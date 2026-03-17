@@ -11,31 +11,6 @@ install_manifest.txt
 CTestTestfile.cmake
 _deps/
 
-# Compiled binaries
-*.exe
-*.out
-*.app
-
-# Compiled object files
-*.o
-*.obj
-*.lo
-*.slo
-
-# Precompiled headers
-*.gch
-*.pch
-
-# Compiled dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Compiled static libraries
-*.lib
-*.a
-*.la
-
 # IDE specific files
 .idea/
 *.user

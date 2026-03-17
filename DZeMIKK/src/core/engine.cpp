@@ -1,10 +1,10 @@
 #include <cstdio>
-#include "../../include/core/engine.h"
+#include "core/engine.h"
 
-#include "third_party/glad/glad.h"
-#include "third_party/GLFW/glfw3.h"
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
 
-engine::engine::engine() {
+dzemikk::Engine::Engine() {
     printf("Hello Engine\n");
 
     if (!glfwInit()) {
@@ -43,4 +43,4 @@ engine::engine::engine() {
     glfwTerminate();
 }
 
-engine::engine::~engine() = default;
+dzemikk::Engine::~Engine() = default;

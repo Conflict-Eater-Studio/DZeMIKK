@@ -1,12 +1,12 @@
 #ifndef DZeMIKK_ENGINE_H
 #define DZeMIKK_ENGINE_H
 
-namespace engine {
-    class engine {
+namespace dzemikk {
+    class Engine {
     private:
     public:
-        engine();
-        ~engine();
+        Engine();
+        ~Engine();
     };
 }
 
