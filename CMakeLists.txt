@@ -12,3 +12,4 @@ SET(CMAKE_CXX_CLANG_TIDY
         clang-tidy;
         --config-file="${CMAKE_SOURCE_DIR}/.clang-tidy"
 )
+set(CMAKE_VERBOSE_MAKEFILE ON)

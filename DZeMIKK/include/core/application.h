@@ -1,15 +1,15 @@
-#ifndef DZeMIKK_ENGINE_H
-#define DZeMIKK_ENGINE_H
+#ifndef DZEMIKK_APPLICATION_H
+#define DZEMIKK_APPLICATION_H
 
 namespace dzemikk {
-    class Engine {
+    class Application {
     private:
     public:
-        Engine();
-        ~Engine();
+        Application();
+        ~Application();
     };
 }
 
 
 
-#endif //DZeMIKK_ENGINE_H
+#endif //DZEMIKK_APPLICATION_H

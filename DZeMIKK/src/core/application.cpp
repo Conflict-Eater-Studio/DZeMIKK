@@ -3,12 +3,19 @@
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "spdlog/spdlog.h"
 
-dzemikk::Engine::Engine() {
-    printf("Hello Engine\n");
+dzemikk::Application::Application() {
+    spdlog::info("DZeMIKK");
+    spdlog::info("spdlog version: {}.{}.{}",
+             SPDLOG_VER_MAJOR,
+             SPDLOG_VER_MINOR,
+             SPDLOG_VER_PATCH);
 
     if (!glfwInit()) {
-        std::fprintf(stderr, "Failed to initialize GLFW\n");
+        spdlog::critical("Failed to initialize GLFW:");
+    }else {
+        spdlog::info("GLFW version: {}", glfwGetVersionString());
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -16,15 +23,16 @@ dzemikk::Engine::Engine() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "GLFW + GLAD", nullptr, nullptr);
+
     if (!window) {
-        std::fprintf(stderr, "Failed to create GLFW window\n");
+        spdlog::critical("Failed to create GLFW window");
         glfwTerminate();
     }
 
     glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::fprintf(stderr, "Failed to initialize GLAD\n");
+        spdlog::critical("Failed to initialize GLAD");
         glfwDestroyWindow(window);
         glfwTerminate();
     }
@@ -38,9 +46,8 @@ dzemikk::Engine::Engine() {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
     glfwDestroyWindow(window);
     glfwTerminate();
 }
 
-dzemikk::Engine::~Engine() = default;
+dzemikk::Application::~Application() = default;
