@@ -1,11 +1,11 @@
-#include <cstdio>
-#include "core/application.h"
-
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "core/engine.h"
 #include "spdlog/spdlog.h"
 
-dzemikk::Application::Application() {
+#include <cstdio>
+
+dzemikk::Engine::Engine() {
     spdlog::info("DZeMIKK");
     spdlog::info("spdlog version: {}.{}.{}",
              SPDLOG_VER_MAJOR,
@@ -50,4 +50,4 @@ dzemikk::Application::Application() {
     glfwTerminate();
 }
 
-dzemikk::Application::~Application() = default;
+dzemikk::Engine::~Engine() = default;

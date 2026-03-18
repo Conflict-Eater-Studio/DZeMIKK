@@ -3,7 +3,7 @@ project(DZeMIKK VERSION 1.0 LANGUAGES C CXX)
 
 
 set(ENGINE_SOURCE
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/core/application.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/core/engine.cpp"
         src/core/window.cpp
         include/core/window.h
 )

@@ -1,5 +1,5 @@
-#include <core/application.h>
+#include <core/engine.h>
 
 int main() {
-    dzemikk::Application e;
+    dzemikk::Engine e;
 }

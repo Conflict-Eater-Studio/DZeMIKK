@@ -2,11 +2,11 @@
 #define DZEMIKK_APPLICATION_H
 
 namespace dzemikk {
-    class Application {
+    class Engine {
     private:
     public:
-        Application();
-        ~Application();
+        Engine();
+        ~Engine();
     };
 }
 
