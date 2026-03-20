@@ -21,3 +21,4 @@ _deps/
 # OS specific files
 .DS_Store
 Thumbs.db
+/DZeMIKK/extern/assimp/
