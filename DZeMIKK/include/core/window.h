@@ -4,13 +4,14 @@
 
 #ifndef DZEMIKK_WINDOW_H
 #define DZEMIKK_WINDOW_H
+#include <memory>
+
 #include "GLFW/glfw3.h"
 
 namespace dzemikk {
     class Window {
         private:
-
-            GLFWwindow* window;
+            GLFWwindow* window_;
         public:
         Window();
         Window(int width, int height, const char* title);

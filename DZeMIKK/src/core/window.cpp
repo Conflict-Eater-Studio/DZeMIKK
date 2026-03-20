@@ -3,15 +3,19 @@
 //
 
 #include "core/window.h"
+#include "spdlog/spdlog.h"
 
 namespace dzemikk {
-    Window::Window() {
-        GLFWwindow* window = glfwCreateWindow(800, 600, "GLFW + GLAD", nullptr, nullptr);
-
-    }
+    Window::Window() : Window(600, 800, "DZeMIKK") {}
 
     Window::Window(int width, int height, const char *title) {
-        GLFWwindow* window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+        if (!glfwInit()) {
+            spdlog::critical("Failed to initialize GLFW:");
+        }else {
+            spdlog::info("GLFW version: {}", GLFW_CONTEXT_VERSION_MAJOR);
+        }
+        glfwCreateWindow(width, height, title, nullptr, nullptr);
+        this->window_ = glfwCreateWindow(width, height, title, nullptr, nullptr);
     }
 
     Window::~Window() = default;

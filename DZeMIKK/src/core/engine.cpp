@@ -6,6 +6,7 @@
 #include <glm/glm/detail/setup.hpp>
 
 dzemikk::Engine::Engine() {
+    init();
     spdlog::info("DZeMIKK 1.0.0");
     spdlog::info("GLM version: {}.{}.{}", GLM_VERSION_MAJOR, GLM_VERSION_MINOR, GLM_VERSION_PATCH);
     spdlog::info("Assimp version: {}.{}.{}",
@@ -18,11 +19,6 @@ dzemikk::Engine::Engine() {
         SPDLOG_VER_MINOR,
         SPDLOG_VER_PATCH);
 
-    if (!glfwInit()) {
-        spdlog::critical("Failed to initialize GLFW:");
-    }else {
-        spdlog::info("GLFW version: {}", GLFW_CONTEXT_VERSION_MAJOR);
-    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -56,4 +52,13 @@ dzemikk::Engine::Engine() {
     glfwTerminate();
 }
 
+void dzemikk::Engine::update() {
+    spdlog::info("Update");
+}
+
 dzemikk::Engine::~Engine() = default;
+
+void dzemikk::Engine::init() {
+    spdlog::info("Init");
+    mainWindow = std::make_shared<Window>(600, 800, "DZeMIKK");
+}
