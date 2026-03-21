@@ -1,6 +1,7 @@
+#include <memory>
 #include <core/engine.h>
-#include <ecs/gameobject.h>
 
 int main() {
-    dzemikk::Engine e;
+    auto engine = std::make_shared<dzemikk::Engine>();
+    engine->update();
 }

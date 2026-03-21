@@ -1,70 +1,96 @@
 cmake_minimum_required(VERSION 3.20)
 project(DZeMIKK VERSION 1.0 LANGUAGES C CXX)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(ENGINE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(SRC_DIR    "${ENGINE_DIR}/src")
+set(INC_DIR    "${ENGINE_DIR}/include")
+set(EXTERN_DIR "${ENGINE_DIR}/extern")
+set(DZEMIKK_DEV_TOOLS OFF)
+set(DZeMIKK_VERSION_MAJOR 1)
+set(DZeMIKK_VERSION_MAJOR 0)
+set(DZeMIKK_VERSION_REVISION 0)
 
-include(FetchContent)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    set(DZEMIKK_DEV_TOOLS ON)
+endif()
 
-# Fetch GLM
-FetchContent_Declare(
-    glm
-    GIT_REPOSITORY https://github.com/g-truc/glm.git
-    GIT_TAG 1.0.3
-)
-FetchContent_MakeAvailable(glm)
-
-# Fetch GLFW from source to compile with the current toolchain (GCC/MinGW)
-FetchContent_Declare(
-    glfw
-    GIT_REPOSITORY https://github.com/glfw/glfw.git
-    GIT_TAG 3.3.8
-)
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(glfw)
-
-file(GLOB_RECURSE ENGINE_SOURCE CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
-)
-add_library(DZeMIKK STATIC
-        ${ENGINE_SOURCE}
+add_library(DZeMIKK STATIC)
+target_sources(DZeMIKK
+        PRIVATE
+        "${SRC_DIR}/core/engine.cpp"
+        "${SRC_DIR}/core/window.cpp"
 )
 
 target_include_directories(DZeMIKK
         PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/include"
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern"
+        "${INC_DIR}"
+        PRIVATE
+        "${EXTERN_DIR}"
 )
 
-# No longer using the precompiled MSVC library
-# add_library(glfw3 STATIC IMPORTED)
-# set_target_properties(glfw3 PROPERTIES
-#         IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/extern/GLFW/lib-vc2022/glfw3.lib"
-# )
+add_library(glfw3 STATIC IMPORTED)
+set_target_properties(glfw3 PROPERTIES
+        IMPORTED_LOCATION "${EXTERN_DIR}/GLFW/lib-vc2022/glfw3.lib"
+)
 
-add_library(glad STATIC extern/glad/glad.c)
+add_library(freetype STATIC IMPORTED)
+set_target_properties(freetype PROPERTIES
+        IMPORTED_LOCATION "${EXTERN_DIR}/freetype/freetype.lib"
+)
+
+add_library(glad STATIC
+        "${EXTERN_DIR}/glad/glad.c"
+)
 target_include_directories(glad
         PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/glad"
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern"
+        "${EXTERN_DIR}/glad"
+        "${EXTERN_DIR}"
 )
 
-#add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/extern/assimp")
+add_subdirectory("${EXTERN_DIR}/assimp")
+add_subdirectory("${EXTERN_DIR}/glm/glm")
+if (DZEMIKK_DEV_TOOLS)
+    add_library(imgui STATIC
+            "${EXTERN_DIR}/imgui/imgui.cpp"
+            "${EXTERN_DIR}/imgui/imgui_draw.cpp"
+            "${EXTERN_DIR}/imgui/imgui_tables.cpp"
+            "${EXTERN_DIR}/imgui/imgui_widgets.cpp"
+            "${EXTERN_DIR}/imgui/backends/imgui_impl_glfw.cpp"
+            "${EXTERN_DIR}/imgui/backends/imgui_impl_opengl3.cpp"
+    )
 
-if(MSVC)
-    target_compile_options(DZeMIKK PRIVATE /utf-8)
-    target_compile_options(glad PRIVATE /utf-8)
-endif()
+    target_include_directories(imgui
+            PUBLIC
+            "${EXTERN_DIR}/imgui"
+            "${EXTERN_DIR}/imgui/backends"
+            "${EXTERN_DIR}"
+    )
+
+    target_link_libraries(imgui PUBLIC glfw3 opengl32)
+    target_compile_options(imgui PRIVATE /utf-8)
+endif ()
+
+target_compile_options(DZeMIKK PRIVATE /utf-8)
+target_compile_options(glad PRIVATE /utf-8)
+
 
 target_link_libraries(DZeMIKK
         PUBLIC
-            glad
-            opengl32
-            glfw
-            glm::glm
- #           assimp
+        glad
+        opengl32
+        glfw3
+        assimp
+        glm::glm
+        freetype
+        $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:imgui>
+)
+target_compile_definitions(DZeMIKK
+        PUBLIC
+        $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:DZEMIKK_DEV_TOOLS=1>
+        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>>:DZEMIKK_DEV_TOOLS=0>
+        DZeMIKK_VERSION_MAJOR=1
+        DZeMIKK_VERSION_MINOR=0
+        DZeMIKK_VERSION_REVISION=0
+
+
 )
