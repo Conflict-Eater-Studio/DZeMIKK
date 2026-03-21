@@ -3,4 +3,5 @@
 
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
+    engine->update();
 }
