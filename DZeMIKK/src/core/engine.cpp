@@ -1,16 +1,14 @@
-#include <spdlog/spdlog.h>
 #include <assimp/version.h>
 #include <glm/glm/detail/setup.hpp>
 
 #if DZEMIKK_DEV_TOOLS
+#include <spdlog/spdlog.h>
 #include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 #endif
 
 #include "core/engine.h"
-
-
 
 dzemikk::Engine::Engine() {
     init();
@@ -28,8 +26,9 @@ void dzemikk::Engine::update() const {
     ImGui_ImplOpenGL3_Init("#version 330");
 
     ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
-
+#endif
     while (!mainWindow->shouldClose()) {
+#if DZEMIKK_DEV_TOOLS
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -43,21 +42,26 @@ void dzemikk::Engine::update() const {
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#else
+        mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
+#endif
 
         mainWindow->swapBuffers();
         mainWindow->pollEvents();
     }
 
+#if DZEMIKK_DEV_TOOLS
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 #endif
-
 }
+
 dzemikk::Engine::~Engine() = default;
 
 void dzemikk::Engine::init() {
-    spdlog::info("DZeMIKK 1.0.0");
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("DZeMIKK version: {}.{}.{}", DZeMIKK_VERSION_MAJOR, DZeMIKK_VERSION_MINOR, DZeMIKK_VERSION_REVISION);
     spdlog::info("GLM version: {}.{}.{}", GLM_VERSION_MAJOR, GLM_VERSION_MINOR, GLM_VERSION_PATCH);
     spdlog::info("Assimp version: {}.{}.{}",
                  aiGetVersionMajor(),
@@ -67,5 +71,7 @@ void dzemikk::Engine::init() {
                  SPDLOG_VER_MAJOR,
                  SPDLOG_VER_MINOR,
                  SPDLOG_VER_PATCH);
+#endif
+
     mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
 }

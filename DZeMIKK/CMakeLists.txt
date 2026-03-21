@@ -6,6 +6,9 @@ set(SRC_DIR    "${ENGINE_DIR}/src")
 set(INC_DIR    "${ENGINE_DIR}/include")
 set(EXTERN_DIR "${ENGINE_DIR}/extern")
 set(DZEMIKK_DEV_TOOLS OFF)
+set(DZeMIKK_VERSION_MAJOR 1)
+set(DZeMIKK_VERSION_MAJOR 0)
+set(DZeMIKK_VERSION_REVISION 0)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     set(DZEMIKK_DEV_TOOLS ON)
@@ -85,4 +88,9 @@ target_compile_definitions(DZeMIKK
         PUBLIC
         $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:DZEMIKK_DEV_TOOLS=1>
         $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>>:DZEMIKK_DEV_TOOLS=0>
+        DZeMIKK_VERSION_MAJOR=1
+        DZeMIKK_VERSION_MINOR=0
+        DZeMIKK_VERSION_REVISION=0
+
+
 )
