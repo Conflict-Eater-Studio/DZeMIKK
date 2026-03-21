@@ -18,13 +18,17 @@ add_library(DZeMIKK STATIC)
 set(ENGINE_SOURCES
     "${SRC_DIR}/core/engine.cpp"
     "${SRC_DIR}/core/window.cpp"
-    "${SRC_DIR}/Renderer/renderer.cpp"
+    "${SRC_DIR}/renderer/renderer.cpp"
+    "${SRC_DIR}/ecs/components/transform.cpp"
 )
 
 set(ENGINE_HEADERS
     "${INC_DIR}/core/engine.h"
     "${INC_DIR}/core/window.h"
-    "${INC_DIR}/Renderer/renderer.h"
+    "${INC_DIR}/renderer/renderer.h"
+    "${INC_DIR}/ecs/component.h"
+    "${INC_DIR}/ecs/components/transform.h"
+    "${INC_DIR}/ecs/components/monoBehaviour.h"
 )
 
 target_sources(DZeMIKK PRIVATE ${ENGINE_SOURCES} ${ENGINE_HEADERS})
