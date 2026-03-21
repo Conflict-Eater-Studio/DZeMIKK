@@ -10,6 +10,10 @@
 
 #include "core/engine.h"
 
+#include <glm/glm/glm.hpp>
+#include <glm/glm/gtc/matrix_transform.hpp>
+#include <glm/glm/gtc/type_ptr.hpp>
+
 dzemikk::Engine::Engine() {
     init();
 }
@@ -45,7 +49,8 @@ void dzemikk::Engine::update() const {
 #else
         mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
-
+        renderer->DrawCube();
+        renderer->DrawRectangle();
         mainWindow->swapBuffers();
         mainWindow->pollEvents();
     }
@@ -74,4 +79,5 @@ void dzemikk::Engine::init() {
 #endif
 
     mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
+    renderer = std::make_shared<Renderer>();
 }

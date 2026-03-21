@@ -2,6 +2,7 @@
 #define DZEMIKK_APPLICATION_H
 #include <memory>
 #include "window.h"
+#include "renderer/renderer.h"
 
 namespace dzemikk {
     class Engine {
@@ -12,9 +13,8 @@ namespace dzemikk {
         Engine();
         ~Engine();
         void update() const;
+        std::shared_ptr<Renderer> renderer;
     };
 }
-
-
 
 #endif //DZEMIKK_APPLICATION_H

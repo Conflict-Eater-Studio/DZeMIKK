@@ -15,11 +15,19 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebIn
 endif()
 
 add_library(DZeMIKK STATIC)
-target_sources(DZeMIKK
-        PRIVATE
-        "${SRC_DIR}/core/engine.cpp"
-        "${SRC_DIR}/core/window.cpp"
+set(ENGINE_SOURCES
+    "${SRC_DIR}/core/engine.cpp"
+    "${SRC_DIR}/core/window.cpp"
+    "${SRC_DIR}/Renderer/renderer.cpp"
 )
+
+set(ENGINE_HEADERS
+    "${INC_DIR}/core/engine.h"
+    "${INC_DIR}/core/window.h"
+    "${INC_DIR}/Renderer/renderer.h"
+)
+
+target_sources(DZeMIKK PRIVATE ${ENGINE_SOURCES} ${ENGINE_HEADERS})
 
 target_include_directories(DZeMIKK
         PUBLIC
