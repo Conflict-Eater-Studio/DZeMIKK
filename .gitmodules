@@ -1,0 +1,6 @@
+[submodule "DZeMIKK/extern/imgui"]
+	path = DZeMIKK/extern/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "DZeMIKK/extern/assimp"]
+	path = DZeMIKK/extern/assimp
+	url = https://github.com/assimp/assimp.git
