@@ -4,8 +4,8 @@
 
 #ifndef DZEMIKK_WINDOW_H
 #define DZEMIKK_WINDOW_H
-#include <memory>
 
+#define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 
 namespace dzemikk {

@@ -1,9 +1,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "core/engine.h"
 #include <spdlog/spdlog.h>
 #include <assimp/version.h>
 #include <glm/glm/detail/setup.hpp>
+
+#include "core/engine.h"
 
 dzemikk::Engine::Engine() {
     init();
@@ -23,33 +24,6 @@ dzemikk::Engine::Engine() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    GLFWwindow* window = glfwCreateWindow(800, 600, "GLFW + GLAD", nullptr, nullptr);
-
-    if (!window) {
-        spdlog::critical("Failed to create GLFW window");
-        glfwTerminate();
-    }
-
-    glfwMakeContextCurrent(window);
-
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        spdlog::critical("Failed to initialize GLAD");
-        glfwDestroyWindow(window);
-        glfwTerminate();
-    }
-
-    glViewport(0, 0, 800, 600);
-
-    while (!glfwWindowShouldClose(window)) {
-        glClearColor(0.1f, 0.15f, 0.2f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-    glfwDestroyWindow(window);
-    glfwTerminate();
 }
 
 void dzemikk::Engine::update() {
