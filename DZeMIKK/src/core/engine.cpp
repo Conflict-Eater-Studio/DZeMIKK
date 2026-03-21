@@ -2,12 +2,14 @@
 #include <assimp/version.h>
 #include <glm/glm/detail/setup.hpp>
 
+#if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+#endif
 
 #include "core/engine.h"
 
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
 
 
 dzemikk::Engine::Engine() {
@@ -15,6 +17,7 @@ dzemikk::Engine::Engine() {
 }
 
 void dzemikk::Engine::update() const {
+#if DZEMIKK_DEV_TOOLS
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -48,6 +51,8 @@ void dzemikk::Engine::update() const {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+#endif
+
 }
 dzemikk::Engine::~Engine() = default;
 

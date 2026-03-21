@@ -5,10 +5,10 @@ set(ENGINE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(SRC_DIR    "${ENGINE_DIR}/src")
 set(INC_DIR    "${ENGINE_DIR}/include")
 set(EXTERN_DIR "${ENGINE_DIR}/extern")
-set(DZEMIKK_WITH_DEV_TOOLS ON)
+set(DZEMIKK_DEV_TOOLS OFF)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-    set(DZEMIKK_WITH_DEV_TOOLS ON)
+    set(DZEMIKK_DEV_TOOLS ON)
 endif()
 
 add_library(DZeMIKK STATIC)
@@ -46,7 +46,7 @@ target_include_directories(glad
 
 add_subdirectory("${EXTERN_DIR}/assimp")
 add_subdirectory("${EXTERN_DIR}/glm/glm")
-if (DZEMIKK_WITH_DEV_TOOLS)
+if (DZEMIKK_DEV_TOOLS)
     add_library(imgui STATIC
             "${EXTERN_DIR}/imgui/imgui.cpp"
             "${EXTERN_DIR}/imgui/imgui_draw.cpp"
@@ -79,6 +79,10 @@ target_link_libraries(DZeMIKK
         assimp
         glm::glm
         freetype
-        imgui
+        $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:imgui>
 )
-
+target_compile_definitions(DZeMIKK
+        PUBLIC
+        $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:DZEMIKK_DEV_TOOLS=1>
+        $<$<NOT:$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>>:DZEMIKK_DEV_TOOLS=0>
+)
