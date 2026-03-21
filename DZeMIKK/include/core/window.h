@@ -17,7 +17,8 @@ namespace dzemikk {
         bool shouldClose() const;
         void pollEvents() const;
         void swapBuffers() const;
-        void clear(float r, float g, float b, float a) const;
+        void clear(float red, float green, float blue, float alpha) const;
+        GLFWwindow* nativeHandle() const;
     };
 } // dzemikk
 

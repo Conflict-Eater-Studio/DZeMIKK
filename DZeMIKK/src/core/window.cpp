@@ -7,10 +7,11 @@
 #include <GLFW/glfw3.h>
 #include <spdlog/spdlog.h>
 
+
 namespace dzemikk {
     Window::Window() : Window(800, 600, "DZeMIKK") {}
 
-    Window::Window(int width, int height, const char* title) : window_(nullptr) {
+    Window::Window(const int width, const int height, const char* title) : window_(nullptr) {
         if (!glfwInit()) {
             spdlog::critical("Failed to initialize GLFW");
             throw std::runtime_error("Failed to initialize GLFW");
@@ -29,7 +30,7 @@ namespace dzemikk {
 
         glfwMakeContextCurrent(window_);
 
-        if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+        if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress))) {
             glfwDestroyWindow(window_);
             window_ = nullptr;
             glfwTerminate();
@@ -61,8 +62,12 @@ namespace dzemikk {
         glfwSwapBuffers(window_);
     }
 
-    void Window::clear(float r, float g, float b, float a) const {
-        glClearColor(r, g, b, a);
+    void Window::clear(const float red, const float green, const float blue, const float alpha) const {
+        glClearColor(red, green, blue, alpha);
         glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    GLFWwindow * Window::nativeHandle() const {
+        return window_;
     }
 }

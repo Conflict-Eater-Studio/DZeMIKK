@@ -5,8 +5,9 @@ Checks: >
   modernize-*,
   readability-*,
   cppcoreguidelines-*,
-  readability-identifier-naming
-
+  readability-identifier-naming,
+  -readability-implicit-bool-conversion,
+  -modernize-use-trailing-return-type
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 FormatStyle: file
@@ -14,7 +15,8 @@ FormatStyle: file
 CheckOptions:
   - key: readability-identifier-naming.NamespaceCase
     value: lower_case
-
+  - key: readability-implicit-bool-conversion
+    value: 0
   - key: readability-identifier-naming.ClassCase
     value: CamelCase
   - key: readability-identifier-naming.StructCase

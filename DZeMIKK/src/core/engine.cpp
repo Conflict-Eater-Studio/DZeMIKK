@@ -2,11 +2,56 @@
 #include <assimp/version.h>
 #include <glm/glm/detail/setup.hpp>
 
+#include <imgui.h>
+
 #include "core/engine.h"
+
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 
 dzemikk::Engine::Engine() {
     init();
+}
 
+void dzemikk::Engine::update() const {
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForOpenGL(mainWindow->nativeHandle(), true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
+    ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
+
+    while (!mainWindow->shouldClose()) {
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("Renderer");
+        ImGui::Text("Background");
+        ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
+        ImGui::End();
+
+        mainWindow->clear(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        mainWindow->swapBuffers();
+        mainWindow->pollEvents();
+    }
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+}
+dzemikk::Engine::~Engine() = default;
+
+void dzemikk::Engine::init() {
     spdlog::info("DZeMIKK 1.0.0");
     spdlog::info("GLM version: {}.{}.{}", GLM_VERSION_MAJOR, GLM_VERSION_MINOR, GLM_VERSION_PATCH);
     spdlog::info("Assimp version: {}.{}.{}",
@@ -17,19 +62,5 @@ dzemikk::Engine::Engine() {
                  SPDLOG_VER_MAJOR,
                  SPDLOG_VER_MINOR,
                  SPDLOG_VER_PATCH);
-}
-
-void dzemikk::Engine::update() {
-    while (!mainWindow->shouldClose()) {
-        mainWindow->clear(0.1f, 0.15f, 0.2f, 1.0f);
-        mainWindow->swapBuffers();
-        mainWindow->pollEvents();
-    }
-}
-
-dzemikk::Engine::~Engine() = default;
-
-void dzemikk::Engine::init() {
-    spdlog::info("Init");
     mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
 }

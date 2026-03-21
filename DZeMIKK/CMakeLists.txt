@@ -1,74 +1,84 @@
 cmake_minimum_required(VERSION 3.20)
 project(DZeMIKK VERSION 1.0 LANGUAGES C CXX)
 
+set(ENGINE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(SRC_DIR    "${ENGINE_DIR}/src")
+set(INC_DIR    "${ENGINE_DIR}/include")
+set(EXTERN_DIR "${ENGINE_DIR}/extern")
+set(DZEMIKK_WITH_DEV_TOOLS ON)
 
-set(ENGINE_SOURCE
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/core/engine.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/core/window.cpp"
-)
-add_library(DZeMIKK STATIC
-        ${ENGINE_SOURCE}
+if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    set(DZEMIKK_WITH_DEV_TOOLS ON)
+endif()
+
+add_library(DZeMIKK STATIC)
+target_sources(DZeMIKK
+        PRIVATE
+        "${SRC_DIR}/core/engine.cpp"
+        "${SRC_DIR}/core/window.cpp"
 )
 
 target_include_directories(DZeMIKK
         PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        "${INC_DIR}"
         PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern"
+        "${EXTERN_DIR}"
 )
-
 
 add_library(glfw3 STATIC IMPORTED)
 set_target_properties(glfw3 PROPERTIES
-        IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/extern/GLFW/lib-vc2022/glfw3.lib"
+        IMPORTED_LOCATION "${EXTERN_DIR}/GLFW/lib-vc2022/glfw3.lib"
 )
+
 add_library(freetype STATIC IMPORTED)
 set_target_properties(freetype PROPERTIES
-        IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/extern/freetype/freetype.lib"
+        IMPORTED_LOCATION "${EXTERN_DIR}/freetype/freetype.lib"
 )
 
 add_library(glad STATIC
-        "extern/glad/glad.c")
-
+        "${EXTERN_DIR}/glad/glad.c"
+)
 target_include_directories(glad
         PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/glad"
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern"
+        "${EXTERN_DIR}/glad"
+        "${EXTERN_DIR}"
 )
 
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/extern/assimp")
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/extern/glm/glm")
+add_subdirectory("${EXTERN_DIR}/assimp")
+add_subdirectory("${EXTERN_DIR}/glm/glm")
+if (DZEMIKK_WITH_DEV_TOOLS)
+    add_library(imgui STATIC
+            "${EXTERN_DIR}/imgui/imgui.cpp"
+            "${EXTERN_DIR}/imgui/imgui_draw.cpp"
+            "${EXTERN_DIR}/imgui/imgui_tables.cpp"
+            "${EXTERN_DIR}/imgui/imgui_widgets.cpp"
+            "${EXTERN_DIR}/imgui/backends/imgui_impl_glfw.cpp"
+            "${EXTERN_DIR}/imgui/backends/imgui_impl_opengl3.cpp"
+    )
 
-add_library(imgui STATIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui/imgui.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui/imgui_draw.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui/imgui_tables.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui/imgui_widgets.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui/backends/imgui_impl_glfw.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui/backends/imgui_impl_opengl3.cpp"
-)
-target_include_directories(imgui
-        PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui"
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern/imgui/backends"
-        "${CMAKE_CURRENT_SOURCE_DIR}/extern"
-)
-target_link_libraries(imgui PUBLIC glfw3 opengl32)
+    target_include_directories(imgui
+            PUBLIC
+            "${EXTERN_DIR}/imgui"
+            "${EXTERN_DIR}/imgui/backends"
+            "${EXTERN_DIR}"
+    )
+
+    target_link_libraries(imgui PUBLIC glfw3 opengl32)
+    target_compile_options(imgui PRIVATE /utf-8)
+endif ()
 
 target_compile_options(DZeMIKK PRIVATE /utf-8)
 target_compile_options(glad PRIVATE /utf-8)
-target_compile_options(imgui PRIVATE /utf-8)
 
 
 target_link_libraries(DZeMIKK
         PUBLIC
-            glad
-            opengl32
-            glfw3
-            assimp
-            glm::glm
-            freetype
-            imgui
+        glad
+        opengl32
+        glfw3
+        assimp
+        glm::glm
+        freetype
+        imgui
 )
-
 

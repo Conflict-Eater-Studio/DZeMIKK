@@ -11,7 +11,7 @@ namespace dzemikk {
     public:
         Engine();
         ~Engine();
-        void update();
+        void update() const;
     };
 }
 
