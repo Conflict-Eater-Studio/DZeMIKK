@@ -1,5 +1,5 @@
-#ifndef DZeMIKK_COMPONENT_H
-#define DZeMIKK_COMPONENT_H
+#ifndef DZEMIKK_COMPONENT_H
+#define DZEMIKK_COMPONENT_H
 
 namespace dzemikk {
     class Component {
@@ -13,4 +13,4 @@ namespace dzemikk {
     };
 }
 
-#endif // DZeMIKK_COMPONENT_H
+#endif // DZEMIKK_COMPONENT_H

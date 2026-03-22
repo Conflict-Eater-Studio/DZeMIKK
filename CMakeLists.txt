@@ -9,6 +9,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(DZeMIKK)
 add_subdirectory(game)
+add_subdirectory(tests)
+
+enable_testing()
 
 SET(CMAKE_CXX_CLANG_TIDY
         clang-tidy;

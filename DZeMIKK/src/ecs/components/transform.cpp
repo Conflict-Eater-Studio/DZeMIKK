@@ -1,51 +1,53 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "ecs/components/transform.h"
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "ecs/gameobject.h"
+#include <glm/glm/gtx/quaternion.hpp>
+#include <glm/glm/gtc/matrix_transform.hpp>
 
 namespace dzemikk {
     // --- Constructors & Destructor
-    Transform::Transform(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale)
-    : Component()
-    , _position(position)
-    , _rotation(glm::quat(glm::radians(rotation)))
-    , _scale(scale) {}
+    Transform::Transform(TransformParams params)
+    : _position(params.position)
+    , _rotation(glm::quat(glm::radians(params.rotation)))
+    , _scale(params.scale)
+    , _owner(params.owner)
+    {}
 
     // --- Setters
-    void Transform::setPosition(const glm::vec3 position) {
+    void Transform::setPosition(const glm::vec3& position) {
         _position = position;
         _dirty = true;
     }
 
-    void Transform::setRotation(const glm::quat rotation) {
+    void Transform::setRotation(const glm::quat& rotation) {
         _rotation = rotation;
         _dirty = true;
     }
 
-    void Transform::setScale(const glm::vec3 scale) {
+    void Transform::setScale(const glm::vec3& scale) {
         _scale = scale;
         _dirty = true;
     }
 
-    void Transform::setEulerAngles(glm::vec3 rotation) {
+    void Transform::setEulerAngles(const glm::vec3& rotation) {
         _rotation = glm::quat(glm::radians(rotation));
         _dirty = true;
     }
 
     // --- Getters
-    const glm::vec3 Transform::getPosition() const {
+    glm::vec3 Transform::getPosition() const {
         return _position;
     }
 
-    const glm::quat Transform::getRotation() const {
+    glm::quat Transform::getRotation() const {
         return _rotation;
     }
 
-    const glm::vec3 Transform::getScale() const {
+    glm::vec3 Transform::getScale() const {
         return _scale;
     }
 
-    const glm::vec3 Transform::getEulerAngles() const {
+    glm::vec3 Transform::getEulerAngles() const {
         return glm::degrees(glm::eulerAngles(_rotation));
     }
 
@@ -55,8 +57,8 @@ namespace dzemikk {
         _dirty = true;
     }
 
-    void Transform::rotate(const glm::quat& q) {
-        _rotation = q * _rotation;
+    void Transform::rotate(const glm::quat& quat) {
+        _rotation = quat * _rotation;
         _dirty = true;
     }
 
@@ -79,26 +81,33 @@ namespace dzemikk {
 
     // --- Direction vectors
     glm::vec3 Transform::forward() const {
-        return _rotation * glm::vec3(0.0f, 0.0f, -1.0f);
+        return _rotation * glm::vec3(0.0F, 0.0F, -1.0F);
     }
 
     glm::vec3 Transform::right() const {
-        return _rotation * glm::vec3(1.0f, 0.0f, 0.0f);
+        return _rotation * glm::vec3(1.0F, 0.0F, 0.0F);
     }
 
     glm::vec3 Transform::up() const {
-        return _rotation * glm::vec3(0.0f, 1.0f, 0.0f);
+        return _rotation * glm::vec3(0.0F, 1.0F, 0.0F);
     }
 
     // --- Matrix
-    const glm::mat4& Transform::getMatrix() {
+    const glm::mat4& Transform::getLocalMatrix() const {
         if (_dirty) {
-            glm::mat4 translation = glm::translate(glm::mat4(1.0f), _position);
+            glm::mat4 translation = glm::translate(glm::mat4(1.0F), _position);
             glm::mat4 rotation = glm::toMat4(_rotation);
-            glm::mat4 scale = glm::scale(glm::mat4(1.0f), _scale);
-            _cachedMatrix = translation * rotation * scale;
+            glm::mat4 scale = glm::scale(glm::mat4(1.0F), _scale);
+            _cachedLocalMatrix = translation * rotation * scale;
             _dirty = false;
         }
-        return _cachedMatrix;
+        return _cachedLocalMatrix;
+    }
+
+    glm::mat4 Transform::getWorldMatrix() const {
+        if (_owner && _owner->getParent()) {
+            return _owner->getParent()->transform()->getWorldMatrix() * getLocalMatrix();
+        }
+        return getLocalMatrix();
     }
 }

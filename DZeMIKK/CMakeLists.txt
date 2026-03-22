@@ -19,6 +19,9 @@ target_sources(DZeMIKK
         PRIVATE
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"
+        "${SRC_DIR}/ecs/gameobject.cpp"
+        "${SRC_DIR}/ecs/components/transform.cpp"
+        "${SRC_DIR}/ecs/scene.cpp"
 )
 
 target_include_directories(DZeMIKK

@@ -12,3 +12,4 @@ target_link_libraries(game
         PUBLIC
         DZeMIKK
 )
+target_compile_options(game PRIVATE /utf-8)
