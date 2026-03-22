@@ -41,6 +41,7 @@ target_include_directories(DZeMIKK
             "${EXTERN_DIR}/assimp/include"
             "${EXTERN_DIR}/freetype/include"
             "${EXTERN_DIR}/freetype"
+            "${EXTERN_DIR}/glm/include"
 
 
 )
@@ -63,13 +64,15 @@ target_include_directories(glad
         "${EXTERN_DIR}/glad"
         "${EXTERN_DIR}"
 )
-
 add_library(glfw3 STATIC IMPORTED)
 set_target_properties(glfw3 PROPERTIES
-        IMPORTED_LOCATION "${EXTERN_DIR}/GLFW/lib-vc2022/glfw3.lib"
+        IMPORTED_LOCATION "${EXTERN_DIR}/GLFW/lib/glfw3.lib"
 )
 
-add_subdirectory("${EXTERN_DIR}/glm/glm")
+add_library(glm::glm STATIC IMPORTED)
+set_target_properties(glm::glm PROPERTIES
+        IMPORTED_LOCATION "${EXTERN_DIR}/glm/lib/glm.lib"
+)
 if (DZEMIKK_DEV_TOOLS)
     add_library(imgui STATIC
             "${EXTERN_DIR}/imgui/imgui.cpp"

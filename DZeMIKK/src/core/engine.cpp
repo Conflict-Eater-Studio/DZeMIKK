@@ -1,5 +1,5 @@
 #include <assimp/version.h>
-#include <glm/glm/detail/setup.hpp>
+#include <glm//detail/setup.hpp>
 
 #if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
