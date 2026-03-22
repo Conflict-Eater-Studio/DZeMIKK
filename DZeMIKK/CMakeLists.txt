@@ -7,7 +7,7 @@ set(INC_DIR    "${ENGINE_DIR}/include")
 set(EXTERN_DIR "${ENGINE_DIR}/extern")
 set(DZEMIKK_DEV_TOOLS OFF)
 set(DZeMIKK_VERSION_MAJOR 1)
-set(DZeMIKK_VERSION_MAJOR 0)
+set(DZeMIKK_VERSION_MINOR 0)
 set(DZeMIKK_VERSION_REVISION 0)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
@@ -37,14 +37,13 @@ target_sources(DZeMIKK
 )
 target_include_directories(DZeMIKK
         PUBLIC
-        "${INC_DIR}"
+            "${INC_DIR}"
+            "${EXTERN_DIR}/glm/include"
         PRIVATE
             "${EXTERN_DIR}"
             "${EXTERN_DIR}/assimp/include"
             "${EXTERN_DIR}/freetype/include"
             "${EXTERN_DIR}/freetype"
-            "${EXTERN_DIR}/glm/include"
-
 
 )
 
