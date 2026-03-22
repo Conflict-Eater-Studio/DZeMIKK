@@ -6,6 +6,8 @@
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #endif
 
 #include "core/engine.h"
@@ -71,6 +73,17 @@ void dzemikk::Engine::init() {
                  SPDLOG_VER_MAJOR,
                  SPDLOG_VER_MINOR,
                  SPDLOG_VER_PATCH);
+    FT_Library ft = nullptr;
+    if (FT_Init_FreeType(&ft) == 0) {
+        FT_Int major = 0;
+        FT_Int minor = 0;
+        FT_Int patch = 0;
+        FT_Library_Version(ft, &major, &minor, &patch);
+        spdlog::info("FreeType version: {}.{}.{}", major, minor, patch);
+        FT_Done_FreeType(ft);
+    } else {
+        spdlog::warn("Failed to initialize FreeType (version unavailable)");
+    }
 #endif
 
     mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");

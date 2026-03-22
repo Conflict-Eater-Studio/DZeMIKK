@@ -40,22 +40,21 @@ target_include_directories(DZeMIKK
             "${EXTERN_DIR}"
             "${EXTERN_DIR}/assimp/include"
             "${EXTERN_DIR}/freetype/include"
+            "${EXTERN_DIR}/freetype"
+
 
 )
 
-add_library(glfw3 STATIC IMPORTED)
-set_target_properties(glfw3 PROPERTIES
-        IMPORTED_LOCATION "${EXTERN_DIR}/GLFW/lib-vc2022/glfw3.lib"
-)
-
-add_library(freetype STATIC IMPORTED)
-set_target_properties(freetype PROPERTIES
-        IMPORTED_LOCATION "${EXTERN_DIR}/freetype/freetype.lib"
-)
 add_library(assimp STATIC IMPORTED)
 set_target_properties(assimp PROPERTIES
         IMPORTED_LOCATION "${EXTERN_DIR}/assimp/lib/assimp.lib"
 )
+
+add_library(freetype STATIC IMPORTED)
+set_target_properties(freetype PROPERTIES
+        IMPORTED_LOCATION "${EXTERN_DIR}/freetype/lib/freetype.lib"
+)
+
 add_library(glad STATIC
         "${EXTERN_DIR}/glad/glad.c"
 )
@@ -63,6 +62,11 @@ target_include_directories(glad
         PRIVATE
         "${EXTERN_DIR}/glad"
         "${EXTERN_DIR}"
+)
+
+add_library(glfw3 STATIC IMPORTED)
+set_target_properties(glfw3 PROPERTIES
+        IMPORTED_LOCATION "${EXTERN_DIR}/GLFW/lib-vc2022/glfw3.lib"
 )
 
 add_subdirectory("${EXTERN_DIR}/glm/glm")
