@@ -7,7 +7,7 @@ set(INC_DIR    "${ENGINE_DIR}/include")
 set(EXTERN_DIR "${ENGINE_DIR}/extern")
 set(DZEMIKK_DEV_TOOLS OFF)
 set(DZeMIKK_VERSION_MAJOR 1)
-set(DZeMIKK_VERSION_MAJOR 0)
+set(DZeMIKK_VERSION_MINOR 0)
 set(DZeMIKK_VERSION_REVISION 0)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
@@ -15,17 +15,29 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebIn
 endif()
 
 add_library(DZeMIKK STATIC)
+
+set(ENGINE_SOURCES
+    "${SRC_DIR}/core/engine.cpp"
+    "${SRC_DIR}/core/window.cpp"
+)
+set(ENGINE_HEADERS
+    "${INC_DIR}/core/engine.h"
+    "${INC_DIR}/core/window.h"
+)
 target_sources(DZeMIKK
         PRIVATE
-        "${SRC_DIR}/core/engine.cpp"
-        "${SRC_DIR}/core/window.cpp"
+            ${ENGINE_SOURCES}
+        PUBLIC
+            FILE_SET HEADERS
+            BASE_DIRS "${INC_DIR}"
+            FILES ${ENGINE_HEADERS}
 )
 
 target_include_directories(DZeMIKK
         PUBLIC
-        "${INC_DIR}"
+            "${INC_DIR}"
         PRIVATE
-        "${EXTERN_DIR}"
+            "${EXTERN_DIR}"
 )
 
 add_library(glfw3 STATIC IMPORTED)
@@ -91,6 +103,4 @@ target_compile_definitions(DZeMIKK
         DZeMIKK_VERSION_MAJOR=1
         DZeMIKK_VERSION_MINOR=0
         DZeMIKK_VERSION_REVISION=0
-
-
 )
