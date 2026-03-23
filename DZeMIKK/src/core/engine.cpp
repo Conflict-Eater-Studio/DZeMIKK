@@ -1,6 +1,3 @@
-#include <assimp/version.h>
-#include <glm//detail/setup.hpp>
-
 #if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
 #include <imgui.h>
@@ -10,12 +7,12 @@
 #include FT_FREETYPE_H
 #endif
 
+#include <assimp/version.h>
+#include <glm/detail/setup.hpp>
+#include <stb/stb_image.h>
+
 #include "core/engine.h"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
+#include <GLFW/glfw3.h>
 dzemikk::Engine::Engine() {
     init();
 }
@@ -69,15 +66,10 @@ dzemikk::Engine::~Engine() = default;
 void dzemikk::Engine::init() {
 #if DZEMIKK_DEV_TOOLS
     spdlog::info("DZeMIKK version: {}.{}.{}", DZeMIKK_VERSION_MAJOR, DZeMIKK_VERSION_MINOR, DZeMIKK_VERSION_REVISION);
-    spdlog::info("GLM version: {}.{}.{}", GLM_VERSION_MAJOR, GLM_VERSION_MINOR, GLM_VERSION_PATCH);
     spdlog::info("Assimp version: {}.{}.{}",
                  aiGetVersionMajor(),
                  aiGetVersionMinor(),
                  aiGetVersionRevision());
-    spdlog::info("spdlog version: {}.{}.{}",
-                 SPDLOG_VER_MAJOR,
-                 SPDLOG_VER_MINOR,
-                 SPDLOG_VER_PATCH);
     FT_Library ft = nullptr;
     if (FT_Init_FreeType(&ft) == 0) {
         FT_Int major = 0;
@@ -89,6 +81,15 @@ void dzemikk::Engine::init() {
     } else {
         spdlog::warn("Failed to initialize FreeType (version unavailable)");
     }
+    spdlog::info("GLFW version: {}.{}.{}", GLFW_VERSION_MAJOR, GLFW_VERSION_MINOR, GLFW_VERSION_REVISION);
+    spdlog::info("GLM version: {}.{}.{}", GLM_VERSION_MAJOR, GLM_VERSION_MINOR, GLM_VERSION_PATCH);
+    spdlog::info("ImGui version: {}.{}.{}");
+    spdlog::info("NLOHMANN version: {}.{}.{}");
+    spdlog::info("spdlog version: {}.{}.{}",
+                 SPDLOG_VER_MAJOR,
+                 SPDLOG_VER_MINOR,
+                 SPDLOG_VER_PATCH);
+    spdlog::info("stb_image API version: {}", STBI_VERSION);
 #endif
 
     mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
