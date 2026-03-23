@@ -21,3 +21,6 @@ _deps/
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# cache files
+.cache/

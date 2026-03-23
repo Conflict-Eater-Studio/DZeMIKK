@@ -19,6 +19,9 @@ set(ENGINE_SOURCES
     "${SRC_DIR}/core/engine.cpp"
     "${SRC_DIR}/core/window.cpp"
     "${SRC_DIR}/Renderer/renderer.cpp"
+    "${SRC_DIR}/ecs/gameobject.cpp"
+    "${SRC_DIR}/ecs/components/transform.cpp"
+    "${SRC_DIR}/ecs/scene.cpp"
 )
 
 set(ENGINE_HEADERS
