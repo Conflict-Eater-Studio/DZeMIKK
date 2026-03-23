@@ -1,7 +1,7 @@
 #ifndef DZEMIKK_MONOBEHAVIOUR_H
 #define DZEMIKK_MONOBEHAVIOUR_H
 
-#include "../component.h"
+#include "ecs/component.h"
 
 namespace dzemikk {
     class GameObject;

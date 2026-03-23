@@ -1,8 +1,8 @@
 #ifndef DZEMIKK_GAMEOBJECT_H
 #define DZEMIKK_GAMEOBJECT_H
 
-#include "component.h"
-#include "components/transform.h"
+#include "ecs/component.h"
+#include "ecs/components/transform.h"
 
 #include <memory>
 #include <string>

@@ -1,8 +1,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
-#include <glm/glm/gtx/quaternion.hpp>
-#include <glm/glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace dzemikk {
     // --- Constructors & Destructor
