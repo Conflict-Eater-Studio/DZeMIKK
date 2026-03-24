@@ -125,7 +125,12 @@ if (DZEMIKK_DEV_TOOLS)
     )
 
     target_link_libraries(imgui PUBLIC glfw opengl32)
-    target_compile_options(imgui PRIVATE /utf-8)
+    if (MSVC)
+        target_compile_options(imgui PRIVATE /utf-8)
+    else()
+        target_compile_options(imgui PRIVATE -finput-charset=UTF-8)
+    endif()
+
 endif ()
 
 if (MSVC)
