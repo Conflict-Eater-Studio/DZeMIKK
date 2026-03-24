@@ -16,15 +16,25 @@ endif()
 
 add_library(DZeMIKK STATIC)
 set(ENGINE_SOURCES
-    "${SRC_DIR}/core/engine.cpp"
-    "${SRC_DIR}/core/window.cpp"
-    "${SRC_DIR}/Renderer/renderer.cpp"
+        "${SRC_DIR}/core/engine.cpp"
+        "${SRC_DIR}/core/window.cpp"
+        "${SRC_DIR}/renderer/renderer.cpp"
+        "${SRC_DIR}/ecs/components/monobehaviour.cpp"
+        "${SRC_DIR}/ecs/components/transform.cpp"
+        "${SRC_DIR}/ecs/gameobject.cpp"
+        "${SRC_DIR}/ecs/scene.cpp"
+
 )
 
 set(ENGINE_HEADERS
-    "${INC_DIR}/core/engine.h"
-    "${INC_DIR}/core/window.h"
-    "${INC_DIR}/Renderer/renderer.h"
+        "${INC_DIR}/core/engine.h"
+        "${INC_DIR}/core/window.h"
+        "${INC_DIR}/renderer/renderer.h"
+        "${INC_DIR}/ecs/components/monobehaviour.h"
+        "${INC_DIR}/ecs/components/transform.h"
+        "${INC_DIR}/ecs/component.h"
+        "${INC_DIR}/ecs/gameobject.h"
+        "${INC_DIR}/ecs/scene.h"
 )
 
 target_sources(DZeMIKK
@@ -37,24 +47,14 @@ target_sources(DZeMIKK
 )
 target_include_directories(DZeMIKK
         PUBLIC
-            "${INC_DIR}"
-            "${EXTERN_DIR}/glm/include"
+        "${INC_DIR}"
+        "${EXTERN_DIR}/glm/include"
         PRIVATE
-            "${EXTERN_DIR}"
-            "${EXTERN_DIR}/assimp/include"
-            "${EXTERN_DIR}/freetype/include"
-            "${EXTERN_DIR}/freetype"
+        "${EXTERN_DIR}"
+        "${EXTERN_DIR}/assimp/include"
+        "${EXTERN_DIR}/freetype/include"
 
-)
 
-add_library(assimp STATIC IMPORTED)
-set_target_properties(assimp PROPERTIES
-        IMPORTED_LOCATION "${EXTERN_DIR}/assimp/lib/assimp.lib"
-)
-
-add_library(freetype STATIC IMPORTED)
-set_target_properties(freetype PROPERTIES
-        IMPORTED_LOCATION "${EXTERN_DIR}/freetype/lib/freetype.lib"
 )
 
 add_library(glad STATIC
@@ -65,16 +65,42 @@ target_include_directories(glad
         "${EXTERN_DIR}/glad"
         "${EXTERN_DIR}"
 )
-add_library(glfw3 STATIC IMPORTED)
-set_target_properties(glfw3 PROPERTIES
-        IMPORTED_LOCATION "${EXTERN_DIR}/GLFW/lib/glfw3.lib"
+
+include(FetchContent)
+
+FetchContent_Declare(
+        assimp
+        GIT_REPOSITORY https://github.com/assimp/assimp.git
+        GIT_TAG v6.0.4
 )
 
-add_library(glm::glm STATIC IMPORTED)
-set_target_properties(glm::glm PROPERTIES
-        IMPORTED_LOCATION "${EXTERN_DIR}/glm/lib/glm.lib"
+FetchContent_MakeAvailable(assimp)
+
+FetchContent_Declare(
+        glm
+        GIT_REPOSITORY	https://github.com/g-truc/glm.git
+        GIT_TAG 	1.0.3
 )
+
+FetchContent_MakeAvailable(glm)
+
+FetchContent_Declare(
+        glfw
+        GIT_REPOSITORY https://github.com/glfw/glfw.git
+        GIT_TAG 3.3.9
+)
+FetchContent_MakeAvailable(glfw)
+
+FetchContent_Declare(
+        freetype
+        GIT_REPOSITORY https://github.com/freetype/freetype.git
+)
+FetchContent_MakeAvailable(freetype)
+
+
+
 if (DZEMIKK_DEV_TOOLS)
+
     add_library(imgui STATIC
             "${EXTERN_DIR}/imgui/imgui.cpp"
             "${EXTERN_DIR}/imgui/imgui_draw.cpp"
@@ -91,19 +117,18 @@ if (DZEMIKK_DEV_TOOLS)
             "${EXTERN_DIR}"
     )
 
-    target_link_libraries(imgui PUBLIC glfw3 opengl32)
+    target_link_libraries(imgui PUBLIC glfw opengl32)
     target_compile_options(imgui PRIVATE /utf-8)
 endif ()
 
 target_compile_options(DZeMIKK PRIVATE /utf-8)
 target_compile_options(glad PRIVATE /utf-8)
 
-
 target_link_libraries(DZeMIKK
         PUBLIC
         glad
         opengl32
-        glfw3
+        glfw
         assimp
         glm::glm
         freetype

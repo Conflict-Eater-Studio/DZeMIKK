@@ -2,8 +2,8 @@
 #define DZEMIKK_TRANSFORM_H
 
 #include "../component.h"
-#include <glm/glm/glm.hpp>
-#include <glm/glm/gtc/quaternion.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace dzemikk {
     class GameObject;
