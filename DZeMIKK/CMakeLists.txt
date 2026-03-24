@@ -37,7 +37,6 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/scene.h"
 
 )
-set(FMOD_DIR "C:/Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows/api/core" )
 
 target_sources(DZeMIKK
         PRIVATE
