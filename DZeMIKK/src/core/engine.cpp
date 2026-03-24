@@ -11,6 +11,7 @@
 #endif
 
 #include "core/engine.h"
+#include "core/time.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -34,12 +35,14 @@ void dzemikk::Engine::update() const {
     ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
 #endif
     while (!mainWindow->shouldClose()) {
+        Time::update();
 #if DZEMIKK_DEV_TOOLS
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
         ImGui::Begin("Renderer");
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", Time::deltaTime, 1.0f/Time::deltaTime);
         ImGui::Text("Background");
         ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
         ImGui::End();
