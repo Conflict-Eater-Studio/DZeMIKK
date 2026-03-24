@@ -9,6 +9,8 @@ set(DZEMIKK_DEV_TOOLS OFF)
 set(DZeMIKK_VERSION_MAJOR 1)
 set(DZeMIKK_VERSION_MINOR 0)
 set(DZeMIKK_VERSION_REVISION 0)
+set(FMOD_LIBS_PATH "" CACHE PATH "Path to FMOD root directory")
+message(FMOD_LIBS_PATH: "${FMOD_LIBS_PATH}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     set(DZEMIKK_DEV_TOOLS ON)
@@ -101,13 +103,13 @@ FetchContent_MakeAvailable(freetype)
 
 add_library(fmod STATIC IMPORTED)
 set_target_properties(fmod PROPERTIES
-        IMPORTED_LOCATION "${FMOD_DIR}/lib/x64/fmod_vc.lib"
+        IMPORTED_LOCATION "${FMOD_LIBS_PATH}/fmod_vc.lib"
 )
 
 if (DZEMIKK_DEV_TOOLS)
     add_library(fmod_debug STATIC IMPORTED)
     set_target_properties(fmod_debug PROPERTIES
-            IMPORTED_LOCATION "${FMOD_DIR}/lib/x64/fmodL_vc.lib"
+            IMPORTED_LOCATION "${FMOD_LIBS_PATH}/fmodL_vc.lib"
     )
     add_library(imgui STATIC
             "${EXTERN_DIR}/imgui/imgui.cpp"
