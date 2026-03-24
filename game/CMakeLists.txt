@@ -12,4 +12,8 @@ target_link_libraries(game
         PUBLIC
         DZeMIKK
 )
-target_compile_options(game PRIVATE /utf-8)
+if (MSVC)
+    target_compile_options(game PRIVATE /utf-8)
+else()
+    target_compile_options(game PRIVATE -finput-charset=UTF-8)
+endif()
