@@ -4,7 +4,9 @@ Checks: >
   performance-*,
   modernize-*,
   readability-*,
+  -readability-magic-numbers,
   cppcoreguidelines-*,
+  -cppcoreguidelines-avoid-magic-numbers,
   readability-identifier-naming,
   -readability-implicit-bool-conversion,
   -modernize-use-trailing-return-type
@@ -31,16 +33,16 @@ CheckOptions:
     value: CamelCase
 
   - key: readability-identifier-naming.FunctionCase
-    value: lower_case
+    value: camelBack
   - key: readability-identifier-naming.MethodCase
-    value: lower_case
+    value: camelBack
   - key: readability-identifier-naming.ParameterCase
-    value: lower_case
+    value: camelBack
   - key: readability-identifier-naming.VariableCase
-    value: lower_case
+    value: camelBack
   - key: readability-identifier-naming.MemberCase
-    value: lower_case
-  - key: readability-identifier-naming.PrivateMemberSuffix
+    value: camelBack
+  - key: readability-identifier-naming.PrivateMemberPrefix
     value: _
 
   - key: readability-identifier-naming.GlobalConstantCase
