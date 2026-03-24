@@ -1,5 +1,5 @@
 #include <assimp/version.h>
-#include <glm//detail/setup.hpp>
+#include <glm/detail/setup.hpp>
 
 #if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
@@ -13,12 +13,40 @@
 #include "core/engine.h"
 #include "core/time.h"
 
+#include "fmod/fmod.hpp"
+#include "fmod/fmod_errors.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 dzemikk::Engine::Engine() {
     init();
+    FMOD_RESULT result;
+    FMOD::System *system = NULL;
+
+    result = FMOD::System_Create(&system);      // Create the main system object.
+    if (result != FMOD_OK)
+    {
+        printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
+
+    }
+
+    result = system->init(512, FMOD_INIT_NORMAL, 0);    // Initialize FMOD.
+    if (result != FMOD_OK)
+    {
+        printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
+        exit(-1);
+    }
+
+    unsigned int version = 0;
+    result = system->getVersion(&version);
+
+    unsigned int major = (version >> 16) & 0xFFFF;
+    unsigned int minor = (version >> 8) & 0xFF;
+    unsigned int patch = version & 0xFF;
+
+    spdlog::info("FMOD Version: {}.{}.{}", major, minor, patch);
 }
 
 void dzemikk::Engine::update() const {

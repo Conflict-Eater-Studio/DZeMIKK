@@ -35,7 +35,9 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/component.h"
         "${INC_DIR}/ecs/gameobject.h"
         "${INC_DIR}/ecs/scene.h"
+
 )
+set(FMOD_DIR "C:/Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows/api/core" )
 
 target_sources(DZeMIKK
         PRIVATE
@@ -53,8 +55,7 @@ target_include_directories(DZeMIKK
         "${EXTERN_DIR}"
         "${EXTERN_DIR}/assimp/include"
         "${EXTERN_DIR}/freetype/include"
-
-
+        "${EXTERN_DIR}/fmod/include"
 )
 
 add_library(glad STATIC
@@ -98,9 +99,16 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(freetype)
 
 
+add_library(fmod STATIC IMPORTED)
+set_target_properties(fmod PROPERTIES
+        IMPORTED_LOCATION "${FMOD_DIR}/lib/x64/fmod_vc.lib"
+)
 
 if (DZEMIKK_DEV_TOOLS)
-
+    add_library(fmod_debug STATIC IMPORTED)
+    set_target_properties(fmod_debug PROPERTIES
+            IMPORTED_LOCATION "${FMOD_DIR}/lib/x64/fmodL_vc.lib"
+    )
     add_library(imgui STATIC
             "${EXTERN_DIR}/imgui/imgui.cpp"
             "${EXTERN_DIR}/imgui/imgui_draw.cpp"
@@ -132,6 +140,8 @@ target_link_libraries(DZeMIKK
         assimp
         glm::glm
         freetype
+        $<$<CONFIG:Release>:fmod>
+        $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:fmod_debug>
         $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:imgui>
 )
 target_compile_definitions(DZeMIKK
@@ -142,3 +152,12 @@ target_compile_definitions(DZeMIKK
         DZeMIKK_VERSION_MINOR=0
         DZeMIKK_VERSION_REVISION=0
 )
+
+#add_custom_command(TARGET game POST_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#        "${FMOD_DIR}/api/core/lib/x64/fmod.dll"
+#        $<TARGET_FILE_DIR:game>
+#        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#        "${FMOD_DIR}/api/core/lib/x64/fmodL.dll"
+#        $<TARGET_FILE_DIR:game>
+#)
