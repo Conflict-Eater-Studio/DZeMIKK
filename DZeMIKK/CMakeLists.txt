@@ -9,8 +9,6 @@ set(DZEMIKK_DEV_TOOLS OFF)
 set(DZeMIKK_VERSION_MAJOR 1)
 set(DZeMIKK_VERSION_MINOR 0)
 set(DZeMIKK_VERSION_REVISION 0)
-set(FMOD_LIBS_PATH "" CACHE PATH "Path to FMOD root directory")
-message(FMOD_LIBS_PATH: "${FMOD_LIBS_PATH}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     set(DZEMIKK_DEV_TOOLS ON)
@@ -131,8 +129,14 @@ if (DZEMIKK_DEV_TOOLS)
     target_compile_options(imgui PRIVATE /utf-8)
 endif ()
 
-target_compile_options(DZeMIKK PRIVATE /utf-8)
-target_compile_options(glad PRIVATE /utf-8)
+if (MSVC)
+    target_compile_options(DZeMIKK PRIVATE /utf-8)
+    target_compile_options(glad PRIVATE /utf-8)
+else()
+    target_compile_options(DZeMIKK PRIVATE -finput-charset=UTF-8)
+    target_compile_options(glad PRIVATE -finput-charset=UTF-8)
+endif()
+
 
 target_link_libraries(DZeMIKK
         PUBLIC
@@ -155,11 +159,3 @@ target_compile_definitions(DZeMIKK
         DZeMIKK_VERSION_REVISION=0
 )
 
-#add_custom_command(TARGET game POST_BUILD
-#        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#        "${FMOD_DIR}/api/core/lib/x64/fmod.dll"
-#        $<TARGET_FILE_DIR:game>
-#        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#        "${FMOD_DIR}/api/core/lib/x64/fmodL.dll"
-#        $<TARGET_FILE_DIR:game>
-#)
