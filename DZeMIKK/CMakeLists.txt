@@ -50,7 +50,6 @@ target_include_directories(DZeMIKK
         "${INC_DIR}"
         "${EXTERN_DIR}/glm/include"
         PRIVATE
-        "${EXTERN_DIR}"
         "${EXTERN_DIR}/assimp/include"
         "${EXTERN_DIR}/freetype/include"
 
@@ -61,9 +60,11 @@ add_library(glad STATIC
         "${EXTERN_DIR}/glad/glad.c"
 )
 target_include_directories(glad
-        PRIVATE
-        "${EXTERN_DIR}/glad"
-        "${EXTERN_DIR}"
+        PUBLIC
+        "${EXTERN_DIR}/glad/include"
+        "${EXTERN_DIR}/glad/include/glad"
+        "${EXTERN_DIR}/KHR/include"
+
 )
 
 include(FetchContent)
@@ -96,8 +97,6 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/freetype/freetype.git
 )
 FetchContent_MakeAvailable(freetype)
-
-
 
 if (DZEMIKK_DEV_TOOLS)
 

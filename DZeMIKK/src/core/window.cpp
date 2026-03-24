@@ -1,7 +1,7 @@
 #include "core/window.h"
 
-#include <stdexcept>
 #include <glad/glad.h>
+#include <stdexcept>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
