@@ -21,7 +21,13 @@ target_link_libraries(dzemikk_tests
     GTest::gtest_main
 )
 
-target_compile_options(dzemikk_tests PRIVATE /utf-8)
+    if (MSVC)
+        target_compile_options(dzemikk_tests PRIVATE /utf-8)
+    else()
+        target_compile_options(dzemikk_tests PRIVATE -finput-charset=UTF-8)
+
+    endif()
+
 
 include(GoogleTest)
 gtest_discover_tests(dzemikk_tests)

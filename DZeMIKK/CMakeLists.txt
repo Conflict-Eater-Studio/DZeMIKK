@@ -35,19 +35,21 @@ set(ENGINE_HEADERS
         "${INC_DIR}/core/engine.h"
         "${INC_DIR}/core/window.h"
         "${INC_DIR}/renderer/renderer.h"
-    	"${INC_DIR}/renderer/mesh.h"
-    	"${INC_DIR}/renderer/shader.h"
-    	"${INC_DIR}/renderer/material.h"
         "${INC_DIR}/ecs/components/monobehaviour.h"
         "${INC_DIR}/ecs/components/transform.h"
-    	"${INC_DIR}/ecs/components/meshRenderer.h"
-    	"${INC_DIR}/ecs/components/spriteRenderer.h"
         "${INC_DIR}/ecs/component.h"
         "${INC_DIR}/ecs/gameobject.h"
         "${INC_DIR}/ecs/scene.h"
 )
 
-target_sources(DZeMIKK PRIVATE ${ENGINE_SOURCES} ${ENGINE_HEADERS})
+target_sources(DZeMIKK
+        PRIVATE
+        ${ENGINE_SOURCES}
+        PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS "${INC_DIR}"
+        FILES ${ENGINE_HEADERS}
+)
 
 source_group(TREE "${SRC_DIR}" PREFIX "Source" FILES ${ENGINE_SOURCES})
 source_group(TREE "${INC_DIR}" PREFIX "Include" FILES ${ENGINE_HEADERS})
@@ -57,10 +59,10 @@ target_include_directories(DZeMIKK
         "${INC_DIR}"
         "${EXTERN_DIR}/glm/include"
         PRIVATE
+        "${EXTERN_DIR}"
         "${EXTERN_DIR}/assimp/include"
         "${EXTERN_DIR}/freetype/include"
-
-
+        "${EXTERN_DIR}/fmod/include"
 )
 
 add_library(glad STATIC
@@ -105,8 +107,17 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(freetype)
 
-if (DZEMIKK_DEV_TOOLS)
 
+add_library(fmod STATIC IMPORTED)
+set_target_properties(fmod PROPERTIES
+        IMPORTED_LOCATION "${FMOD_LIBS_PATH}/fmod_vc.lib"
+)
+
+if (DZEMIKK_DEV_TOOLS)
+    add_library(fmod_debug STATIC IMPORTED)
+    set_target_properties(fmod_debug PROPERTIES
+            IMPORTED_LOCATION "${FMOD_LIBS_PATH}/fmodL_vc.lib"
+    )
     add_library(imgui STATIC
             "${EXTERN_DIR}/imgui/imgui.cpp"
             "${EXTERN_DIR}/imgui/imgui_draw.cpp"
@@ -124,11 +135,22 @@ if (DZEMIKK_DEV_TOOLS)
     )
 
     target_link_libraries(imgui PUBLIC glfw opengl32)
-    target_compile_options(imgui PRIVATE /utf-8)
+    if (MSVC)
+        target_compile_options(imgui PRIVATE /utf-8)
+    else()
+        target_compile_options(imgui PRIVATE -finput-charset=UTF-8)
+    endif()
+
 endif ()
 
-target_compile_options(DZeMIKK PRIVATE /utf-8)
-target_compile_options(glad PRIVATE /utf-8)
+if (MSVC)
+    target_compile_options(DZeMIKK PRIVATE /utf-8)
+    target_compile_options(glad PRIVATE /utf-8)
+else()
+    target_compile_options(DZeMIKK PRIVATE -finput-charset=UTF-8)
+    target_compile_options(glad PRIVATE -finput-charset=UTF-8)
+endif()
+
 
 target_link_libraries(DZeMIKK
         PUBLIC
@@ -138,6 +160,8 @@ target_link_libraries(DZeMIKK
         assimp
         glm::glm
         freetype
+        $<$<CONFIG:Release>:fmod>
+        $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:fmod_debug>
         $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:imgui>
 )
 target_compile_definitions(DZeMIKK
