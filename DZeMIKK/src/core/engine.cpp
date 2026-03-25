@@ -51,11 +51,12 @@ void dzemikk::Engine::update() const {
 #else
         mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
-        renderer->DrawCube();
-        renderer->DrawRectangle();
+        _renderer->render();
         mainWindow->swapBuffers();
         mainWindow->pollEvents();
     }
+
+    _renderer->UnInitialize();
 
 #if DZEMIKK_DEV_TOOLS
     ImGui_ImplOpenGL3_Shutdown();
@@ -92,5 +93,7 @@ void dzemikk::Engine::init() {
 #endif
 
     mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
-    renderer = std::make_shared<Renderer>();
+
+    _renderer = std::make_shared<Renderer>();
+    _renderer->Initialize();
 }
