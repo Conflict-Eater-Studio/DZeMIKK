@@ -50,7 +50,7 @@ void dzemikk::Renderer::render() {
             continue;
         auto* shader = r->material->shader;
         shader->bind();
-        shader->setMat4("model", r->transform->getMatrix());
+        shader->setMat4("model", r->transform->getWorldMatrix());
         shader->setMat4("view", _view);
         shader->setMat4("projection", _projection);
         r->mesh->draw();
@@ -61,7 +61,7 @@ void dzemikk::Renderer::render() {
             continue;
         auto* shader = r->material->shader;
         shader->bind();
-        shader->setMat4("model", r->transform->getMatrix());
+        shader->setMat4("model", r->transform->getWorldMatrix());
         shader->setMat4("view", glm::mat4(1.0f));
         shader->setMat4("projection", _uiProjection);
         r->mesh->draw();

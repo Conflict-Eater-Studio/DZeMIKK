@@ -2,7 +2,7 @@
 #include "core/iEngineModule.h"
 #include "ecs/components/transform.h"
 
-#include <glm/glm/glm.hpp>
+#include <glm/glm.hpp>
 #include <vector>
 
 namespace dzemikk {

@@ -1,6 +1,6 @@
 #include <glad/glad.h>
-#include <glm/glm/fwd.hpp>
-#include <glm/glm/gtc/type_ptr.hpp>
+#include <glm/fwd.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace dzemikk {
     class Shader {
