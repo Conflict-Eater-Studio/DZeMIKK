@@ -19,19 +19,33 @@ set(ENGINE_SOURCES
     "${SRC_DIR}/core/engine.cpp"
     "${SRC_DIR}/core/window.cpp"
     "${SRC_DIR}/renderer/renderer.cpp"
+    "${SRC_DIR}/renderer/mesh.cpp"
+    "${SRC_DIR}/renderer/shader.cpp"
+    "${SRC_DIR}/renderer/material.cpp"
     "${SRC_DIR}/ecs/components/transform.cpp"
+    "${SRC_DIR}/ecs/components/meshRenderer.cpp"
+    "${SRC_DIR}/ecs/components/spriteRenderer.cpp"
 )
 
 set(ENGINE_HEADERS
     "${INC_DIR}/core/engine.h"
     "${INC_DIR}/core/window.h"
+    "${INC_DIR}/core/iEngineModule.h"
     "${INC_DIR}/renderer/renderer.h"
+    "${INC_DIR}/renderer/mesh.h"
+    "${INC_DIR}/renderer/shader.h"
+    "${INC_DIR}/renderer/material.h"
     "${INC_DIR}/ecs/component.h"
     "${INC_DIR}/ecs/components/transform.h"
     "${INC_DIR}/ecs/components/monoBehaviour.h"
+    "${INC_DIR}/ecs/components/meshRenderer.h"
+    "${INC_DIR}/ecs/components/spriteRenderer.h"
 )
 
 target_sources(DZeMIKK PRIVATE ${ENGINE_SOURCES} ${ENGINE_HEADERS})
+
+source_group(TREE "${SRC_DIR}" PREFIX "Source" FILES ${ENGINE_SOURCES})
+source_group(TREE "${INC_DIR}" PREFIX "Include" FILES ${ENGINE_HEADERS})
 
 target_include_directories(DZeMIKK
         PUBLIC

@@ -1,29 +1,44 @@
 #pragma once
-#include <glad/glad.h>
+#include "core/iEngineModule.h"
+#include "ecs/components/transform.h"
+
 #include <glm/glm/glm.hpp>
+#include <vector>
 
 namespace dzemikk {
-    class Renderer {
-      private:
-        unsigned int cubeVAO;
-        unsigned int cubeVBO;
-        unsigned int cubeShader;
 
-        unsigned int rectVAO;
-        unsigned int rectVBO;
-        unsigned int rectShader;
+    class MeshRenderer;
+    class SpriteRenderer;
 
-        void initCube();
-        void initCubeShader();
-
-        void initRectangle();
-        void initRectShader();
-
+    class Renderer : public IEngineModule {
       public:
-        Renderer();
-        ~Renderer();
+        Renderer() = default;
+        ~Renderer() = default;
 
-        void DrawCube();
-        void DrawRectangle();
+        void Initialize() override;
+        void UnInitialize() override;
+
+        void registerRenderer(MeshRenderer* renderer);
+        void unregisterRenderer(MeshRenderer* renderer);
+
+        void registerSpriteRenderer(SpriteRenderer* renderer);
+        void unregisterSpriteRenderer(SpriteRenderer* renderer);
+
+        void setCamera(const glm::mat4& view, const glm::mat4& projection);
+        void setUIProjection(const glm::mat4& ortho);
+
+        void render();
+
+      private:
+        Renderer(const Renderer&) = delete;
+        Renderer& operator=(const Renderer&) = delete;
+
+        std::vector<MeshRenderer*> _meshRenderers;
+        std::vector<SpriteRenderer*> _spriteRenderers;
+
+        glm::mat4 _view = glm::mat4(1.0f);
+        glm::mat4 _projection = glm::mat4(1.0f);
+        glm::mat4 _uiProjection = glm::mat4(1.0f);
     };
+
 } 
