@@ -23,14 +23,7 @@ namespace dzemikk {
             // --- Start state management
             [[nodiscard]] bool hasStarted() const;
             void markStarted();
-
-            // --- Getters
-            [[nodiscard]] GameObject* getOwner() const;
-
-            // --- Setters
-            void setOwner(GameObject* owner);
         private:
-            GameObject* _owner = nullptr;
             bool _started = false;
     };
 }

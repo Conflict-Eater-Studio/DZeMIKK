@@ -10,15 +10,4 @@ namespace dzemikk {
     void MonoBehaviour::markStarted() {
         _started = true;
     }
-
-    // --- Getters
-    GameObject* MonoBehaviour::getOwner() const {
-        return _owner;
-    }
-
-    // --- Setters
-    void MonoBehaviour::setOwner(GameObject* owner) {
-        _owner = owner;
-    }
-
 }

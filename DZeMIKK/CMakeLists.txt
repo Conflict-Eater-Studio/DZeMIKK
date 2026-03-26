@@ -24,10 +24,11 @@ set(ENGINE_SOURCES
     	"${SRC_DIR}/renderer/material.cpp"
         "${SRC_DIR}/ecs/components/monobehaviour.cpp"
         "${SRC_DIR}/ecs/components/transform.cpp"
-	"${SRC_DIR}/ecs/components/meshRenderer.cpp"
+	    "${SRC_DIR}/ecs/components/meshRenderer.cpp"
     	"${SRC_DIR}/ecs/components/spriteRenderer.cpp"
         "${SRC_DIR}/ecs/gameobject.cpp"
         "${SRC_DIR}/ecs/scene.cpp"
+        "${SRC_DIR}/ecs/component.cpp"
 
 )
 

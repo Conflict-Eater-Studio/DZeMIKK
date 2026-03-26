@@ -11,7 +11,6 @@ namespace dzemikk {
         glm::vec3 position = glm::vec3(0.0F);
         glm::vec3 rotation = glm::vec3(0.0F);
         glm::vec3 scale = glm::vec3(1.0F);
-        GameObject* owner = nullptr;
     };
 
     class Transform : public Component {
@@ -53,16 +52,18 @@ namespace dzemikk {
 
             // --- Matrix
             const glm::mat4& getLocalMatrix() const;
-            glm::mat4 getWorldMatrix() const; // World matrix is not cached. May be a problem for deep hierarchies (20+ levels)
-        private:
-            GameObject* _owner = nullptr;
+            glm::mat4 getWorldMatrix() const;
 
+            void markDirty();
+        private:
             glm::vec3 _position = glm::vec3(0.0F);
             glm::quat _rotation = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
             glm::vec3 _scale = glm::vec3(1.0F);
 
             mutable glm::mat4 _cachedLocalMatrix = glm::mat4(1.0F);
-            mutable bool _dirty = true;
+            mutable glm::mat4 _cachedWorldMatrix = glm::mat4(1.0F);
+            mutable bool _localDirty = true;
+            mutable bool _worldDirty = true;
     };
 }
 

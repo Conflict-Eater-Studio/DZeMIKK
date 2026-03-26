@@ -6,8 +6,10 @@
 
 namespace dzemikk {
     GameObject::GameObject()
-    : _transform(TransformParams{ .owner = this })
-    {}
+    : _transform(TransformParams())
+    {
+        _transform.setOwner(this);
+    }
 
     Transform* GameObject::transform() {
         return &_transform;
@@ -41,31 +43,29 @@ namespace dzemikk {
 
     // --- Hierarchy operations
     void GameObject::setParent(GameObject* parent) {
-        if (_parent == parent) { return; }
+        if (_parent == parent)
+            return;
 
+        // Remove from old parent
         if (_parent) {
             auto& siblings = _parent->_children;
-            siblings.erase(
-                std::ranges::remove(siblings, this).begin(),
-                siblings.end()
-            );
+            siblings.erase(std::ranges::remove(siblings, this).begin(), siblings.end());
         }
 
         _parent = parent;
 
+        // Add to new parent
         if (_parent) {
-            _parent->addChild(this);
+            _parent->_children.push_back(this);
         }
+
+        transform()->markDirty();
     }
 
     void GameObject::addChild(GameObject* child) {
-        if (!child || child == this) { return; }
-
-        auto iter = std::ranges::find(_children, child);
-        if (iter != _children.end()) { return; }
-
-        _children.push_back(child);
-        child->_parent = this;
+        if (!child || child == this)
+            return;
+        child->setParent(this); // all logic lives in setParent
     }
 
     void GameObject::removeChild(GameObject* child) {
