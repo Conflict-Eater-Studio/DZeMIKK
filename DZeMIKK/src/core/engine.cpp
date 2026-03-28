@@ -103,7 +103,7 @@ namespace dzemikk {
     }
 
     std::shared_ptr<Renderer> Engine::getRenderer() {
-        return _renderer;
+        return getModule<Renderer>();
     }
     std::shared_ptr<Window> Engine::getWindow() {
         return _mainWindow;
