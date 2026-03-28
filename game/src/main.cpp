@@ -1,13 +1,17 @@
 #include "core/engine.h"
+#include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/transform.h"
+#include "ecs/gameobject.h"
 #include "renderer/material.h"
 #include "renderer/mesh.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
+#include "ecs/scene.h"
 
 #include <memory>
+#include <GLFW/glfw3.h>
 
 dzemikk::Mesh* createCubeMesh();
 dzemikk::Mesh* createQuadMesh();
@@ -15,8 +19,24 @@ dzemikk::Mesh* createQuadMesh();
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
 
-    auto cubeMesh = createCubeMesh();
+    dzemikk::Scene mainScene;
 
+    // --- Scene Camera
+    auto cameraGO = mainScene.createGameObject();
+
+    cameraGO->transform()->setPosition(glm::vec3(1.5f, 1.5f, 3.0f));
+
+    auto camera = cameraGO->addComponent<dzemikk::Camera>();
+    camera->lookAt(glm::vec3(0, 0, 0));
+
+    // Rejestracja kamery w rendererze
+    engine->GetRenderer()->registerCamera(camera);
+    engine->GetRenderer()->setActiveSceneCamera(camera);
+
+    // --- Cube GameObject
+    auto cubeGO = new dzemikk::GameObject();
+
+    auto cubeMesh = createCubeMesh();
     const char* vertexSrc3D = R"(
     #version 330 core
     layout(location = 0) in vec3 aPos;
@@ -40,14 +60,30 @@ int main() {
     auto cubeMaterial = new dzemikk::Material();
     cubeMaterial->shader = cubeShader;
 
-    auto cubeTransform = new dzemikk::Transform();
-
-    auto cubeRenderer = new dzemikk::MeshRenderer();
+    auto cubeRenderer = cubeGO->addComponent<dzemikk::MeshRenderer>();
     cubeRenderer->mesh = cubeMesh;
     cubeRenderer->material = cubeMaterial;
-    cubeRenderer->transform = cubeTransform;
+    cubeRenderer->transform = cubeGO->transform();
 
     engine->GetRenderer()->registerRenderer(cubeRenderer);
+
+    // UI Camera
+    auto cameraUIGO = mainScene.createGameObject();
+    cameraUIGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+
+    auto cameraUI = cameraUIGO->addComponent<dzemikk::Camera>();
+
+    cameraUI->setOrthographic(0.0f, 1920.0f, 
+                            0.0f, 1080.0f, 
+                            -1.0f, 1.0f  
+    );
+    engine->GetRenderer()->setActiveUICamera(cameraUI);
+
+    // --- Quad GameObject
+    auto quadGO = new dzemikk::GameObject();
+    quadGO->transform()->setPosition(glm::vec3(100.0f, 300.0f, 0.0f));
+    quadGO->transform()->setScale(glm::vec3(100.0f, 100.0f, 1.0f)); 
+    quadGO->transform()->setRotation(glm::quat());
 
     auto quadMesh = createQuadMesh();
 
@@ -55,10 +91,10 @@ int main() {
     #version 330 core
     layout(location = 0) in vec3 aPos;
     uniform mat4 model;
-    uniform mat4 view;
     uniform mat4 projection;
+
     void main() {
-        gl_Position = projection * view * model * vec4(aPos,1.0);
+        gl_Position = projection * model * vec4(aPos, 1.0);
     }
     )";
 
@@ -70,30 +106,16 @@ int main() {
     }
     )";
 
-    auto uiShader = new dzemikk::Shader(vertexSrcUI, fragmentSrcUI);
+    auto quadShader = new dzemikk::Shader(vertexSrcUI, fragmentSrcUI);
     auto quadMaterial = new dzemikk::Material();
-    quadMaterial->shader = uiShader;
+    quadMaterial->shader = quadShader;
 
-    auto quadTransform = new dzemikk::Transform();
-    quadTransform->setPosition(glm::vec3(100.0f, 300.0f, 0.0f)); 
-    quadTransform->setScale(glm::vec3(100.0f, 100.0f, 1.0f));   
-
-    auto quadRenderer = new dzemikk::SpriteRenderer();
+    auto quadRenderer = quadGO->addComponent<dzemikk::SpriteRenderer>();
     quadRenderer->mesh = quadMesh;
     quadRenderer->material = quadMaterial;
-    quadRenderer->transform = quadTransform;
+    quadRenderer->transform = quadGO->transform();
 
     engine->GetRenderer()->registerSpriteRenderer(quadRenderer);
-
-    glm::mat4 view =
-        glm::lookAt(glm::vec3(1.5f, 1.5f, 3.0f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
-    engine->GetRenderer()->setCamera(view, projection);
-
-    glm::mat4 uiOrtho = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-    engine->GetRenderer()->setUIProjection(uiOrtho);
 
     engine->update();
 
@@ -134,8 +156,8 @@ dzemikk::Mesh* createCubeMesh() {
 
 dzemikk::Mesh* createQuadMesh() {
     dzemikk::Mesh* mesh = new dzemikk::Mesh();
-    float vertices[] = {-0.5f, -0.5f, 0.0f, 0.5f,  -0.5f, 0.0f, 0.5f,  0.5f,  0.0f,
-                        0.5f,  0.5f,  0.0f, -0.5f, 0.5f,  0.0f, -0.5f, -0.5f, 0.0f};
+    float vertices[] = {0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+                        1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
     glGenVertexArrays(1, &mesh->vao);
     glGenBuffers(1, &mesh->vbo);
     glBindVertexArray(mesh->vao);

@@ -12,6 +12,7 @@
 
 #include "core/engine.h"
 #include "core/time.h"
+#include "ecs/gameobject.h"
 
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_errors.h"
@@ -49,7 +50,7 @@ dzemikk::Engine::Engine() {
     spdlog::info("FMOD Version: {}.{}.{}", major, minor, patch);
 }
 
-void dzemikk::Engine::update() const {
+void dzemikk::Engine::update() {
 #if DZEMIKK_DEV_TOOLS
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -82,6 +83,8 @@ void dzemikk::Engine::update() const {
 #else
         mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
+        updateCameraWASD(.1f);
+        updateCameraArrows(.1f); 
         _renderer->render();
         mainWindow->swapBuffers();
         mainWindow->pollEvents();
@@ -123,8 +126,60 @@ void dzemikk::Engine::init() {
     }
 #endif
 
-    mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
+    mainWindow = std::make_shared<Window>(1920, 1080, "DZeMIKK");
 
     _renderer = std::make_shared<Renderer>();
     _renderer->Initialize();
+}
+
+void dzemikk::Engine::updateCameraWASD(float speed) {
+    auto* transform = _renderer->getActiveSceneCamera()->getOwner()->transform();
+
+    glm::vec3 move(0.0f);
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_W) == GLFW_PRESS)
+        move += transform->forward();
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_S) == GLFW_PRESS)
+        move -= transform->forward();
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_A) == GLFW_PRESS)
+        move -= transform->right();
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_D) == GLFW_PRESS)
+        move += transform->right();
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_Q) == GLFW_PRESS)
+        move -= transform->up(); 
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_E) == GLFW_PRESS)
+        move += transform->up();
+
+    if (glm::length(move) > 0.0f) {
+        move = glm::normalize(move);
+        transform->translate(move * speed * 0.016f);
+    }
+}
+
+void dzemikk::Engine::updateCameraArrows(float speed) {
+    auto* camera = _renderer->getActiveSceneCamera();
+    if (!camera)
+        return;
+    auto* transform = camera->getOwner()->transform();
+
+    glm::vec3 euler = transform->getEulerAngles();
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_LEFT) == GLFW_PRESS)
+        euler.y += speed;
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_RIGHT) == GLFW_PRESS)
+        euler.y -= speed;
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_UP) == GLFW_PRESS)
+        euler.x += speed;
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_DOWN) == GLFW_PRESS)
+        euler.x -= speed;
+
+    transform->setEulerAngles(euler);
 }

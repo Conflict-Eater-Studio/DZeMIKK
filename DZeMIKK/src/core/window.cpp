@@ -11,7 +11,7 @@
 #endif
 
 namespace dzemikk {
-    Window::Window() : Window(800, 600, "DZeMIKK") {}
+    Window::Window() : Window(1920, 1080, "DZeMIKK") {}
 
     Window::Window(const int width, const int height, const char* title) : window_(nullptr) {
         if (!glfwInit()) {

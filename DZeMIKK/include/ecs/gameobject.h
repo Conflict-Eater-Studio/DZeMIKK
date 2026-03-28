@@ -41,8 +41,8 @@ namespace dzemikk {
                 if constexpr (std::is_base_of_v<MonoBehaviour, T>) {
                     // For monobehaviours, set owner to this GameObject and cache the pointer for quick access
                     _monoBehaviours.push_back(result);
-                    result->setOwner(this);
                 }
+                result->setOwner(this);
                 _components.push_back(std::move(component));
                 return result;
             }

@@ -5,6 +5,7 @@
 
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
+#include <iostream>
 
 void dzemikk::Renderer::Initialize() {
     _view = glm::mat4(1.0f);
@@ -45,6 +46,11 @@ void dzemikk::Renderer::setUIProjection(const glm::mat4& ortho) {
 }
 
 void dzemikk::Renderer::render() {
+    if (_sceneCamera) {
+        _view = _sceneCamera->getView();
+        _projection = _sceneCamera->getProjection();
+    }
+
     for (auto* r : _meshRenderers) {
         if (!r->mesh || !r->material || !r->transform)
             continue;
@@ -56,14 +62,84 @@ void dzemikk::Renderer::render() {
         r->mesh->draw();
     }
 
+    if (_uiCamera) {
+        _uiProjection = _uiCamera->getProjection();
+    }
+
     for (auto* r : _spriteRenderers) {
         if (!r->mesh || !r->material || !r->transform)
             continue;
         auto* shader = r->material->shader;
         shader->bind();
         shader->setMat4("model", r->transform->getWorldMatrix());
-        shader->setMat4("view", glm::mat4(1.0f));
         shader->setMat4("projection", _uiProjection);
         r->mesh->draw();
     }
+}
+
+const dzemikk::Camera* dzemikk::Renderer::getActiveSceneCamera() const {
+    return _sceneCamera;
+}
+const dzemikk::Camera* dzemikk::Renderer::getActiveUICamera() const {
+    return _uiCamera;
+}
+
+void dzemikk::Renderer::registerCamera(const dzemikk::Camera* camera) {
+    if (!camera)
+        return;
+
+    if (std::find(_cameras.begin(), _cameras.end(), camera) == _cameras.end()) {
+        _cameras.push_back(camera);
+    }
+}
+
+void dzemikk::Renderer::unregisterCamera(const dzemikk::Camera* camera) {
+    if (!camera)
+        return;
+
+    auto iter = std::find(_cameras.begin(), _cameras.end(), camera);
+    if (iter != _cameras.end()) {
+        if (*iter == _sceneCamera)
+            _sceneCamera = nullptr;
+        if (*iter == _uiCamera)
+            _uiCamera = nullptr;
+
+        _cameras.erase(iter);
+    }
+}
+
+void dzemikk::Renderer::setActiveSceneCamera(const dzemikk::Camera* camera) {
+    if (!camera)
+        return;
+
+    registerCamera(camera);
+    _sceneCamera = camera;
+}
+
+void dzemikk::Renderer::setActiveUICamera(const dzemikk::Camera* camera) {
+    if (!camera)
+        return;
+
+    registerCamera(camera);
+    _uiCamera = camera;
+}
+
+void dzemikk::Renderer::setActiveSceneCameraById(int cameraId) {
+    for (auto& cam : _cameras) {
+        if (cam->getId() == cameraId) {
+            _sceneCamera = cam;
+            return;
+        }
+    }
+    std::cerr << "[Renderer] Warning: Scene camera with ID " << cameraId << " not found.\n";
+}
+
+void dzemikk::Renderer::setActiveUICameraById(int cameraId) {
+    for (auto& cam : _cameras) {
+        if (cam->getId() == cameraId) {
+            _uiCamera = cam;
+            return;
+        }
+    }
+    std::cerr << "[Renderer] Warning: UI camera with ID " << cameraId << " not found.\n";
 }

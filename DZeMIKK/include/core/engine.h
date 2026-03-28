@@ -13,11 +13,15 @@ namespace dzemikk {
     public:
         Engine();
         ~Engine();
-        void update() const;
+        void update();
 
         std::shared_ptr<Renderer> GetRenderer() {
             return _renderer;
         }
+
+        // --- Only for test DELETE THIS
+        void updateCameraWASD(float speed);
+        void updateCameraArrows(float speed);
     };
 }
 
