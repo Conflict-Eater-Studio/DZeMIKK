@@ -47,7 +47,7 @@ int main() {
     cubeRenderer->material = cubeMaterial;
     cubeRenderer->transform = cubeTransform;
 
-    engine->GetRenderer()->registerRenderer(cubeRenderer);
+    engine->getRenderer()->registerRenderer(cubeRenderer);
 
     auto quadMesh = createQuadMesh();
 
@@ -83,17 +83,17 @@ int main() {
     quadRenderer->material = quadMaterial;
     quadRenderer->transform = quadTransform;
 
-    engine->GetRenderer()->registerSpriteRenderer(quadRenderer);
+    engine->getRenderer()->registerSpriteRenderer(quadRenderer);
 
     glm::mat4 view =
         glm::lookAt(glm::vec3(1.5f, 1.5f, 3.0f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
-    engine->GetRenderer()->setCamera(view, projection);
+    engine->getRenderer()->setCamera(view, projection);
 
     glm::mat4 uiOrtho = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-    engine->GetRenderer()->setUIProjection(uiOrtho);
+    engine->getRenderer()->setUIProjection(uiOrtho);
 
     engine->update();
 
