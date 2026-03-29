@@ -1,6 +1,7 @@
 #ifndef DZEMIKK_GAMEOBJECT_H
 #define DZEMIKK_GAMEOBJECT_H
 
+#pragma once
 #include "component.h"
 #include "components/transform.h"
 
@@ -19,11 +20,10 @@ class GameObject {
     GameObject& operator=(const GameObject& other) = delete;
     GameObject(GameObject&& other) noexcept = delete;
     GameObject& operator=(GameObject&& other) noexcept = delete;
-    ~GameObject() = default;
+    ~GameObject();
 
     // ---
     Transform* transform();
-    const Transform* transform() const;
 
     // --- Component operations
     /*
@@ -72,6 +72,7 @@ class GameObject {
             }
         }
         result->setOwner(this);
+        registerComponent(result);
         _components.push_back(std::move(component));
         return result;
     }
@@ -99,6 +100,7 @@ class GameObject {
                 }
             }
             _components.erase(iter);
+            unregisterComponent(component);
         }
     }
 
@@ -108,6 +110,7 @@ class GameObject {
     [[nodiscard]] std::string getName() const;
     [[nodiscard]] const std::vector<MonoBehaviour*>& getMonoBehaviours() const;
     [[nodiscard]] bool hasStarted() const;
+    [[nodiscard]] const Scene& getScene() const;
 
     // --- Setters
     void setName(const std::string& name);
@@ -165,10 +168,14 @@ class GameObject {
 
     Scene* _scene = nullptr;
 
-    Transform _transform;
+    Transform* _transform;
 
     std::vector<std::unique_ptr<Component>> _components;
     std::vector<MonoBehaviour*> _monoBehaviours;
+
+    // --- Private helpers
+    static void registerComponent(Component* component);
+    static void unregisterComponent(Component* component);
 };
 } // namespace dzemikk
 

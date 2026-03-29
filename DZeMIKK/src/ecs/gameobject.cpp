@@ -1,5 +1,6 @@
 #include "ecs/gameobject.h"
 
+#include "ecs/componentRegistry.h"
 #include "ecs/components/monoBehaviour.h"
 #include "ecs/components/transform.h"
 #include "ecs/scene.h"
@@ -7,16 +8,20 @@
 #include <algorithm>
 
 namespace dzemikk {
-GameObject::GameObject() : _transform(TransformParams()) {
-    _transform.setOwner(this);
+GameObject::GameObject() {
+    _transform = addComponent<Transform>(TransformParams());
+}
+
+GameObject::~GameObject() {
+    for (auto& component : _components) {
+        if (component) {
+            unregisterComponent(component.get());
+        }
+    }
 }
 
 Transform* GameObject::transform() {
-    return &_transform;
-}
-
-const Transform* GameObject::transform() const {
-    return &_transform;
+    return _transform;
 }
 
 // --- Getters
@@ -38,6 +43,10 @@ const std::vector<MonoBehaviour*>& GameObject::getMonoBehaviours() const {
 
 bool GameObject::hasStarted() const {
     return _hasStarted;
+}
+
+Scene const& GameObject::getScene() const {
+    return *_scene;
 }
 
 // --- Setters
@@ -155,5 +164,13 @@ void GameObject::removeSceneActive(MonoBehaviour* mono) {
     if (_scene) {
         _scene->removeActive(mono);
     }
+}
+
+void GameObject::registerComponent(Component* component) {
+    ComponentRegistry::get().registerComponent(component);
+}
+
+void GameObject::unregisterComponent(Component* component) {
+    ComponentRegistry::get().unregisterComponent(component);
 }
 } // namespace dzemikk

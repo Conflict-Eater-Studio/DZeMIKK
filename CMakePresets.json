@@ -1,0 +1,57 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl",
+        "FMOD_LIBS_PATH": "$env{FMOD_LIBS_PATH}"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug-all",
+      "displayName": "Build all (Debug)",
+      "configurePreset": "debug",
+      "jobs": 10
+    },
+    {
+      "name": "debug-game",
+      "displayName": "Build game (Debug)",
+      "configurePreset": "debug",
+      "targets": [
+        "game"
+      ],
+      "jobs": 10
+    },
+    {
+      "name": "debug-tests",
+      "displayName": "Build tests (Debug)",
+      "configurePreset": "debug",
+      "targets": [
+        "dzemikk_tests"
+      ],
+      "jobs": 10
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "debug-tests",
+      "displayName": "Run tests (Debug)",
+      "configurePreset": "debug",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "stopOnFailure": false
+      }
+    }
+  ]
+}

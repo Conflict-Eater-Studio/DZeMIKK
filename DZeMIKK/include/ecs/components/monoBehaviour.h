@@ -7,6 +7,8 @@ namespace dzemikk {
 class GameObject;
 class MonoBehaviour : public Component {
   public:
+    using Base = Component;
+
     MonoBehaviour() = default;
     MonoBehaviour(const MonoBehaviour& other) = delete;
     MonoBehaviour& operator=(const MonoBehaviour& other) = delete;
