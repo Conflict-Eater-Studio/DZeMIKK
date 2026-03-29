@@ -6,11 +6,20 @@
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
 #include <iostream>
+#include <map>
 
 void dzemikk::Renderer::Initialize() {
     _view = glm::mat4(1.0f);
     _projection = glm::mat4(1.0f);
     _uiProjection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
+
+    glGenBuffers(1, &uboMatrices);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
 }
 
 void dzemikk::Renderer::UnInitialize() {
@@ -47,37 +56,70 @@ void dzemikk::Renderer::setUIProjection(const glm::mat4& ortho) {
 
 void dzemikk::Renderer::render() {
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS); 
+    glDepthFunc(GL_LESS);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (_sceneCamera) {
         _view = _sceneCamera->getView();
         _projection = _sceneCamera->getProjection();
+
+        glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(_projection));
+        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4),
+                        glm::value_ptr(_view));
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
+
+    using Key = std::pair<Mesh*, Material*>;
+    std::map<Key, std::vector<glm::mat4>> batches;
 
     for (auto* r : _meshRenderers) {
         if (!r->mesh || !r->material || !r->transform)
             continue;
-        auto* shader = r->material->shader;
+
+        Key key = {r->mesh, r->material};
+        batches[key].push_back(r->transform->getWorldMatrix());
+    }
+
+    for (auto& [key, models] : batches) {
+        Mesh* mesh = key.first;
+        Material* material = key.second;
+        Shader* shader = material->shader;
+
         shader->bind();
-        shader->setMat4("model", r->transform->getWorldMatrix());
-        shader->setMat4("view", _view);
-        shader->setMat4("projection", _projection);
         shader->setVec3("lightDir", glm::vec3(1.0f, -1.0f, 1.0f));
         shader->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
         shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
-        r->mesh->draw();
+
+        GLuint instanceVBO;
+        glGenBuffers(1, &instanceVBO);
+        glBindVertexArray(mesh->vao);
+        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+        glBufferData(GL_ARRAY_BUFFER, models.size() * sizeof(glm::mat4), models.data(),
+                     GL_DYNAMIC_DRAW);
+
+        for (int i = 0; i < 4; i++) {
+            glVertexAttribPointer(2 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+                                  (void*)(sizeof(glm::vec4) * i));
+            glEnableVertexAttribArray(2 + i);
+            glVertexAttribDivisor(2 + i, 1);
+        }
+
+        glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->vertexCount, models.size());
+
+        glBindVertexArray(0);
+        glDeleteBuffers(1, &instanceVBO);
     }
 
-    if (_uiCamera) {
+    if (_uiCamera)
         _uiProjection = _uiCamera->getProjection();
-    }
 
     for (auto* r : _spriteRenderers) {
         if (!r->mesh || !r->material || !r->transform)
             continue;
-        auto* shader = r->material->shader;
+
+        Shader* shader = r->material->shader;
         shader->bind();
         shader->setMat4("model", r->transform->getWorldMatrix());
         shader->setMat4("projection", _uiProjection);

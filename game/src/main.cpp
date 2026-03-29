@@ -16,8 +16,8 @@
 dzemikk::Mesh* createCubeMesh();
 dzemikk::Mesh* createQuadMesh();
 void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& scene,
-                     dzemikk::Mesh* cubeMesh, dzemikk::Material* cubeMaterial, int rows, int cols,
-                     float spacing = 1.5f);
+                     dzemikk::Mesh* cubeMesh, dzemikk::Material* materialA,
+                     dzemikk::Material* materialB, int rows, int cols, float spacing);
 
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
@@ -42,14 +42,23 @@ int main() {
     layout(location = 0) in vec3 aPos;
     layout(location = 1) in vec3 aNormal;
 
-    uniform mat4 model;
-    uniform mat4 view;
-    uniform mat4 projection;
+    // Atrybut instancji: model mat4 (4 wektory)
+    layout(location = 2) in vec4 aModelRow0;
+    layout(location = 3) in vec4 aModelRow1;
+    layout(location = 4) in vec4 aModelRow2;
+    layout(location = 5) in vec4 aModelRow3;
+
+    layout (std140) uniform Matrices
+    {
+        mat4 projection;
+        mat4 view;
+    };
 
     out vec3 FragPos;
     out vec3 Normal;
 
     void main() {
+        mat4 model = mat4(aModelRow0, aModelRow1, aModelRow2, aModelRow3);
         FragPos = vec3(model * vec4(aPos,1.0));
         Normal = mat3(transpose(inverse(model))) * aNormal;
         gl_Position = projection * view * vec4(FragPos,1.0);
@@ -80,12 +89,34 @@ int main() {
     }
     )";
 
-    auto cubeShader = new dzemikk::Shader(vertexSrc3D, fragmentSrc3D);
-    auto cubeMesh = createCubeMesh();
-    auto cubeMaterial = new dzemikk::Material();
-    cubeMaterial->shader = cubeShader;
+    auto shaderA = new dzemikk::Shader(vertexSrc3D, fragmentSrc3D); 
+    auto materialA = new dzemikk::Material();
+    materialA->shader = shaderA;
 
-    createCubeBoard(engine, mainScene, cubeMesh, cubeMaterial, 250, 250, 1.2f);
+    const char* fragmentSrc3D_B = R"(
+    #version 330 core
+    out vec4 FragColor;
+
+    in vec3 FragPos;
+    in vec3 Normal;
+
+    uniform vec3 lightDir;
+    uniform vec3 lightColor;
+
+    void main() {
+        vec3 norm = normalize(Normal);
+        vec3 lightDirNorm = normalize(-lightDir);
+        float diff = max(dot(norm, lightDirNorm), 0.0);
+        vec3 diffuse = diff * lightColor;
+        FragColor = vec4(diffuse * vec3(0.2,0.5,1.0), 1.0); // niebieska kostka
+    }
+    )";
+    auto shaderB = new dzemikk::Shader(vertexSrc3D, fragmentSrc3D_B);
+    auto materialB = new dzemikk::Material();
+    materialB->shader = shaderB;
+
+    auto cubeMesh = createCubeMesh();
+    createCubeBoard(engine, mainScene, cubeMesh, materialA, materialB, 250, 250, 1.2f);
 
     // UI Camera
     auto cameraUIGO = mainScene.createGameObject();
@@ -222,8 +253,9 @@ dzemikk::Mesh* createQuadMesh() {
     return mesh;
 }
 
-void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& scene, dzemikk::Mesh* cubeMesh,
-                     dzemikk::Material* cubeMaterial, int rows, int cols, float spacing) {
+void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& scene,
+                     dzemikk::Mesh* cubeMesh, dzemikk::Material* materialA,
+                     dzemikk::Material* materialB, int rows, int cols, float spacing) {
     for (int row = 0; row < rows; ++row) {
         for (int col = 0; col < cols; ++col) {
             auto cubeGO = scene.createGameObject();
@@ -237,8 +269,12 @@ void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& sc
 
             auto cubeRenderer = cubeGO->addComponent<dzemikk::MeshRenderer>();
             cubeRenderer->mesh = cubeMesh;
-            cubeRenderer->material = cubeMaterial;
             cubeRenderer->transform = cubeGO->transform();
+
+            if ((row + col) % 2 == 0)
+                cubeRenderer->material = materialA;
+            else
+                cubeRenderer->material = materialB;
 
             engine->GetRenderer()->registerRenderer(cubeRenderer);
         }

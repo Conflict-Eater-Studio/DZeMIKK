@@ -3,6 +3,7 @@
 #include "ecs/components/transform.h"
 #include "ecs/components/camera.h"
 
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <vector>
 #include <memory>   
@@ -11,9 +12,11 @@ namespace dzemikk {
 
     class MeshRenderer;
     class SpriteRenderer;
+    class Mesh;
+    class Material;
 
     class Renderer : public IEngineModule {
-      public:
+    public:
         Renderer() = default;
         ~Renderer() = default;
 
@@ -43,7 +46,14 @@ namespace dzemikk {
 
         void render();
 
-      private:
+    private:
+        struct InstancedBatch {
+            dzemikk::Mesh* mesh;
+            dzemikk::Material* material;
+            std::vector<glm::mat4> modelMatrices;
+            GLuint instanceVBO = 0;
+        };
+
         Renderer(const Renderer&) = delete;
         Renderer& operator=(const Renderer&) = delete;
 
@@ -56,7 +66,8 @@ namespace dzemikk {
 
         std::vector<const Camera*> _cameras; 
         const Camera* _sceneCamera;        
-        const Camera* _uiCamera;           
+        const Camera* _uiCamera;      
+        unsigned int uboMatrices;
     };
 
 } 

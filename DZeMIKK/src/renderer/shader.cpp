@@ -21,6 +21,9 @@ dzemikk::Shader::Shader(const char* vertexSrc, const char* fragmentSrc) {
 
     glDeleteShader(vertex);
     glDeleteShader(fragment);
+
+    unsigned int uniformBlockIndex = glGetUniformBlockIndex(_program, "Matrices");
+    glUniformBlockBinding(_program, uniformBlockIndex, 0);
 }
 
 dzemikk::Shader::~Shader() {
