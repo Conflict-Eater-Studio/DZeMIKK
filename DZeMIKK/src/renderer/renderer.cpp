@@ -46,6 +46,11 @@ void dzemikk::Renderer::setUIProjection(const glm::mat4& ortho) {
 }
 
 void dzemikk::Renderer::render() {
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS); 
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     if (_sceneCamera) {
         _view = _sceneCamera->getView();
         _projection = _sceneCamera->getProjection();
@@ -59,6 +64,9 @@ void dzemikk::Renderer::render() {
         shader->setMat4("model", r->transform->getWorldMatrix());
         shader->setMat4("view", _view);
         shader->setMat4("projection", _projection);
+        shader->setVec3("lightDir", glm::vec3(1.0f, -1.0f, 1.0f));
+        shader->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
         r->mesh->draw();
     }
 

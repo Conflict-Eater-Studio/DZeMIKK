@@ -77,15 +77,19 @@ void dzemikk::Engine::update() {
         ImGui::End();
 
         mainWindow->clear(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 #else
         mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
-        updateCameraWASD(.1f);
-        updateCameraArrows(.1f); 
+        updateCameraWASD(1.f);
+        updateCameraArrows(1.1f); 
         _renderer->render();
+        
+#if DZEMIKK_DEV_TOOLS
+        glDisable(GL_DEPTH_TEST);
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
+
         mainWindow->swapBuffers();
         mainWindow->pollEvents();
     }
@@ -167,19 +171,17 @@ void dzemikk::Engine::updateCameraArrows(float speed) {
         return;
     auto* transform = camera->getOwner()->transform();
 
-    glm::vec3 euler = transform->getEulerAngles();
+    float deltaAngle = speed; 
 
     if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_LEFT) == GLFW_PRESS)
-        euler.y += speed;
+        transform->rotate(glm::angleAxis(glm::radians(deltaAngle), transform->up()));
 
     if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_RIGHT) == GLFW_PRESS)
-        euler.y -= speed;
+        transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->up()));
 
     if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_UP) == GLFW_PRESS)
-        euler.x += speed;
+        transform->rotate(glm::angleAxis(glm::radians(deltaAngle), transform->right()));
 
     if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_DOWN) == GLFW_PRESS)
-        euler.x -= speed;
-
-    transform->setEulerAngles(euler);
+        transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->right()));
 }

@@ -5,6 +5,12 @@
 #include <glm/glm.hpp>
 
 namespace dzemikk {
+    /**
+     * @brief Encapsulates a 3D camera with view and projection matrices.
+     *
+     * Provides utilities to set perspective or orthographic projections,
+     * compute view and view-projection matrices, and query direction vectors.
+     */
 	class Camera : public Component {
 	public:
         /**
