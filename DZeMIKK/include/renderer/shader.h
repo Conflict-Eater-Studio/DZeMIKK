@@ -4,7 +4,6 @@
 #include <glad/glad.h>
 #include <glm/fwd.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <string>
 
 namespace dzemikk {
     /**
@@ -59,28 +58,28 @@ namespace dzemikk {
         #pragma region Uniform setters
 
         // --- Scalars
-        void setFloat(const std::string& name, float value);
-        void setInt(const std::string& name, int value);
-        void setBool(const std::string& name, bool value);
+        void setFloat(const char* name, float value);
+        void setInt(const char* name, int value);
+        void setBool(const char* name, bool value);
 
         // --- Vectors
-        void setVec2(const std::string& name, const glm::vec2& vec);
-        void setVec3(const std::string& name, const glm::vec3& vec);
-        void setVec4(const std::string& name, const glm::vec4& vec);
-        void setIVec2(const std::string& name, const glm::ivec2& vec);
-        void setIVec3(const std::string& name, const glm::ivec3& vec);
-        void setIVec4(const std::string& name, const glm::ivec4& vec);
-        void setBVec2(const std::string& name, const glm::bvec2& vec);
-        void setBVec3(const std::string& name, const glm::bvec3& vec);
-        void setBVec4(const std::string& name, const glm::bvec4& vec);
+        void setVec2(const char* name, const glm::vec2& vec);
+        void setVec3(const char* name, const glm::vec3& vec);
+        void setVec4(const char* name, const glm::vec4& vec);
+        void setIVec2(const char* name, const glm::ivec2& vec);
+        void setIVec3(const char* name, const glm::ivec3& vec);
+        void setIVec4(const char* name, const glm::ivec4& vec);
+        void setBVec2(const char* name, const glm::bvec2& vec);
+        void setBVec3(const char* name, const glm::bvec3& vec);
+        void setBVec4(const char* name, const glm::bvec4& vec);
 
         // --- Matrices
-        void setMat2(const std::string& name, const glm::mat2& mat);
-        void setMat3(const std::string& name, const glm::mat3& mat);
-        void setMat4(const std::string& name, const glm::mat4& mat);
+        void setMat2(const char* name, const glm::mat2& mat);
+        void setMat3(const char* name, const glm::mat3& mat);
+        void setMat4(const char* name, const glm::mat4& mat);
 
         // --- Texture samplers
-        void setSampler(const std::string& name, int textureUnit);
+        void setSampler(const char* name, int textureUnit);
 
         #pragma endregion
 
@@ -97,19 +96,10 @@ namespace dzemikk {
         #pragma region Internal state
 
         GLuint _program = 0;
-        mutable std::unordered_map<std::string, GLint> _uniformLocationCache;
 
         #pragma endregion
 
         #pragma region Internal helpers
-
-        /**
-         * @brief Retrieves the location of a uniform (with caching).
-         *
-         * @param name Uniform name.
-         * @return GLint Location of the uniform.
-         */
-        GLint getUniformLocation(const std::string& name) const;
 
         /**
          * @brief Checks compilation/linking errors and prints messages.
@@ -117,7 +107,7 @@ namespace dzemikk {
          * @param shader Shader or program ID.
          * @param type Type string: "VERTEX", "FRAGMENT", "PROGRAM".
          */
-        void checkCompileErrors(GLuint shader, const std::string& type) const;
+        void checkCompileErrors(GLuint shader, const char* type) const;
 
         #pragma endregion
     };
