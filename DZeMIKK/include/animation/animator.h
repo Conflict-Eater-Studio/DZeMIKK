@@ -1,0 +1,7 @@
+#ifndef TUL_PBL_DZEMIKK_ANIMATOR_H
+#define TUL_PBL_DZEMIKK_ANIMATOR_H
+
+class Animator  {
+
+}
+#endif // TUL_PBL_DZEMIKK_ANIMATOR_H

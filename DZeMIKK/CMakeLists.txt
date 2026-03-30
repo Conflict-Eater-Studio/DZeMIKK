@@ -26,11 +26,12 @@ set(ENGINE_SOURCES
     	"${SRC_DIR}/renderer/material.cpp"
         "${SRC_DIR}/ecs/components/monobehaviour.cpp"
         "${SRC_DIR}/ecs/components/transform.cpp"
-	    "${SRC_DIR}/ecs/components/meshRenderer.cpp"
+        "${SRC_DIR}/ecs/components/meshRenderer.cpp"
     	"${SRC_DIR}/ecs/components/spriteRenderer.cpp"
         "${SRC_DIR}/ecs/gameobject.cpp"
 
 )
+
 set(ENGINE_HEADERS
         "${INC_DIR}/core/engine.h"
         "${INC_DIR}/core/window.h"
