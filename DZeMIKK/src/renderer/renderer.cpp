@@ -51,6 +51,10 @@ void dzemikk::Renderer::render() {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
+
     if (_sceneCamera) {
         if (_sceneCamera->isDirty()) {
             _frustum.update(_sceneCamera->getViewProjection());
