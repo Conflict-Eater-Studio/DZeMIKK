@@ -28,10 +28,10 @@ namespace dzemikk {
         _mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
         _renderer = std::make_shared<Renderer>();
         _sceneManager = std::make_shared<SceneManager>();
+        _time = std::make_shared<Time>();
 
         _modules.push_back(_renderer);
         _modules.push_back(_sceneManager);
-
         for (const auto& element : _modules) {
             element->Initialize();
         }
@@ -58,14 +58,13 @@ namespace dzemikk {
         ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
     #endif
         while (!_mainWindow->shouldClose()) {
-            Time::update();
-
-            float dt = Time::deltaTime;
+            _time->update();
+            float dt = _time->getDeltaTime();
             _accumulator += dt;
 
             //_sceneManager->update(dt);
 
-            float fdt = Time::fixedDeltaTime;
+            float fdt = _time->getFixedDeltaTime();
             if (_accumulator >= fdt) {
                 _accumulator -= fdt;
                 //_sceneManager->fixedUpdate(fdt);
@@ -76,7 +75,7 @@ namespace dzemikk {
             ImGui::NewFrame();
 
             ImGui::Begin("Renderer");
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", Time::deltaTime, 1.0f/Time::deltaTime);
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", _time->getDeltaTime(), 1.0f/_time->getDeltaTime());
             ImGui::Text("Background");
             ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
             ImGui::End();
@@ -110,6 +109,9 @@ namespace dzemikk {
     }
     std::shared_ptr<SceneManager> Engine::getSceneManager() {
         return _sceneManager;
+    }
+    std::shared_ptr<Time> Engine::getTime() {
+        return _time;
     }
 
     template <std::derived_from<IEngineModule> T>

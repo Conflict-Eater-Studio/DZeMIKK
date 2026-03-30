@@ -2,6 +2,7 @@
 #define DZEMIKK_APPLICATION_H
 #include "renderer/renderer.h"
 #include "scenemanager.h"
+#include "time.h"
 #include "window.h"
 
 #include <memory>
@@ -18,6 +19,8 @@ class Engine {
         std::shared_ptr<Renderer> getRenderer();
         std::shared_ptr<Window> getWindow();
         std::shared_ptr<SceneManager> getSceneManager();
+        std::shared_ptr<Time> getTime();
+
         template <std::derived_from<IEngineModule> T>
         std::shared_ptr<T> getModule() const;
     private:
@@ -27,6 +30,7 @@ class Engine {
         std::shared_ptr<Window> _mainWindow;
         std::shared_ptr<Renderer> _renderer;
         std::shared_ptr<SceneManager> _sceneManager;
+        std::shared_ptr<Time> _time;
 
         float _accumulator = 0.0f;
     };
