@@ -18,8 +18,7 @@ add_library(DZeMIKK STATIC)
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"
-        "${SRC_DIR}/core/scene.cpp"
-        "${SRC_DIR}/core/scenemanager.cpp"
+        "${SRC_DIR}/core/time.cpp"
         "${SRC_DIR}/renderer/renderer.cpp"
     	"${SRC_DIR}/renderer/mesh.cpp"
     	"${SRC_DIR}/renderer/shader.cpp"
@@ -29,19 +28,20 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/components/meshRenderer.cpp"
     	"${SRC_DIR}/ecs/components/spriteRenderer.cpp"
         "${SRC_DIR}/ecs/gameobject.cpp"
-
+        "${SRC_DIR}/ecs/scene.cpp"
+        "${SRC_DIR}/ecs/scenemanager.cpp"
 )
 
 set(ENGINE_HEADERS
         "${INC_DIR}/core/engine.h"
         "${INC_DIR}/core/window.h"
-        "${INC_DIR}/core/scene.h"
-        "${INC_DIR}/core/scenemanager.h"
         "${INC_DIR}/renderer/renderer.h"
         "${INC_DIR}/ecs/components/monobehaviour.h"
         "${INC_DIR}/ecs/components/transform.h"
         "${INC_DIR}/ecs/component.h"
         "${INC_DIR}/ecs/gameobject.h"
+        "${INC_DIR}/ecs/scene.h"
+        "${INC_DIR}/ecs/scenemanager.h"
 )
 
 target_sources(DZeMIKK
@@ -75,7 +75,6 @@ target_include_directories(glad
         "${EXTERN_DIR}/glad/include"
         "${EXTERN_DIR}/glad/include/glad"
         "${EXTERN_DIR}/KHR/include"
-
 )
 
 include(FetchContent)

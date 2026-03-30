@@ -3,9 +3,9 @@
 
 #include <memory>
 #include <vector>
+#include "gameobject.h"
 
 namespace dzemikk {
-    class GameObject;
     class Scene {
         public:
             Scene() = default;
