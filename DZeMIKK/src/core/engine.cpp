@@ -35,11 +35,13 @@ void Engine::init() {
     _renderer = std::make_shared<Renderer>();
     _sceneManager = std::make_shared<SceneManager>();
     _time = std::make_shared<Time>();
+    _animationSystem = std::make_shared<AnimationModule>();
 
     _modules.push_back(_mainWindow);
     _modules.push_back(_renderer);
     _modules.push_back(_sceneManager);
     _modules.push_back(_time);
+    _modules.push_back(_animationSystem);
 
     for (const auto& module : _modules) {
         module->Initialize();
@@ -78,14 +80,15 @@ void Engine::start() {
     ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
 #endif
 
+    float fdt = _time->getFixedDeltaTime();
     while (!_mainWindow->shouldClose()) {
         _time->update();
         float dt = _time->getDeltaTime();
         _accumulator += dt;
 
         _sceneManager->update(dt);
+        _animationSystem->update(dt);
 
-        float fdt = _time->getFixedDeltaTime();
         if (_accumulator >= fdt) {
             _sceneManager->fixedUpdate(fdt);
             _accumulator -= fdt;
@@ -131,7 +134,7 @@ void Engine::start() {
 }
 
 std::shared_ptr<Renderer> Engine::getRenderer() {
-    return getModule<Renderer>();
+    return _renderer;
 }
 
 std::shared_ptr<Window> Engine::getWindow() {
@@ -144,6 +147,9 @@ std::shared_ptr<SceneManager> Engine::getSceneManager() {
 
 std::shared_ptr<Time> Engine::getTime() {
     return _time;
+}
+std::shared_ptr<AnimationModule> Engine::getAnimationSystem() {
+    return _animationSystem;
 }
 
 template <std::derived_from<IEngineModule> T>

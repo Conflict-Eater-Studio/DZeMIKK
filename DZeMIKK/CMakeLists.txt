@@ -30,6 +30,7 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/gameobject.cpp"
         "${SRC_DIR}/ecs/scene.cpp"
         "${SRC_DIR}/ecs/scenemanager.cpp"
+        "${SRC_DIR}/animation/animationmodule.cpp"
 )
 
 set(ENGINE_HEADERS
@@ -42,6 +43,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/gameobject.h"
         "${INC_DIR}/ecs/scene.h"
         "${INC_DIR}/ecs/scenemanager.h"
+        "${INC_DIR}/animation/animationmodule.h"
 )
 
 target_sources(DZeMIKK
