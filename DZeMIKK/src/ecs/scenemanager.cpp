@@ -2,7 +2,9 @@
 
 namespace dzemikk {
     void SceneManager::Initialize() {
-
+        std::shared_ptr<Scene> scene = std::make_shared<Scene>();
+        loadScene(scene);
+        setActiveScene(scene);
     }
     void SceneManager::UnInitialize() {
 

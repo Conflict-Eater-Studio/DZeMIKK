@@ -3,10 +3,8 @@
 
 namespace dzemikk {
 Time::Time() {
-    Time::Initialize();
 }
 Time::~Time() {
-    Time::UnInitialize();
 }
 void Time::update() {
     time = glfwGetTime();

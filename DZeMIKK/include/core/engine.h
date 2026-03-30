@@ -13,8 +13,7 @@ class Engine {
         Engine();
         ~Engine();
 
-        void start() const;
-        void update();
+        void start();
 
         std::shared_ptr<Renderer> getRenderer();
         std::shared_ptr<Window> getWindow();
@@ -25,7 +24,7 @@ class Engine {
         std::shared_ptr<T> getModule() const;
     private:
         void init();
-
+        void shutdown();
         std::vector<std::shared_ptr<IEngineModule>> _modules;
         std::shared_ptr<Window> _mainWindow;
         std::shared_ptr<Renderer> _renderer;

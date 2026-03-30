@@ -19,108 +19,141 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 namespace dzemikk {
-    Engine::Engine() {
-        init();
+
+Engine::Engine() {
+    init();
+}
+
+Engine::~Engine() {
+    shutdown();
+}
+
+void Engine::init() {
+    _mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
+    _renderer = std::make_shared<Renderer>();
+    _sceneManager = std::make_shared<SceneManager>();
+    _time = std::make_shared<Time>();
+
+    _modules.push_back(_mainWindow);
+    _modules.push_back(_renderer);
+    _modules.push_back(_sceneManager);
+    _modules.push_back(_time);
+
+    for (const auto& module : _modules) {
+        module->Initialize();
     }
-    Engine::~Engine() = default;
-    void Engine::init() {
-        _mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
-        _renderer = std::make_shared<Renderer>();
-        _sceneManager = std::make_shared<SceneManager>();
-        _time = std::make_shared<Time>();
 
-        _modules.push_back(_renderer);
-        _modules.push_back(_sceneManager);
-        for (const auto& element : _modules) {
-            element->Initialize();
-        }
-    #if DZEMIKK_DEV_TOOLS
-        spdlog::info("DZeMIKK version: {}.{}.{}", DZeMIKK_VERSION_MAJOR, DZeMIKK_VERSION_MINOR, DZeMIKK_VERSION_REVISION);
-    #endif
+#if DZEMIKK_DEV_TOOLS
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForOpenGL(_mainWindow->nativeHandle(), true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
+    spdlog::info("DZeMIKK version: {}.{}.{}",
+        DZeMIKK_VERSION_MAJOR,
+        DZeMIKK_VERSION_MINOR,
+        DZeMIKK_VERSION_REVISION);
+#endif
+}
+
+void Engine::shutdown() {
+#if DZEMIKK_DEV_TOOLS
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+#endif
+
+    for (const auto& module : _modules) {
+        module->UnInitialize();
     }
+}
 
-    void Engine::start() const {
+void Engine::start() {
 
-    }
+#if DZEMIKK_DEV_TOOLS
+    ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
+#endif
 
-    void Engine::update() {
-    #if DZEMIKK_DEV_TOOLS
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO();
-        (void)io;
-        ImGui::StyleColorsDark();
+    while (!_mainWindow->shouldClose()) {
+        _time->update();
+        float dt = _time->getDeltaTime();
+        _accumulator += dt;
 
-        ImGui_ImplGlfw_InitForOpenGL(_mainWindow->nativeHandle(), true);
-        ImGui_ImplOpenGL3_Init("#version 330");
+        _sceneManager->update(dt);
 
-        ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
-    #endif
-        while (!_mainWindow->shouldClose()) {
-            _time->update();
-            float dt = _time->getDeltaTime();
-            _accumulator += dt;
-
-            //_sceneManager->update(dt);
-
-            float fdt = _time->getFixedDeltaTime();
-            if (_accumulator >= fdt) {
-                _accumulator -= fdt;
-                //_sceneManager->fixedUpdate(fdt);
-            }
-    #if DZEMIKK_DEV_TOOLS
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
-
-            ImGui::Begin("Renderer");
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", _time->getDeltaTime(), 1.0f/_time->getDeltaTime());
-            ImGui::Text("Background");
-            ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
-            ImGui::End();
-
-            _mainWindow->clear(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-
-            ImGui::Render();
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    #else
-            _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
-    #endif
-            _renderer->render();
-            _mainWindow->swapBuffers();
-            _mainWindow->pollEvents();
+        float fdt = _time->getFixedDeltaTime();
+        if (_accumulator >= fdt) {
+            _sceneManager->fixedUpdate(fdt);
+            _accumulator -= fdt;
         }
 
-        _renderer->UnInitialize();
+#if DZEMIKK_DEV_TOOLS
+        // ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
-    #if DZEMIKK_DEV_TOOLS
-        ImGui_ImplOpenGL3_Shutdown();
-        ImGui_ImplGlfw_Shutdown();
-        ImGui::DestroyContext();
-    #endif
-    }
+        ImGui::Begin("Renderer");
 
-    std::shared_ptr<Renderer> Engine::getRenderer() {
-        return getModule<Renderer>();
-    }
-    std::shared_ptr<Window> Engine::getWindow() {
-        return _mainWindow;
-    }
-    std::shared_ptr<SceneManager> Engine::getSceneManager() {
-        return _sceneManager;
-    }
-    std::shared_ptr<Time> Engine::getTime() {
-        return _time;
-    }
+        float dt_ms = dt * 1000.0f;
+        ImGui::Text("Application %.3f ms/frame (%.1f FPS)",
+            dt_ms,
+            1.0f / dt);
 
-    template <std::derived_from<IEngineModule> T>
-    std::shared_ptr<T> Engine::getModule() const {
-        for (const auto& module : _modules) {
-            if (auto casted = std::dynamic_pointer_cast<T>(module)) {
-                return casted;
-            }
+        ImGui::ColorEdit4("Clear Color",
+            reinterpret_cast<float*>(&clear_color));
+
+        ImGui::End();
+
+        _mainWindow->clear(
+            clear_color.x,
+            clear_color.y,
+            clear_color.z,
+            clear_color.w
+        );
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+#else
+        _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
+#endif
+
+        _renderer->render();
+
+        _mainWindow->swapBuffers();
+        _mainWindow->pollEvents();
+    }
+}
+
+std::shared_ptr<Renderer> Engine::getRenderer() {
+    return getModule<Renderer>();
+}
+
+std::shared_ptr<Window> Engine::getWindow() {
+    return _mainWindow;
+}
+
+std::shared_ptr<SceneManager> Engine::getSceneManager() {
+    return _sceneManager;
+}
+
+std::shared_ptr<Time> Engine::getTime() {
+    return _time;
+}
+
+template <std::derived_from<IEngineModule> T>
+std::shared_ptr<T> Engine::getModule() const {
+    for (const auto& module : _modules) {
+        if (auto casted = std::dynamic_pointer_cast<T>(module)) {
+            return casted;
         }
-        return nullptr;
     }
+    return nullptr;
+}
+
 }
