@@ -15,12 +15,16 @@ GameObject::GameObject() {
 GameObject::~GameObject() {
     for (auto& component : _components) {
         if (component) {
-            unregisterComponent(component.get());
+            ComponentRegistry::get().unregisterComponent(component.get());
         }
     }
 }
 
 Transform* GameObject::transform() {
+    return _transform;
+}
+
+const Transform* GameObject::transform() const {
     return _transform;
 }
 
@@ -164,13 +168,5 @@ void GameObject::removeSceneActive(MonoBehaviour* mono) {
     if (_scene) {
         _scene->removeActive(mono);
     }
-}
-
-void GameObject::registerComponent(Component* component) {
-    ComponentRegistry::get().registerComponent(component);
-}
-
-void GameObject::unregisterComponent(Component* component) {
-    ComponentRegistry::get().unregisterComponent(component);
 }
 } // namespace dzemikk

@@ -1,18 +1,16 @@
 #ifndef DZEMIKK_COMPONENTREGISTRY_H
 #define DZEMIKK_COMPONENTREGISTRY_H
-
 #pragma once
-
 #include "component.h"
-#include "gameobject.h"
-#include "scene.h"
 
 #include <concepts>
+#include <cstddef>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
 
 namespace dzemikk {
+
 class ComponentRegistry {
   public:
     ComponentRegistry(const ComponentRegistry&) = delete;
@@ -31,88 +29,70 @@ class ComponentRegistry {
         if (!component || _componentToTypes.contains(component)) {
             return;
         }
-
-        Component* base = component;
-        const GameObject* obj = base->getOwner();
-
-        if (const Scene* scene = &obj->getScene(); scene) {
-            registerRecursive<T>(component, scene);
-        }
+        registerRecursive<T>(component);
     }
 
     void unregisterComponent(Component* component) {
         if (!component) {
             return;
         }
-
         auto typeIter = _componentToTypes.find(component);
         if (typeIter == _componentToTypes.end()) {
             return;
         }
 
-        Component* base = component;
-        auto* owner = base->getOwner();
-
-        if (!owner) {
-            return;
-        }
-
-        const Scene* scene = &owner->getScene();
-        auto sceneIter = _components.find(scene);
-
-        if (sceneIter == _components.end()) {
-            return;
-        }
-
         for (const std::type_index& typeIdx : typeIter->second) {
-            auto& vec = sceneIter->second[typeIdx];
-            std::erase(vec, component);
-        }
+            auto vecIter = _components.find(typeIdx);
+            auto indexMapIter = _componentIndices.find(typeIdx);
+            if (vecIter == _components.end() || indexMapIter == _componentIndices.end()) {
+                continue;
+            }
 
-        if (sceneIter->second.empty()) {
-            _components.erase(sceneIter);
+            auto& vec = vecIter->second;
+            auto& indices = indexMapIter->second;
+
+            auto componentIndexIter = indices.find(component);
+            if (componentIndexIter == indices.end() || vec.empty()) {
+                continue;
+            }
+
+            std::size_t removeIndex = componentIndexIter->second;
+            std::size_t lastIndex = vec.size() - 1;
+
+            if (removeIndex != lastIndex) {
+                Component* lastComponent = vec[lastIndex];
+                vec[removeIndex] = lastComponent;
+                indices[lastComponent] = removeIndex;
+            }
+
+            vec.pop_back();
+            indices.erase(componentIndexIter);
+
+            if (vec.empty()) {
+                _components.erase(vecIter);
+                _componentIndices.erase(indexMapIter);
+            }
         }
 
         _componentToTypes.erase(typeIter);
     }
 
-    template <typename T>
-        requires std::derived_from<T, Component>
-    void getComponents(const Scene* scene, std::vector<T*>& out) {
-        out.clear();
-
-        if (!scene) {
-            return;
-        }
-
-        auto sceneIter = _components.find(scene);
-        if (sceneIter == _components.end()) {
-            return;
-        }
-
-        auto typeIter = sceneIter->second.find(std::type_index(typeid(T)));
-        if (typeIter == sceneIter->second.end()) {
-            return;
-        }
-
-        out.reserve(typeIter->second.size());
-        for (Component* component : typeIter->second) {
-            out.push_back(static_cast<T*>(component));
-        }
+    void clear() {
+        _components.clear();
+        _componentIndices.clear();
+        _componentToTypes.clear();
     }
 
     template <typename T>
         requires std::derived_from<T, Component>
     void getComponents(std::vector<T*>& out) {
         out.clear();
-
-        for (const auto& [scene, typeComponents] : _components) {
-            if (auto typeIter = typeComponents.find(std::type_index(typeid(T)));
-                typeIter != typeComponents.end()) {
-                for (Component* component : typeIter->second) {
-                    out.push_back(static_cast<T*>(component));
-                }
-            }
+        auto iter = _components.find(std::type_index(typeid(T)));
+        if (iter == _components.end()) {
+            return;
+        }
+        for (Component* component : iter->second) {
+            out.push_back(static_cast<T*>(component));
         }
     }
 
@@ -122,25 +102,27 @@ class ComponentRegistry {
 
     template <typename T>
         requires std::derived_from<T, Component>
-    void registerRecursive(T* component, const Scene* scene) {
+    void registerRecursive(T* component) {
         std::type_index idx(typeid(T));
-        _components[scene][idx].push_back(component);
+        auto& components = _components[idx];
+        components.push_back(component);
+        _componentIndices[idx][component] = components.size() - 1;
         _componentToTypes[component].push_back(idx);
-
         if constexpr (requires { typename T::Base; }) {
             static_assert(!std::is_same_v<T, typename T::Base>,
                           "Base type cannot be the same as derived type");
-            registerRecursive<typename T::Base>(static_cast<typename T::Base*>(component), scene);
+            registerRecursive<typename T::Base>(static_cast<typename T::Base*>(component));
         }
     }
 
-    // Map: Scene -> (Type -> Component List)
-    std::unordered_map<const Scene*, std::unordered_map<std::type_index, std::vector<Component*>>>
-        _components;
-
-    // Map: Component -> List of Types (under which it was registered)
+    // Type -> Component list (active scene only)
+    std::unordered_map<std::type_index, std::vector<Component*>> _components;
+    // Type -> (component -> index in _components[type])
+    std::unordered_map<std::type_index, std::unordered_map<Component*, std::size_t>>
+        _componentIndices;
+    // Component -> list of types it was registered under
     std::unordered_map<Component*, std::vector<std::type_index>> _componentToTypes;
 };
-} // namespace dzemikk
 
+} // namespace dzemikk
 #endif // DZEMIKK_COMPONENTREGISTRY_H

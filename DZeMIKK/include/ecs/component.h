@@ -3,6 +3,7 @@
 
 namespace dzemikk {
 class GameObject;
+class Scene;
 class Component {
   public:
     Component() = default;
