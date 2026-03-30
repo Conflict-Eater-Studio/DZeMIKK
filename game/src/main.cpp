@@ -260,9 +260,9 @@ void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& sc
         for (int col = 0; col < cols; ++col) {
             auto cubeGO = scene.createGameObject();
 
-            float x = col * spacing;
+            float x = -col * spacing;
             float y = 0.0f;
-            float z = row * spacing;
+            float z = -row * spacing;
 
             cubeGO->transform()->setPosition(glm::vec3(x, y, z));
             cubeGO->transform()->setScale(glm::vec3(1.0f));

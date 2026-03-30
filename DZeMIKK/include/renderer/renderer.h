@@ -1,7 +1,10 @@
-#pragma once
+#ifndef DZEMIKK_RENDERER_H
+#define DZEMIKK_RENDERER_H
+
 #include "core/iEngineModule.h"
 #include "ecs/components/transform.h"
 #include "ecs/components/camera.h"
+#include "frustum.h"
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -41,17 +44,23 @@ namespace dzemikk {
         const Camera* getActiveSceneCamera() const;
         const Camera* getActiveUICamera() const;
 
-        void setCamera(const glm::mat4& view, const glm::mat4& projection);
-        void setUIProjection(const glm::mat4& ortho);
-
         void render();
 
     private:
-        struct InstancedBatch {
-            dzemikk::Mesh* mesh;
-            dzemikk::Material* material;
-            std::vector<glm::mat4> modelMatrices;
+        struct Batch {
+            Mesh* mesh;
+            Material* material;
+            std::vector<glm::mat4> models;
             GLuint instanceVBO = 0;
+            int instanceCapacity = 0;
+        };
+
+        std::vector<Batch> _batches;
+
+        struct pair_hash {
+            template <class T1, class T2> std::size_t operator()(const std::pair<T1, T2>& p) const {
+                return std::hash<T1>{}(p.first) ^ (std::hash<T2>{}(p.second) << 1);
+            }
         };
 
         Renderer(const Renderer&) = delete;
@@ -67,7 +76,9 @@ namespace dzemikk {
         std::vector<const Camera*> _cameras; 
         const Camera* _sceneCamera;        
         const Camera* _uiCamera;      
-        unsigned int uboMatrices;
+        unsigned int _uboMatrices;
+        Frustum _frustum;
     };
 
-} 
+}  // namespace dzemikk
+#endif // DZEMIKK_RENDERER_H

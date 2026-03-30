@@ -150,6 +150,10 @@ namespace dzemikk {
 
         #pragma endregion
 
+        bool isDirty() const {
+            return _viewProjectionDirty;
+        }
+
     private:
         int _id = -1;
         ProjectionType _projectionType = ProjectionType::Perspective;

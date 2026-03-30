@@ -13,13 +13,13 @@ void dzemikk::Renderer::Initialize() {
     _projection = glm::mat4(1.0f);
     _uiProjection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
 
-    glGenBuffers(1, &uboMatrices);
+    glGenBuffers(1, &_uboMatrices);
 
-    glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
+    glBindBuffer(GL_UNIFORM_BUFFER, _uboMatrices);
     glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-    glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrices, 0, 2 * sizeof(glm::mat4));
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, _uboMatrices, 0, 2 * sizeof(glm::mat4));
 }
 
 void dzemikk::Renderer::UnInitialize() {
@@ -45,15 +45,6 @@ void dzemikk::Renderer::unregisterSpriteRenderer(SpriteRenderer* renderer) {
                            _spriteRenderers.end());
 }
 
-void dzemikk::Renderer::setCamera(const glm::mat4& view, const glm::mat4& projection) {
-    _view = view;
-    _projection = projection;
-}
-
-void dzemikk::Renderer::setUIProjection(const glm::mat4& ortho) {
-    _uiProjection = ortho;
-}
-
 void dzemikk::Renderer::render() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -61,42 +52,71 @@ void dzemikk::Renderer::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (_sceneCamera) {
+        if (_sceneCamera->isDirty()) {
+            _frustum.update(_sceneCamera->getViewProjection());
+        }
+
         _view = _sceneCamera->getView();
         _projection = _sceneCamera->getProjection();
 
-        glBindBuffer(GL_UNIFORM_BUFFER, uboMatrices);
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(_projection));
-        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4),
-                        glm::value_ptr(_view));
+        glm::mat4 matrices[2] = {_projection, _view};
+
+        glBindBuffer(GL_UNIFORM_BUFFER, _uboMatrices);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(matrices), matrices);
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
-    using Key = std::pair<Mesh*, Material*>;
-    std::map<Key, std::vector<glm::mat4>> batches;
+    _batches.clear();
 
     for (auto* r : _meshRenderers) {
         if (!r->mesh || !r->material || !r->transform)
             continue;
 
-        Key key = {r->mesh, r->material};
-        batches[key].push_back(r->transform->getWorldMatrix());
+        glm::vec3 pos = r->transform->getPosition();
+        float radius = 1.0f;
+
+        if (!_frustum.isSphereVisible(pos, radius))
+            continue;
+
+        Batch* batch = nullptr;
+
+        for (auto& b : _batches) {
+            if (b.mesh == r->mesh && b.material == r->material) {
+                batch = &b;
+                break;
+            }
+        }
+
+        if (!batch) {
+            _batches.push_back({});
+            batch = &_batches.back();
+            batch->mesh = r->mesh;
+            batch->material = r->material;
+
+            glGenBuffers(1, &batch->instanceVBO);
+        }
+
+        batch->models.push_back(r->transform->getWorldMatrix());
     }
 
-    for (auto& [key, models] : batches) {
-        Mesh* mesh = key.first;
-        Material* material = key.second;
+    for (auto& batch : _batches) {
+        if (batch.models.empty())
+            continue;
+
+        Mesh* mesh = batch.mesh;
+        Material* material = batch.material;
         Shader* shader = material->shader;
 
         shader->bind();
+
         shader->setVec3("lightDir", glm::vec3(1.0f, -1.0f, 1.0f));
-        shader->setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        shader->setVec3("lightColor", glm::vec3(1.0f));
         shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
 
-        GLuint instanceVBO;
-        glGenBuffers(1, &instanceVBO);
         glBindVertexArray(mesh->vao);
-        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-        glBufferData(GL_ARRAY_BUFFER, models.size() * sizeof(glm::mat4), models.data(),
+        glBindBuffer(GL_ARRAY_BUFFER, batch.instanceVBO);
+
+        glBufferData(GL_ARRAY_BUFFER, batch.models.size() * sizeof(glm::mat4), batch.models.data(),
                      GL_DYNAMIC_DRAW);
 
         for (int i = 0; i < 4; i++) {
@@ -106,10 +126,7 @@ void dzemikk::Renderer::render() {
             glVertexAttribDivisor(2 + i, 1);
         }
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->vertexCount, models.size());
-
-        glBindVertexArray(0);
-        glDeleteBuffers(1, &instanceVBO);
+        glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->vertexCount, batch.models.size());
     }
 
     if (_uiCamera)
@@ -121,8 +138,10 @@ void dzemikk::Renderer::render() {
 
         Shader* shader = r->material->shader;
         shader->bind();
+
         shader->setMat4("model", r->transform->getWorldMatrix());
         shader->setMat4("projection", _uiProjection);
+
         r->mesh->draw();
     }
 }
