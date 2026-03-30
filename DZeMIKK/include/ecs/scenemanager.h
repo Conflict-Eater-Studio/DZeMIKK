@@ -1,6 +1,6 @@
 #ifndef TUL_PBL_DZEMIKK_SCENEMANAGER_H
 #define TUL_PBL_DZEMIKK_SCENEMANAGER_H
-#include "iEngineModule.h"
+#include "../core/iEngineModule.h"
 #include "scene.h"
 
 #include <memory>

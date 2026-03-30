@@ -1,7 +1,7 @@
 #ifndef DZEMIKK_APPLICATION_H
 #define DZEMIKK_APPLICATION_H
 #include "renderer/renderer.h"
-#include "scenemanager.h"
+#include "ecs/scenemanager.h"
 #include "time.h"
 #include "window.h"
 

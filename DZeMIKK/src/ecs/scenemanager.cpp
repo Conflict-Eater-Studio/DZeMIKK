@@ -1,4 +1,4 @@
-#include "core/scenemanager.h"
+#include "../../include/ecs/scenemanager.h"
 
 namespace dzemikk {
     void SceneManager::Initialize() {

@@ -1,4 +1,4 @@
-#include "../../include/core/scene.h"
+#include "../../include/ecs/scene.h"
 
 #include "ecs/components/monobehaviour.h"
 #include "ecs/gameobject.h"
