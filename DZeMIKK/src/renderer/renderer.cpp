@@ -2,68 +2,203 @@
 #include "renderer/shader.h"
 #include "renderer/material.h"
 #include "renderer/mesh.h"
+#include "ecs/componentRegistry.h"
 
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
+#include <iostream>
+#include <map>
 
 void dzemikk::Renderer::Initialize() {
     _view = glm::mat4(1.0f);
     _projection = glm::mat4(1.0f);
     _uiProjection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
+
+    glGenBuffers(1, &_uboMatrices);
+
+    glBindBuffer(GL_UNIFORM_BUFFER, _uboMatrices);
+    glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), NULL, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+    glBindBufferRange(GL_UNIFORM_BUFFER, 0, _uboMatrices, 0, 2 * sizeof(glm::mat4));
 }
 
 void dzemikk::Renderer::UnInitialize() {
-    _meshRenderers.clear();
-    _spriteRenderers.clear();
-}
-
-void dzemikk::Renderer::registerRenderer(MeshRenderer* renderer) {
-    _meshRenderers.push_back(renderer);
-}
-
-void dzemikk::Renderer::unregisterRenderer(MeshRenderer* renderer) {
-    _meshRenderers.erase(std::remove(_meshRenderers.begin(), _meshRenderers.end(), renderer),
-                         _meshRenderers.end());
-}
-
-void dzemikk::Renderer::registerSpriteRenderer(SpriteRenderer* renderer) {
-    _spriteRenderers.push_back(renderer);
-}
-
-void dzemikk::Renderer::unregisterSpriteRenderer(SpriteRenderer* renderer) {
-    _spriteRenderers.erase(std::remove(_spriteRenderers.begin(), _spriteRenderers.end(), renderer),
-                           _spriteRenderers.end());
-}
-
-void dzemikk::Renderer::setCamera(const glm::mat4& view, const glm::mat4& projection) {
-    _view = view;
-    _projection = projection;
-}
-
-void dzemikk::Renderer::setUIProjection(const glm::mat4& ortho) {
-    _uiProjection = ortho;
 }
 
 void dzemikk::Renderer::render() {
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
+
+    if (_sceneCamera) {
+        if (_sceneCamera->isDirty()) {
+            _frustum.update(_sceneCamera->getViewProjection());
+        }
+
+        _view = _sceneCamera->getView();
+        _projection = _sceneCamera->getProjection();
+
+        glm::mat4 matrices[2] = {_projection, _view};
+
+        glBindBuffer(GL_UNIFORM_BUFFER, _uboMatrices);
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(matrices), matrices);
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    }
+
+    _batches.clear();
+
+    dzemikk::ComponentRegistry::get().getComponents<MeshRenderer>(_meshRenderers);
+
     for (auto* r : _meshRenderers) {
         if (!r->mesh || !r->material || !r->transform)
             continue;
-        auto* shader = r->material->shader;
-        shader->bind();
-        shader->setMat4("model", r->transform->getWorldMatrix());
-        shader->setMat4("view", _view);
-        shader->setMat4("projection", _projection);
-        r->mesh->draw();
+
+        glm::vec3 pos = r->transform->getPosition();
+        float radius = 1.0f;
+
+        if (!_frustum.isSphereVisible(pos, radius))
+            continue;
+
+        Batch* batch = nullptr;
+
+        for (auto& b : _batches) {
+            if (b.mesh == r->mesh && b.material == r->material) {
+                batch = &b;
+                break;
+            }
+        }
+
+        if (!batch) {
+            _batches.push_back({});
+            batch = &_batches.back();
+            batch->mesh = r->mesh;
+            batch->material = r->material;
+
+            glGenBuffers(1, &batch->instanceVBO);
+        }
+
+        batch->models.push_back(r->transform->getWorldMatrix());
     }
+
+    for (auto& batch : _batches) {
+        if (batch.models.empty())
+            continue;
+
+        Mesh* mesh = batch.mesh;
+        Material* material = batch.material;
+        Shader* shader = material->shader;
+
+        shader->bind();
+
+        shader->setVec3("lightDir", glm::vec3(1.0f, -1.0f, 1.0f));
+        shader->setVec3("lightColor", glm::vec3(1.0f));
+        shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
+
+        glBindVertexArray(mesh->vao);
+        glBindBuffer(GL_ARRAY_BUFFER, batch.instanceVBO);
+
+        glBufferData(GL_ARRAY_BUFFER, batch.models.size() * sizeof(glm::mat4), batch.models.data(),
+                     GL_DYNAMIC_DRAW);
+
+        for (int i = 0; i < 4; i++) {
+            glVertexAttribPointer(2 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+                                  (void*)(sizeof(glm::vec4) * i));
+            glEnableVertexAttribArray(2 + i);
+            glVertexAttribDivisor(2 + i, 1);
+        }
+
+        glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->vertexCount, batch.models.size());
+    }
+
+    if (_uiCamera)
+        _uiProjection = _uiCamera->getProjection();
+
+
+    dzemikk::ComponentRegistry::get().getComponents<SpriteRenderer>(_spriteRenderers);
 
     for (auto* r : _spriteRenderers) {
         if (!r->mesh || !r->material || !r->transform)
             continue;
-        auto* shader = r->material->shader;
+
+        Shader* shader = r->material->shader;
         shader->bind();
+
         shader->setMat4("model", r->transform->getWorldMatrix());
-        shader->setMat4("view", glm::mat4(1.0f));
         shader->setMat4("projection", _uiProjection);
+
         r->mesh->draw();
     }
+}
+
+const dzemikk::Camera* dzemikk::Renderer::getActiveSceneCamera() const {
+    return _sceneCamera;
+}
+const dzemikk::Camera* dzemikk::Renderer::getActiveUICamera() const {
+    return _uiCamera;
+}
+
+void dzemikk::Renderer::registerCamera(const dzemikk::Camera* camera) {
+    if (!camera)
+        return;
+
+    if (std::find(_cameras.begin(), _cameras.end(), camera) == _cameras.end()) {
+        _cameras.push_back(camera);
+    }
+}
+
+void dzemikk::Renderer::unregisterCamera(const dzemikk::Camera* camera) {
+    if (!camera)
+        return;
+
+    auto iter = std::find(_cameras.begin(), _cameras.end(), camera);
+    if (iter != _cameras.end()) {
+        if (*iter == _sceneCamera)
+            _sceneCamera = nullptr;
+        if (*iter == _uiCamera)
+            _uiCamera = nullptr;
+
+        _cameras.erase(iter);
+    }
+}
+
+void dzemikk::Renderer::setActiveSceneCamera(const dzemikk::Camera* camera) {
+    if (!camera)
+        return;
+
+    registerCamera(camera);
+    _sceneCamera = camera;
+}
+
+void dzemikk::Renderer::setActiveUICamera(const dzemikk::Camera* camera) {
+    if (!camera)
+        return;
+
+    registerCamera(camera);
+    _uiCamera = camera;
+}
+
+void dzemikk::Renderer::setActiveSceneCameraById(int cameraId) {
+    for (auto& cam : _cameras) {
+        if (cam->getId() == cameraId) {
+            _sceneCamera = cam;
+            return;
+        }
+    }
+    std::cerr << "[Renderer] Warning: Scene camera with ID " << cameraId << " not found.\n";
+}
+
+void dzemikk::Renderer::setActiveUICameraById(int cameraId) {
+    for (auto& cam : _cameras) {
+        if (cam->getId() == cameraId) {
+            _uiCamera = cam;
+            return;
+        }
+    }
+    std::cerr << "[Renderer] Warning: UI camera with ID " << cameraId << " not found.\n";
 }

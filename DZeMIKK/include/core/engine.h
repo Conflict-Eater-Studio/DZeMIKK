@@ -15,6 +15,7 @@ class Engine {
         ~Engine();
 
         void start();
+        void update();
 
         std::shared_ptr<Renderer> getRenderer();
         std::shared_ptr<Window> getWindow();
@@ -34,6 +35,13 @@ class Engine {
         std::shared_ptr<AnimationModule> _animationSystem;
 
         float _accumulator = 0.0f;
+        std::shared_ptr<Renderer> GetRenderer() {
+            return _renderer;
+        }
+
+        // --- Only for test DELETE THIS
+        void updateCameraWASD(float speed);
+        void updateCameraArrows(float speed);
     };
 } // namespace dzemikk
 

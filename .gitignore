@@ -26,3 +26,9 @@ Thumbs.db
 
 # cache files
 .cache/
+
+# imgui generated files
+imgui.ini
+
+# Temp gtest files
+Testing/

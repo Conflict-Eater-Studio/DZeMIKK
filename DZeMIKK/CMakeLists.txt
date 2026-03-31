@@ -14,7 +14,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebIn
     set(DZEMIKK_DEV_TOOLS ON)
 endif()
 
-
 add_library(DZeMIKK STATIC)
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
@@ -24,24 +23,35 @@ set(ENGINE_SOURCES
     	"${SRC_DIR}/renderer/mesh.cpp"
     	"${SRC_DIR}/renderer/shader.cpp"
     	"${SRC_DIR}/renderer/material.cpp"
+    	"${SRC_DIR}/renderer/frustum.cpp"
         "${SRC_DIR}/ecs/components/monobehaviour.cpp"
         "${SRC_DIR}/ecs/components/transform.cpp"
         "${SRC_DIR}/ecs/components/meshRenderer.cpp"
+		"${SRC_DIR}/ecs/components/meshRenderer.cpp"
     	"${SRC_DIR}/ecs/components/spriteRenderer.cpp"
+        "${SRC_DIR}/ecs/components/camera.cpp"
         "${SRC_DIR}/ecs/gameobject.cpp"
         "${SRC_DIR}/ecs/scene.cpp"
         "${SRC_DIR}/ecs/scenemanager.cpp"
         "${SRC_DIR}/animation/animationmodule.cpp"
         "${SRC_DIR}/ecs/components/animator.cpp"
         "${SRC_DIR}/animation/animationstatemachine.cpp"
+        "${SRC_DIR}/ecs/component.cpp"
 )
 
 set(ENGINE_HEADERS
         "${INC_DIR}/core/engine.h"
         "${INC_DIR}/core/window.h"
         "${INC_DIR}/renderer/renderer.h"
+	    "${INC_DIR}/renderer/mesh.h"
+    	"${INC_DIR}/renderer/shader.h"
+    	"${INC_DIR}/renderer/material.h"
+    	"${INC_DIR}/renderer/frustum.h"
         "${INC_DIR}/ecs/components/monobehaviour.h"
         "${INC_DIR}/ecs/components/transform.h"
+	    "${INC_DIR}/ecs/components/meshRenderer.h"
+    	"${INC_DIR}/ecs/components/spriteRenderer.h"
+        "${INC_DIR}/ecs/components/camera.h"
         "${INC_DIR}/ecs/component.h"
         "${INC_DIR}/ecs/gameobject.h"
         "${INC_DIR}/ecs/scene.h"
@@ -53,6 +63,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/animation/AnimationStateMachine.h"
         "${INC_DIR}/animation/animationstate.h"
         "${INC_DIR}/animation/transition.h"
+        "${INC_DIR}/ecs/componentRegistry.h"
 )
 
 target_sources(DZeMIKK
@@ -86,6 +97,7 @@ target_include_directories(glad
         "${EXTERN_DIR}/glad/include"
         "${EXTERN_DIR}/glad/include/glad"
         "${EXTERN_DIR}/KHR/include"
+
 )
 
 include(FetchContent)

@@ -8,7 +8,9 @@ namespace dzemikk {
     class Material;
 
     class SpriteRenderer : public MonoBehaviour {
-      public:
+    public:
+          using Base = MonoBehaviour;
+
         Mesh* mesh = nullptr;
         Material* material = nullptr;
         Transform* transform = nullptr;
