@@ -6,7 +6,9 @@ namespace dzemikk {
     class Material;
 
     class MeshRenderer : public MonoBehaviour {
-      public:
+    public:
+        using Base = MonoBehaviour;
+
         Mesh* mesh = nullptr;
         Material* material = nullptr;
         Transform* transform = nullptr;

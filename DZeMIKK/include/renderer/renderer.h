@@ -26,12 +26,6 @@ namespace dzemikk {
         void Initialize() override;
         void UnInitialize() override;
 
-        void registerRenderer(MeshRenderer* renderer);
-        void unregisterRenderer(MeshRenderer* renderer);
-
-        void registerSpriteRenderer(SpriteRenderer* renderer);
-        void unregisterSpriteRenderer(SpriteRenderer* renderer);
-
         void registerCamera(const Camera* camera);
         void unregisterCamera(const Camera* camera);
 

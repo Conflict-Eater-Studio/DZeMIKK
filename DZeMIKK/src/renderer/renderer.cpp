@@ -2,6 +2,7 @@
 #include "renderer/shader.h"
 #include "renderer/material.h"
 #include "renderer/mesh.h"
+#include "ecs/componentRegistry.h"
 
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
@@ -23,26 +24,6 @@ void dzemikk::Renderer::Initialize() {
 }
 
 void dzemikk::Renderer::UnInitialize() {
-    _meshRenderers.clear();
-    _spriteRenderers.clear();
-}
-
-void dzemikk::Renderer::registerRenderer(MeshRenderer* renderer) {
-    _meshRenderers.push_back(renderer);
-}
-
-void dzemikk::Renderer::unregisterRenderer(MeshRenderer* renderer) {
-    _meshRenderers.erase(std::remove(_meshRenderers.begin(), _meshRenderers.end(), renderer),
-                         _meshRenderers.end());
-}
-
-void dzemikk::Renderer::registerSpriteRenderer(SpriteRenderer* renderer) {
-    _spriteRenderers.push_back(renderer);
-}
-
-void dzemikk::Renderer::unregisterSpriteRenderer(SpriteRenderer* renderer) {
-    _spriteRenderers.erase(std::remove(_spriteRenderers.begin(), _spriteRenderers.end(), renderer),
-                           _spriteRenderers.end());
 }
 
 void dzemikk::Renderer::render() {
@@ -71,6 +52,8 @@ void dzemikk::Renderer::render() {
     }
 
     _batches.clear();
+
+    dzemikk::ComponentRegistry::get().getComponents<MeshRenderer>(_meshRenderers);
 
     for (auto* r : _meshRenderers) {
         if (!r->mesh || !r->material || !r->transform)
@@ -135,6 +118,9 @@ void dzemikk::Renderer::render() {
 
     if (_uiCamera)
         _uiProjection = _uiCamera->getProjection();
+
+
+    dzemikk::ComponentRegistry::get().getComponents<SpriteRenderer>(_spriteRenderers);
 
     for (auto* r : _spriteRenderers) {
         if (!r->mesh || !r->material || !r->transform)

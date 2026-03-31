@@ -166,8 +166,6 @@ int main() {
     quadRenderer->material = quadMaterial;
     quadRenderer->transform = quadGO->transform();
 
-    engine->GetRenderer()->registerSpriteRenderer(quadRenderer);
-
     engine->update();
 
     return 0;
@@ -275,8 +273,6 @@ void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& sc
                 cubeRenderer->material = materialA;
             else
                 cubeRenderer->material = materialB;
-
-            engine->GetRenderer()->registerRenderer(cubeRenderer);
         }
     }
 }
