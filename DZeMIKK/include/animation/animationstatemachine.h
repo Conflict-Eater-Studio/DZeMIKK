@@ -1,14 +1,17 @@
-#ifndef TUL_PBL_DZEMIKK_ANIMATIONSTATEMACHINE_H
-#define TUL_PBL_DZEMIKK_ANIMATIONSTATEMACHINE_H
+#pragma once
+#ifndef DZEMIKK_ANIMATIONSTATEMACHINE_H
+#define DZEMIKK_ANIMATIONSTATEMACHINE_H
 #include "animationstate.h"
 
 #include <map>
-class AnimationStateMachine {
-public:
-    void update(float dt);
-    AnimationState* getCurrentState() const;
-private:
-    std::map<std::string, AnimationState*> _states;
-    AnimationState* _currentState;
-};
-#endif // TUL_PBL_DZEMIKK_ANIMATIONSTATEMACHINE_H
+namespace dzemikk {
+    class AnimationStateMachine {
+    public:
+        void update(float dt);
+        AnimationState* getCurrentState() const;
+    private:
+        std::map<std::string, AnimationState*> _states;
+        AnimationState* _currentState;
+    };
+}
+#endif

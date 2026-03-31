@@ -33,8 +33,8 @@ int main() {
     camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
 
     // Rejestracja kamery w rendererze
-    engine->GetRenderer()->registerCamera(camera);
-    engine->GetRenderer()->setActiveSceneCamera(camera);
+    engine->getRenderer()->registerCamera(camera);
+    engine->getRenderer()->setActiveSceneCamera(camera);
 
     // --- Cube GameObject
     const char* vertexSrc3D = R"(
@@ -128,7 +128,7 @@ int main() {
                             0.0f, 1080.0f, 
                             -1.0f, 1.0f  
     );
-    engine->GetRenderer()->setActiveUICamera(cameraUI);
+    engine->getRenderer()->setActiveUICamera(cameraUI);
 
     // --- Quad GameObject
     auto quadGO = new dzemikk::GameObject();
@@ -166,7 +166,7 @@ int main() {
     quadRenderer->material = quadMaterial;
     quadRenderer->transform = quadGO->transform();
 
-    engine->update();
+    engine->start();
 
     return 0;
 }

@@ -1,19 +1,11 @@
-//
-// Created by damia on 30.03.2026.
-//
+#pragma once
+#ifndef DZEMIKK_ANIMATIONCONTROLLER_H
+#define DZEMIKK_ANIMATIONCONTROLLER_H
 
-#ifndef TUL_PBL_DZEMIKK_ANIMATIONCONTROLLER_H
-#define TUL_PBL_DZEMIKK_ANIMATIONCONTROLLER_H
-#include "animationstate.h"
-#include "animationstatemachine.h"
-
-#include <map>
-#include <string>
 namespace dzemikk {
-class AnimationController {
+    class AnimationController {
     public:
-    void update(float dt);
-private:
-};
+        void update(float dt);
+    };
 }
-#endif // TUL_PBL_DZEMIKK_ANIMATIONCONTROLLER_H
+#endif

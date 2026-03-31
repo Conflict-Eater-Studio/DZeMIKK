@@ -1,5 +1,7 @@
-#ifndef TUL_PBL_DZEMIKK_ANIMATIONCLIP_H
-#define TUL_PBL_DZEMIKK_ANIMATIONCLIP_H
+#pragma once
+#ifndef DZEMIKK_ANIMATIONCLIP_H
+#define DZEMIKK_ANIMATIONCLIP_H
+
 namespace dzemikk {
     class Pose;
     class AnimationClip {
@@ -8,6 +10,7 @@ namespace dzemikk {
         float ticksPerSecond;
 
         void sample(float timeInTicks, Pose& outPose);
+
+    };
 };
-};
-#endif // TUL_PBL_DZEMIKK_ANIMATIONCLIP_H
+#endif

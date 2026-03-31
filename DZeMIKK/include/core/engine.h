@@ -1,3 +1,4 @@
+#pragma once
 #ifndef DZEMIKK_APPLICATION_H
 #define DZEMIKK_APPLICATION_H
 
@@ -41,6 +42,6 @@ class Engine {
         void updateCameraWASD(float speed);
         void updateCameraArrows(float speed);
     };
-} // namespace dzemikk
+}
 
-#endif //DZEMIKK_APPLICATION_H
+#endif

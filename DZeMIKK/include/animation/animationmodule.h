@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TUL_PBL_DZEMIKK_ANIMATIONMODULE_H
-#define TUL_PBL_DZEMIKK_ANIMATIONMODULE_H
+#ifndef DZEMIKK_ANIMATIONMODULE_H
+#define DZEMIKK_ANIMATIONMODULE_H
 
 #include "core/iEngineModule.h"
 #include "ecs/components/animator.h"
@@ -18,4 +18,4 @@ namespace dzemikk {
         void UnInitialize() override;
     };
 }
-#endif // TUL_PBL_DZEMIKK_ANIMATIONMODULE_H
+#endif

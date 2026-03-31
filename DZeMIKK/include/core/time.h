@@ -1,12 +1,10 @@
-#ifndef TUL_PBL_DZEMIKK_TIME_H
-#define TUL_PBL_DZEMIKK_TIME_H
+#pragma once
+#ifndef DZEMIKK_TIME_H
+#define DZEMIKK_TIME_H
 #include "iEngineModule.h"
 
 namespace dzemikk {
-
-class Time : public IEngineModule{
-    private:
-        float _lastFrameTime{};
+    class Time : public IEngineModule{
     public:
         Time();
         ~Time();
@@ -22,8 +20,8 @@ class Time : public IEngineModule{
         float getTime() const;
         void Initialize() override;
         void UnInitialize() override;
-};
-
-} // namespace dzemikk
-
-#endif // TUL_PBL_DZEMIKK_TIME_H
+    private:
+        float _lastFrameTime{};
+    };
+}
+#endif

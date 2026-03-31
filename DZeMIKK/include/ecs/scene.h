@@ -2,6 +2,7 @@
 #define DZEMIKK_SCENE_H
 
 #include "ecs/components/monoBehaviour.h"
+#include "ecs/gameobject.h"
 
 #include <memory>
 #include <vector>
