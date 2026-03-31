@@ -95,7 +95,7 @@ int main() {
     glm::mat4 uiOrtho = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
     engine->getRenderer()->setUIProjection(uiOrtho);
 
-    engine->update();
+    engine->start();
 
     return 0;
 }

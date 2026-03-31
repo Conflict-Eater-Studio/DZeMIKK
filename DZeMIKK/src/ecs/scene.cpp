@@ -1,4 +1,4 @@
-#include "../../include/core/scene.h"
+#include "../../include/ecs/scene.h"
 
 #include "ecs/components/monobehaviour.h"
 #include "ecs/gameobject.h"
@@ -47,6 +47,7 @@ namespace dzemikk {
     }
 
     void Scene::update(double deltaTime) {
+        if (_objects.empty()) return;
         // Update all behaviours
         for (const auto& object : _objects) {
             for (const auto& mono : object->getMonoBehaviours()) {
@@ -67,6 +68,8 @@ namespace dzemikk {
     }
 
     void Scene::fixedUpdate(double deltaTime) {
+        if (_objects.empty()) return;
+
         // Fixed update also starts components that haven't started since it runs at a fixed interval
         for (const auto& object : _objects) {
             for (const auto& mono : object->getMonoBehaviours()) {
