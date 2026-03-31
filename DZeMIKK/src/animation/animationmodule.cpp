@@ -1,6 +1,6 @@
 #include "animation/animationmodule.h"
-
-#include "spdlog/spdlog.h"
+#include "ecs/components/animator.h"
+#include "ecs/componentRegistry.h"
 
 namespace dzemikk {
     void AnimationModule::update(float deltaTime) const {

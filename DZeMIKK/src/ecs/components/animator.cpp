@@ -1,8 +1,8 @@
 #include "ecs/components/animator.h"
-
 #include "animation/animationclip.h"
-namespace dzemikk {
+#include "animation/animationstate.h"
 
+namespace dzemikk {
     void Animator::update(float deltaTime) {
         _stateMachine->update(deltaTime);
         AnimationClip* _currentClip = _stateMachine->getCurrentState()->clip;

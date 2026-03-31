@@ -1,4 +1,6 @@
 #include "animation/animationstatemachine.h"
+#include "animation/animationstate.h"
+#include "animation/transition.h"
 namespace dzemikk {
     void AnimationStateMachine::update(float dt) {
         for (auto element : _currentState->transitions) {
