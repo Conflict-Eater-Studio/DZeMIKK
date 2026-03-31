@@ -1,24 +1,35 @@
 #ifndef DZEMIKK_APPLICATION_H
 #define DZEMIKK_APPLICATION_H
-#include <memory>
-#include "window.h"
 #include "renderer/renderer.h"
+#include "scenemanager.h"
+#include "window.h"
+
+#include <memory>
 
 namespace dzemikk {
-    class Engine {
-    private:
-        std::shared_ptr<Window> mainWindow;
-        std::shared_ptr<Renderer> _renderer;
-        void init();
+class Engine {
     public:
         Engine();
         ~Engine();
-        void update() const;
 
-        std::shared_ptr<Renderer> GetRenderer() {
-            return _renderer;
-        }
+        void start() const;
+        void update();
+
+        std::shared_ptr<Renderer> getRenderer();
+        std::shared_ptr<Window> getWindow();
+        std::shared_ptr<SceneManager> getSceneManager();
+        template <std::derived_from<IEngineModule> T>
+        std::shared_ptr<T> getModule() const;
+    private:
+        void init();
+
+        std::vector<std::shared_ptr<IEngineModule>> _modules;
+        std::shared_ptr<Window> _mainWindow;
+        std::shared_ptr<Renderer> _renderer;
+        std::shared_ptr<SceneManager> _sceneManager;
+
+        float _accumulator = 0.0f;
     };
-}
+} // namespace dzemikk
 
 #endif //DZEMIKK_APPLICATION_H

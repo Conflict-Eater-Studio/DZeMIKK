@@ -1,6 +1,8 @@
-#include "ecs/scene.h"
-#include "ecs/gameobject.h"
+#include "../../include/core/scene.h"
+
 #include "ecs/components/monobehaviour.h"
+#include "ecs/gameobject.h"
+
 #include <type_traits>
 
 namespace dzemikk {

@@ -21,7 +21,7 @@ namespace dzemikk {
             void fixedUpdate(double deltaTime);
 
         private:
-            std::vector<std::unique_ptr<dzemikk::GameObject>> _objects;
+            std::vector<std::unique_ptr<GameObject>> _objects;
     };
 }
 

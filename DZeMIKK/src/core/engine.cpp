@@ -19,112 +19,106 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+namespace dzemikk {
+    Engine::Engine() {
+        init();
+    }
+    Engine::~Engine() = default;
+    void Engine::init() {
+        _mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
+        _renderer = std::make_shared<Renderer>();
+        _sceneManager = std::make_shared<SceneManager>();
 
-dzemikk::Engine::Engine() {
-    init();
-    FMOD_RESULT result;
-    FMOD::System *system = NULL;
+        _modules.push_back(_renderer);
+        _modules.push_back(_sceneManager);
 
-    result = FMOD::System_Create(&system);      // Create the main system object.
-    if (result != FMOD_OK)
-    {
-        printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
+        for (const auto& element : _modules) {
+            element->Initialize();
+        }
+    #if DZEMIKK_DEV_TOOLS
+        spdlog::info("DZeMIKK version: {}.{}.{}", DZeMIKK_VERSION_MAJOR, DZeMIKK_VERSION_MINOR, DZeMIKK_VERSION_REVISION);
+    #endif
+    }
+
+    void Engine::start() const {
 
     }
 
-    result = system->init(512, FMOD_INIT_NORMAL, 0);    // Initialize FMOD.
-    if (result != FMOD_OK)
-    {
-        printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-        exit(-1);
+    void Engine::update() {
+    #if DZEMIKK_DEV_TOOLS
+        IMGUI_CHECKVERSION();
+        ImGui::CreateContext();
+        ImGuiIO& io = ImGui::GetIO();
+        (void)io;
+        ImGui::StyleColorsDark();
+
+        ImGui_ImplGlfw_InitForOpenGL(_mainWindow->nativeHandle(), true);
+        ImGui_ImplOpenGL3_Init("#version 330");
+
+        ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
+    #endif
+        while (!_mainWindow->shouldClose()) {
+            Time::update();
+
+            float dt = Time::deltaTime;
+            _accumulator += dt;
+
+            //_sceneManager->update(dt);
+
+            float fdt = Time::fixedDeltaTime;
+            if (_accumulator >= fdt) {
+                _accumulator -= fdt;
+                //_sceneManager->fixedUpdate(fdt);
+            }
+    #if DZEMIKK_DEV_TOOLS
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
+            ImGui::Begin("Renderer");
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", Time::deltaTime, 1.0f/Time::deltaTime);
+            ImGui::Text("Background");
+            ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
+            ImGui::End();
+
+            _mainWindow->clear(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    #else
+            _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
+    #endif
+            _renderer->render();
+            _mainWindow->swapBuffers();
+            _mainWindow->pollEvents();
+        }
+
+        _renderer->UnInitialize();
+
+    #if DZEMIKK_DEV_TOOLS
+        ImGui_ImplOpenGL3_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
+    #endif
     }
 
-    unsigned int version = 0;
-    result = system->getVersion(&version);
-
-    unsigned int major = (version >> 16) & 0xFFFF;
-    unsigned int minor = (version >> 8) & 0xFF;
-    unsigned int patch = version & 0xFF;
-
-    spdlog::info("FMOD Version: {}.{}.{}", major, minor, patch);
-}
-
-void dzemikk::Engine::update() const {
-#if DZEMIKK_DEV_TOOLS
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    (void)io;
-    ImGui::StyleColorsDark();
-
-    ImGui_ImplGlfw_InitForOpenGL(mainWindow->nativeHandle(), true);
-    ImGui_ImplOpenGL3_Init("#version 330");
-
-    ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
-#endif
-    while (!mainWindow->shouldClose()) {
-        Time::update();
-#if DZEMIKK_DEV_TOOLS
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        ImGui::Begin("Renderer");
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", Time::deltaTime, 1.0f/Time::deltaTime);
-        ImGui::Text("Background");
-        ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
-        ImGui::End();
-
-        mainWindow->clear(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-#else
-        mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
-#endif
-        _renderer->render();
-        mainWindow->swapBuffers();
-        mainWindow->pollEvents();
+    std::shared_ptr<Renderer> Engine::getRenderer() {
+        return getModule<Renderer>();
+    }
+    std::shared_ptr<Window> Engine::getWindow() {
+        return _mainWindow;
+    }
+    std::shared_ptr<SceneManager> Engine::getSceneManager() {
+        return _sceneManager;
     }
 
-    _renderer->UnInitialize();
-
-#if DZEMIKK_DEV_TOOLS
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-#endif
-}
-
-dzemikk::Engine::~Engine() = default;
-
-void dzemikk::Engine::init() {
-#if DZEMIKK_DEV_TOOLS
-    spdlog::info("DZeMIKK version: {}.{}.{}", DZeMIKK_VERSION_MAJOR, DZeMIKK_VERSION_MINOR, DZeMIKK_VERSION_REVISION);
-    spdlog::info("GLM version: {}.{}.{}", GLM_VERSION_MAJOR, GLM_VERSION_MINOR, GLM_VERSION_PATCH);
-    spdlog::info("Assimp version: {}.{}.{}",
-                 aiGetVersionMajor(),
-                 aiGetVersionMinor(),
-                 aiGetVersionRevision());
-    spdlog::info("spdlog version: {}.{}.{}",
-                 SPDLOG_VER_MAJOR,
-                 SPDLOG_VER_MINOR,
-                 SPDLOG_VER_PATCH);
-    FT_Library ft = nullptr;
-    if (FT_Init_FreeType(&ft) == 0) {
-        FT_Int major = 0;
-        FT_Int minor = 0;
-        FT_Int patch = 0;
-        FT_Library_Version(ft, &major, &minor, &patch);
-        spdlog::info("FreeType version: {}.{}.{}", major, minor, patch);
-        FT_Done_FreeType(ft);
-    } else {
-        spdlog::warn("Failed to initialize FreeType (version unavailable)");
+    template <std::derived_from<IEngineModule> T>
+    std::shared_ptr<T> Engine::getModule() const {
+        for (const auto& module : _modules) {
+            if (auto casted = std::dynamic_pointer_cast<T>(module)) {
+                return casted;
+            }
+        }
+        return nullptr;
     }
-#endif
-
-    mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
-
-    _renderer = std::make_shared<Renderer>();
-    _renderer->Initialize();
 }
