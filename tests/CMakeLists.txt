@@ -13,6 +13,8 @@ enable_testing()
 
 add_executable(dzemikk_tests
     test_hierarchy.cpp
+    test_gameobject.cpp
+    test_componentRegister.cpp
 )
 
 target_link_libraries(dzemikk_tests

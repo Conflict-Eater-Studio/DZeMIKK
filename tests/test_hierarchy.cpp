@@ -1,12 +1,11 @@
-#include <gtest/gtest.h>
-
-#include "ecs/gameobject.h"
 #include "ecs/components/transform.h"
+#include "ecs/gameobject.h"
 
-#include <glm/glm.hpp>
 #include <chrono>
-#include <cstdint>
 #include <cmath>
+#include <cstdint>
+#include <glm/glm.hpp>
+#include <gtest/gtest.h>
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -27,7 +26,9 @@ struct BenchmarkScene {
     std::vector<dzemikk::GameObject*> allObjects;
 };
 
-bool makeHierarchyScene(BenchmarkScene& scene, const std::vector<std::size_t>& branchingPerDepth, std::mt19937& rng) {
+bool makeHierarchyScene(BenchmarkScene& scene, const std::vector<std::size_t>& branchingPerDepth,
+                        std::mt19937& rng) {
+    std::cerr << "Creating hierarchy\n";
     scene.root = std::make_unique<dzemikk::GameObject>();
     scene.ownedObjects.clear();
     scene.allObjects.clear();
@@ -59,10 +60,12 @@ bool makeHierarchyScene(BenchmarkScene& scene, const std::vector<std::size_t>& b
         currentLevel = std::move(nextLevel);
     }
 
+    std::cerr << "Created hierarchy\n";
     return true;
 }
 
 double benchmarkGetWorldMatrix(const std::vector<dzemikk::GameObject*>& objects, int iterations) {
+    std::cerr << "beanch start\n";
     if (objects.empty() || iterations <= 0) {
         ADD_FAILURE() << "Invalid benchmark input";
         return 0.0;
@@ -87,6 +90,7 @@ double benchmarkGetWorldMatrix(const std::vector<dzemikk::GameObject*>& objects,
     EXPECT_FALSE(std::isnan(sink));
 
     const auto elapsed = std::chrono::duration<double, std::micro>(end - start).count();
+    std::cerr << "bench end\n";
     return elapsed / static_cast<double>(objects.size() * iterations);
 }
 
@@ -273,6 +277,7 @@ TEST(TransformWorld, Performance) {
 
     std::cerr << "\ngetWorldMatrix benchmark (avg microseconds per call)\n";
     for (const auto& testCase : cases) {
+        std::cerr << "Running case\n";
         BenchmarkScene scene;
         if (!makeHierarchyScene(scene, testCase.branchingPerDepth, rng)) {
             std::cerr << "  skipped: fanout too large (overflow or >2,000,000 nodes)\n";
@@ -283,10 +288,7 @@ TEST(TransformWorld, Performance) {
 
         const std::size_t depth = testCase.branchingPerDepth.size() + 1;
 
-        std::cerr
-            << "  depth=" << depth
-            << ", objects=" << scene.allObjects.size()
-            << ", fanout=[";
+        std::cerr << "  depth=" << depth << ", objects=" << scene.allObjects.size() << ", fanout=[";
 
         for (std::size_t i = 0; i < testCase.branchingPerDepth.size(); ++i) {
             std::cerr << testCase.branchingPerDepth[i];
@@ -295,9 +297,8 @@ TEST(TransformWorld, Performance) {
             }
         }
 
-        std::cerr
-            << "]"
-            << ", avg_us=" << avgMicros;
+        std::cerr << "]"
+                  << ", avg_us=" << avgMicros;
 
         std::cerr << '\n';
     }

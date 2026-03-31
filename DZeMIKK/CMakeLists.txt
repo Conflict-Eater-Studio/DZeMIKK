@@ -25,13 +25,12 @@ set(ENGINE_SOURCES
     	"${SRC_DIR}/renderer/frustum.cpp"
         "${SRC_DIR}/ecs/components/monobehaviour.cpp"
         "${SRC_DIR}/ecs/components/transform.cpp"
-	    "${SRC_DIR}/ecs/components/meshRenderer.cpp"
+		"${SRC_DIR}/ecs/components/meshRenderer.cpp"
     	"${SRC_DIR}/ecs/components/spriteRenderer.cpp"
         "${SRC_DIR}/ecs/components/camera.cpp"
         "${SRC_DIR}/ecs/gameobject.cpp"
         "${SRC_DIR}/ecs/scene.cpp"
         "${SRC_DIR}/ecs/component.cpp"
-
 )
 
 set(ENGINE_HEADERS
@@ -50,6 +49,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/component.h"
         "${INC_DIR}/ecs/gameobject.h"
         "${INC_DIR}/ecs/scene.h"
+        "${INC_DIR}/ecs/componentRegistry.h"
 )
 
 target_sources(DZeMIKK
