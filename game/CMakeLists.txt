@@ -12,4 +12,17 @@ target_link_libraries(game
         PUBLIC
         DZeMIKK
 )
-target_compile_options(game PRIVATE /utf-8)
+if (MSVC)
+    target_compile_options(game PRIVATE /utf-8)
+else()
+    target_compile_options(game PRIVATE -finput-charset=UTF-8)
+endif()
+
+add_custom_command(TARGET game POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${FMOD_LIBS_PATH}/fmod.dll"
+        $<TARGET_FILE_DIR:game>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${FMOD_LIBS_PATH}/fmodL.dll"
+        $<TARGET_FILE_DIR:game>
+)
