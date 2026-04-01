@@ -26,10 +26,11 @@ namespace dzemikk {
             return;
         };
         _time += deltaTime;
-        float timeInTicks = _time * _currentClip->getTicksPerSecond();
-        timeInTicks = fmod(timeInTicks, _currentClip->getDuration());
+        float time = _time * _currentClip->getFramerate(); // seconds in animation clip timeline
+        float lengthInSeconds = _currentClip->getLength() / _currentClip->getFramerate();
+        float keyframe = fmod(time, lengthInSeconds);
 #if DZEMIKK_DEV_TOOLS
-        spdlog::info("Animation time: {}", timeInTicks);
+        spdlog::info("Animation time: {}", keyframe);
 #endif
         //_currentClip->sample(timeInTicks, pose)
     }

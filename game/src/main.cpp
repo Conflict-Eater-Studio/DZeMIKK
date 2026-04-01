@@ -34,7 +34,7 @@ int main() {
     dzemikk::Animator* animator =  playerGO->addComponent<dzemikk::Animator>();
     dzemikk::AnimationStateMachine* animationStateMachine = new dzemikk::AnimationStateMachine();
     dzemikk::AnimationState* animationState = new dzemikk::AnimationState("Idle");
-    dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2.0f, 24);
+    dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
     animationState->setClip(animationClip);
     animationStateMachine->addState(animationState);
 //    animationStateMachine->setState("Idle");

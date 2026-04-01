@@ -17,7 +17,8 @@ endif()
 add_library(DZeMIKK STATIC
         src/animation/animationclip.cpp
         src/animation/animationcontroller.cpp
-        src/animation/animationstate.cpp)
+        src/animation/animationstate.cpp
+        include/animation/pose.h)
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"

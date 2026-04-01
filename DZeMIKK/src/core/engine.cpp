@@ -75,18 +75,20 @@ void Engine::start() {
     ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
 #endif
 
-    float fdt = _time->getFixedDeltaTime();
+    float fixedDeltaTime = _time->getFixedDeltaTime();
     while (!_mainWindow->shouldClose()) {
         _time->update();
-        float dt = _time->getDeltaTime();
-        _accumulator += dt;
 
-        _sceneManager->update(dt);
-        _animationSystem->update(dt);
+        float deltaTime = _time->getDeltaTime();
+        _accumulator += deltaTime;
 
-        if (_accumulator >= fdt) {
-            _sceneManager->fixedUpdate(fdt);
-            _accumulator -= fdt;
+        _sceneManager->update(deltaTime);
+
+        _animationSystem->update(deltaTime);
+
+        if (_accumulator >= fixedDeltaTime) {
+            _sceneManager->fixedUpdate(fixedDeltaTime);
+            _accumulator -= fixedDeltaTime;
         }
 
 #if DZEMIKK_DEV_TOOLS
@@ -97,10 +99,10 @@ void Engine::start() {
 
         ImGui::Begin("Renderer");
 
-        float dt_ms = dt * 1000.0f;
+        float dt_ms = deltaTime * 1000.0f;
         ImGui::Text("Application %.3f ms/frame (%.1f FPS)",
             dt_ms,
-            1.0f / dt);
+            1.0f / deltaTime);
 
         ImGui::ColorEdit4("Clear Color",
             reinterpret_cast<float*>(&clear_color));
