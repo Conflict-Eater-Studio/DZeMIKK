@@ -6,13 +6,14 @@
 
 namespace dzemikk {
     void AnimationModule::update(float deltaTime) const {
-        for (const auto& element : _animators) {
+        std::vector<Animator*> out;
+        ComponentRegistry::get().getComponents<Animator>(out);
+        for (const auto& element : out) {
             element->update(deltaTime);
         }
     }
     void AnimationModule::Initialize() {
-        ComponentRegistry::get().getComponents<Animator>(_animators);
-        spdlog::info("Animator count: {}", _animators.size());
+
         //TODO: Get all animators components from component registry
     }
     void AnimationModule::UnInitialize() {

@@ -6,12 +6,28 @@
 
 namespace dzemikk {
     void Animator::update(float deltaTime) {
+        if (_stateMachine == nullptr) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::warn("Animator has no state machine!");
+#endif
+            return;
+        }
         _stateMachine->update(deltaTime);
-        AnimationClip* _currentClip = _stateMachine->getCurrentState()->clip;
-        if (_currentClip == nullptr) return;
+        AnimationState* _state = _stateMachine->getCurrentState();
+        if (_state == nullptr) {
+            spdlog::warn("AnimationStateMachine has not a state!");
+            return;
+        }
+        AnimationClip* _currentClip = _state->getClip();
+        if (_currentClip == nullptr){
+#if DZEMIKK_DEV_TOOLS
+            spdlog::warn("State machine has no clips!");
+#endif
+            return;
+        };
         _time += deltaTime;
-        float timeInTicks = _time * _currentClip->ticksPerSecond;
-        timeInTicks = fmod(timeInTicks, _currentClip->durationInTicks);
+        float timeInTicks = _time * _currentClip->getTicksPerSecond();
+        timeInTicks = fmod(timeInTicks, _currentClip->getDuration());
 #if DZEMIKK_DEV_TOOLS
         spdlog::info("Animation time: {}", timeInTicks);
 #endif

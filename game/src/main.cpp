@@ -1,3 +1,5 @@
+#include "animation/animationclip.h"
+#include "animation/animationstate.h"
 #include "core/engine.h"
 #include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
@@ -28,8 +30,16 @@ int main() {
     playerGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
     playerGO->transform()->setScale(glm::vec3(1.0f));
-    dzemikk::Animator* animator =  playerGO->addComponent<dzemikk::Animator>();
 
+    dzemikk::Animator* animator =  playerGO->addComponent<dzemikk::Animator>();
+    dzemikk::AnimationStateMachine* animationStateMachine = new dzemikk::AnimationStateMachine();
+    dzemikk::AnimationState* animationState = new dzemikk::AnimationState("Idle");
+    dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2.0f, 24);
+    animationState->setClip(animationClip);
+    animationStateMachine->addState(animationState);
+    animator->setStateMachine(animationStateMachine);
+
+    //dzemikk::AnimationClip* idleClip = new dzemikk::AnimationClip("idle", 0.1f);
 
 
 

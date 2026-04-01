@@ -3,7 +3,6 @@
 #define DZEMIKK_ANIMATIONMODULE_H
 
 #include "core/iEngineModule.h"
-#include "ecs/componentRegistry.h"
 
 #include <memory>
 #include <vector>
