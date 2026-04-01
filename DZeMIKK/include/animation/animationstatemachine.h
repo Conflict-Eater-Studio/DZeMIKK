@@ -12,10 +12,10 @@ namespace dzemikk {
         ~AnimationStateMachine() = default;
         void update(float deltaTime);
         [[nodiscard]] AnimationState* getCurrentState() const;
-        void addState(AnimationState* state) const;
+        void addState(AnimationState* state);
         void setState(const std::string& stateName);
     private:
-        std::map<std::string, AnimationState*> _states;
+        std::map<std::string, AnimationState*>  _states;
         AnimationState* _currentState = nullptr;
     };
 }

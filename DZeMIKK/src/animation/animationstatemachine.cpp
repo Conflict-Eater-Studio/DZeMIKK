@@ -15,9 +15,12 @@ namespace dzemikk {
     AnimationState* AnimationStateMachine::getCurrentState() const {
         return _currentState;
     }
-    void AnimationStateMachine::addState(AnimationState* state) const {
+    void AnimationStateMachine::addState(AnimationState* state) {
+        if (_currentState == nullptr) {
+            _currentState = state;
+        }
     }
     void AnimationStateMachine::setState(const std::string& stateName) {
-        _currentState = _states.at(stateName);
+        //_currentState = _states.at(stateName);
     }
 } // namespace dzemikk

@@ -37,6 +37,7 @@ int main() {
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2.0f, 24);
     animationState->setClip(animationClip);
     animationStateMachine->addState(animationState);
+//    animationStateMachine->setState("Idle");
     animator->setStateMachine(animationStateMachine);
 
     //dzemikk::AnimationClip* idleClip = new dzemikk::AnimationClip("idle", 0.1f);
