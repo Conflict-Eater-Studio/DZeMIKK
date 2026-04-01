@@ -14,14 +14,13 @@ namespace dzemikk {
         float fixedDeltaTime;
         float time;
 
-        void update() const;
         float getDeltaTime() const;
         float getFixedDeltaTime() const;
         float getTime() const;
         void Initialize() override;
         void UnInitialize() override;
     private:
-        float _lastFrameTime{};
+        float _lastFrameTime;
     };
 }
 #endif
