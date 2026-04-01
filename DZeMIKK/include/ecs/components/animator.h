@@ -12,6 +12,9 @@ namespace dzemikk {
         void play(const std::string& stateName);
         void setFloat(const std::string& name, float value);
         void setBool(const std::string& name, bool value);
+        void setInt(const std::string& name, int value);
+        void setStateMachine(AnimationStateMachine* stateMachine);
+        AnimationStateMachine* getStateMachine() const;
     private:
         AnimationStateMachine* _stateMachine = nullptr;
         float _time = 0.0f;

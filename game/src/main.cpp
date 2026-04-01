@@ -1,17 +1,18 @@
 #include "core/engine.h"
+#include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
+#include "ecs/scene.h"
 #include "renderer/material.h"
 #include "renderer/mesh.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
-#include "ecs/scene.h"
 
-#include <memory>
 #include <GLFW/glfw3.h>
+#include <memory>
 
 dzemikk::Mesh* createCubeMesh();
 dzemikk::Mesh* createQuadMesh();
@@ -23,6 +24,14 @@ int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
 
     dzemikk::Scene mainScene;
+    auto playerGO = mainScene.createGameObject();
+    playerGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
+    playerGO->transform()->setScale(glm::vec3(1.0f));
+    dzemikk::Animator* animator =  playerGO->addComponent<dzemikk::Animator>();
+
+
+
 
     // --- Scene Camera
     auto cameraGO = mainScene.createGameObject();

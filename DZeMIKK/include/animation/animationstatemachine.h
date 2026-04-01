@@ -12,7 +12,7 @@ namespace dzemikk {
         AnimationState* getCurrentState() const;
     private:
         std::map<std::string, AnimationState*> _states;
-        AnimationState* _currentState;
+        AnimationState* _currentState = nullptr;
     };
 }
 #endif
