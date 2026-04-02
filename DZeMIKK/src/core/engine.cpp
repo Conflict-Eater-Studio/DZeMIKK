@@ -71,6 +71,17 @@ void dzemikk::Engine::update() const {
 
         ImGui::Begin("Renderer");
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", Time::deltaTime, 1.0f/Time::deltaTime);
+        ImGui::Separator();
+        
+        const auto& stats = _renderer->getStats();
+        ImGui::Text("Render Stats:");
+        ImGui::Text("Draw Calls:      %u", stats.drawCalls);
+        ImGui::Text("Objects:         %u", stats.renderedObjects);
+        ImGui::Text("Triangles:       %u", stats.triangleCount);
+        ImGui::Text("Vertices:        %u", stats.vertexCount);
+        ImGui::Text("State Changes:   %u", stats.stateChanges);
+        
+        ImGui::Separator();
         ImGui::Text("Background");
         ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
         ImGui::End();

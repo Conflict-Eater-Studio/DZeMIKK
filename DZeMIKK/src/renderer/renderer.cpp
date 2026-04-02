@@ -45,25 +45,52 @@ void dzemikk::Renderer::setUIProjection(const glm::mat4& ortho) {
 }
 
 void dzemikk::Renderer::render() {
+    _stats.reset();
+    dzemikk::Shader* currentShader = nullptr;
+
     for (auto* r : _meshRenderers) {
         if (!r->mesh || !r->material || !r->transform)
             continue;
+        
         auto* shader = r->material->shader;
-        shader->bind();
+        if (currentShader != shader) {
+            shader->bind();
+            currentShader = shader;
+            _stats.stateChanges++;
+        }
+
         shader->setMat4("model", r->transform->getWorldMatrix());
         shader->setMat4("view", _view);
         shader->setMat4("projection", _projection);
+        
         r->mesh->draw();
+        
+        _stats.drawCalls++;
+        _stats.renderedObjects++;
+        _stats.vertexCount += r->mesh->vertexCount;
+        _stats.triangleCount += r->mesh->vertexCount / 3;
     }
 
     for (auto* r : _spriteRenderers) {
         if (!r->mesh || !r->material || !r->transform)
             continue;
+            
         auto* shader = r->material->shader;
-        shader->bind();
+        if (currentShader != shader) {
+            shader->bind();
+            currentShader = shader;
+            _stats.stateChanges++;
+        }
+
         shader->setMat4("model", r->transform->getWorldMatrix());
         shader->setMat4("view", glm::mat4(1.0f));
         shader->setMat4("projection", _uiProjection);
+        
         r->mesh->draw();
+        
+        _stats.drawCalls++;
+        _stats.renderedObjects++;
+        _stats.vertexCount += r->mesh->vertexCount;
+        _stats.triangleCount += r->mesh->vertexCount / 3;
     }
 }

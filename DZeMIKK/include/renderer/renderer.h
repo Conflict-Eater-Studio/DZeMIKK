@@ -10,6 +10,22 @@ namespace dzemikk {
     class MeshRenderer;
     class SpriteRenderer;
 
+    struct RendererStats {
+        uint32_t drawCalls = 0;
+        uint32_t renderedObjects = 0;
+        uint32_t triangleCount = 0;
+        uint32_t vertexCount = 0;
+        uint32_t stateChanges = 0;
+        
+        void reset() {
+            drawCalls = 0;
+            renderedObjects = 0;
+            triangleCount = 0;
+            vertexCount = 0;
+            stateChanges = 0;
+        }
+    };
+
     class Renderer : public IEngineModule {
       public:
         Renderer() = default;
@@ -29,6 +45,8 @@ namespace dzemikk {
 
         void render();
 
+        const RendererStats& getStats() const { return _stats; }
+
       private:
         Renderer(const Renderer&) = delete;
         Renderer& operator=(const Renderer&) = delete;
@@ -39,6 +57,8 @@ namespace dzemikk {
         glm::mat4 _view = glm::mat4(1.0f);
         glm::mat4 _projection = glm::mat4(1.0f);
         glm::mat4 _uiProjection = glm::mat4(1.0f);
+        
+        RendererStats _stats;
     };
 
-} 
+}
