@@ -12,6 +12,7 @@
 
 #include "core/engine.h"
 #include "core/time.h"
+#include "core/profiler.h"
 
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_errors.h"
@@ -73,7 +74,7 @@ void dzemikk::Engine::update() const {
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", Time::deltaTime, 1.0f/Time::deltaTime);
         ImGui::Separator();
         
-        const auto& stats = _renderer->getStats();
+        const auto& stats = Profiler::rendererStats;
         ImGui::Text("Render Stats:");
         ImGui::Text("Draw Calls:      %u", stats.drawCalls);
         ImGui::Text("Objects:         %u", stats.renderedObjects);

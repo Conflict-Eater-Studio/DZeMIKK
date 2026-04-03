@@ -6,6 +6,8 @@
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
 
+#include "core/profiler.h"
+
 void dzemikk::Renderer::Initialize() {
     _view = glm::mat4(1.0f);
     _projection = glm::mat4(1.0f);
@@ -45,7 +47,7 @@ void dzemikk::Renderer::setUIProjection(const glm::mat4& ortho) {
 }
 
 void dzemikk::Renderer::render() {
-    _stats.reset();
+    Profiler::resetFrame();
     dzemikk::Shader* currentShader = nullptr;
 
     for (auto* r : _meshRenderers) {
@@ -56,7 +58,7 @@ void dzemikk::Renderer::render() {
         if (currentShader != shader) {
             shader->bind();
             currentShader = shader;
-            _stats.stateChanges++;
+            Profiler::rendererStats.stateChanges++;
         }
 
         shader->setMat4("model", r->transform->getWorldMatrix());
@@ -65,10 +67,10 @@ void dzemikk::Renderer::render() {
         
         r->mesh->draw();
         
-        _stats.drawCalls++;
-        _stats.renderedObjects++;
-        _stats.vertexCount += r->mesh->vertexCount;
-        _stats.triangleCount += r->mesh->vertexCount / 3;
+        Profiler::rendererStats.drawCalls++;
+        Profiler::rendererStats.renderedObjects++;
+        Profiler::rendererStats.vertexCount += r->mesh->vertexCount;
+        Profiler::rendererStats.triangleCount += r->mesh->vertexCount / 3;
     }
 
     for (auto* r : _spriteRenderers) {
@@ -79,7 +81,7 @@ void dzemikk::Renderer::render() {
         if (currentShader != shader) {
             shader->bind();
             currentShader = shader;
-            _stats.stateChanges++;
+            Profiler::rendererStats.stateChanges++;
         }
 
         shader->setMat4("model", r->transform->getWorldMatrix());
@@ -88,9 +90,9 @@ void dzemikk::Renderer::render() {
         
         r->mesh->draw();
         
-        _stats.drawCalls++;
-        _stats.renderedObjects++;
-        _stats.vertexCount += r->mesh->vertexCount;
-        _stats.triangleCount += r->mesh->vertexCount / 3;
+        Profiler::rendererStats.drawCalls++;
+        Profiler::rendererStats.renderedObjects++;
+        Profiler::rendererStats.vertexCount += r->mesh->vertexCount;
+        Profiler::rendererStats.triangleCount += r->mesh->vertexCount / 3;
     }
 }
