@@ -27,6 +27,19 @@ void dzemikk::Renderer::Initialize() {
 }
 
 void dzemikk::Renderer::UnInitialize() {
+    for (auto& batch : _batches) {
+        if (batch.instanceVBO != 0) {
+            glDeleteBuffers(1, &batch.instanceVBO);
+            batch.instanceVBO = 0;
+        }
+    }
+
+    if (_uboMatrices != 0) {
+        glDeleteBuffers(1, &_uboMatrices);
+        _uboMatrices = 0;
+    }
+
+    _batches.clear();
 }
 
 void dzemikk::Renderer::render() {
@@ -54,7 +67,9 @@ void dzemikk::Renderer::render() {
         glBindBuffer(GL_UNIFORM_BUFFER, 0);
     }
 
-    _batches.clear();
+    for (auto& batch : _batches) {
+        batch.models.clear();
+    }
 
     dzemikk::ComponentRegistry::get().getComponents<MeshRenderer>(_meshRenderers);
 
