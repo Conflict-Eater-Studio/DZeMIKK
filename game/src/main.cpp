@@ -173,9 +173,9 @@ int main() {
     quadMaterial->shader = quadShader;
 
     auto quadRenderer = quadGO->addComponent<dzemikk::SpriteRenderer>();
-    quadRenderer->mesh = quadMesh;
-    quadRenderer->material = quadMaterial;
-    quadRenderer->transform = quadGO->transform();
+    quadRenderer->setMesh(quadMesh);
+    quadRenderer->setMaterial(quadMaterial);
+    quadRenderer->setTransform(quadGO->transform());
 
     engine->update();
 

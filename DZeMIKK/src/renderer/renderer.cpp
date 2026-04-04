@@ -148,16 +148,16 @@ void dzemikk::Renderer::render() {
     dzemikk::ComponentRegistry::get().getComponents<SpriteRenderer>(_spriteRenderers);
 
     for (auto* r : _spriteRenderers) {
-        if (!r->mesh || !r->material || !r->transform)
+        if (!r->isValid())
             continue;
 
-        Shader* shader = r->material->shader;
+        Shader* shader = r->getMaterial()->shader;
         shader->bind();
 
-        shader->setMat4("model", r->transform->getWorldMatrix());
+        shader->setMat4("model", r->getTransform()->getWorldMatrix());
         shader->setMat4("projection", _uiProjection);
 
-        r->mesh->draw();
+        r->getMesh()->draw();
     }
 }
 
