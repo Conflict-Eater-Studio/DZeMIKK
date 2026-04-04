@@ -29,6 +29,10 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/gameobject.cpp"
         "${SRC_DIR}/ecs/scene.cpp"
         "${SRC_DIR}/ecs/component.cpp"
+        "${SRC_DIR}/ecs/serialize/componentSerializerRegistry.cpp"
+        "${SRC_DIR}/ecs/serialize/gameobjectSerializer.cpp"
+        "${SRC_DIR}/ecs/serialize/sceneSerializer.cpp"
+        "${SRC_DIR}/ecs/serialize/prefabSerializer.cpp"
 )
 
 set(ENGINE_HEADERS
@@ -41,6 +45,14 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/gameobject.h"
         "${INC_DIR}/ecs/scene.h"
         "${INC_DIR}/ecs/componentRegistry.h"
+        "${INC_DIR}/ecs/serialize/componentSerializerRegistry.h"
+        "${INC_DIR}/ecs/serialize/gameobjectSerializer.h"
+        "${INC_DIR}/ecs/serialize/sceneSerializer.h"
+        "${INC_DIR}/ecs/serialize/prefabSerializer.h"
+        "${INC_DIR}/ecs/serialize/serializedRef.h"
+        "${INC_DIR}/ecs/serialize/monoBehaviourSerializer.h"
+        "${INC_DIR}/ecs/serialize/transformSerializer.h"
+        "${INC_DIR}/ecs/serialize/uuid.h"
 )
 
 target_sources(DZeMIKK
@@ -59,6 +71,7 @@ target_include_directories(DZeMIKK
         PUBLIC
         "${INC_DIR}"
         "${EXTERN_DIR}/glm/include"
+        "${EXTERN_DIR}/boost/include"
         PRIVATE
         "${EXTERN_DIR}"
         "${EXTERN_DIR}/assimp/include"

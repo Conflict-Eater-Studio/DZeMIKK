@@ -9,6 +9,8 @@
 #include <unordered_set>
 
 namespace dzemikk {
+Scene::Scene() : _id(boost::uuids::random_generator()()) {};
+
 GameObject* Scene::createGameObject() {
     auto object = std::make_unique<GameObject>();
     GameObject* result = object.get();
@@ -144,5 +146,17 @@ void Scene::addPending(MonoBehaviour* mono) {
 void Scene::removeActive(MonoBehaviour* mono) {
     std::erase(_active, mono);
     std::erase(_pendingStart, mono);
+}
+
+boost::uuids::uuid Scene::getId() const {
+    return _id;
+}
+
+const std::vector<std::unique_ptr<GameObject>>& Scene::getObjects() const {
+    return _objects;
+}
+
+void Scene::setId(const boost::uuids::uuid& uuid) {
+    _id = uuid;
 }
 } // namespace dzemikk

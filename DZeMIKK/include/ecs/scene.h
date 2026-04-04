@@ -3,6 +3,7 @@
 
 #include "ecs/components/monoBehaviour.h"
 
+#include <boost/uuid/uuid.hpp>
 #include <memory>
 #include <vector>
 
@@ -11,7 +12,7 @@ class GameObject;
 class MonoBehaviour;
 class Scene {
   public:
-    Scene() = default;
+    Scene();
     Scene(const Scene& other) = delete;
     Scene& operator=(const Scene& other) = delete;
     Scene(Scene&& other) noexcept = delete;
@@ -38,7 +39,12 @@ class Scene {
     void removeActive(MonoBehaviour* mono);
     void processDelete();
 
+    [[nodiscard]] boost::uuids::uuid getId() const;
+    [[nodiscard]] const std::vector<std::unique_ptr<dzemikk::GameObject>>& getObjects() const;
+    void setId(const boost::uuids::uuid& uuid);
+
   private:
+    boost::uuids::uuid _id;
     std::vector<std::unique_ptr<dzemikk::GameObject>> _objects;
     std::vector<MonoBehaviour*> _pendingStart;
     std::vector<MonoBehaviour*> _active;
