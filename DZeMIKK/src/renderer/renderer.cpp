@@ -113,7 +113,12 @@ void dzemikk::Renderer::render() {
             glVertexAttribDivisor(2 + i, 1);
         }
 
-        glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->vertexCount, batch.models.size());
+        if (mesh->useIndices) {
+            glDrawElementsInstanced(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0,
+                                    batch.models.size());
+        } else {
+            glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->vertexCount, batch.models.size());
+        }
     }
 
     if (_uiCamera)

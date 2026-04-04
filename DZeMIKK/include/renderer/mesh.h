@@ -6,7 +6,12 @@ namespace dzemikk {
       public:
         GLuint vao;
         GLuint vbo;
-        uint32_t vertexCount;
+        GLuint ebo = 0;
+
+        uint32_t vertexCount = 0;
+        uint32_t indexCount = 0;
+
+        bool useIndices = false;
 
         void draw() const;
     };

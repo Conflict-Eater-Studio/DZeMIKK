@@ -13,13 +13,26 @@
 #include <memory>
 #include <GLFW/glfw3.h>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <iostream>
+
+#include <filesystem>
+
 dzemikk::Mesh* createCubeMesh();
 dzemikk::Mesh* createQuadMesh();
 void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& scene,
                      dzemikk::Mesh* cubeMesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int rows, int cols, float spacing);
 
+dzemikk::Mesh* loadMeshFromFile(const std::string& path);
+void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Material* materialA,
+                     dzemikk::Material* materialB, int tileCount, float size, float spacing = 0.1f,
+                     float maxHeight = 0.3f); 
+
 int main() {
+    std::cout << "Current path: " << std::filesystem::current_path() << std::endl;
     auto engine = std::make_shared<dzemikk::Engine>();
 
     dzemikk::Scene mainScene;
@@ -116,7 +129,10 @@ int main() {
     materialB->shader = shaderB;
 
     auto cubeMesh = createCubeMesh();
-    createCubeBoard(engine, mainScene, cubeMesh, materialA, materialB, 250, 250, 1.2f);
+
+    auto tileMesh = loadMeshFromFile("Debug/res/models/pole.fbx");
+    
+    createHexIsland(mainScene, tileMesh, materialA, materialB, 150000, 1.0f, 0.15f, 0.5f);
 
     // UI Camera
     auto cameraUIGO = mainScene.createGameObject();
@@ -268,11 +284,170 @@ void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& sc
             auto cubeRenderer = cubeGO->addComponent<dzemikk::MeshRenderer>();
             cubeRenderer->mesh = cubeMesh;
             cubeRenderer->transform = cubeGO->transform();
+            cubeGO->transform()->setScale(glm::vec3(1.f));
 
             if ((row + col) % 2 == 0)
                 cubeRenderer->material = materialA;
             else
                 cubeRenderer->material = materialB;
         }
+    }
+}
+
+dzemikk::Mesh* loadMeshFromFile(const std::string& path) {
+    Assimp::Importer importer;
+
+    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals |
+                                                       aiProcess_JoinIdenticalVertices);
+
+    if (!scene) {
+        std::cerr << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
+    }
+
+    if (!scene->HasMeshes()) {
+        std::cerr << "NO MESHES IN FILE" << std::endl;
+    }
+
+    aiMesh* ai_mesh = scene->mMeshes[0];
+
+    std::vector<float> vertices;
+
+    for (unsigned int i = 0; i < ai_mesh->mNumVertices; i++) {
+        // pozycja
+        vertices.push_back(ai_mesh->mVertices[i].x);
+        vertices.push_back(ai_mesh->mVertices[i].y);
+        vertices.push_back(ai_mesh->mVertices[i].z);
+
+        // normal
+        vertices.push_back(ai_mesh->mNormals[i].x);
+        vertices.push_back(ai_mesh->mNormals[i].y);
+        vertices.push_back(ai_mesh->mNormals[i].z);
+    }
+
+    std::vector<unsigned int> indices;
+    for (unsigned int i = 0; i < ai_mesh->mNumFaces; i++) {
+        aiFace face = ai_mesh->mFaces[i];
+        for (unsigned int j = 0; j < face.mNumIndices; j++) {
+            indices.push_back(face.mIndices[j]);
+        }
+    }
+
+    auto mesh = new dzemikk::Mesh();
+
+    glGenVertexArrays(1, &mesh->vao);
+    glGenBuffers(1, &mesh->vbo);
+    glGenBuffers(1, &mesh->ebo);
+
+    glBindVertexArray(mesh->vao);
+
+    glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(),
+                 GL_STATIC_DRAW);
+
+    // position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // normal
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+
+    mesh->indexCount = indices.size();
+    mesh->useIndices = true;
+
+    return mesh;
+}
+
+#include <queue>
+#include <random>
+#include <set>
+
+struct Hex {
+    int q, r;
+
+    bool operator<(const Hex& other) const {
+        return std::tie(q, r) < std::tie(other.q, other.r);
+    }
+};
+
+glm::vec3 hexToWorld(int q, int r, float size) {
+    float x = size * sqrt(3.0f) * (q + r * 0.5f);
+    float z = size * 1.5f * r;
+    return glm::vec3(x, 0.0f, z);
+}
+
+glm::vec3 hexToWorld(int q, int r, float size, float spacing = 0.1f, float maxHeight = 0.3f) {
+    float width = sqrt(3.0f) * size + spacing;
+    float verticalSpacing = 1.5f * size + spacing;
+
+    float x = width * (q + r * 0.5f);
+    float z = verticalSpacing * r;
+
+    static std::mt19937 rng(std::random_device{}());
+    static std::uniform_real_distribution<float> heightDist(0.0f, maxHeight);
+    float y = heightDist(rng);
+
+    return glm::vec3(x, y, z);
+}
+
+void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Material* materialA,
+                     dzemikk::Material* materialB, int tileCount, float size, float spacing,
+                     float maxHeight) {
+    std::set<Hex> island;
+    std::vector<Hex> frontier;
+
+    std::mt19937 rng(std::random_device{}());
+    std::uniform_real_distribution<float> chance(0.0f, 1.0f);
+
+    const std::vector<std::pair<int, int>> directions = {{1, 0},  {0, 1},  {-1, 1},
+                                                         {-1, 0}, {0, -1}, {1, -1}};
+
+    island.insert({0, 0});
+    frontier.push_back({0, 0});
+
+    while (island.size() < tileCount && !frontier.empty()) {
+        int idx = rng() % frontier.size();
+        Hex current = frontier[idx];
+
+        for (auto& dir : directions) {
+            Hex next = {current.q + dir.first, current.r + dir.second};
+
+            if (island.contains(next))
+                continue;
+
+            if (chance(rng) < 0.6f) {
+                island.insert(next);
+                frontier.push_back(next);
+            }
+        }
+
+        frontier.erase(frontier.begin() + idx);
+    }
+
+    for (const auto& hex : island) {
+        if (chance(rng) < 0.1f)
+            continue;
+
+        glm::vec3 pos = hexToWorld(hex.q, hex.r, size, spacing, maxHeight);
+
+        auto tile = scene.createGameObject();
+        tile->transform()->setPosition(pos);
+        tile->transform()->setScale(glm::vec3(1.0f));
+
+        tile->transform()->setRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+        auto renderer = tile->addComponent<dzemikk::MeshRenderer>();
+        renderer->mesh = mesh;
+        renderer->transform = tile->transform();
+
+        if ((hex.q + hex.r) % 2 == 0)
+            renderer->material = materialA;
+        else
+            renderer->material = materialB;
     }
 }
