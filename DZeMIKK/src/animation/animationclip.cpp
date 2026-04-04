@@ -2,7 +2,9 @@
 #include "animation/pose.h"
 
 namespace dzemikk {
-AnimationClip::AnimationClip(int frames, int framerate) : _length(frames), _framerate(framerate)  {}
+AnimationClip::AnimationClip(int frames, int framerate) : _length(frames), _framerate(framerate) {
+    _poses.reserve(frames);
+    }
     int AnimationClip::getLength() const {
         return _length;
     }
@@ -12,8 +14,9 @@ AnimationClip::AnimationClip(int frames, int framerate) : _length(frames), _fram
     void AnimationClip::addPose(const Pose& pose) {
         _poses.push_back(pose);
     }
-    void AnimationClip::sample(float timeInTicks, Pose& outPose) {
-
+    Pose AnimationClip::sample(float timeInTicks) {
+        int frame = (int)(timeInTicks * _framerate);
+        return _poses[frame];
     }
 
     } // namespace dzemikk
