@@ -20,10 +20,10 @@ class Transform : public Component {
 
     // --- Constructors & Destructor
     Transform(TransformParams params = TransformParams());
-    Transform(const Transform& other) = delete;
-    Transform& operator=(const Transform& other) = delete;
-    Transform(Transform&& other) noexcept = delete;
-    Transform operator=(Transform&& other) noexcept = delete;
+    Transform(const Transform& other);
+    Transform& operator=(const Transform& other);
+    Transform(Transform&& other) noexcept;
+    Transform operator=(Transform&& other) noexcept;
     ~Transform() override = default;
 
     // --- Setters

@@ -1,14 +1,14 @@
 #ifndef DZEMIKK_KEYFRAME_H
 #define DZEMIKK_KEYFRAME_H
+#include "ecs/components/transform.h"
 
 namespace dzemikk {
-    class Transform;
-    class Pose {
+class Pose {
     public:
         ~Pose() = default;
         Pose() = default;
-        Pose(Transform* transform); // Transform in local space
-        Transform* transform;
+        Pose(const Transform& transform);
+        Transform transform;
     };
 };
 #endif

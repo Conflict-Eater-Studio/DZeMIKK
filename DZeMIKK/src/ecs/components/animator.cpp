@@ -1,8 +1,10 @@
-#include <spdlog/spdlog.h>
-
 #include "ecs/components/animator.h"
+
 #include "animation/animationclip.h"
 #include "animation/animationstate.h"
+#include "ecs/components/transform.h"
+
+#include <spdlog/spdlog.h>
 
 namespace dzemikk {
     void Animator::update(float deltaTime) {
@@ -31,8 +33,9 @@ namespace dzemikk {
         float keyframe = fmod(time, lengthInSeconds);
 #if DZEMIKK_DEV_TOOLS
         spdlog::info("Animation time: {}", keyframe);
+        Pose p = _currentClip->sample(keyframe);
+        spdlog::info("Scale: ({}, {}, {})", p.transform.getScale().x, p.transform.getScale().y, p.transform.getScale().z);
 #endif
-        //_currentClip->sample(timeInTicks, pose)
     }
 
     void Animator::play(const std::string& stateName) {

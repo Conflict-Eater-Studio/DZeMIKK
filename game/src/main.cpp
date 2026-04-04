@@ -36,6 +36,19 @@ int main() {
     dzemikk::AnimationState* animationState = new dzemikk::AnimationState("Idle");
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
 
+    dzemikk::Transform t1;
+    dzemikk::Transform t2;
+
+    // Set different values so poses are different
+    t1.scale(glm::vec3(1.0f));
+    t2.scale(glm::vec3(2.0f));
+
+    dzemikk::Pose pose1(t1);
+    dzemikk::Pose pose2(t2);
+
+    animationClip->addPose(pose1);
+    animationClip->addPose(pose2);
+
     animationState->setClip(animationClip);
     animationStateMachine->addState(animationState);
 //    animationStateMachine->setState("Idle");

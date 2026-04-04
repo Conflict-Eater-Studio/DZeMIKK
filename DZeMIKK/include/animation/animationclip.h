@@ -15,7 +15,7 @@ namespace dzemikk {
         void setPoses(const std::vector<Pose>& poses);
         void addPose(const Pose& pose);
         void clear();
-        Pose sample(float timeInTicks); // TODO: Blending shape
+        Pose sample(float timeInTicks) const; // TODO: Blending shape
     private:
         std::vector<Pose> _poses;
         int _length = 0;
