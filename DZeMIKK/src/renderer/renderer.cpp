@@ -21,6 +21,9 @@ void dzemikk::Renderer::Initialize() {
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     glBindBufferRange(GL_UNIFORM_BUFFER, 0, _uboMatrices, 0, 2 * sizeof(glm::mat4));
+
+    
+    glEnable(GL_MULTISAMPLE);
 }
 
 void dzemikk::Renderer::UnInitialize() {
