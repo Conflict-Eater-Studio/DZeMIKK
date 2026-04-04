@@ -26,11 +26,8 @@ namespace dzemikk {
         void Initialize() override;
         void UnInitialize() override;
 
-        void registerCamera(const Camera* camera);
-        void unregisterCamera(const Camera* camera);
-
-        void setActiveSceneCamera(const Camera* camera);
-        void setActiveUICamera(const Camera* camera);
+        void setActiveSceneCamera(Camera* camera);
+        void setActiveUICamera(Camera* camera);
 
         void setActiveSceneCameraById(int cameraId);
         void setActiveUICameraById(int cameraId);
@@ -51,12 +48,6 @@ namespace dzemikk {
 
         std::vector<Batch> _batches;
 
-        struct pair_hash {
-            template <class T1, class T2> std::size_t operator()(const std::pair<T1, T2>& p) const {
-                return std::hash<T1>{}(p.first) ^ (std::hash<T2>{}(p.second) << 1);
-            }
-        };
-
         Renderer(const Renderer&) = delete;
         Renderer& operator=(const Renderer&) = delete;
 
@@ -67,9 +58,9 @@ namespace dzemikk {
         glm::mat4 _projection = glm::mat4(1.0f);
         glm::mat4 _uiProjection = glm::mat4(1.0f);
 
-        std::vector<const Camera*> _cameras; 
-        const Camera* _sceneCamera;        
-        const Camera* _uiCamera;      
+        std::vector<Camera*> _cameras; 
+        Camera* _sceneCamera;        
+        Camera* _uiCamera;      
         unsigned int _uboMatrices;
         Frustum _frustum;
     };

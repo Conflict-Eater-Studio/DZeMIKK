@@ -39,14 +39,9 @@ int main() {
 
     // --- Scene Camera
     auto cameraGO = mainScene.createGameObject();
-
     cameraGO->transform()->setPosition(glm::vec3(1.5f, 1.5f, 3.0f));
-
     auto camera = cameraGO->addComponent<dzemikk::Camera>();
     camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
-
-    // Rejestracja kamery w rendererze
-    engine->GetRenderer()->registerCamera(camera);
     engine->GetRenderer()->setActiveSceneCamera(camera);
 
     // --- Cube GameObject

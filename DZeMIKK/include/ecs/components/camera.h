@@ -13,6 +13,7 @@ namespace dzemikk {
      */
 	class Camera : public Component {
 	public:
+        using Base = Component;
         /**
          * @brief Types of projection the camera can use.
          */

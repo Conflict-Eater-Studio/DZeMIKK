@@ -52,6 +52,8 @@ void dzemikk::Renderer::render() {
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
+    dzemikk::ComponentRegistry::get().getComponents<Camera>(_cameras);
+
     if (_sceneCamera) {
         if (_sceneCamera->isDirty()) {
             _frustum.update(_sceneCamera->getViewProjection());
@@ -166,43 +168,17 @@ const dzemikk::Camera* dzemikk::Renderer::getActiveUICamera() const {
     return _uiCamera;
 }
 
-void dzemikk::Renderer::registerCamera(const dzemikk::Camera* camera) {
+void dzemikk::Renderer::setActiveSceneCamera(dzemikk::Camera* camera) {
     if (!camera)
         return;
 
-    if (std::find(_cameras.begin(), _cameras.end(), camera) == _cameras.end()) {
-        _cameras.push_back(camera);
-    }
-}
-
-void dzemikk::Renderer::unregisterCamera(const dzemikk::Camera* camera) {
-    if (!camera)
-        return;
-
-    auto iter = std::find(_cameras.begin(), _cameras.end(), camera);
-    if (iter != _cameras.end()) {
-        if (*iter == _sceneCamera)
-            _sceneCamera = nullptr;
-        if (*iter == _uiCamera)
-            _uiCamera = nullptr;
-
-        _cameras.erase(iter);
-    }
-}
-
-void dzemikk::Renderer::setActiveSceneCamera(const dzemikk::Camera* camera) {
-    if (!camera)
-        return;
-
-    registerCamera(camera);
     _sceneCamera = camera;
 }
 
-void dzemikk::Renderer::setActiveUICamera(const dzemikk::Camera* camera) {
+void dzemikk::Renderer::setActiveUICamera(dzemikk::Camera* camera) {
     if (!camera)
         return;
 
-    registerCamera(camera);
     _uiCamera = camera;
 }
 
