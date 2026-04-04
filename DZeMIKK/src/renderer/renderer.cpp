@@ -6,6 +6,8 @@
 
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
+#include "ecs/components/camera.h"
+#include "ecs/components/transform.h"
 #include <iostream>
 #include <map>
 

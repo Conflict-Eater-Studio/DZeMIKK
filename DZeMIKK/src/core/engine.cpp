@@ -13,6 +13,7 @@
 #include "core/engine.h"
 #include "core/time.h"
 #include "ecs/gameobject.h"
+#include "ecs/components/camera.h" 
 
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_errors.h"
