@@ -76,10 +76,10 @@ void dzemikk::Renderer::render() {
     dzemikk::ComponentRegistry::get().getComponents<MeshRenderer>(_meshRenderers);
 
     for (auto* r : _meshRenderers) {
-        if (!r->mesh || !r->material || !r->transform)
+        if (!r->isValid())
             continue;
 
-        glm::vec3 pos = r->transform->getPosition();
+        glm::vec3 pos = r->getTransform()->getPosition();
         float radius = 1.0f;
 
         if (!_frustum.isSphereVisible(pos, radius))
@@ -88,7 +88,7 @@ void dzemikk::Renderer::render() {
         Batch* batch = nullptr;
 
         for (auto& b : _batches) {
-            if (b.mesh == r->mesh && b.material == r->material) {
+            if (b.mesh == r->getMesh() && b.material == r->getMaterial()) {
                 batch = &b;
                 break;
             }
@@ -97,13 +97,13 @@ void dzemikk::Renderer::render() {
         if (!batch) {
             _batches.push_back({});
             batch = &_batches.back();
-            batch->mesh = r->mesh;
-            batch->material = r->material;
+            batch->mesh = r->getMesh();
+            batch->material = r->getMaterial();
 
             glGenBuffers(1, &batch->instanceVBO);
         }
 
-        batch->models.push_back(r->transform->getWorldMatrix());
+        batch->models.push_back(r->getTransform()->getWorldMatrix());
     }
 
     for (auto& batch : _batches) {

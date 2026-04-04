@@ -277,14 +277,14 @@ void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& sc
             cubeGO->transform()->setScale(glm::vec3(1.0f));
 
             auto cubeRenderer = cubeGO->addComponent<dzemikk::MeshRenderer>();
-            cubeRenderer->mesh = cubeMesh;
-            cubeRenderer->transform = cubeGO->transform();
+            cubeRenderer->setMesh(cubeMesh);
+            cubeRenderer->setTransform(cubeGO->transform());
             cubeGO->transform()->setScale(glm::vec3(1.f));
 
             if ((row + col) % 2 == 0)
-                cubeRenderer->material = materialA;
+                cubeRenderer->setMaterial(materialA);
             else
-                cubeRenderer->material = materialB;
+                cubeRenderer->setMaterial(materialB);
         }
     }
 }
@@ -437,12 +437,12 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Materi
         tile->transform()->setRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
         auto renderer = tile->addComponent<dzemikk::MeshRenderer>();
-        renderer->mesh = mesh;
-        renderer->transform = tile->transform();
+        renderer->setMesh(mesh);
+        renderer->setTransform(tile->transform());
 
         if ((hex.q + hex.r) % 2 == 0)
-            renderer->material = materialA;
+            renderer->setMaterial(materialA);
         else
-            renderer->material = materialB;
+            renderer->setMaterial(materialB);
     }
 }
