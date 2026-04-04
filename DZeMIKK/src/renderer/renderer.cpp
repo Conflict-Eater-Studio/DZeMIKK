@@ -112,7 +112,7 @@ void dzemikk::Renderer::render() {
 
         Mesh* mesh = batch.mesh;
         Material* material = batch.material;
-        Shader* shader = material->shader;
+        Shader* shader = material->getShader();
 
         shader->bind();
 
@@ -120,25 +120,7 @@ void dzemikk::Renderer::render() {
         shader->setVec3("lightColor", glm::vec3(1.0f));
         shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
 
-        glBindVertexArray(mesh->vao);
-        glBindBuffer(GL_ARRAY_BUFFER, batch.instanceVBO);
-
-        glBufferData(GL_ARRAY_BUFFER, batch.models.size() * sizeof(glm::mat4), batch.models.data(),
-                     GL_DYNAMIC_DRAW);
-
-        for (int i = 0; i < 4; i++) {
-            glVertexAttribPointer(2 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
-                                  (void*)(sizeof(glm::vec4) * i));
-            glEnableVertexAttribArray(2 + i);
-            glVertexAttribDivisor(2 + i, 1);
-        }
-
-        if (mesh->useIndices) {
-            glDrawElementsInstanced(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0,
-                                    batch.models.size());
-        } else {
-            glDrawArraysInstanced(GL_TRIANGLES, 0, mesh->vertexCount, batch.models.size());
-        }
+        mesh->drawInstanced(batch.models, batch.instanceVBO);
     }
 
     if (_uiCamera)
@@ -151,7 +133,7 @@ void dzemikk::Renderer::render() {
         if (!r->isValid())
             continue;
 
-        Shader* shader = r->getMaterial()->shader;
+        Shader* shader = r->getMaterial()->getShader();
         shader->bind();
 
         shader->setMat4("model", r->getTransform()->getWorldMatrix());

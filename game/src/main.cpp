@@ -99,7 +99,7 @@ int main() {
 
     auto shaderA = new dzemikk::Shader(vertexSrc3D, fragmentSrc3D); 
     auto materialA = new dzemikk::Material();
-    materialA->shader = shaderA;
+    materialA->setShader(shaderA);
 
     const char* fragmentSrc3D_B = R"(
     #version 330 core
@@ -121,7 +121,7 @@ int main() {
     )";
     auto shaderB = new dzemikk::Shader(vertexSrc3D, fragmentSrc3D_B);
     auto materialB = new dzemikk::Material();
-    materialB->shader = shaderB;
+    materialB->setShader(shaderB);
 
     auto cubeMesh = createCubeMesh();
 
@@ -170,7 +170,7 @@ int main() {
 
     auto quadShader = new dzemikk::Shader(vertexSrcUI, fragmentSrcUI);
     auto quadMaterial = new dzemikk::Material();
-    quadMaterial->shader = quadShader;
+    quadMaterial->setShader(quadShader);
 
     auto quadRenderer = quadGO->addComponent<dzemikk::SpriteRenderer>();
     quadRenderer->setMesh(quadMesh);
@@ -227,22 +227,7 @@ dzemikk::Mesh* createCubeMesh() {
                         0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,
                         0.0f, 0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f};
 
-    glGenVertexArrays(1, &mesh->vao);
-    glGenBuffers(1, &mesh->vbo);
-
-    glBindVertexArray(mesh->vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-
-    mesh->vertexCount = 36;
+    mesh->create(vertices, 36, 6);
     return mesh;
 }
 
@@ -250,15 +235,8 @@ dzemikk::Mesh* createQuadMesh() {
     dzemikk::Mesh* mesh = new dzemikk::Mesh();
     float vertices[] = {0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
                         1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-    glGenVertexArrays(1, &mesh->vao);
-    glGenBuffers(1, &mesh->vbo);
-    glBindVertexArray(mesh->vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
-    mesh->vertexCount = 6;
+
+    mesh->create(vertices, 6, 3);
     return mesh;
 }
 
@@ -328,32 +306,7 @@ dzemikk::Mesh* loadMeshFromFile(const std::string& path) {
     }
 
     auto mesh = new dzemikk::Mesh();
-
-    glGenVertexArrays(1, &mesh->vao);
-    glGenBuffers(1, &mesh->vbo);
-    glGenBuffers(1, &mesh->ebo);
-
-    glBindVertexArray(mesh->vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(),
-                 GL_STATIC_DRAW);
-
-    // position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-
-    mesh->indexCount = indices.size();
-    mesh->useIndices = true;
+    mesh->createIndexed(vertices.data(), ai_mesh->mNumVertices, indices.data(), indices.size(), 6);
 
     return mesh;
 }
