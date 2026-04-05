@@ -12,6 +12,7 @@
 #include <map>
 
 #include <filesystem>
+#include <GLFW/glfw3.h>
 
 void dzemikk::Renderer::Initialize() {
     _view = glm::mat4(1.0f);
@@ -63,7 +64,13 @@ void dzemikk::Renderer::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (_skybox && _sceneCamera) {
-        _skybox->render(_sceneCamera->getView(), _sceneCamera->getProjection());
+
+        float time = glfwGetTime(); 
+
+        glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), time * 0.1f, glm::vec3(0, 1, 0));
+        glm::mat4 viewNoTrans = _sceneCamera->getView() * rotation;
+
+        _skybox->render(viewNoTrans, _sceneCamera->getProjection());
     }
 
     glEnable(GL_CULL_FACE);
