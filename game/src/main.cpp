@@ -27,6 +27,16 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Materi
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
 
+    auto customSkybox = std::make_unique<dzemikk::Skybox>();
+    customSkybox->loadCubemap({"Debug/res/textures/Daylight Box_Pieces/right.png",
+                               "Debug/res/textures/Daylight Box_Pieces/left.png",
+                               "Debug/res/textures/Daylight Box_Pieces/top.png",
+                               "Debug/res/textures/Daylight Box_Pieces/bottom.png",
+                               "Debug/res/textures/Daylight Box_Pieces/front.png",
+                               "Debug/res/textures/Daylight Box_Pieces/back.png"});
+
+    engine->GetRenderer()->setSkybox(std::move(customSkybox));
+
     dzemikk::Scene mainScene;
 
     // --- Scene Camera

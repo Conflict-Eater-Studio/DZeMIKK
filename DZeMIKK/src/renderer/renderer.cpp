@@ -32,13 +32,6 @@ void dzemikk::Renderer::Initialize() {
 
     _skybox = std::make_unique<Skybox>();
     
-    _skybox->loadCubemap(
-        {"Debug/res/textures/Daylight Box_Pieces/right.png", 
-        "Debug/res/textures/Daylight Box_Pieces/left.png", 
-        "Debug/res/textures/Daylight Box_Pieces/top.png", 
-        "Debug/res/textures/Daylight Box_Pieces/bottom.png", 
-        "Debug/res/textures/Daylight Box_Pieces/front.png", 
-        "Debug/res/textures/Daylight Box_Pieces/back.png"});
 }
 
 void dzemikk::Renderer::UnInitialize() {
@@ -207,4 +200,16 @@ void dzemikk::Renderer::setActiveUICameraById(int cameraId) {
         }
     }
     std::cerr << "[Renderer] Warning: UI camera with ID " << cameraId << " not found.\n";
+}
+
+void dzemikk::Renderer::setSkybox(std::unique_ptr<Skybox> skybox) {
+    if (!skybox) {
+        _skybox.reset();
+        return;
+    }
+    _skybox = std::move(skybox);
+}
+
+const dzemikk::Skybox* dzemikk::Renderer::getSkybox() const {
+    return _skybox.get();
 }

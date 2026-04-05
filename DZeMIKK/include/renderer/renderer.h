@@ -97,6 +97,20 @@ namespace dzemikk {
         
         #pragma endregion
 
+        #pragma region Skybox Management
+
+        /**
+         * @brief Sets a custom skybox using a cubemap texture.
+         */
+        void setSkybox(std::unique_ptr<Skybox> skybox);
+
+        /**
+         * @brief Returns the currently active skybox.
+         */
+        [[nodiscard]] const Skybox* getSkybox() const;
+
+        #pragma endregion
+
     private:
         #pragma region Batch structure
 
