@@ -3,10 +3,8 @@
 
 #include "core/iEngineModule.h"
 #include "frustum.h"
+#include "skybox.h"
 
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include <vector>
 #include <memory>   
 
 namespace dzemikk {
@@ -133,6 +131,8 @@ namespace dzemikk {
 
         unsigned int _uboMatrices;
         Frustum _frustum;
+
+        std::unique_ptr<Skybox> _skybox;
 
         #pragma endregion
     };

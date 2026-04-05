@@ -2,22 +2,15 @@
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
-#include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
 #include "renderer/material.h"
-#include "renderer/mesh.h"
 #include "renderer/renderer.h"
-#include "renderer/shader.h"
 #include "ecs/scene.h"
-
-#include <memory>
-#include <GLFW/glfw3.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <iostream>
-
 #include <filesystem>
 
 dzemikk::Mesh* createCubeMesh();
@@ -32,7 +25,6 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Materi
                      float maxHeight = 0.3f); 
 
 int main() {
-    std::cout << "Current path: " << std::filesystem::current_path() << std::endl;
     auto engine = std::make_shared<dzemikk::Engine>();
 
     dzemikk::Scene mainScene;
@@ -127,7 +119,7 @@ int main() {
 
     auto tileMesh = loadMeshFromFile("Debug/res/models/pole.fbx");
     
-    createHexIsland(mainScene, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
+    createHexIsland(mainScene, tileMesh, materialA, materialB, 10000, 1.0f, 0.15f, 0.5f);
 
     // UI Camera
     auto cameraUIGO = mainScene.createGameObject();

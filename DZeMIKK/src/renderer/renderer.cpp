@@ -11,6 +11,8 @@
 #include <iostream>
 #include <map>
 
+#include <filesystem>
+
 void dzemikk::Renderer::Initialize() {
     _view = glm::mat4(1.0f);
     _projection = glm::mat4(1.0f);
@@ -26,6 +28,16 @@ void dzemikk::Renderer::Initialize() {
 
     
     glEnable(GL_MULTISAMPLE);
+
+    _skybox = std::make_unique<Skybox>();
+    
+    _skybox->loadCubemap(
+        {"Debug/res/textures/Daylight Box_Pieces/right.png", 
+        "Debug/res/textures/Daylight Box_Pieces/left.png", 
+        "Debug/res/textures/Daylight Box_Pieces/top.png", 
+        "Debug/res/textures/Daylight Box_Pieces/bottom.png", 
+        "Debug/res/textures/Daylight Box_Pieces/front.png", 
+        "Debug/res/textures/Daylight Box_Pieces/back.png"});
 }
 
 void dzemikk::Renderer::UnInitialize() {
@@ -49,6 +61,10 @@ void dzemikk::Renderer::render() {
     glDepthFunc(GL_LESS);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if (_skybox && _sceneCamera) {
+        _skybox->render(_sceneCamera->getView(), _sceneCamera->getProjection());
+    }
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
