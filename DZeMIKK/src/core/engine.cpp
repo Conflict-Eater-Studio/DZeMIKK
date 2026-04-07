@@ -12,6 +12,7 @@
 
 #include "core/engine.h"
 #include "core/time.h"
+#include "core/input.h"
 
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_errors.h"
@@ -49,6 +50,12 @@ dzemikk::Engine::Engine() {
     spdlog::info("FMOD Version: {}.{}.{}", major, minor, patch);
 }
 
+void dzemikk::Engine::OnEvent(Event& e) {
+#if DZEMIKK_DEV_TOOLS
+   // spdlog::info("Event: {}", e.ToString()); // zakomentowane aby nie spamować konsoli
+#endif
+}
+
 void dzemikk::Engine::update() const {
 #if DZEMIKK_DEV_TOOLS
     IMGUI_CHECKVERSION();
@@ -64,6 +71,9 @@ void dzemikk::Engine::update() const {
 #endif
     while (!mainWindow->shouldClose()) {
         Time::update();
+        if (m_UserUpdateCallback) {
+            m_UserUpdateCallback();
+        }
 #if DZEMIKK_DEV_TOOLS
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -124,6 +134,9 @@ void dzemikk::Engine::init() {
 #endif
 
     mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
+    mainWindow->setEventCallback(std::bind(&Engine::OnEvent, this, std::placeholders::_1));
+
+    Input::Initialize(mainWindow->nativeHandle());
 
     _renderer = std::make_shared<Renderer>();
     _renderer->Initialize();

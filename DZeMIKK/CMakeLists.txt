@@ -18,6 +18,7 @@ add_library(DZeMIKK STATIC)
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"
+        "${SRC_DIR}/core/input.cpp"
         "${SRC_DIR}/renderer/renderer.cpp"
     	"${SRC_DIR}/renderer/mesh.cpp"
     	"${SRC_DIR}/renderer/shader.cpp"
@@ -34,6 +35,13 @@ set(ENGINE_SOURCES
 set(ENGINE_HEADERS
         "${INC_DIR}/core/engine.h"
         "${INC_DIR}/core/window.h"
+        "${INC_DIR}/core/input.h"
+        "${INC_DIR}/core/key_codes.h"
+        "${INC_DIR}/core/mouse_codes.h"
+        "${INC_DIR}/events/event.h"
+        "${INC_DIR}/events/key_event.h"
+        "${INC_DIR}/events/mouse_event.h"
+        "${INC_DIR}/events/application_event.h"
         "${INC_DIR}/renderer/renderer.h"
         "${INC_DIR}/ecs/components/monobehaviour.h"
         "${INC_DIR}/ecs/components/transform.h"

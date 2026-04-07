@@ -7,6 +7,9 @@
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
 
+#include "core/input.h"
+#include "core/time.h"
+
 #include <memory>
 
 dzemikk::Mesh* createCubeMesh();
@@ -94,6 +97,33 @@ int main() {
 
     glm::mat4 uiOrtho = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
     engine->GetRenderer()->setUIProjection(uiOrtho);
+
+    glm::vec2 lastMousePos = dzemikk::Input::GetMousePosition();
+
+    engine->SetUserUpdateCallback([&]() {
+        glm::vec2 currentMousePos = dzemikk::Input::GetMousePosition();
+        glm::vec2 delta = currentMousePos - lastMousePos;
+        lastMousePos = currentMousePos;
+
+        // Jeśli wciśnięty Lewy Przycisk Myszy, obracaj sześcian myszką
+        if (dzemikk::Input::IsMouseButtonPressed(dzemikk::Mouse::ButtonLeft)) {
+            glm::vec3 rot = cubeTransform->getEulerAngles();
+            rot.y += delta.x * 0.5f;
+            rot.x += delta.y * 0.5f;
+            cubeTransform->setEulerAngles(rot);
+        }
+
+        // Poruszanie za pomocą WSAD
+        glm::vec3 pos = cubeTransform->getPosition();
+        float speed = 2.0f * dzemikk::Time::deltaTime;
+
+        if (dzemikk::Input::IsKeyPressed(dzemikk::Key::W)) pos.z -= speed;
+        if (dzemikk::Input::IsKeyPressed(dzemikk::Key::S)) pos.z += speed;
+        if (dzemikk::Input::IsKeyPressed(dzemikk::Key::A)) pos.x -= speed;
+        if (dzemikk::Input::IsKeyPressed(dzemikk::Key::D)) pos.x += speed;
+
+        cubeTransform->setPosition(pos);
+    });
 
     engine->update();
 
