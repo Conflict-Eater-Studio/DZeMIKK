@@ -2,6 +2,7 @@
 #define DZEMIKK_APPLICATION_H
 #include <memory>
 #include "window.h"
+#include "ecs/scene.h"
 #include "renderer/renderer.h"
 
 namespace dzemikk {
@@ -22,6 +23,8 @@ namespace dzemikk {
         // --- Only for test DELETE THIS
         void updateCameraWASD(float speed);
         void updateCameraArrows(float speed);
+        Scene* scene;
+
     };
 }
 

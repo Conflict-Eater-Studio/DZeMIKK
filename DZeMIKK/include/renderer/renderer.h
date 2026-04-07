@@ -148,6 +148,10 @@ namespace dzemikk {
 
         std::unique_ptr<Skybox> _skybox;
 
+        Shader* _textShader = nullptr;
+        GLuint textVAO = 0;
+        GLuint textVBO = 0;
+
         #pragma endregion
     };
 

@@ -81,6 +81,10 @@ void dzemikk::Engine::update() {
 #else
         mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
+        // --- Only for test DELETE THIS
+        if (scene)
+            scene->update(Time::deltaTime);
+
         updateCameraWASD(1.f);
         updateCameraArrows(1.1f); 
         _renderer->render();

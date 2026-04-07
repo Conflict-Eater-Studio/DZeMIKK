@@ -2,9 +2,12 @@
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
+#include "ecs/components/textRenderer.h"
+#include "ecs/components/monobehaviour.h"
 #include "ecs/gameobject.h"
 #include "renderer/material.h"
 #include "renderer/renderer.h"
+#include "renderer/font.h"
 #include "ecs/scene.h"
 
 #include <assimp/Importer.hpp>
@@ -12,6 +15,19 @@
 #include <assimp/postprocess.h>
 #include <iostream>
 #include <filesystem>
+
+class TextUpdater : public dzemikk::MonoBehaviour {
+  public:
+    using Base = MonoBehaviour;
+
+    dzemikk::TextRenderer* text = nullptr;
+    float time = 0.0f;
+
+    void update(double deltaTime) override {
+        time += deltaTime;
+        text->text = "Time: " + std::to_string((int)time);
+    }
+};
 
 dzemikk::Mesh* createCubeMesh();
 dzemikk::Mesh* createQuadMesh();
@@ -37,7 +53,13 @@ int main() {
 
     engine->GetRenderer()->setSkybox(std::move(customSkybox));
 
+    auto font = new dzemikk::Font();
+    if (!font->load("Debug/res/fonts/UncialAntiqua-Regular.ttf")) {
+        std::cout << "Failed to load font\n";
+    }
+
     dzemikk::Scene mainScene;
+    engine->scene = &mainScene;
 
     // --- Scene Camera
     auto cameraGO = mainScene.createGameObject();
@@ -178,6 +200,18 @@ int main() {
     quadRenderer->setMesh(quadMesh);
     quadRenderer->setMaterial(quadMaterial);
     quadRenderer->setTransform(quadGO->transform());
+
+    auto textGO = mainScene.createGameObject();
+    textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
+
+    auto text = textGO->addComponent<dzemikk::TextRenderer>();
+    text->text = "Hello World!";
+    text->font = font;
+    text->scale = 1.0f;
+    text->color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    auto updater = textGO->addComponent<TextUpdater>();
+    updater->text = text;
 
     engine->update();
 
