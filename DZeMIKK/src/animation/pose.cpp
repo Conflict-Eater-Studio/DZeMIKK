@@ -2,7 +2,6 @@
 
 namespace dzemikk {
 
-Pose::Pose(const Transform& transform) {
-    Pose::transform = transform;
+Pose::Pose(const Transform& transform) : transform(transform) {
 }
 } // namespace dzemikk

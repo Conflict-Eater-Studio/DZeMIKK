@@ -40,8 +40,8 @@ int main() {
     dzemikk::Transform t2;
 
     // Set different values so poses are different
-    t1.scale(glm::vec3(1.0f));
-    t2.scale(glm::vec3(2.0f));
+    t1.setScale(glm::vec3(1.0f));
+    t2.setScale(glm::vec3(2.0f));
 
     dzemikk::Pose pose1(t1);
     dzemikk::Pose pose2(t2);

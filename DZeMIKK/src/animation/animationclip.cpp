@@ -2,6 +2,7 @@
 
 #include "animation/pose.h"
 #include "ecs/components/transform.h"
+#include "spdlog/spdlog.h"
 namespace dzemikk {
 namespace math {
     Transform lerp(const Transform& a, const Transform& b, float t) {
@@ -39,6 +40,7 @@ AnimationClip::AnimationClip(int frames, int framerate) : _length(frames), _fram
         frameB = frameB % _length;
 
         float t = frameTime - frameA;
+        spdlog::info("{} to {}", _poses[frameA].transform.getScale().x,  _poses[frameB].transform.getScale().x);
 
         return math::lerp(_poses[frameA], _poses[frameB], t);
     }
