@@ -1,6 +1,7 @@
 #pragma once
 #ifndef DZEMIKK_ANIMATIONCLIP_H
 #define DZEMIKK_ANIMATIONCLIP_H
+#include "pose.h"
 #include <vector>
 
 namespace dzemikk {
@@ -11,9 +12,12 @@ namespace dzemikk {
         int getLength() const;
         int getFramerate() const;
         void clear();
-        std::vector<float> sample(float timeInTicks) const; // TODO: Blending shape
+        void addPose(const Pose& pose);
+        Pose sample(float time) const;
+        //std::vector<float> sample(float timeInTicks) const; // TODO: Blending shape
     private:
-        std::vector<AnimationCurve> _curves;
+        //std::vector<AnimationCurve> _curves;
+        std::vector<Pose> _poses;
         int _length = 0;
         int _framerate = 0;
 

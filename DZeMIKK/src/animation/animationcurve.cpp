@@ -1,7 +1,7 @@
 #include <animation/animationcurve.h>
 void AnimationCurve::addValue(float value) const {
-    _values.push_back(value);
+    //_values.push_back(value);
 }
 float AnimationCurve::evaluate(float time) const {
-
+    return 0.0f;
 }
