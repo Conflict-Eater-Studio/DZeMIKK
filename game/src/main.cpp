@@ -15,6 +15,9 @@
 #include <assimp/postprocess.h>
 #include <iostream>
 #include <filesystem>
+#include <glad/glad.h>
+#include <stb/stb_image.h>
+#include "spdlog/spdlog.h"
 
 class TextUpdater : public dzemikk::MonoBehaviour {
   public:
@@ -29,6 +32,24 @@ class TextUpdater : public dzemikk::MonoBehaviour {
     }
 };
 
+class SpriteUpdater: public dzemikk::MonoBehaviour {
+  public:
+      using Base = MonoBehaviour;
+
+      dzemikk::Transform* transform = nullptr;
+      float time = 0.0f;
+
+      void update(double deltaTime) override {
+          time += deltaTime;
+
+          float scaleX = 0.5f + 0.5f * sin(time);
+          float scaleY = 1.0f;
+
+          transform->setScale(glm::vec3(scaleX, scaleY, 1.0f));
+      }
+
+};
+
 dzemikk::Mesh* createCubeMesh();
 dzemikk::Mesh* createQuadMesh();
 void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& scene,
@@ -36,6 +57,8 @@ void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& sc
                      dzemikk::Material* materialB, int rows, int cols, float spacing);
 
 dzemikk::Mesh* loadMeshFromFile(const std::string& path);
+GLuint loadTextureFromFile(const std::string& path, bool flipVertical = true);
+
 void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int tileCount, float size, float spacing = 0.1f,
                      float maxHeight = 0.3f); 
@@ -176,19 +199,32 @@ int main() {
     const char* vertexSrcUI = R"(
     #version 330 core
     layout(location = 0) in vec3 aPos;
+    layout(location = 1) in vec2 aTexCoords;
+
+    out vec2 TexCoords;
+
     uniform mat4 model;
     uniform mat4 projection;
 
-    void main() {
+    void main()
+    {
         gl_Position = projection * model * vec4(aPos, 1.0);
+        TexCoords = aTexCoords;
     }
     )";
 
     const char* fragmentSrcUI = R"(
     #version 330 core
+    in vec2 TexCoords;
     out vec4 FragColor;
-    void main() {
-        FragColor = vec4(0.2,0.8,0.3,1.0); 
+
+    uniform sampler2D spriteTexture;
+    uniform vec4 spriteColor; // RGBA
+
+    void main()
+    {
+        vec4 texColor = texture(spriteTexture, TexCoords);
+        FragColor = vec4(spriteColor.rgb, spriteColor.a * texColor.a);
     }
     )";
 
@@ -200,6 +236,35 @@ int main() {
     quadRenderer->setMesh(quadMesh);
     quadRenderer->setMaterial(quadMaterial);
     quadRenderer->setTransform(quadGO->transform());
+    quadRenderer->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
+
+    auto quadGO2 = mainScene.createGameObject();
+    quadGO2->transform()->setPosition(glm::vec3(1500.0f, 950.0f, 0.0f));
+    quadGO2->transform()->setScale(glm::vec3(400.0f, 50.0f, 1.0f));
+    quadGO2->transform()->setRotation(glm::quat());
+
+    auto quadRenderer2 = quadGO2->addComponent<dzemikk::SpriteRenderer>();
+    quadRenderer2->setMesh(quadMesh);
+    quadRenderer2->setMaterial(quadMaterial);
+    quadRenderer2->setTransform(quadGO2->transform());
+    quadRenderer2->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
+
+    auto quadGO3 = mainScene.createGameObject();
+    quadGO3->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    quadGO3->transform()->setScale(glm::vec3(0.9f, 1.0f, 1.0f));
+    quadGO3->transform()->setRotation(glm::quat());
+    quadGO2->addChild(quadGO3);
+
+    quadGO3->setName("QuadGO3");
+
+    auto quadRenderer3 = quadGO3->addComponent<dzemikk::SpriteRenderer>();
+    quadRenderer3->setMesh(quadMesh);
+    quadRenderer3->setMaterial(quadMaterial);
+    quadRenderer3->setTransform(quadGO3->transform());
+    quadRenderer3->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+
+    auto quadSpriteUpdater = quadGO3->addComponent<SpriteUpdater>();
+    quadSpriteUpdater->transform = quadGO3->transform();
 
     auto textGO = mainScene.createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
@@ -434,4 +499,41 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Materi
         else
             renderer->setMaterial(materialB);
     }
+}
+
+GLuint loadTextureFromFile(const std::string& path, bool flipVertical) {
+    int width, height, channels;
+
+    stbi_set_flip_vertically_on_load(flipVertical ? 1 : 0);
+
+    unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+    if (!data) {
+        std::cerr << "Failed to load texture: " << path << std::endl;
+        return 0; 
+    }
+
+    GLenum format = GL_RGB;
+    if (channels == 1)
+        format = GL_RED;
+    else if (channels == 3)
+        format = GL_RGB;
+    else if (channels == 4)
+        format = GL_RGBA;
+
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_image_free(data);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    return textureID;
 }

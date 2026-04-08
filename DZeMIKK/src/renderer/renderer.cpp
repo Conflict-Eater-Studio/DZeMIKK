@@ -77,6 +77,9 @@ void dzemikk::Renderer::Initialize() {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
 }
 
@@ -203,6 +206,11 @@ void dzemikk::Renderer::render() {
 
         shader->setMat4("model", r->getTransform()->getWorldMatrix());
         shader->setMat4("projection", _uiProjection);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, r->getTexture());
+        shader->setInt("spriteTexture", 0);
+        shader->setVec4("spriteColor", r->getColor());
 
         r->getMesh()->draw();
     }

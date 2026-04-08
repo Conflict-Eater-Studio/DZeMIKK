@@ -3,6 +3,8 @@
 
 #include "../component.h"
 
+#include <glm/glm.hpp>
+
 namespace dzemikk {
 
     class Transform;
@@ -63,6 +65,14 @@ namespace dzemikk {
             return _transform;
         }
 
+        unsigned int getTexture() const {
+            return _textureID;
+        }
+
+        glm::vec4 getColor() const {
+            return _color;
+        }
+
         #pragma endregion
 
         #pragma region Setters
@@ -92,6 +102,15 @@ namespace dzemikk {
          */
         void setTransform(Transform* transform) {
             _transform = transform;
+        }
+
+        
+        void setTexture(unsigned int texID) {
+            _textureID = texID;
+        }
+
+        void setColor(const glm::vec4& color) {
+            _color = color;
         }
 
         #pragma endregion
@@ -127,6 +146,9 @@ namespace dzemikk {
          * @brief Non-owning pointer to transform component.
          */
         Transform* _transform = nullptr;
+
+        unsigned int _textureID = 0;
+        glm::vec4 _color = glm::vec4(1.0f); 
 
         #pragma endregion
     };
