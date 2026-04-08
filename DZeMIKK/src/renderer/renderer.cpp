@@ -115,6 +115,11 @@ void dzemikk::Renderer::render() {
         glm::mat4 viewNoTrans = _sceneCamera->getView() * rotation;
 
         _skybox->render(viewNoTrans, _sceneCamera->getProjection());
+
+        Profiler::rendererStats.drawCalls++;
+        Profiler::rendererStats.renderedObjects++;
+        Profiler::rendererStats.vertexCount += 36;
+        Profiler::rendererStats.triangleCount += 12;
     }
 
     glEnable(GL_CULL_FACE);
@@ -268,6 +273,8 @@ void dzemikk::Renderer::render() {
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 
             glDrawArrays(GL_TRIANGLES, 0, 6);
+
+            Profiler::rendererStats.drawCalls++;
 
             Profiler::rendererStats.renderedObjects++;
             Profiler::rendererStats.vertexCount += 6;
