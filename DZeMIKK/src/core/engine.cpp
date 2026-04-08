@@ -12,6 +12,8 @@
 
 #include "core/engine.h"
 #include "core/time.h"
+#include "ecs/gameobject.h"
+#include "ecs/components/camera.h" 
 
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_errors.h"
@@ -31,7 +33,7 @@ Engine::~Engine() {
 }
 
 void Engine::init() {
-    _mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
+    mainWindow = std::make_shared<Window>(1920, 1080, "DZeMIKK");
     _renderer = std::make_shared<Renderer>();
     _sceneManager = std::make_shared<SceneManager>();
     _time = std::make_shared<Time>();
@@ -122,8 +124,19 @@ void Engine::start() {
 #else
         _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
+        // --- Only for test DELETE THIS
+        if (scene)
+            scene->update(Time::deltaTime);
 
+        updateCameraWASD(1.f);
+        updateCameraArrows(1.1f); 
         _renderer->render();
+        
+#if DZEMIKK_DEV_TOOLS
+        glDisable(GL_DEPTH_TEST);
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
 
         _mainWindow->swapBuffers();
         _mainWindow->pollEvents();
@@ -146,14 +159,52 @@ std::shared_ptr<Time> Engine::getTime() {
     return _time;
 }
 
-template <std::derived_from<IEngineModule> T>
-std::shared_ptr<T> Engine::getModule() const {
-    for (const auto& module : _modules) {
-        if (auto casted = std::dynamic_pointer_cast<T>(module)) {
-            return casted;
-        }
+void dzemikk::Engine::updateCameraWASD(float speed) {
+    auto* transform = _renderer->getActiveSceneCamera()->getOwner()->transform();
+
+    glm::vec3 move(0.0f);
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_W) == GLFW_PRESS)
+        move += transform->forward();
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_S) == GLFW_PRESS)
+        move -= transform->forward();
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_A) == GLFW_PRESS)
+        move -= transform->right();
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_D) == GLFW_PRESS)
+        move += transform->right();
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_Q) == GLFW_PRESS)
+        move -= transform->up(); 
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_E) == GLFW_PRESS)
+        move += transform->up();
+
+    if (glm::length(move) > 0.0f) {
+        move = glm::normalize(move);
+        transform->translate(move * speed * 0.016f);
     }
-    return nullptr;
 }
 
+void dzemikk::Engine::updateCameraArrows(float speed) {
+    auto* camera = _renderer->getActiveSceneCamera();
+    if (!camera)
+        return;
+    auto* transform = camera->getOwner()->transform();
+
+    float deltaAngle = speed; 
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_LEFT) == GLFW_PRESS)
+        transform->rotate(glm::angleAxis(glm::radians(deltaAngle), transform->up()));
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_RIGHT) == GLFW_PRESS)
+        transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->up()));
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_UP) == GLFW_PRESS)
+        transform->rotate(glm::angleAxis(glm::radians(deltaAngle), transform->right()));
+
+    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_DOWN) == GLFW_PRESS)
+        transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->right()));
 }

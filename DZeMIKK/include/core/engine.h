@@ -1,5 +1,8 @@
 #ifndef DZEMIKK_APPLICATION_H
 #define DZEMIKK_APPLICATION_H
+#include <memory>
+#include "window.h"
+#include "ecs/scene.h"
 #include "renderer/renderer.h"
 #include "ecs/scenemanager.h"
 #include "time.h"
@@ -12,6 +15,9 @@ class Engine {
     public:
         Engine();
         ~Engine();
+        // --- Only for test DELETE THIS
+        void updateCameraWASD(float speed);
+        void updateCameraArrows(float speed);
 
         void start();
 

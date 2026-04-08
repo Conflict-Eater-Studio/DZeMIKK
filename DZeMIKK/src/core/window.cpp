@@ -11,7 +11,7 @@
 #endif
 
 namespace dzemikk {
-    Window::Window() : Window(800, 600, "DZeMIKK") {}
+    Window::Window() : Window(1920, 1080, "DZeMIKK") {}
 
     Window::Window(const int width, const int height, const char* title) : window_(nullptr) {
         if (!glfwInit()) {
@@ -25,6 +25,7 @@ namespace dzemikk {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_SAMPLES, 4);
 
         window_ = glfwCreateWindow(width, height, title, nullptr, nullptr);
         if (!window_) {

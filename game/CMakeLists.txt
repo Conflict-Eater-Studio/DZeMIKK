@@ -26,3 +26,9 @@ add_custom_command(TARGET game POST_BUILD
         "${FMOD_LIBS_PATH}/fmodL.dll"
         $<TARGET_FILE_DIR:game>
 )
+
+add_custom_command(TARGET game POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/res"
+    "$<TARGET_FILE_DIR:game>/res"
+)
