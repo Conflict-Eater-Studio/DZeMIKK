@@ -2,6 +2,8 @@
 #define DZEMIKK_MESH_RENDERER_H
 
 #include "../component.h"
+#include <glm/ext/vector_float3.hpp>
+#include <glm/ext/quaternion_geometric.hpp>
 
 namespace dzemikk {
     class Transform;
@@ -74,6 +76,7 @@ namespace dzemikk {
          */
         void setMesh(Mesh* mesh) {
             _mesh = mesh;
+            calculateCullingRadius(mesh);
         }
 
         /**
@@ -110,6 +113,9 @@ namespace dzemikk {
 
         #pragma endregion
 
+        void calculateCullingRadius(Mesh* mesh);
+
+        float getCullingRadius();
         
     private:
         #pragma region References
@@ -117,6 +123,8 @@ namespace dzemikk {
         Mesh* _mesh = nullptr;
         Material* _material = nullptr;
         Transform* _transform = nullptr;
+
+        float _cullingRadius = 1.0f;
 
         #pragma endregion
     };

@@ -11,7 +11,6 @@ namespace dzemikk {
 	class TextRenderer : public Component {
     public:
         std::string text = "Hello";
-        std::string fontPath;
         float scale = 1.0f;
         glm::vec3 color = glm::vec3(1.0f);
 

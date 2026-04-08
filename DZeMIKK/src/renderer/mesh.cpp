@@ -62,6 +62,8 @@ void dzemikk::Mesh::create(const float* vertices, uint32_t vertexCount, uint32_t
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
+
+    computeBounds(vertices, vertexCount, stride);
 }
 
 void dzemikk::Mesh::createIndexed(const float* vertices, uint32_t vertexCount, const unsigned int* indices,
@@ -90,6 +92,8 @@ void dzemikk::Mesh::createIndexed(const float* vertices, uint32_t vertexCount, c
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
+
+    computeBounds(vertices, vertexCount, stride);
 }
 
 void dzemikk::Mesh::drawInstanced(const std::vector<glm::mat4>& models, GLuint instanceVBO) const {

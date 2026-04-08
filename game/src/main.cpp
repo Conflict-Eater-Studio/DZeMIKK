@@ -151,7 +151,7 @@ int main() {
 
     auto tileMesh = loadMeshFromFile("Debug/res/models/pole.fbx");
     
-    createHexIsland(mainScene, tileMesh, materialA, materialB, 10000, 1.0f, 0.15f, 0.5f);
+    createHexIsland(mainScene, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
     // UI Camera
     auto cameraUIGO = mainScene.createGameObject();

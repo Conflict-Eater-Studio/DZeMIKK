@@ -152,6 +152,31 @@ namespace dzemikk {
 
         #pragma endregion
 
+            
+        glm::vec3 getBoundsMin() const {
+            return _boundsMin;
+        }
+        glm::vec3 getBoundsMax() const {
+            return _boundsMax;
+        }
+
+        void computeBounds(const float* vertices, uint32_t vertexCount, uint32_t stride) {
+            if (vertexCount == 0)
+                return;
+
+            _boundsMin = glm::vec3(vertices[0], vertices[1], vertices[2]);
+            _boundsMax = _boundsMin;
+
+            for (uint32_t i = 1; i < vertexCount; ++i) {
+                float x = vertices[i * stride + 0];
+                float y = vertices[i * stride + 1];
+                float z = vertices[i * stride + 2];
+
+                _boundsMin = glm::min(_boundsMin, glm::vec3(x, y, z));
+                _boundsMax = glm::max(_boundsMax, glm::vec3(x, y, z));
+            }
+        }
+
     private:
         #pragma region GPU Handles
 
@@ -167,6 +192,9 @@ namespace dzemikk {
         uint32_t _indexCount = 0;
 
         bool _useIndices = false;
+
+        glm::vec3 _boundsMin{0.0f};
+        glm::vec3 _boundsMax{0.0f};
 
         #pragma endregion
     };

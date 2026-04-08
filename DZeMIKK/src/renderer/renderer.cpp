@@ -20,7 +20,7 @@
 void dzemikk::Renderer::Initialize() {
     _view = glm::mat4(1.0f);
     _projection = glm::mat4(1.0f);
-    _uiProjection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
+    _uiProjection = glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f);
 
     glGenBuffers(1, &_uboMatrices);
 
@@ -144,7 +144,7 @@ void dzemikk::Renderer::render() {
             continue;
 
         glm::vec3 pos = r->getTransform()->getPosition();
-        float radius = 1.0f;
+        float radius = r->getCullingRadius();
 
         if (!_frustum.isSphereVisible(pos, radius))
             continue;
