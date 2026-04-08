@@ -82,7 +82,7 @@ int main() {
                                "Debug/res/textures/Daylight Box_Pieces/front.png",
                                "Debug/res/textures/Daylight Box_Pieces/back.png"});
 
-    engine->GetRenderer()->setSkybox(std::move(customSkybox));
+    engine->getRenderer()->setSkybox(std::move(customSkybox));
 
     auto font = new dzemikk::Font();
     if (!font->load("Debug/res/fonts/UncialAntiqua-Regular.ttf")) {
@@ -124,7 +124,6 @@ int main() {
     camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
 
     // Rejestracja kamery w rendererze
-    engine->getRenderer()->registerCamera(camera);
     engine->getRenderer()->setActiveSceneCamera(camera);
 
     // --- Cube GameObject
@@ -229,7 +228,6 @@ int main() {
     quadGO->transform()->setPosition(glm::vec3(100.0f, 300.0f, 0.0f));
     quadGO->transform()->setScale(glm::vec3(100.0f, 100.0f, 1.0f)); 
     quadGO->transform()->setRotation(glm::quat());
-    engine->getRenderer()->registerRenderer(cubeRenderer);
 
     auto quadMesh = createQuadMesh();
 
@@ -285,7 +283,6 @@ int main() {
     quadRenderer2->setMaterial(quadMaterial);
     quadRenderer2->setTransform(quadGO2->transform());
     quadRenderer2->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
-    engine->getRenderer()->registerSpriteRenderer(quadRenderer);
 
     auto quadGO3 = mainScene.createGameObject();
     quadGO3->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -315,10 +312,6 @@ int main() {
 
     auto updater = textGO->addComponent<TextUpdater>();
     updater->text = text;
-    engine->getRenderer()->setCamera(view, projection);
-
-    glm::mat4 uiOrtho = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-    engine->getRenderer()->setUIProjection(uiOrtho);
 
     engine->start();
 

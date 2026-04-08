@@ -11,6 +11,7 @@
 #include "core/engine.h"
 #include "core/time.h"
 #include "core/window.h"
+#include "ecs/components/camera.h"
 #include "ecs/scenemanager.h"
 #include "renderer/renderer.h"
 

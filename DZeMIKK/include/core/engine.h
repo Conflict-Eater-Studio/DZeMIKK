@@ -6,6 +6,7 @@
 #include <vector>
 
 namespace dzemikk {
+class Scene;
 class IEngineModule;
 class SceneManager;
 class Time;
