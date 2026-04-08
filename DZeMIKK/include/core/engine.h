@@ -28,6 +28,7 @@ class Engine {
 
         template <std::derived_from<IEngineModule> T>
         std::shared_ptr<T> getModule() const;
+         Scene* scene;
     private:
         void init();
         void shutdown();

@@ -15,15 +15,12 @@
 #include "ecs/gameobject.h"
 #include "ecs/components/camera.h" 
 
-#include "fmod/fmod.hpp"
-#include "fmod/fmod_errors.h"
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "GLFW/glfw3.h"
 
 namespace dzemikk {
-
 Engine::Engine() {
     init();
 }
@@ -33,7 +30,7 @@ Engine::~Engine() {
 }
 
 void Engine::init() {
-    mainWindow = std::make_shared<Window>(1920, 1080, "DZeMIKK");
+    _mainWindow = std::make_shared<Window>(1920, 1080, "DZeMIKK");
     _renderer = std::make_shared<Renderer>();
     _sceneManager = std::make_shared<SceneManager>();
     _time = std::make_shared<Time>();
@@ -126,7 +123,7 @@ void Engine::start() {
 #endif
         // --- Only for test DELETE THIS
         if (scene)
-            scene->update(Time::deltaTime);
+            scene->update(_time->getDeltaTime());
 
         updateCameraWASD(1.f);
         updateCameraArrows(1.1f); 
@@ -144,7 +141,7 @@ void Engine::start() {
 }
 
 std::shared_ptr<Renderer> Engine::getRenderer() {
-    return getModule<Renderer>();
+    return _renderer;
 }
 
 std::shared_ptr<Window> Engine::getWindow() {
@@ -159,27 +156,27 @@ std::shared_ptr<Time> Engine::getTime() {
     return _time;
 }
 
-void dzemikk::Engine::updateCameraWASD(float speed) {
+void Engine::updateCameraWASD(float speed) {
     auto* transform = _renderer->getActiveSceneCamera()->getOwner()->transform();
 
     glm::vec3 move(0.0f);
 
-    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_W) == GLFW_PRESS)
         move += transform->forward();
 
-    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_S) == GLFW_PRESS)
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_S) == GLFW_PRESS)
         move -= transform->forward();
 
-    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_A) == GLFW_PRESS)
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_A) == GLFW_PRESS)
         move -= transform->right();
 
-    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_D) == GLFW_PRESS)
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_D) == GLFW_PRESS)
         move += transform->right();
 
-    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_Q) == GLFW_PRESS)
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Q) == GLFW_PRESS)
         move -= transform->up(); 
 
-    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_E) == GLFW_PRESS)
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_E) == GLFW_PRESS)
         move += transform->up();
 
     if (glm::length(move) > 0.0f) {
@@ -196,15 +193,16 @@ void dzemikk::Engine::updateCameraArrows(float speed) {
 
     float deltaAngle = speed; 
 
-    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_LEFT) == GLFW_PRESS)
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_LEFT) == GLFW_PRESS)
         transform->rotate(glm::angleAxis(glm::radians(deltaAngle), transform->up()));
 
-    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_RIGHT) == GLFW_PRESS)
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_RIGHT) == GLFW_PRESS)
         transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->up()));
 
-    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_UP) == GLFW_PRESS)
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_UP) == GLFW_PRESS)
         transform->rotate(glm::angleAxis(glm::radians(deltaAngle), transform->right()));
 
-    if (glfwGetKey(mainWindow->nativeHandle(), GLFW_KEY_DOWN) == GLFW_PRESS)
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_DOWN) == GLFW_PRESS)
         transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->right()));
+}
 }
