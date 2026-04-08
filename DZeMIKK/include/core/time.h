@@ -1,21 +1,27 @@
 #ifndef TUL_PBL_DZEMIKK_TIME_H
 #define TUL_PBL_DZEMIKK_TIME_H
-#include "GLFW/glfw3.h"
+#include "iEngineModule.h"
 
 namespace dzemikk {
 
-class Time {
+class Time : public IEngineModule{
     private:
-        inline static float lastFrameTime = 0.0f;
+        float _lastFrameTime{};
     public:
-        inline static float deltaTime = 0.0f;
-        inline static float fixedDeltaTime = 1.0 / 60.0f;
-        inline static float time = 0.0f;
-        static void update() {
-            time = glfwGetTime();
-            deltaTime = time - lastFrameTime;
-            lastFrameTime = time;
-        }
+        Time();
+        ~Time();
+        void update();
+
+        float deltaTime;
+        float fixedDeltaTime;
+        float time;
+
+        void update() const;
+        float getDeltaTime() const;
+        float getFixedDeltaTime() const;
+        float getTime() const;
+        void Initialize() override;
+        void UnInitialize() override;
 };
 
 } // namespace dzemikk

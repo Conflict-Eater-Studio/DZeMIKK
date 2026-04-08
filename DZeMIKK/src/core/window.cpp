@@ -80,7 +80,13 @@ namespace dzemikk {
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    GLFWwindow * Window::nativeHandle() const {
+    GLFWwindow* Window::nativeHandle() const {
         return window_;
     }
-}
+    void Window::Initialize() {
+
+    }
+    void Window::UnInitialize() {
+
+        }
+    } // namespace dzemikk

@@ -18,22 +18,24 @@ add_library(DZeMIKK STATIC)
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"
+        "${SRC_DIR}/core/time.cpp"
         "${SRC_DIR}/renderer/renderer.cpp"
-    	"${SRC_DIR}/renderer/mesh.cpp"
-    	"${SRC_DIR}/renderer/shader.cpp"
-    	"${SRC_DIR}/renderer/material.cpp"
-    	"${SRC_DIR}/renderer/frustum.cpp"
-    	"${SRC_DIR}/renderer/skybox.cpp"
-    	"${SRC_DIR}/renderer/font.cpp"
+    	  "${SRC_DIR}/renderer/mesh.cpp"
+    	  "${SRC_DIR}/renderer/shader.cpp"
+    	  "${SRC_DIR}/renderer/material.cpp"
+    	  "${SRC_DIR}/renderer/frustum.cpp"
+    	  "${SRC_DIR}/renderer/skybox.cpp"
+    	  "${SRC_DIR}/renderer/font.cpp"
         "${SRC_DIR}/ecs/components/monobehaviour.cpp"
         "${SRC_DIR}/ecs/components/transform.cpp"
-		"${SRC_DIR}/ecs/components/meshRenderer.cpp"
-    	"${SRC_DIR}/ecs/components/spriteRenderer.cpp"
+	      "${SRC_DIR}/ecs/components/meshRenderer.cpp"
+    	  "${SRC_DIR}/ecs/components/spriteRenderer.cpp"
         "${SRC_DIR}/ecs/components/camera.cpp"
         "${SRC_DIR}/ecs/components/textRenderer.cpp"
         "${SRC_DIR}/ecs/gameobject.cpp"
         "${SRC_DIR}/ecs/scene.cpp"
         "${SRC_DIR}/ecs/component.cpp"
+        "${SRC_DIR}/ecs/scenemanager.cpp"
 )
 
 set(ENGINE_HEADERS
@@ -41,22 +43,23 @@ set(ENGINE_HEADERS
         "${INC_DIR}/core/window.h"
         "${INC_DIR}/core/iEngineModule.h"
         "${INC_DIR}/renderer/renderer.h"
-	    "${INC_DIR}/renderer/mesh.h"
-    	"${INC_DIR}/renderer/shader.h"
-    	"${INC_DIR}/renderer/material.h"
-    	"${INC_DIR}/renderer/frustum.h"
-    	"${INC_DIR}/renderer/skybox.h"
-    	"${INC_DIR}/renderer/font.h"
+	      "${INC_DIR}/renderer/mesh.h"
+    	  "${INC_DIR}/renderer/shader.h"
+    	  "${INC_DIR}/renderer/material.h"
+    	  "${INC_DIR}/renderer/frustum.h"
+    	  "${INC_DIR}/renderer/skybox.h"
+    	  "${INC_DIR}/renderer/font.h"
         "${INC_DIR}/ecs/components/monobehaviour.h"
         "${INC_DIR}/ecs/components/transform.h"
-	    "${INC_DIR}/ecs/components/meshRenderer.h"
-    	"${INC_DIR}/ecs/components/spriteRenderer.h"
-    	"${INC_DIR}/ecs/components/textRenderer.h"
+	      "${INC_DIR}/ecs/components/meshRenderer.h"
+    	  "${INC_DIR}/ecs/components/spriteRenderer.h"
+    	  "${INC_DIR}/ecs/components/textRenderer.h"
         "${INC_DIR}/ecs/components/camera.h"
         "${INC_DIR}/ecs/component.h"
         "${INC_DIR}/ecs/gameobject.h"
         "${INC_DIR}/ecs/scene.h"
         "${INC_DIR}/ecs/componentRegistry.h"
+        "${INC_DIR}/ecs/scenemanager.h"
 )
 
 target_sources(DZeMIKK
@@ -90,7 +93,6 @@ target_include_directories(glad
         "${EXTERN_DIR}/glad/include"
         "${EXTERN_DIR}/glad/include/glad"
         "${EXTERN_DIR}/KHR/include"
-
 )
 
 include(FetchContent)

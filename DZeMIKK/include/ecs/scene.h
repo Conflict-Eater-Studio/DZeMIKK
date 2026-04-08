@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <vector>
+#include "gameobject.h"
 
 namespace dzemikk {
 class GameObject;
@@ -32,6 +33,14 @@ class Scene {
     void destroyGameObject(GameObject* object);
     void update(double deltaTime);
     void fixedUpdate(double deltaTime);
+    class Scene {
+        public:
+            Scene() = default;
+            Scene(const Scene& other) = delete;
+            Scene& operator=(const Scene& other) = delete;
+            Scene(Scene&& other) noexcept = delete;
+            Scene& operator=(Scene&& other) noexcept = delete;
+            ~Scene() = default;
 
     void processPendingStart();
     void addPending(MonoBehaviour* mono);

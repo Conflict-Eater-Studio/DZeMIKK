@@ -89,6 +89,17 @@ void Scene::fixedUpdate(double deltaTime) {
     for (auto* mono : active_snapshot) {
         if (!mono || std::ranges::find(_active, mono) == _active.end()) {
             continue;
+    void Scene::update(double deltaTime) {
+        if (_objects.empty()) return;
+        // Update all behaviours
+        for (const auto& object : _objects) {
+            for (const auto& mono : object->getMonoBehaviours()) {
+                if (!mono->hasStarted()) {
+                    mono->start();
+                    mono->markStarted();
+                }
+                mono->update(deltaTime);
+            }
         }
         mono->fixedUpdate(deltaTime);
     }
@@ -125,11 +136,6 @@ void Scene::processDelete() {
 
         if (obj->getParent()) {
             obj->getParent()->detachChild(obj);
-        }
-
-        std::erase_if(_objects, [obj](const auto& lObj) { return lObj.get() == obj; });
-    }
-
     _pendingDestroy.clear();
 }
 

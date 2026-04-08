@@ -127,14 +127,14 @@ int main() {
     in vec3 FragPos;
     in vec3 Normal;
 
-    uniform vec3 lightDir;      // Kierunek œwiat³a (np. glm::normalize(glm::vec3(-1.0, -1.0, -1.0)))
-    uniform vec3 lightColor;    // Kolor œwiat³a (np. vec3(1.0,1.0,1.0))
+    uniform vec3 lightDir;      // Kierunek ï¿½wiatï¿½a (np. glm::normalize(glm::vec3(-1.0, -1.0, -1.0)))
+    uniform vec3 lightColor;    // Kolor ï¿½wiatï¿½a (np. vec3(1.0,1.0,1.0))
     uniform vec3 objectColor;   // Kolor kostki (np. vec3(1.0,0.5,0.2))
 
     void main() {
         // Lambert: max(dot(N,L),0)
         vec3 norm = normalize(Normal);
-        vec3 lightDirNorm = normalize(-lightDir); // jeœli œwiat³o "idzie w kierunku"
+        vec3 lightDirNorm = normalize(-lightDir); // jeï¿½li ï¿½wiatï¿½o "idzie w kierunku"
         float diff = max(dot(norm, lightDirNorm), 0.0);
 
         vec3 diffuse = diff * lightColor;
@@ -193,6 +193,7 @@ int main() {
     quadGO->transform()->setPosition(glm::vec3(100.0f, 300.0f, 0.0f));
     quadGO->transform()->setScale(glm::vec3(100.0f, 100.0f, 1.0f)); 
     quadGO->transform()->setRotation(glm::quat());
+    engine->getRenderer()->registerRenderer(cubeRenderer);
 
     auto quadMesh = createQuadMesh();
 
@@ -248,6 +249,7 @@ int main() {
     quadRenderer2->setMaterial(quadMaterial);
     quadRenderer2->setTransform(quadGO2->transform());
     quadRenderer2->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
+    engine->getRenderer()->registerSpriteRenderer(quadRenderer);
 
     auto quadGO3 = mainScene.createGameObject();
     quadGO3->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -277,8 +279,12 @@ int main() {
 
     auto updater = textGO->addComponent<TextUpdater>();
     updater->text = text;
+    engine->getRenderer()->setCamera(view, projection);
 
-    engine->update();
+    glm::mat4 uiOrtho = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
+    engine->getRenderer()->setUIProjection(uiOrtho);
+
+    engine->start();
 
     return 0;
 }
