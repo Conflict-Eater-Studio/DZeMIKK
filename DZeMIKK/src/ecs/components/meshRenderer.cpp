@@ -1,13 +1,17 @@
 #include "ecs/components/meshRenderer.h"
-#include "ecs/components/transform.h"
 #include "renderer/mesh.h"
-#include "renderer/material.h"
-#include "renderer/renderer.h"
 
-void dzemikk::MeshRenderer::start(){
+void dzemikk::MeshRenderer::calculateCullingRadius(Mesh* mesh) {
+    if (!mesh)
+        return;
 
+    glm::vec3 min = mesh->getBoundsMin();
+    glm::vec3 max = mesh->getBoundsMax();
+
+    glm::vec3 size = max - min;
+    _cullingRadius = glm::length(size) * 0.5f;
 }
 
-void dzemikk::MeshRenderer::onDestroy(){
-
+float dzemikk::MeshRenderer::getCullingRadius() {
+    return _cullingRadius;
 }

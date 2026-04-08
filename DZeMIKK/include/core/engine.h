@@ -26,6 +26,11 @@ class Engine {
         std::shared_ptr<AnimationModule> getAnimationSystem();
         template <std::derived_from<IEngineModule> T>
         std::shared_ptr<T> getModule() const;
+          // --- Only for test DELETE THIS
+        void updateCameraWASD(float speed);
+        void updateCameraArrows(float speed);
+
+         Scene* scene;
     private:
         void init();
         void shutdown();
@@ -38,10 +43,7 @@ class Engine {
 
         float _accumulator = 0.0f;
 
-        // --- Only for test DELETE THIS
-        void updateCameraWASD(float speed);
-        void updateCameraArrows(float speed);
     };
-}
+} // namespace dzemikk
 
 #endif

@@ -5,16 +5,58 @@
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
-#include "ecs/components/transform.h"
+#include "ecs/components/textRenderer.h"
+#include "ecs/components/monobehaviour.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "renderer/material.h"
-#include "renderer/mesh.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
 #include "animation/animationcurve.h"
 #include <GLFW/glfw3.h>
 #include <memory>
+#include "renderer/font.h"
+#include "ecs/scene.h"
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <iostream>
+#include <filesystem>
+#include <glad/glad.h>
+#include <stb/stb_image.h>
+#include "spdlog/spdlog.h"
+
+class TextUpdater : public dzemikk::MonoBehaviour {
+  public:
+    using Base = MonoBehaviour;
+
+    dzemikk::TextRenderer* text = nullptr;
+    float time = 0.0f;
+
+    void update(double deltaTime) override {
+        time += deltaTime;
+        text->text = "Time: " + std::to_string((int)time);
+    }
+};
+
+class SpriteUpdater: public dzemikk::MonoBehaviour {
+  public:
+      using Base = MonoBehaviour;
+
+      dzemikk::Transform* transform = nullptr;
+      float time = 0.0f;
+
+      void update(double deltaTime) override {
+          time += deltaTime;
+
+          float scaleX = 0.5f + 0.5f * sin(time);
+          float scaleY = 1.0f;
+
+          transform->setScale(glm::vec3(scaleX, scaleY, 1.0f));
+      }
+
+};
 
 dzemikk::Mesh* createCubeMesh();
 dzemikk::Mesh* createQuadMesh();
@@ -22,8 +64,30 @@ void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& sc
                      dzemikk::Mesh* cubeMesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int rows, int cols, float spacing);
 
+dzemikk::Mesh* loadMeshFromFile(const std::string& path);
+GLuint loadTextureFromFile(const std::string& path, bool flipVertical = true);
+
+void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Material* materialA,
+                     dzemikk::Material* materialB, int tileCount, float size, float spacing = 0.1f,
+                     float maxHeight = 0.3f); 
+
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
+
+    auto customSkybox = std::make_unique<dzemikk::Skybox>();
+    customSkybox->loadCubemap({"Debug/res/textures/Daylight Box_Pieces/right.png",
+                               "Debug/res/textures/Daylight Box_Pieces/left.png",
+                               "Debug/res/textures/Daylight Box_Pieces/top.png",
+                               "Debug/res/textures/Daylight Box_Pieces/bottom.png",
+                               "Debug/res/textures/Daylight Box_Pieces/front.png",
+                               "Debug/res/textures/Daylight Box_Pieces/back.png"});
+
+    engine->GetRenderer()->setSkybox(std::move(customSkybox));
+
+    auto font = new dzemikk::Font();
+    if (!font->load("Debug/res/fonts/UncialAntiqua-Regular.ttf")) {
+        std::cout << "Failed to load font\n";
+    }
 
     dzemikk::Scene mainScene;
     auto playerGO = mainScene.createGameObject();
@@ -51,12 +115,11 @@ int main() {
     //dzemikk::AnimationClip* idleClip = new dzemikk::AnimationClip("idle", 0.1f);
 
 
+    engine->scene = &mainScene;
 
     // --- Scene Camera
     auto cameraGO = mainScene.createGameObject();
-
     cameraGO->transform()->setPosition(glm::vec3(1.5f, 1.5f, 3.0f));
-
     auto camera = cameraGO->addComponent<dzemikk::Camera>();
     camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -119,7 +182,7 @@ int main() {
 
     auto shaderA = new dzemikk::Shader(vertexSrc3D, fragmentSrc3D); 
     auto materialA = new dzemikk::Material();
-    materialA->shader = shaderA;
+    materialA->setShader(shaderA);
 
     const char* fragmentSrc3D_B = R"(
     #version 330 core
@@ -141,10 +204,13 @@ int main() {
     )";
     auto shaderB = new dzemikk::Shader(vertexSrc3D, fragmentSrc3D_B);
     auto materialB = new dzemikk::Material();
-    materialB->shader = shaderB;
+    materialB->setShader(shaderB);
 
     auto cubeMesh = createCubeMesh();
-    createCubeBoard(engine, mainScene, cubeMesh, materialA, materialB, 250, 250, 1.2f);
+
+    auto tileMesh = loadMeshFromFile("Debug/res/models/pole.fbx");
+    
+    createHexIsland(mainScene, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
     // UI Camera
     auto cameraUIGO = mainScene.createGameObject();
@@ -163,36 +229,96 @@ int main() {
     quadGO->transform()->setPosition(glm::vec3(100.0f, 300.0f, 0.0f));
     quadGO->transform()->setScale(glm::vec3(100.0f, 100.0f, 1.0f)); 
     quadGO->transform()->setRotation(glm::quat());
+    engine->getRenderer()->registerRenderer(cubeRenderer);
 
     auto quadMesh = createQuadMesh();
 
     const char* vertexSrcUI = R"(
     #version 330 core
     layout(location = 0) in vec3 aPos;
+    layout(location = 1) in vec2 aTexCoords;
+
+    out vec2 TexCoords;
+
     uniform mat4 model;
     uniform mat4 projection;
 
-    void main() {
+    void main()
+    {
         gl_Position = projection * model * vec4(aPos, 1.0);
+        TexCoords = aTexCoords;
     }
     )";
 
     const char* fragmentSrcUI = R"(
     #version 330 core
+    in vec2 TexCoords;
     out vec4 FragColor;
-    void main() {
-        FragColor = vec4(0.2,0.8,0.3,1.0); 
+
+    uniform sampler2D spriteTexture;
+    uniform vec4 spriteColor; // RGBA
+
+    void main()
+    {
+        vec4 texColor = texture(spriteTexture, TexCoords);
+        FragColor = vec4(spriteColor.rgb, spriteColor.a * texColor.a);
     }
     )";
 
     auto quadShader = new dzemikk::Shader(vertexSrcUI, fragmentSrcUI);
     auto quadMaterial = new dzemikk::Material();
-    quadMaterial->shader = quadShader;
+    quadMaterial->setShader(quadShader);
 
     auto quadRenderer = quadGO->addComponent<dzemikk::SpriteRenderer>();
-    quadRenderer->mesh = quadMesh;
-    quadRenderer->material = quadMaterial;
-    quadRenderer->transform = quadGO->transform();
+    quadRenderer->setMesh(quadMesh);
+    quadRenderer->setMaterial(quadMaterial);
+    quadRenderer->setTransform(quadGO->transform());
+    quadRenderer->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
+
+    auto quadGO2 = mainScene.createGameObject();
+    quadGO2->transform()->setPosition(glm::vec3(1500.0f, 950.0f, 0.0f));
+    quadGO2->transform()->setScale(glm::vec3(400.0f, 50.0f, 1.0f));
+    quadGO2->transform()->setRotation(glm::quat());
+
+    auto quadRenderer2 = quadGO2->addComponent<dzemikk::SpriteRenderer>();
+    quadRenderer2->setMesh(quadMesh);
+    quadRenderer2->setMaterial(quadMaterial);
+    quadRenderer2->setTransform(quadGO2->transform());
+    quadRenderer2->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
+    engine->getRenderer()->registerSpriteRenderer(quadRenderer);
+
+    auto quadGO3 = mainScene.createGameObject();
+    quadGO3->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    quadGO3->transform()->setScale(glm::vec3(0.9f, 1.0f, 1.0f));
+    quadGO3->transform()->setRotation(glm::quat());
+    quadGO2->addChild(quadGO3);
+
+    quadGO3->setName("QuadGO3");
+
+    auto quadRenderer3 = quadGO3->addComponent<dzemikk::SpriteRenderer>();
+    quadRenderer3->setMesh(quadMesh);
+    quadRenderer3->setMaterial(quadMaterial);
+    quadRenderer3->setTransform(quadGO3->transform());
+    quadRenderer3->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+
+    auto quadSpriteUpdater = quadGO3->addComponent<SpriteUpdater>();
+    quadSpriteUpdater->transform = quadGO3->transform();
+
+    auto textGO = mainScene.createGameObject();
+    textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
+
+    auto text = textGO->addComponent<dzemikk::TextRenderer>();
+    text->text = "Hello World!";
+    text->font = font;
+    text->scale = 1.0f;
+    text->color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    auto updater = textGO->addComponent<TextUpdater>();
+    updater->text = text;
+    engine->getRenderer()->setCamera(view, projection);
+
+    glm::mat4 uiOrtho = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
+    engine->getRenderer()->setUIProjection(uiOrtho);
 
     engine->start();
 
@@ -244,22 +370,7 @@ dzemikk::Mesh* createCubeMesh() {
                         0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,
                         0.0f, 0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f};
 
-    glGenVertexArrays(1, &mesh->vao);
-    glGenBuffers(1, &mesh->vbo);
-
-    glBindVertexArray(mesh->vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-
-    mesh->vertexCount = 36;
+    mesh->create(vertices, 36, 6);
     return mesh;
 }
 
@@ -267,15 +378,8 @@ dzemikk::Mesh* createQuadMesh() {
     dzemikk::Mesh* mesh = new dzemikk::Mesh();
     float vertices[] = {0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
                         1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-    glGenVertexArrays(1, &mesh->vao);
-    glGenBuffers(1, &mesh->vbo);
-    glBindVertexArray(mesh->vao);
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
-    mesh->vertexCount = 6;
+
+    mesh->create(vertices, 6, 3);
     return mesh;
 }
 
@@ -294,13 +398,184 @@ void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& sc
             cubeGO->transform()->setScale(glm::vec3(1.0f));
 
             auto cubeRenderer = cubeGO->addComponent<dzemikk::MeshRenderer>();
-            cubeRenderer->mesh = cubeMesh;
-            cubeRenderer->transform = cubeGO->transform();
+            cubeRenderer->setMesh(cubeMesh);
+            cubeRenderer->setTransform(cubeGO->transform());
+            cubeGO->transform()->setScale(glm::vec3(1.f));
 
             if ((row + col) % 2 == 0)
-                cubeRenderer->material = materialA;
+                cubeRenderer->setMaterial(materialA);
             else
-                cubeRenderer->material = materialB;
+                cubeRenderer->setMaterial(materialB);
         }
     }
+}
+
+dzemikk::Mesh* loadMeshFromFile(const std::string& path) {
+    Assimp::Importer importer;
+
+    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals |
+                                                       aiProcess_JoinIdenticalVertices);
+
+    if (!scene) {
+        std::cerr << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
+    }
+
+    if (!scene->HasMeshes()) {
+        std::cerr << "NO MESHES IN FILE" << std::endl;
+    }
+
+    aiMesh* ai_mesh = scene->mMeshes[0];
+
+    std::vector<float> vertices;
+
+    for (unsigned int i = 0; i < ai_mesh->mNumVertices; i++) {
+        // pozycja
+        vertices.push_back(ai_mesh->mVertices[i].x);
+        vertices.push_back(ai_mesh->mVertices[i].y);
+        vertices.push_back(ai_mesh->mVertices[i].z);
+
+        // normal
+        vertices.push_back(ai_mesh->mNormals[i].x);
+        vertices.push_back(ai_mesh->mNormals[i].y);
+        vertices.push_back(ai_mesh->mNormals[i].z);
+    }
+
+    std::vector<unsigned int> indices;
+    for (unsigned int i = 0; i < ai_mesh->mNumFaces; i++) {
+        aiFace face = ai_mesh->mFaces[i];
+        for (unsigned int j = 0; j < face.mNumIndices; j++) {
+            indices.push_back(face.mIndices[j]);
+        }
+    }
+
+    auto mesh = new dzemikk::Mesh();
+    mesh->createIndexed(vertices.data(), ai_mesh->mNumVertices, indices.data(), indices.size(), 6);
+
+    return mesh;
+}
+
+#include <queue>
+#include <random>
+#include <set>
+
+struct Hex {
+    int q, r;
+
+    bool operator<(const Hex& other) const {
+        return std::tie(q, r) < std::tie(other.q, other.r);
+    }
+};
+
+glm::vec3 hexToWorld(int q, int r, float size) {
+    float x = size * sqrt(3.0f) * (q + r * 0.5f);
+    float z = size * 1.5f * r;
+    return glm::vec3(x, 0.0f, z);
+}
+
+glm::vec3 hexToWorld(int q, int r, float size, float spacing = 0.1f, float maxHeight = 0.3f) {
+    float width = sqrt(3.0f) * size + spacing;
+    float verticalSpacing = 1.5f * size + spacing;
+
+    float x = width * (q + r * 0.5f);
+    float z = verticalSpacing * r;
+
+    static std::mt19937 rng(std::random_device{}());
+    static std::uniform_real_distribution<float> heightDist(0.0f, maxHeight);
+    float y = heightDist(rng);
+
+    return glm::vec3(x, y, z);
+}
+
+void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Material* materialA,
+                     dzemikk::Material* materialB, int tileCount, float size, float spacing,
+                     float maxHeight) {
+    std::set<Hex> island;
+    std::vector<Hex> frontier;
+
+    std::mt19937 rng(std::random_device{}());
+    std::uniform_real_distribution<float> chance(0.0f, 1.0f);
+
+    const std::vector<std::pair<int, int>> directions = {{1, 0},  {0, 1},  {-1, 1},
+                                                         {-1, 0}, {0, -1}, {1, -1}};
+
+    island.insert({0, 0});
+    frontier.push_back({0, 0});
+
+    while (island.size() < tileCount && !frontier.empty()) {
+        int idx = rng() % frontier.size();
+        Hex current = frontier[idx];
+
+        for (auto& dir : directions) {
+            Hex next = {current.q + dir.first, current.r + dir.second};
+
+            if (island.contains(next))
+                continue;
+
+            if (chance(rng) < 0.6f) {
+                island.insert(next);
+                frontier.push_back(next);
+            }
+        }
+
+        frontier.erase(frontier.begin() + idx);
+    }
+
+    for (const auto& hex : island) {
+        if (chance(rng) < 0.1f)
+            continue;
+
+        glm::vec3 pos = hexToWorld(hex.q, hex.r, size, spacing, maxHeight);
+
+        auto tile = scene.createGameObject();
+        tile->transform()->setPosition(pos);
+        tile->transform()->setScale(glm::vec3(1.0f));
+
+        tile->transform()->setRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+        auto renderer = tile->addComponent<dzemikk::MeshRenderer>();
+        renderer->setMesh(mesh);
+        renderer->setTransform(tile->transform());
+
+        if ((hex.q + hex.r) % 2 == 0)
+            renderer->setMaterial(materialA);
+        else
+            renderer->setMaterial(materialB);
+    }
+}
+
+GLuint loadTextureFromFile(const std::string& path, bool flipVertical) {
+    int width, height, channels;
+
+    stbi_set_flip_vertically_on_load(flipVertical ? 1 : 0);
+
+    unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+    if (!data) {
+        std::cerr << "Failed to load texture: " << path << std::endl;
+        return 0; 
+    }
+
+    GLenum format = GL_RGB;
+    if (channels == 1)
+        format = GL_RED;
+    else if (channels == 3)
+        format = GL_RGB;
+    else if (channels == 4)
+        format = GL_RGBA;
+
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_image_free(data);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    return textureID;
 }

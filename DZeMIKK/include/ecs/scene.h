@@ -6,12 +6,13 @@
 
 #include <memory>
 #include <vector>
+#include "gameobject.h"
 
 namespace dzemikk {
 class GameObject;
 class MonoBehaviour;
 class Scene {
-  public:
+public:
     Scene() = default;
     Scene(const Scene& other) = delete;
     Scene& operator=(const Scene& other) = delete;
@@ -33,18 +34,16 @@ class Scene {
     void destroyGameObject(GameObject* object);
     void update(double deltaTime);
     void fixedUpdate(double deltaTime);
-
     void processPendingStart();
     void addPending(MonoBehaviour* mono);
     void removeActive(MonoBehaviour* mono);
     void processDelete();
 
-  private:
+private:
     std::vector<std::unique_ptr<dzemikk::GameObject>> _objects;
     std::vector<MonoBehaviour*> _pendingStart;
     std::vector<MonoBehaviour*> _active;
     std::vector<GameObject*> _pendingDestroy;
-};
-} // namespace dzemikk
-
+}; // namespace dzemikk
+}
 #endif // DZEMIKK_SCENE_H
