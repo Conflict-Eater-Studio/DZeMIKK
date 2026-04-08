@@ -16,7 +16,7 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 #include "renderer/font.h"
-#include "ecs/scene.h"
+#include <ecs/scenemanager.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -89,8 +89,11 @@ int main() {
         std::cout << "Failed to load font\n";
     }
 
-    dzemikk::Scene mainScene;
-    auto playerGO = mainScene.createGameObject();
+    auto mainScenePtr = std::make_shared<dzemikk::Scene>();
+    engine->getSceneManager()->loadScene(mainScenePtr);
+    engine->getSceneManager()->setActiveScene(mainScenePtr);
+
+    auto playerGO = mainScenePtr->createGameObject();
     playerGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
     playerGO->transform()->setScale(glm::vec3(1.0f));
@@ -114,11 +117,8 @@ int main() {
 
     //dzemikk::AnimationClip* idleClip = new dzemikk::AnimationClip("idle", 0.1f);
 
-
-    engine->scene = &mainScene;
-
     // --- Scene Camera
-    auto cameraGO = mainScene.createGameObject();
+    auto cameraGO = mainScenePtr->createGameObject();
     cameraGO->transform()->setPosition(glm::vec3(1.5f, 1.5f, 3.0f));
     auto camera = cameraGO->addComponent<dzemikk::Camera>();
     camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -209,10 +209,10 @@ int main() {
 
     auto tileMesh = loadMeshFromFile("Debug/res/models/pole.fbx");
     
-    createHexIsland(mainScene, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
+    createHexIsland(*mainScenePtr, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
     // UI Camera
-    auto cameraUIGO = mainScene.createGameObject();
+    auto cameraUIGO = mainScenePtr->createGameObject();
     cameraUIGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 1.0f));
 
     auto cameraUI = cameraUIGO->addComponent<dzemikk::Camera>();
@@ -273,7 +273,7 @@ int main() {
     quadRenderer->setTransform(quadGO->transform());
     quadRenderer->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
 
-    auto quadGO2 = mainScene.createGameObject();
+    auto quadGO2 = mainScenePtr->createGameObject();
     quadGO2->transform()->setPosition(glm::vec3(1500.0f, 950.0f, 0.0f));
     quadGO2->transform()->setScale(glm::vec3(400.0f, 50.0f, 1.0f));
     quadGO2->transform()->setRotation(glm::quat());
@@ -284,7 +284,7 @@ int main() {
     quadRenderer2->setTransform(quadGO2->transform());
     quadRenderer2->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
 
-    auto quadGO3 = mainScene.createGameObject();
+    auto quadGO3 = mainScenePtr->createGameObject();
     quadGO3->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     quadGO3->transform()->setScale(glm::vec3(0.9f, 1.0f, 1.0f));
     quadGO3->transform()->setRotation(glm::quat());
@@ -301,7 +301,7 @@ int main() {
     auto quadSpriteUpdater = quadGO3->addComponent<SpriteUpdater>();
     quadSpriteUpdater->transform = quadGO3->transform();
 
-    auto textGO = mainScene.createGameObject();
+    auto textGO = mainScenePtr->createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
 
     auto text = textGO->addComponent<dzemikk::TextRenderer>();

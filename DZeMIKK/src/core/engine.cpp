@@ -27,7 +27,7 @@ Engine::~Engine() {
 }
 
 void Engine::init() {
-    _mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
+    _mainWindow = std::make_shared<Window>(1920, 1080, "DZeMIKK");
     _renderer = std::make_shared<Renderer>();
     _sceneManager = std::make_shared<SceneManager>();
     _time = std::make_shared<Time>();
@@ -120,10 +120,6 @@ void Engine::start() {
 #else
         _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
-        // --- Only for test DELETE THIS
-        if (scene)
-            scene->update(_time->getDeltaTime());
-
         updateCameraWASD(1.f);
         updateCameraArrows(1.1f);
         _renderer->render();
