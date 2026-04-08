@@ -15,6 +15,8 @@
 #include "ecs/scenemanager.h"
 #include "renderer/renderer.h"
 
+#include "core/profiler.h"
+
 #include <GLFW/glfw3.h>
 namespace dzemikk {
 
@@ -99,23 +101,24 @@ void Engine::start() {
         ImGui::NewFrame();
 
         ImGui::Begin("Renderer");
-
-        float dt_ms = deltaTime * 1000.0f;
-        ImGui::Text("Application %.3f ms/frame (%.1f FPS)",
-            dt_ms,
-            1.0f / deltaTime);
-
-        ImGui::ColorEdit4("Clear Color",
-            reinterpret_cast<float*>(&clear_color));
-
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", _time->deltaTime,
+                    1.0f / _time->deltaTime);
+        ImGui::Separator();
+        
+        const auto& stats = Profiler::rendererStats;
+        ImGui::Text("Render Stats:");
+        ImGui::Text("Draw Calls:      %u", stats.drawCalls);
+        ImGui::Text("Objects:         %u", stats.renderedObjects);
+        ImGui::Text("Triangles:       %u", stats.triangleCount);
+        ImGui::Text("Vertices:        %u", stats.vertexCount);
+        ImGui::Text("State Changes:   %u", stats.stateChanges);
+        
+        ImGui::Separator();
+        ImGui::Text("Background");
+        ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
         ImGui::End();
 
-        _mainWindow->clear(
-            clear_color.x,
-            clear_color.y,
-            clear_color.z,
-            clear_color.w
-        );
+        _mainWindow->clear(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
 #else
         _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
