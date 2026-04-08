@@ -9,6 +9,7 @@
 #include <unordered_set>
 
 namespace dzemikk {
+
 GameObject* Scene::createGameObject() {
     auto object = std::make_unique<GameObject>();
     GameObject* result = object.get();
@@ -89,22 +90,22 @@ void Scene::fixedUpdate(double deltaTime) {
     for (auto* mono : active_snapshot) {
         if (!mono || std::ranges::find(_active, mono) == _active.end()) {
             continue;
-    void Scene::update(double deltaTime) {
-        if (_objects.empty()) return;
-        // Update all behaviours
-        for (const auto& object : _objects) {
-            for (const auto& mono : object->getMonoBehaviours()) {
-                if (!mono->hasStarted()) {
-                    mono->start();
-                    mono->markStarted();
+            if (_objects.empty()) return;
+            // Update all behaviours
+            for (const auto& object : _objects) {
+                for (const auto& mono : object->getMonoBehaviours()) {
+                    if (!mono->hasStarted()) {
+                        mono->start();
+                        mono->markStarted();
+                    }
+                    mono->update(deltaTime);
                 }
-                mono->update(deltaTime);
             }
-        }
-        mono->fixedUpdate(deltaTime);
-    }
+            mono->fixedUpdate(deltaTime);
 
-    processDelete();
+            processDelete();
+        }
+    }
 }
 
 void Scene::processPendingStart() {
@@ -136,7 +137,9 @@ void Scene::processDelete() {
 
         if (obj->getParent()) {
             obj->getParent()->detachChild(obj);
-    _pendingDestroy.clear();
+            _pendingDestroy.clear();
+        }
+    }
 }
 
 void Scene::addPending(MonoBehaviour* mono) {
