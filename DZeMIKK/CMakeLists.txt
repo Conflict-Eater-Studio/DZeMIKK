@@ -14,11 +14,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebIn
     set(DZEMIKK_DEV_TOOLS ON)
 endif()
 
-add_library(DZeMIKK STATIC
-        src/animation/animationclip.cpp
-        src/animation/animationcontroller.cpp
-        src/animation/animationstate.cpp
-        include/animation/pose.h)
+add_library(DZeMIKK STATIC)
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"
@@ -41,6 +37,11 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/components/animator.cpp"
         "${SRC_DIR}/animation/animationstatemachine.cpp"
         "${SRC_DIR}/ecs/component.cpp"
+        "${SRC_DIR}/animation/animationclip.cpp"
+        "${SRC_DIR}/animation/animationcontroller.cpp"
+        "${SRC_DIR}/animation/animationstate.cpp"
+        "${SRC_DIR}/animation/animationcurve.cpp"
+        "${SRC_DIR}/animation/pose.cpp"
 )
 
 set(ENGINE_HEADERS
@@ -68,6 +69,8 @@ set(ENGINE_HEADERS
         "${INC_DIR}/animation/animationstate.h"
         "${INC_DIR}/animation/transition.h"
         "${INC_DIR}/ecs/componentRegistry.h"
+        "${INC_DIR}/animation/pose.h"
+        "${INC_DIR}/animation/animationcurve.h"
 )
 
 target_sources(DZeMIKK
