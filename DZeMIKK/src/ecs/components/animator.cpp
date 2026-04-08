@@ -31,7 +31,7 @@ namespace dzemikk {
         _time += deltaTime;
 
         float time = _time * _currentClip->getFramerate(); // seconds in animation clip timeline
-        float lengthInSeconds = _currentClip->getLength() / _currentClip->getFramerate();
+        float lengthInSeconds = _currentClip->getDuration() / _currentClip->getFramerate();
         float keyframe = fmod(time, lengthInSeconds);
 
         _currentClip->sample(keyframe);

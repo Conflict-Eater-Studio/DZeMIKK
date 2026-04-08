@@ -14,19 +14,14 @@ class AnimationClip {
         static const int DEFAULT_LENGTH = 100;
 
         AnimationClip() = default;
-        AnimationClip(int length, int framerate);
-        int getLength() const;
+        AnimationClip(int duration, int framerate);
+        float getDuration() const;
         int getFramerate() const;
-        void clear();
         void addCurve(const AnimationCurve& curve);
-        AnimationCurve getCurve(int index) const;
-        void setCurve(int index, const AnimationCurve& curve);
         void sample(float timeInTicks) const; // TODO: Blending shape
-        void update(float deltaTime);
     private:
         std::vector<AnimationCurve> _curves;
-        float _time = 0.0f;
-        int _length = 0;
+        int _duration = 0;
         int _framerate = 0;
     };
 };

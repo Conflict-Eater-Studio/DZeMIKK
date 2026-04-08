@@ -16,10 +16,10 @@ namespace dzemikk {
 //         return pose; // or better memory handling
 //     }
 // }
-AnimationClip::AnimationClip(int frames, int framerate) : _length(frames), _framerate(framerate) {
+AnimationClip::AnimationClip(int duration, int framerate) : _duration(duration), _framerate(framerate) {
     }
-    int AnimationClip::getLength() const {
-        return _length;
+    float AnimationClip::getDuration() const {
+        return _duration;
     }
     int AnimationClip::getFramerate() const {
         return _framerate;
