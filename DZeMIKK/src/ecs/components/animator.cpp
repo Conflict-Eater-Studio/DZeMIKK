@@ -20,6 +20,7 @@ namespace dzemikk {
             spdlog::warn("AnimationStateMachine has not a state!");
             return;
         }
+        spdlog::info("Current state: {}", _state->getName());
         AnimationClip* _currentClip = _state->getClip();
         if (_currentClip == nullptr){
 #if DZEMIKK_DEV_TOOLS
@@ -32,14 +33,15 @@ namespace dzemikk {
         float lengthInSeconds = _currentClip->getLength() / _currentClip->getFramerate();
         float keyframe = fmod(time, lengthInSeconds);
 #if DZEMIKK_DEV_TOOLS
-        spdlog::info("Animation time: {}", keyframe);
-        auto p = _currentClip->sample(keyframe);
-        spdlog::info("Scale: ({})", p);
+        //spdlog::info("Animation time: {}", keyframe);
+        //auto p = _currentClip->sample(keyframe);
+        //spdlog::info("Scale: ({})", p);
 #endif
     }
 
     void Animator::play(const std::string& stateName) {
         _time = 0.0f;
+        _stateMachine->setState(stateName);
     }
     void Animator::setStateMachine(AnimationStateMachine* stateMachine) {
         _stateMachine = stateMachine;
