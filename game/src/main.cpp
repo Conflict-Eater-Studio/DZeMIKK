@@ -12,7 +12,7 @@
 #include "renderer/mesh.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
-
+#include "animation/animationcurve.h"
 #include <GLFW/glfw3.h>
 #include <memory>
 
@@ -36,18 +36,12 @@ int main() {
     dzemikk::AnimationState* animationState = new dzemikk::AnimationState("Idle");
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
 
-    dzemikk::Transform t1;
-    dzemikk::Transform t2;
+    dzemikk::AnimationCurve animationCurve;
+    animationCurve.addValue(1.0f);
+    animationCurve.addValue(2.0f);
+    animationCurve.addValue(3.0f);
 
-    // Set different values so poses are different
-    t1.setScale(glm::vec3(1.0f));
-    t2.setScale(glm::vec3(2.0f));
-
-    dzemikk::Pose pose1(t1);
-    dzemikk::Pose pose2(t2);
-
-    animationClip->addPose(pose1);
-    animationClip->addPose(pose2);
+    animationClip->addCurve(animationCurve);
 
     animationState->setClip(animationClip);
     animationStateMachine->addState(animationState);

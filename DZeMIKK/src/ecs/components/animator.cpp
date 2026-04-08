@@ -33,8 +33,8 @@ namespace dzemikk {
         float keyframe = fmod(time, lengthInSeconds);
 #if DZEMIKK_DEV_TOOLS
         spdlog::info("Animation time: {}", keyframe);
-        Pose p = _currentClip->sample(keyframe);
-        spdlog::info("Scale: ({}, {}, {})", p.transform.getScale().x, p.transform.getScale().y, p.transform.getScale().z);
+        auto p = _currentClip->sample(keyframe);
+        spdlog::info("Scale: ({})", p);
 #endif
     }
 

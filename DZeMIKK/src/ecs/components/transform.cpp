@@ -11,18 +11,6 @@ namespace dzemikk {
     , _rotation(glm::quat(glm::radians(params.rotation)))
     , _scale(params.scale)
     {}
-    Transform::Transform(const Transform& other) {
-
-    }
-    Transform& Transform::operator=(const Transform& other) {
-        return *this;
-    }
-    Transform::Transform(Transform&& other) noexcept {
-
-    }
-    Transform Transform::operator=(Transform&& other) noexcept {
-        return *this;
-    }
 
     // --- Setters
     void Transform::setPosition(const glm::vec3& position) {

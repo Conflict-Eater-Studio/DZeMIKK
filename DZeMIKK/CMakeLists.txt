@@ -41,7 +41,6 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/animation/animationcontroller.cpp"
         "${SRC_DIR}/animation/animationstate.cpp"
         "${SRC_DIR}/animation/animationcurve.cpp"
-        "${SRC_DIR}/animation/pose.cpp"
 )
 
 set(ENGINE_HEADERS
@@ -69,7 +68,6 @@ set(ENGINE_HEADERS
         "${INC_DIR}/animation/animationstate.h"
         "${INC_DIR}/animation/transition.h"
         "${INC_DIR}/ecs/componentRegistry.h"
-        "${INC_DIR}/animation/pose.h"
         "${INC_DIR}/animation/animationcurve.h"
 )
 
