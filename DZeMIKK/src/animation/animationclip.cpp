@@ -28,11 +28,11 @@ AnimationClip::AnimationClip(int frames, int framerate) : _length(frames), _fram
         _curves.push_back(curve);
     }
 
-
-    float AnimationClip::sample(float time) const {
-        float frameTime = time * _framerate;
-        int frame = (int)frameTime % _length;
-        return _curves[0].evaluate(frame);
+    void AnimationClip::sample(float keyframe) const {
+        for (auto& curve : _curves) {
+            float value = curve.evaluate(keyframe);
+            transform->setScale(glm::vec3(value));
+        }
     // float frameTime = time * _framerate;
         //
         // int frameA = (int)frameTime;
@@ -47,4 +47,5 @@ AnimationClip::AnimationClip(int frames, int framerate) : _length(frames), _fram
         // return math::lerp(_poses[frameA], _poses[frameB], t);
     }
 
-    } // namespace dzemikk
+}
+

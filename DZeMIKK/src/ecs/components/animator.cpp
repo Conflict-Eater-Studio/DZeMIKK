@@ -17,26 +17,24 @@ namespace dzemikk {
         _stateMachine->update(deltaTime);
         AnimationState* _state = _stateMachine->getCurrentState();
         if (_state == nullptr) {
-            spdlog::warn("AnimationStateMachine has not a state!");
+            spdlog::warn("AnimationStateMachine has no states!");
             return;
         }
-        spdlog::info("Current state: {}", _state->getName());
         AnimationClip* _currentClip = _state->getClip();
         if (_currentClip == nullptr){
 #if DZEMIKK_DEV_TOOLS
-            spdlog::warn("State machine has no clips!");
+            spdlog::warn("State {} has no clip!", _state->getName());
 #endif
             return;
         };
+
         _time += deltaTime;
+
         float time = _time * _currentClip->getFramerate(); // seconds in animation clip timeline
         float lengthInSeconds = _currentClip->getLength() / _currentClip->getFramerate();
         float keyframe = fmod(time, lengthInSeconds);
-#if DZEMIKK_DEV_TOOLS
-        //spdlog::info("Animation time: {}", keyframe);
-        //auto p = _currentClip->sample(keyframe);
-        //spdlog::info("Scale: ({})", p);
-#endif
+
+        _currentClip->sample(keyframe);
     }
 
     void Animator::play(const std::string& stateName) {

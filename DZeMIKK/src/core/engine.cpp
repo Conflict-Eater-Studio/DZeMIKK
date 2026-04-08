@@ -27,7 +27,7 @@ Engine::~Engine() {
 }
 
 void Engine::init() {
-    _mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
+    _mainWindow = std::make_shared<Window>(1920, 1080, "DZeMIKK");
     _renderer = std::make_shared<Renderer>();
     _sceneManager = std::make_shared<SceneManager>();
     _time = std::make_shared<Time>();
