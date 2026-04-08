@@ -1,12 +1,20 @@
+#include "animation/animationclip.h"
+#include "animation/animationstate.h"
 #include "core/engine.h"
+#include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
 #include "ecs/components/monobehaviour.h"
 #include "ecs/gameobject.h"
+#include "ecs/scene.h"
 #include "renderer/material.h"
 #include "renderer/renderer.h"
+#include "renderer/shader.h"
+#include "animation/animationcurve.h"
+#include <GLFW/glfw3.h>
+#include <memory>
 #include "renderer/font.h"
 #include "ecs/scene.h"
 
@@ -74,7 +82,7 @@ int main() {
                                "Debug/res/textures/Daylight Box_Pieces/front.png",
                                "Debug/res/textures/Daylight Box_Pieces/back.png"});
 
-    engine->GetRenderer()->setSkybox(std::move(customSkybox));
+    engine->getRenderer()->setSkybox(std::move(customSkybox));
 
     auto font = new dzemikk::Font();
     if (!font->load("Debug/res/fonts/UncialAntiqua-Regular.ttf")) {
@@ -82,6 +90,31 @@ int main() {
     }
 
     dzemikk::Scene mainScene;
+    auto playerGO = mainScene.createGameObject();
+    playerGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
+    playerGO->transform()->setScale(glm::vec3(1.0f));
+
+    dzemikk::Animator* animator =  playerGO->addComponent<dzemikk::Animator>();
+    dzemikk::AnimationStateMachine* animationStateMachine = new dzemikk::AnimationStateMachine();
+    dzemikk::AnimationState* animationState = new dzemikk::AnimationState("Idle");
+    dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
+
+    dzemikk::AnimationCurve animationCurve;
+    animationCurve.addValue(1.0f);
+    animationCurve.addValue(2.0f);
+    animationCurve.addValue(3.0f);
+
+    animationClip->addCurve(animationCurve);
+
+    animationState->setClip(animationClip);
+    animationStateMachine->addState(animationState);
+//    animationStateMachine->setState("Idle");
+    animator->setStateMachine(animationStateMachine);
+
+    //dzemikk::AnimationClip* idleClip = new dzemikk::AnimationClip("idle", 0.1f);
+
+
     engine->scene = &mainScene;
 
     // --- Scene Camera
@@ -89,7 +122,9 @@ int main() {
     cameraGO->transform()->setPosition(glm::vec3(1.5f, 1.5f, 3.0f));
     auto camera = cameraGO->addComponent<dzemikk::Camera>();
     camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
-    engine->GetRenderer()->setActiveSceneCamera(camera);
+
+    // Rejestracja kamery w rendererze
+    engine->getRenderer()->setActiveSceneCamera(camera);
 
     // --- Cube GameObject
     const char* vertexSrc3D = R"(
@@ -186,14 +221,13 @@ int main() {
                             0.0f, 1080.0f, 
                             -1.0f, 1.0f  
     );
-    engine->GetRenderer()->setActiveUICamera(cameraUI);
+    engine->getRenderer()->setActiveUICamera(cameraUI);
 
     // --- Quad GameObject
     auto quadGO = new dzemikk::GameObject();
     quadGO->transform()->setPosition(glm::vec3(100.0f, 300.0f, 0.0f));
     quadGO->transform()->setScale(glm::vec3(100.0f, 100.0f, 1.0f)); 
     quadGO->transform()->setRotation(glm::quat());
-    engine->getRenderer()->registerRenderer(cubeRenderer);
 
     auto quadMesh = createQuadMesh();
 
@@ -249,7 +283,6 @@ int main() {
     quadRenderer2->setMaterial(quadMaterial);
     quadRenderer2->setTransform(quadGO2->transform());
     quadRenderer2->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
-    engine->getRenderer()->registerSpriteRenderer(quadRenderer);
 
     auto quadGO3 = mainScene.createGameObject();
     quadGO3->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -279,10 +312,6 @@ int main() {
 
     auto updater = textGO->addComponent<TextUpdater>();
     updater->text = text;
-    engine->getRenderer()->setCamera(view, projection);
-
-    glm::mat4 uiOrtho = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-    engine->getRenderer()->setUIProjection(uiOrtho);
 
     engine->start();
 

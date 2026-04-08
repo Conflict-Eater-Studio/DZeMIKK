@@ -1,3 +1,4 @@
+#pragma once
 #ifndef DZEMIKK_WINDOW_H
 #define DZEMIKK_WINDOW_H
 #include "iEngineModule.h"
@@ -20,6 +21,6 @@ namespace dzemikk {
         void Initialize() override;
         void UnInitialize() override;
     };
-} // dzemikk
+}
 
-#endif // DZEMIKK_WINDOW_H
+#endif
