@@ -11,12 +11,14 @@ namespace dzemikk {
     class AnimationState {
     public:
         AnimationState(std::string name);
-        ~AnimationState();
-        [[nodiscard]] const std::string& getName() const;
+        ~AnimationState() = default;
+        [[nodiscard]] const std::string& getName() const noexcept;
         void setName(const std::string& name);
-        [[nodiscard]] AnimationClip* getClip() const;
+
+        [[nodiscard]] AnimationClip* getClip() const noexcept;
         void setClip(AnimationClip* clip);
-        [[nodiscard]] const std::vector<Transition>& getTransitions() const;
+
+        [[nodiscard]] const std::vector<Transition>& getTransitions() const noexcept;
         void addTransition(const Transition& transition);
         void update(float deltaTime);
     private:

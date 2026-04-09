@@ -5,6 +5,7 @@
 #include <vector>
 
 namespace dzemikk {
+class AnimationTrack;
 class Transform;
 class AnimationClip {
     public:
@@ -17,10 +18,10 @@ class AnimationClip {
         AnimationClip(int duration, int framerate);
         float getDuration() const;
         int getFramerate() const;
-        void addCurve(const AnimationCurve& curve);
-        void sample(float timeInTicks) const; // TODO: Blending shape
+        void addTrack(AnimationTrack* track);
+        void sample(float timeInTicks) const;
     private:
-        std::vector<AnimationCurve> _curves;
+        std::vector<AnimationTrack*> _tracks;
         int _duration = 0;
         int _framerate = 0;
     };

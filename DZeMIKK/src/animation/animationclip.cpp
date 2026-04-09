@@ -1,53 +1,33 @@
 #include "animation/animationclip.h"
 
+#include "animation/animationtrack.h"
 #include "ecs/components/transform.h"
 #include "spdlog/spdlog.h"
 namespace dzemikk {
-// namespace math {
-//     Transform lerp(const Transform& a, const Transform& b, float t) {
-//         Transform transform = Transform();
-//         glm::vec3 scale = glm::mix(a.getScale(), b.getScale(), t);
-//         transform.setScale(scale);
-//         return transform;
-//     }
-//     Pose lerp(const Pose& a, const Pose& b, float t) {
-//         Transform blended = lerp(a.transform, b.transform, t);
-//         Pose pose = Pose(blended);
-//         return pose; // or better memory handling
-//     }
-// }
-AnimationClip::AnimationClip(int duration, int framerate) : _duration(duration), _framerate(framerate) {
-    }
+    AnimationClip::AnimationClip(int duration, int framerate) : _duration(duration), _framerate(framerate) {}
+
     float AnimationClip::getDuration() const {
         return _duration;
     }
+
     int AnimationClip::getFramerate() const {
         return _framerate;
     }
-    void AnimationClip::addCurve(const AnimationCurve& curve) {
-        _curves.push_back(curve);
+
+    void AnimationClip::addTrack(AnimationTrack* track) {
+        _tracks.push_back(track);
     }
 
     void AnimationClip::sample(float currentTime) const {
         float time = currentTime * getFramerate(); // seconds in animation clip timeline
         float keyframe = fmod(time, getDuration());
 
-        for (auto& curve : _curves) {
-            float value = curve.evaluate(keyframe);
-            transform->setScale(glm::vec3(value));
+        if (_tracks.empty()) return;
+
+        for (auto& track : _tracks) {
+            glm::vec3 scale = track->interpolateScale(keyframe);
+            transform->setScale(scale);
         }
-    // float frameTime = time * _framerate;
-        //
-        // int frameA = (int)frameTime;
-        // int frameB = frameA + 1;
-        //
-        // frameA = frameA % _length;
-        // frameB = frameB % _length;
-        //
-        // float t = frameTime - frameA;
-        // spdlog::info("{} to {}", _poses[frameA].transform.getScale().x,  _poses[frameB].transform.getScale().x);
-        //
-        // return math::lerp(_poses[frameA], _poses[frameB], t);
     }
 
 }

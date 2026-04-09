@@ -13,13 +13,14 @@ class AnimationState;
     public:
         AnimationStateMachine() = default;
         ~AnimationStateMachine() = default;
+        AnimationStateMachine(const AnimationStateMachine&) = delete;
+        AnimationStateMachine& operator=(const AnimationStateMachine&) = delete;
 
         void update(float deltaTime);
 
         [[nodiscard]] AnimationState* getCurrentState() const;
-        void addState(std::unique_ptr<AnimationState> state);
-        void addState(AnimationState stateName, AnimationClip clip);
 
+        void addState(std::unique_ptr<AnimationState> state);
         void setState(const std::string& stateName);
     private:
         std::unordered_map<std::string, std::unique_ptr<AnimationState>> _states;

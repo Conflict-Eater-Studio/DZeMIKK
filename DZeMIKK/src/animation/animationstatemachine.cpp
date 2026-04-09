@@ -21,11 +21,10 @@ namespace dzemikk {
     }
 
     void AnimationStateMachine::addState(std::unique_ptr<AnimationState> state) {
-        _states.emplace(state->getName(), std::move(state));
-    } 
-
-    void AnimationStateMachine::addState(AnimationState stateName, AnimationClip clip) {
-        std::unique_ptr<AnimationState> _state = std::make_unique<AnimationState>(stateName);
+        if (!state) return;
+        auto name = state->getName();
+        _currentState = _currentState ? _currentState : state.get();
+        _states.emplace(std::move(name), std::move(state));
     }
 
     void AnimationStateMachine::setState(const std::string& stateName) {

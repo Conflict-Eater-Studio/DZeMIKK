@@ -3,20 +3,20 @@
 
 namespace dzemikk {
     AnimationState::AnimationState(std::string name) : _name(std::move(name)) {}
-    AnimationState::~AnimationState() {}
-    const std::string& AnimationState::getName() const {
+
+    const std::string& AnimationState::getName() const noexcept {
         return _name;
     }
     void AnimationState::setName(const std::string& name) {
         _name = name;
     }
-    AnimationClip* AnimationState::getClip() const {
+    AnimationClip* AnimationState::getClip() const noexcept {
         return _clip;
     }
     void AnimationState::setClip(AnimationClip* clip) {
         _clip = clip;
     }
-    const std::vector<Transition>& AnimationState::getTransitions() const {
+    const std::vector<Transition>& AnimationState::getTransitions() const noexcept {
         return _transitions;
     }
     void AnimationState::addTransition(const Transition& transition) {
