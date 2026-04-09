@@ -15,6 +15,7 @@ add_executable(dzemikk_tests
     test_hierarchy.cpp
     test_gameobject.cpp
     test_componentRegister.cpp
+    test_serializers.cpp
 )
 
 target_link_libraries(dzemikk_tests

@@ -11,6 +11,7 @@
 #include "ecs/components/camera.h"
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
+#include "core/profiler.h"
 #include <iostream>
 #include <map>
 
@@ -100,6 +101,7 @@ void dzemikk::Renderer::UnInitialize() {
 }
 
 void dzemikk::Renderer::render() {
+    Profiler::resetFrame();
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
@@ -113,6 +115,11 @@ void dzemikk::Renderer::render() {
         glm::mat4 viewNoTrans = _sceneCamera->getView() * rotation;
 
         _skybox->render(viewNoTrans, _sceneCamera->getProjection());
+
+        Profiler::rendererStats.drawCalls++;
+        Profiler::rendererStats.renderedObjects++;
+        Profiler::rendererStats.vertexCount += 36;
+        Profiler::rendererStats.triangleCount += 12;
     }
 
     glEnable(GL_CULL_FACE);
@@ -171,6 +178,10 @@ void dzemikk::Renderer::render() {
         }
 
         batch->models.push_back(r->getTransform()->getWorldMatrix());
+
+        Profiler::rendererStats.renderedObjects++;
+        Profiler::rendererStats.vertexCount += batch->mesh->getVertexCount();
+        Profiler::rendererStats.triangleCount += batch->mesh->getVertexCount() / 3;
     }
 
     for (auto& batch : _batches) {
@@ -188,6 +199,7 @@ void dzemikk::Renderer::render() {
         shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
 
         mesh->drawInstanced(batch.models, batch.instanceVBO);
+        Profiler::rendererStats.drawCalls++;
     }
 
     if (_uiCamera)
@@ -213,6 +225,11 @@ void dzemikk::Renderer::render() {
         shader->setVec4("spriteColor", r->getColor());
 
         r->getMesh()->draw();
+        Profiler::rendererStats.drawCalls++;
+
+        Profiler::rendererStats.renderedObjects++;
+        Profiler::rendererStats.vertexCount += r->getMesh()->getVertexCount();
+        Profiler::rendererStats.triangleCount += r->getMesh()->getVertexCount() / 3;
     }
 
     std::vector<TextRenderer*> texts;
@@ -256,6 +273,12 @@ void dzemikk::Renderer::render() {
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 
             glDrawArrays(GL_TRIANGLES, 0, 6);
+
+            Profiler::rendererStats.drawCalls++;
+
+            Profiler::rendererStats.renderedObjects++;
+            Profiler::rendererStats.vertexCount += 6;
+            Profiler::rendererStats.triangleCount += 2;
 
             x += (ch.advance >> 6) * t->scale;
         }

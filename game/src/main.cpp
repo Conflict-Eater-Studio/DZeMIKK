@@ -16,9 +16,7 @@
 #include "renderer/material.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
-#include "spdlog/fmt/bundled/std.h"
 #include "spdlog/spdlog.h"
-
 #include <GLFW/glfw3.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -40,6 +38,10 @@ class TextUpdater : public dzemikk::MonoBehaviour {
         time += deltaTime;
         text->text = "Time: " + std::to_string((int)time);
     }
+
+    [[nodiscard]] std::string typeName() const override {
+        return "TextUpdater";
+    };
 };
 
 class SpriteUpdater: public dzemikk::MonoBehaviour {
@@ -57,6 +59,10 @@ class SpriteUpdater: public dzemikk::MonoBehaviour {
 
           transform->setScale(glm::vec3(scaleX, scaleY, 1.0f));
       }
+
+    [[nodiscard]] std::string typeName() const override {
+          return "SpriteUpdater";
+      };
 
 };
 
@@ -116,7 +122,7 @@ int main() {
     engine->scene = &mainScene;
 
     // --- Scene Camera
-    auto cameraGO = mainScene.createGameObject();
+    auto cameraGO = mainScenePtr->createGameObject();
     cameraGO->transform()->setPosition(glm::vec3(1.5f, 1.5f, 3.0f));
     auto camera = cameraGO->addComponent<dzemikk::Camera>();
     camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -205,12 +211,12 @@ int main() {
 
     auto cubeMesh = createCubeMesh();
 
-    auto tileMesh = loadMeshFromFile("./res/models/pole.fbx");
-
-    //createHexIsland(mainScene, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
+    auto tileMesh = loadMeshFromFile("Debug/res/models/pole.fbx");
+    
+    createHexIsland(*mainScenePtr, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
     // UI Camera
-    auto cameraUIGO = mainScene.createGameObject();
+    auto cameraUIGO = mainScenePtr->createGameObject();
     cameraUIGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 1.0f));
 
     auto cameraUI = cameraUIGO->addComponent<dzemikk::Camera>();
@@ -271,7 +277,7 @@ int main() {
     quadRenderer->setTransform(quadGO->transform());
     quadRenderer->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
 
-    auto quadGO2 = mainScene.createGameObject();
+    auto quadGO2 = mainScenePtr->createGameObject();
     quadGO2->transform()->setPosition(glm::vec3(1500.0f, 950.0f, 0.0f));
     quadGO2->transform()->setScale(glm::vec3(400.0f, 50.0f, 1.0f));
     quadGO2->transform()->setRotation(glm::quat());
@@ -282,7 +288,7 @@ int main() {
     quadRenderer2->setTransform(quadGO2->transform());
     quadRenderer2->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
 
-    auto quadGO3 = mainScene.createGameObject();
+    auto quadGO3 = mainScenePtr->createGameObject();
     quadGO3->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     quadGO3->transform()->setScale(glm::vec3(0.9f, 1.0f, 1.0f));
     quadGO3->transform()->setRotation(glm::quat());
@@ -299,7 +305,7 @@ int main() {
     auto quadSpriteUpdater = quadGO3->addComponent<SpriteUpdater>();
     quadSpriteUpdater->transform = quadGO3->transform();
 
-    auto textGO = mainScene.createGameObject();
+    auto textGO = mainScenePtr->createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
 
     auto text = textGO->addComponent<dzemikk::TextRenderer>();

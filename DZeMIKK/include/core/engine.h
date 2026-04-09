@@ -31,7 +31,6 @@ class Engine {
         void updateCameraWASD(float speed);
         void updateCameraArrows(float speed);
 
-         Scene* scene;
     private:
         void init();
         void shutdown();
