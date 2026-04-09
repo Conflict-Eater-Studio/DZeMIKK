@@ -1,31 +1,31 @@
 #include "animation/animationclip.h"
+#include "animation/animationcurve.h"
 #include "animation/animationstate.h"
+#include "animation/animationstatemachine.h"
+#include "animation/animationtrack.h"
 #include "core/engine.h"
 #include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
+#include "ecs/components/monobehaviour.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
-#include "ecs/components/monobehaviour.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
+#include "renderer/font.h"
 #include "renderer/material.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
-#include "animation/animationcurve.h"
+#include "spdlog/spdlog.h"
 #include <GLFW/glfw3.h>
-#include <memory>
-#include "renderer/font.h"
-#include <ecs/scenemanager.h>
-
 #include <assimp/Importer.hpp>
-#include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <iostream>
+#include <assimp/scene.h>
 #include <filesystem>
 #include <glad/glad.h>
+#include <iostream>
+#include <memory>
 #include <stb/stb_image.h>
-#include "spdlog/spdlog.h"
 
 class TextUpdater : public dzemikk::MonoBehaviour {
   public:
@@ -78,52 +78,48 @@ GLuint loadTextureFromFile(const std::string& path, bool flipVertical = true);
 void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int tileCount, float size, float spacing = 0.1f,
                      float maxHeight = 0.3f); 
+void printAnimationInfo(const aiScene* scene) {
+    spdlog::info("Animations: {}", scene->mNumAnimations);
 
+    for (unsigned int i = 0; i < scene->mNumAnimations; i++) {
+        aiAnimation* anim = scene->mAnimations[i];
+
+        spdlog::info("Animation {}:", i);
+        spdlog::info("  Duration: {}", anim->mDuration);
+        spdlog::info("  TicksPerSecond: {}", anim->mTicksPerSecond);
+        spdlog::info("  Channels: {}", anim->mNumChannels);
+
+        for (unsigned int j = 0; j < anim->mNumChannels; j++) {
+            aiNodeAnim* channel = anim->mChannels[j];
+
+            spdlog::info("    Channel {}: {}", j, channel->mNodeName.C_Str());
+            spdlog::info("      Position keys: {}", channel->mNumPositionKeys);
+            spdlog::info("      Rotation keys: {}", channel->mNumRotationKeys);
+            spdlog::info("      Scaling keys: {}", channel->mNumScalingKeys);
+        }
+    }
+}
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
 
     auto customSkybox = std::make_unique<dzemikk::Skybox>();
-    customSkybox->loadCubemap({"Debug/res/textures/Daylight Box_Pieces/right.png",
-                               "Debug/res/textures/Daylight Box_Pieces/left.png",
-                               "Debug/res/textures/Daylight Box_Pieces/top.png",
-                               "Debug/res/textures/Daylight Box_Pieces/bottom.png",
-                               "Debug/res/textures/Daylight Box_Pieces/front.png",
-                               "Debug/res/textures/Daylight Box_Pieces/back.png"});
+    customSkybox->loadCubemap({"./res/textures/Daylight Box_Pieces/right.png",
+                               "./res/textures/Daylight Box_Pieces/left.png",
+                               "./res/textures/Daylight Box_Pieces/top.png",
+                               "./res/textures/Daylight Box_Pieces/bottom.png",
+                               "./res/textures/Daylight Box_Pieces/front.png",
+                               "./res/textures/Daylight Box_Pieces/back.png"});
 
     engine->getRenderer()->setSkybox(std::move(customSkybox));
 
     auto font = new dzemikk::Font();
-    if (!font->load("Debug/res/fonts/UncialAntiqua-Regular.ttf")) {
+    if (!font->load("./res/fonts/UncialAntiqua-Regular.ttf")) {
         std::cout << "Failed to load font\n";
     }
 
-    auto mainScenePtr = std::make_shared<dzemikk::Scene>();
-    engine->getSceneManager()->loadScene(mainScenePtr);
-    engine->getSceneManager()->setActiveScene(mainScenePtr);
+    dzemikk::Scene mainScene;
 
-    auto playerGO = mainScenePtr->createGameObject();
-    playerGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-    playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
-    playerGO->transform()->setScale(glm::vec3(1.0f));
-
-    dzemikk::Animator* animator =  playerGO->addComponent<dzemikk::Animator>();
-    dzemikk::AnimationStateMachine* animationStateMachine = new dzemikk::AnimationStateMachine();
-    dzemikk::AnimationState* animationState = new dzemikk::AnimationState("Idle");
-    dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
-
-    dzemikk::AnimationCurve animationCurve;
-    animationCurve.addValue(1.0f);
-    animationCurve.addValue(2.0f);
-    animationCurve.addValue(3.0f);
-
-    animationClip->addCurve(animationCurve);
-
-    animationState->setClip(animationClip);
-    animationStateMachine->addState(animationState);
-//    animationStateMachine->setState("Idle");
-    animator->setStateMachine(animationStateMachine);
-
-    //dzemikk::AnimationClip* idleClip = new dzemikk::AnimationClip("idle", 0.1f);
+    engine->scene = &mainScene;
 
     // --- Scene Camera
     auto cameraGO = mainScenePtr->createGameObject();
@@ -187,7 +183,7 @@ int main() {
     }
     )";
 
-    auto shaderA = new dzemikk::Shader(vertexSrc3D, fragmentSrc3D); 
+    auto shaderA = new dzemikk::Shader(vertexSrc3D, fragmentSrc3D);
     auto materialA = new dzemikk::Material();
     materialA->setShader(shaderA);
 
@@ -225,16 +221,16 @@ int main() {
 
     auto cameraUI = cameraUIGO->addComponent<dzemikk::Camera>();
 
-    cameraUI->setOrthographic(0.0f, 1920.0f, 
-                            0.0f, 1080.0f, 
-                            -1.0f, 1.0f  
+    cameraUI->setOrthographic(0.0f, 1920.0f,
+                            0.0f, 1080.0f,
+                            -1.0f, 1.0f
     );
     engine->getRenderer()->setActiveUICamera(cameraUI);
 
     // --- Quad GameObject
     auto quadGO = new dzemikk::GameObject();
     quadGO->transform()->setPosition(glm::vec3(100.0f, 300.0f, 0.0f));
-    quadGO->transform()->setScale(glm::vec3(100.0f, 100.0f, 1.0f)); 
+    quadGO->transform()->setScale(glm::vec3(100.0f, 100.0f, 1.0f));
     quadGO->transform()->setRotation(glm::quat());
 
     auto quadMesh = createQuadMesh();
@@ -321,8 +317,56 @@ int main() {
     auto updater = textGO->addComponent<TextUpdater>();
     updater->text = text;
 
-    engine->start();
 
+
+    auto playerGO = mainScene.createGameObject();
+    playerGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
+    playerGO->transform()->setScale(glm::vec3(10.0f));
+
+    auto playerMesh = createCubeMesh();
+    auto renderer = playerGO->addComponent<dzemikk::MeshRenderer>();
+    renderer->setMesh(playerMesh);
+    renderer->setMaterial(materialA);
+    renderer->setTransform(playerGO->transform());
+
+    playerGO->transform()->setScale(glm::vec3(1.f));
+    playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
+
+    dzemikk::Animator* animator =  playerGO->addComponent<dzemikk::Animator>();
+    std::shared_ptr<dzemikk::AnimationStateMachine> animationStateMachine = std::make_shared<dzemikk::AnimationStateMachine>();
+    std::unique_ptr<dzemikk::AnimationState> idleState = std::make_unique<dzemikk::AnimationState>("Idle");
+
+    dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
+    dzemikk::AnimationTrack* animationTrack = new  dzemikk::AnimationTrack("Test");
+
+    animationTrack->addScaleKey(0.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    animationTrack->addScaleKey(0.5f, glm::vec3(1.2f, 1.2f, 1.2f));
+    animationTrack->addScaleKey(1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    animationTrack->addRotationKey(0.0f, glm::vec3(0.0f, 90.0f, 0.0f));
+    animationTrack->addRotationKey(0.5f, glm::vec3(0.0f, 45.0f, 0.0f));
+    animationTrack->addRotationKey(1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+    animationTrack->addPositionKey(0.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+    animationTrack->addPositionKey(0.5f, glm::vec3(1.0f, 0.0f, 0.0f));
+    animationTrack->addPositionKey(1.0f, glm::vec3(2.0f, 0.0f, 0.0f));
+
+    animationClip->addTrack(animationTrack);
+    idleState->setClip(animationClip);
+
+    animator->setStateMachine(animationStateMachine);
+    animationStateMachine->addState(std::move(idleState));
+    animationClip->transform = playerGO->transform();
+
+    // Assimp::Importer importer;
+    // const aiScene* scene = importer.ReadFile("./res/models/model.fbx", aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+    // if (!scene || !scene->mRootNode) {
+    //     spdlog::error("Failed to load model: {}", importer.GetErrorString());
+    // }
+    // spdlog::info("\n=== Animation Info ===");
+    // printAnimationInfo(scene);
+    engine->start();
     return 0;
 }
 

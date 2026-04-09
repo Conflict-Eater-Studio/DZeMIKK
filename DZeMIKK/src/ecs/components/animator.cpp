@@ -1,10 +1,12 @@
-#include "ecs/components/animator.h"
+#if DZEMIKK_DEV_TOOLS
+#include <spdlog/spdlog.h>
+#endif
 
+#include "ecs/components/animator.h"
 #include "animation/animationclip.h"
 #include "animation/animationstate.h"
-#include "ecs/components/transform.h"
+#include "animation/animationstatemachine.h"
 
-#include <spdlog/spdlog.h>
 
 namespace dzemikk {
     void Animator::update(float deltaTime) {
@@ -17,37 +19,40 @@ namespace dzemikk {
         _stateMachine->update(deltaTime);
         AnimationState* _state = _stateMachine->getCurrentState();
         if (_state == nullptr) {
-            spdlog::warn("AnimationStateMachine has not a state!");
+            spdlog::warn("AnimationStateMachine has no states!");
             return;
         }
         AnimationClip* _currentClip = _state->getClip();
         if (_currentClip == nullptr){
 #if DZEMIKK_DEV_TOOLS
-            spdlog::warn("State machine has no clips!");
+            spdlog::warn("State {} has no clip!", _state->getName());
 #endif
             return;
         };
-        _time += deltaTime;
-        float time = _time * _currentClip->getFramerate(); // seconds in animation clip timeline
-        float lengthInSeconds = _currentClip->getLength() / _currentClip->getFramerate();
-        float keyframe = fmod(time, lengthInSeconds);
-#if DZEMIKK_DEV_TOOLS
-        //spdlog::info("Animation time: {}", keyframe);
-        auto p = _currentClip->sample(keyframe);
-        //spdlog::info("Scale: ({})", p);
-#endif
-    }
 
-    void Animator::play(const std::string& stateName) {
-        _time = 0.0f;
+        _currentTime += deltaTime;
+
+        _currentClip->sample(_currentTime);
     }
-    void Animator::setStateMachine(AnimationStateMachine* stateMachine) {
+    void Animator::play(const std::string& stateName) {
+        _currentTime = 0.0f;
+        _stateMachine->setState(stateName);
+    }
+    void Animator::setFloat(std::string_view name, float value) {
+
+    }
+    void Animator::setBool(std::string_view name, bool value) {
+
+    }
+    void Animator::setInt(std::string_view name, int value) {
+
+    }
+    void Animator::setStateMachine(const std::shared_ptr<AnimationStateMachine>& stateMachine) {
         _stateMachine = stateMachine;
     }
-    AnimationStateMachine* Animator::getStateMachine() const {
+    std::shared_ptr<AnimationStateMachine> Animator::getStateMachine() const noexcept {
         return _stateMachine;
     }
-
-    }
+}
 
 
