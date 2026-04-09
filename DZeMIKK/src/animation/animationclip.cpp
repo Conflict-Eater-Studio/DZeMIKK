@@ -28,7 +28,10 @@ AnimationClip::AnimationClip(int duration, int framerate) : _duration(duration),
         _curves.push_back(curve);
     }
 
-    void AnimationClip::sample(float keyframe) const {
+    void AnimationClip::sample(float currentTime) const {
+        float time = currentTime * getFramerate(); // seconds in animation clip timeline
+        float keyframe = fmod(time, getDuration());
+
         for (auto& curve : _curves) {
             float value = curve.evaluate(keyframe);
             transform->setScale(glm::vec3(value));

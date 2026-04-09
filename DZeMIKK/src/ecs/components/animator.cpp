@@ -30,11 +30,7 @@ namespace dzemikk {
 
         _currentTime += deltaTime;
 
-        float time = _currentTime * _currentClip->getFramerate(); // seconds in animation clip timeline
-        float lengthInSeconds = _currentClip->getDuration() / _currentClip->getFramerate();
-        float keyframe = fmod(time, lengthInSeconds);
-
-        _currentClip->sample(keyframe);
+        _currentClip->sample(_currentTime);
     }
     void Animator::play(const std::string& stateName) {
         _currentTime = 0.0f;
