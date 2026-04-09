@@ -32,9 +32,9 @@ namespace dzemikk {
         float lengthInSeconds = _currentClip->getLength() / _currentClip->getFramerate();
         float keyframe = fmod(time, lengthInSeconds);
 #if DZEMIKK_DEV_TOOLS
-        spdlog::info("Animation time: {}", keyframe);
+        //spdlog::info("Animation time: {}", keyframe);
         auto p = _currentClip->sample(keyframe);
-        spdlog::info("Scale: ({})", p);
+        //spdlog::info("Scale: ({})", p);
 #endif
     }
 
