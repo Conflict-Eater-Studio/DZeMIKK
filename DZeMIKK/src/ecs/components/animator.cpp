@@ -1,10 +1,12 @@
-#include "ecs/components/animator.h"
+#if DZEMIKK_DEV_TOOLS
+#include <spdlog/spdlog.h>
+#endif
 
+#include "ecs/components/animator.h"
 #include "animation/animationclip.h"
 #include "animation/animationstate.h"
-#include "ecs/components/transform.h"
+#include "animation/animationstatemachine.h"
 
-#include <spdlog/spdlog.h>
 
 namespace dzemikk {
     void Animator::update(float deltaTime) {
