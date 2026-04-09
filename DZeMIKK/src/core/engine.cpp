@@ -12,6 +12,8 @@
 #include "core/time.h"
 #include "core/window.h"
 #include "ecs/components/camera.h"
+#include "ecs/components/transform.h"
+#include "ecs/gameobject.h"
 #include "ecs/scenemanager.h"
 #include "renderer/renderer.h"
 

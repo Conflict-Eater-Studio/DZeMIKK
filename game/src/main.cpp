@@ -38,6 +38,10 @@ class TextUpdater : public dzemikk::MonoBehaviour {
         time += deltaTime;
         text->text = "Time: " + std::to_string((int)time);
     }
+
+    [[nodiscard]] std::string typeName() const override {
+        return "TextUpdater";
+    };
 };
 
 class SpriteUpdater: public dzemikk::MonoBehaviour {
@@ -55,6 +59,10 @@ class SpriteUpdater: public dzemikk::MonoBehaviour {
 
           transform->setScale(glm::vec3(scaleX, scaleY, 1.0f));
       }
+
+    [[nodiscard]] std::string typeName() const override {
+          return "SpriteUpdater";
+      };
 
 };
 
