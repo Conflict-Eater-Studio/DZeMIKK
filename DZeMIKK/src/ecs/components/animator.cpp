@@ -53,6 +53,9 @@ namespace dzemikk {
     std::shared_ptr<AnimationStateMachine> Animator::getStateMachine() const noexcept {
         return _stateMachine;
     }
+    std::string Animator::typeName() const {
+        return "Animator";
+    }
 }
 
 

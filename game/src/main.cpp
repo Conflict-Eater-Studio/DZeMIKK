@@ -117,9 +117,7 @@ int main() {
         std::cout << "Failed to load font\n";
     }
 
-    dzemikk::Scene mainScene;
-
-    engine->scene = &mainScene;
+    auto mainScenePtr = std::make_shared<dzemikk::Scene>();
 
     // --- Scene Camera
     auto cameraGO = mainScenePtr->createGameObject();
@@ -319,7 +317,7 @@ int main() {
 
 
 
-    auto playerGO = mainScene.createGameObject();
+    auto playerGO = mainScenePtr->createGameObject();
     playerGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
     playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
     playerGO->transform()->setScale(glm::vec3(10.0f));
