@@ -1,9 +1,10 @@
 #if DZEMIKK_DEV_TOOLS
-#include <spdlog/spdlog.h>
-#include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <ft2build.h>
+#include <imgui.h>
+#include <spdlog/spdlog.h>
+
 #include FT_FREETYPE_H
 #endif
 
@@ -12,10 +13,12 @@
 #include "core/time.h"
 #include "core/window.h"
 #include "ecs/components/camera.h"
+#include "ecs/gameobject.h"
 #include "ecs/scenemanager.h"
 #include "renderer/renderer.h"
 
 #include <GLFW/glfw3.h>
+
 namespace dzemikk {
 
 Engine::Engine() {
@@ -51,10 +54,8 @@ void Engine::init() {
     ImGui_ImplGlfw_InitForOpenGL(_mainWindow->nativeHandle(), true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
-    spdlog::info("DZeMIKK version: {}.{}.{}",
-        DZeMIKK_VERSION_MAJOR,
-        DZeMIKK_VERSION_MINOR,
-        DZeMIKK_VERSION_REVISION);
+    spdlog::info("DZeMIKK version: {}.{}.{}", DZeMIKK_VERSION_MAJOR, DZeMIKK_VERSION_MINOR,
+                 DZeMIKK_VERSION_REVISION);
 #endif
 }
 
@@ -101,21 +102,13 @@ void Engine::start() {
         ImGui::Begin("Renderer");
 
         float dt_ms = deltaTime * 1000.0f;
-        ImGui::Text("Application %.3f ms/frame (%.1f FPS)",
-            dt_ms,
-            1.0f / deltaTime);
+        ImGui::Text("Application %.3f ms/frame (%.1f FPS)", dt_ms, 1.0f / deltaTime);
 
-        ImGui::ColorEdit4("Clear Color",
-            reinterpret_cast<float*>(&clear_color));
+        ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
 
         ImGui::End();
 
-        _mainWindow->clear(
-            clear_color.x,
-            clear_color.y,
-            clear_color.z,
-            clear_color.w
-        );
+        _mainWindow->clear(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
 #else
         _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
@@ -156,8 +149,7 @@ std::shared_ptr<AnimationModule> Engine::getAnimationSystem() {
     return _animationSystem;
 }
 
-template <std::derived_from<IEngineModule> T>
-std::shared_ptr<T> Engine::getModule() const {
+template <std::derived_from<IEngineModule> T> std::shared_ptr<T> Engine::getModule() const {
     for (const auto& module : _modules) {
         if (auto casted = std::dynamic_pointer_cast<T>(module)) {
             return casted;
@@ -215,4 +207,4 @@ void Engine::updateCameraArrows(float speed) {
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_DOWN) == GLFW_PRESS)
         transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->right()));
 }
-}
+} // namespace dzemikk
