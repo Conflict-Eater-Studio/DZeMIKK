@@ -19,19 +19,51 @@ struct CallbackCounters {
 
 class TestComponent final : public dzemikk::Component {
   public:
+    using Base = dzemikk::Component;
+
     explicit TestComponent(int value = 0) : value(value) {}
+
+    [[nodiscard]] std::string typeName() const override {
+        return "TestComponent";
+    }
+
     int value = 0;
 };
 
-class AnotherComponent final : public dzemikk::Component {};
+class AnotherComponent final : public dzemikk::Component {
+  public:
+    using Base = dzemikk::Component;
 
-class BaseComponent : public dzemikk::Component {};
+    [[nodiscard]] std::string typeName() const override {
+        return "AnotherComponent";
+    }
+};
 
-class DerivedComponent final : public BaseComponent {};
+class BaseComponent : public dzemikk::Component {
+  public:
+    using Base = dzemikk::Component;
+
+    [[nodiscard]] std::string typeName() const override {
+        return "BaseComponent";
+    }
+};
+
+class DerivedComponent final : public BaseComponent {
+  public:
+    using Base = BaseComponent;
+
+    [[nodiscard]] std::string typeName() const override {
+        return "DerivedComponent";
+    }
+};
 
 class CountingMonoBehaviour final : public dzemikk::MonoBehaviour {
   public:
     explicit CountingMonoBehaviour(CallbackCounters* counters) : _counters(counters) {}
+
+    [[nodiscard]] std::string typeName() const override {
+        return "CountingMonoBehaviour";
+    }
 
     void start() override {
         if (_counters) {

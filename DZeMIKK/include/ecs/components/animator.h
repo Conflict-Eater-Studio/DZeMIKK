@@ -6,18 +6,22 @@
 
 #include <string>
 namespace dzemikk {
-    class Animator : public Component {
-    public:
-        void update(float deltaTime);
-        void play(const std::string& stateName);
-        void setFloat(const std::string& name, float value);
-        void setBool(const std::string& name, bool value);
-        void setInt(const std::string& name, int value);
-        void setStateMachine(AnimationStateMachine* stateMachine);
-        AnimationStateMachine* getStateMachine() const;
-    private:
-        AnimationStateMachine* _stateMachine = nullptr;
-        float _time = 0.0f;
+class Animator : public Component {
+  public:
+    void update(float deltaTime);
+    void play(const std::string& stateName);
+    void setFloat(const std::string& name, float value);
+    void setBool(const std::string& name, bool value);
+    void setInt(const std::string& name, int value);
+    void setStateMachine(AnimationStateMachine* stateMachine);
+    AnimationStateMachine* getStateMachine() const;
+    [[nodiscard]] std::string typeName() const override {
+        return "Animator";
     };
-}
+
+  private:
+    AnimationStateMachine* _stateMachine = nullptr;
+    float _time = 0.0f;
+};
+} // namespace dzemikk
 #endif

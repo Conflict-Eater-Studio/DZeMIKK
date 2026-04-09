@@ -1,22 +1,27 @@
 #ifndef DZEMIKK_COMPONENT_H
 #define DZEMIKK_COMPONENT_H
 
+#pragma once
+#include <boost/uuid.hpp>
+
 namespace dzemikk {
 class GameObject;
 class Scene;
 class Component {
   public:
-    Component() = default;
+    Component();
+    Component(const boost::uuids::uuid& uuid);
     Component(const Component& other) = delete;
     Component(Component&& other) noexcept = delete;
     Component& operator=(const Component& other) = delete;
     Component& operator=(Component&& other) noexcept = delete;
     virtual ~Component() = default;
 
-  protected:
-    GameObject* _owner = nullptr;
+    /*
+     * @brief Gets the type name of this component.
+     */
+    [[nodiscard]] virtual std::string typeName() const = 0;
 
-  public:
     /*
      * @brief Sets the owner GameObject of this component.
      *
@@ -24,11 +29,27 @@ class Component {
      */
     void setOwner(GameObject* owner);
 
+    /*
+     * @brief Sets the unique identifier of this component.
+     *
+     * @param uuid The unique identifier for this component.
+     */
+    void setId(const boost::uuids::uuid& uuid);
+
     // --- Getters
     /*
      * @brief Gets the owner GameObject of this component.
      */
     [[nodiscard]] GameObject* getOwner() const;
+
+    /*
+     * @brief Gets the unique identifier of this component.
+     */
+    [[nodiscard]] boost::uuids::uuid getId() const;
+
+  protected:
+    boost::uuids::uuid _id;
+    GameObject* _owner = nullptr;
 };
 } // namespace dzemikk
 

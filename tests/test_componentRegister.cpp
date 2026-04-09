@@ -11,12 +11,18 @@
 class TestBaseComponent : public dzemikk::Component {
   public:
     using Base = dzemikk::Component;
+    [[nodiscard]] std::string typeName() const override {
+        return "TestBaseComponent";
+    }
     int value = 0;
 };
 
 class TestDerivedComponent : public TestBaseComponent {
   public:
     using Base = TestBaseComponent;
+    [[nodiscard]] std::string typeName() const override {
+        return "TestDerivedComponent";
+    }
     int derivedValue = 0;
 };
 

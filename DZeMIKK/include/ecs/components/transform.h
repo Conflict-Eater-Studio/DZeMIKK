@@ -26,6 +26,10 @@ class Transform : public Component {
     Transform operator=(Transform&& other) noexcept = delete;
     ~Transform() override = default;
 
+    std::string typeName() const override {
+        return "Transform";
+    };
+
     // --- Setters
     void setPosition(const glm::vec3& position);
     void setRotation(const glm::quat& rotation);
