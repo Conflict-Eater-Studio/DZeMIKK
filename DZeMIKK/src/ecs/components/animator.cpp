@@ -28,26 +28,33 @@ namespace dzemikk {
             return;
         };
 
-        _time += deltaTime;
+        _currentTime += deltaTime;
 
-        float time = _time * _currentClip->getFramerate(); // seconds in animation clip timeline
+        float time = _currentTime * _currentClip->getFramerate(); // seconds in animation clip timeline
         float lengthInSeconds = _currentClip->getDuration() / _currentClip->getFramerate();
         float keyframe = fmod(time, lengthInSeconds);
 
         _currentClip->sample(keyframe);
     }
-
     void Animator::play(const std::string& stateName) {
-        _time = 0.0f;
+        _currentTime = 0.0f;
         _stateMachine->setState(stateName);
     }
-    void Animator::setStateMachine(AnimationStateMachine* stateMachine) {
-        _stateMachine = stateMachine;
-    }
-    AnimationStateMachine* Animator::getStateMachine() const {
-        return _stateMachine;
-    }
+    void Animator::setFloat(std::string_view name, float value) {
 
     }
+    void Animator::setBool(std::string_view name, bool value) {
+
+    }
+    void Animator::setInt(std::string_view name, int value) {
+
+    }
+    void Animator::setStateMachine(const std::shared_ptr<AnimationStateMachine>& stateMachine) {
+        _stateMachine = stateMachine;
+    }
+    std::shared_ptr<AnimationStateMachine> Animator::getStateMachine() const noexcept {
+        return _stateMachine;
+    }
+}
 
 

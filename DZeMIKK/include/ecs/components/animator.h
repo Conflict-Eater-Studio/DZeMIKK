@@ -4,20 +4,25 @@
 #include "animation/animationstatemachine.h"
 #include "ecs/component.h"
 
+#include <memory>
 #include <string>
+#include <string_view>
+
 namespace dzemikk {
     class Animator : public Component {
     public:
         void update(float deltaTime);
         void play(const std::string& stateName);
-        void setFloat(const std::string& name, float value);
-        void setBool(const std::string& name, bool value);
-        void setInt(const std::string& name, int value);
-        void setStateMachine(AnimationStateMachine* stateMachine);
-        AnimationStateMachine* getStateMachine() const;
+
+        void setFloat(std::string_view name, float value);
+        void setBool(std::string_view name, bool value);
+        void setInt(std::string_view name, int value);
+
+        void setStateMachine(const std::shared_ptr<AnimationStateMachine>& stateMachine);
+        [[nodiscard]] std::shared_ptr<AnimationStateMachine> getStateMachine() const noexcept;
     private:
-        AnimationStateMachine* _stateMachine = nullptr;
-        float _time = 0.0f;
+        std::shared_ptr<AnimationStateMachine> _stateMachine = nullptr;
+        float _currentTime = 0.0f;
     };
 }
 #endif

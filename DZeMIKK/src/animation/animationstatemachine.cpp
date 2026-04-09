@@ -3,6 +3,8 @@
 #include "animation/animationstate.h"
 #include "animation/transition.h"
 #include "spdlog/spdlog.h"
+#include "animation/animationclip.h"
+
 namespace dzemikk {
     void AnimationStateMachine::update(float deltaTime) {
         if (_currentState == nullptr) return;
@@ -10,21 +12,22 @@ namespace dzemikk {
 
         for (auto element : _currentState->getTransitions()) {
             if (element.condition) {
-                _currentState = _states.at(element.targetState);
+                _currentState = _states.at(element.targetState).get();
             }
         }
     }
     AnimationState* AnimationStateMachine::getCurrentState() const {
         return _currentState;
     }
-    void AnimationStateMachine::addState(AnimationState* state) {
-        if (state == nullptr) return;
 
-        _states[state->getName()] = state;
-        if (_currentState == nullptr) {
-            _currentState = state;
-        }
+    void AnimationStateMachine::addState(std::unique_ptr<AnimationState> state) {
+        _states.emplace(state->getName(), std::move(state));
+    } 
+
+    void AnimationStateMachine::addState(AnimationState stateName, AnimationClip clip) {
+        std::unique_ptr<AnimationState> _state = std::make_unique<AnimationState>(stateName);
     }
+
     void AnimationStateMachine::setState(const std::string& stateName) {
         auto it = _states.find(stateName);
         if (it == _states.end()) {
@@ -36,6 +39,6 @@ namespace dzemikk {
             return;
         }
 
-        _currentState = it->second;
+        _currentState = it->second.get();
     }
 } // namespace dzemikk
