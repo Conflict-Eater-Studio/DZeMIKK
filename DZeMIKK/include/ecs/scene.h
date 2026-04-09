@@ -2,18 +2,17 @@
 #define DZEMIKK_SCENE_H
 
 #include "ecs/components/monoBehaviour.h"
-#include "ecs/gameobject.h"
 
+#include <boost/uuid/uuid.hpp>
 #include <memory>
 #include <vector>
-#include "gameobject.h"
 
 namespace dzemikk {
 class GameObject;
 class MonoBehaviour;
 class Scene {
-public:
-    Scene() = default;
+  public:
+    Scene();
     Scene(const Scene& other) = delete;
     Scene& operator=(const Scene& other) = delete;
     Scene(Scene&& other) noexcept = delete;
@@ -34,16 +33,23 @@ public:
     void destroyGameObject(GameObject* object);
     void update(double deltaTime);
     void fixedUpdate(double deltaTime);
+
     void processPendingStart();
     void addPending(MonoBehaviour* mono);
     void removeActive(MonoBehaviour* mono);
     void processDelete();
 
-private:
+    [[nodiscard]] boost::uuids::uuid getId() const;
+    [[nodiscard]] const std::vector<std::unique_ptr<dzemikk::GameObject>>& getObjects() const;
+    void setId(const boost::uuids::uuid& uuid);
+
+  private:
+    boost::uuids::uuid _id;
     std::vector<std::unique_ptr<dzemikk::GameObject>> _objects;
     std::vector<MonoBehaviour*> _pendingStart;
     std::vector<MonoBehaviour*> _active;
     std::vector<GameObject*> _pendingDestroy;
-}; // namespace dzemikk
-}
+};
+} // namespace dzemikk
+
 #endif // DZEMIKK_SCENE_H

@@ -1,5 +1,6 @@
 #include "ecs/gameobject.h"
 
+#include "boost/uuid/random_generator.hpp"
 #include "ecs/componentRegistry.h"
 #include "ecs/components/monoBehaviour.h"
 #include "ecs/components/transform.h"
@@ -8,7 +9,11 @@
 #include <algorithm>
 
 namespace dzemikk {
-GameObject::GameObject() {
+GameObject::GameObject() : _id(boost::uuids::random_generator()()) {
+    _transform = addComponent<Transform>(TransformParams());
+}
+
+GameObject::GameObject(const boost::uuids::uuid& uuid) : _id(uuid) {
     _transform = addComponent<Transform>(TransformParams());
 }
 
@@ -41,8 +46,16 @@ std::string GameObject::getName() const {
     return _name;
 }
 
+boost::uuids::uuid GameObject::getId() const {
+    return _id;
+}
+
 const std::vector<MonoBehaviour*>& GameObject::getMonoBehaviours() const {
     return _monoBehaviours;
+}
+
+const std::vector<std::unique_ptr<Component>>& GameObject::getAllComponents() const {
+    return _components;
 }
 
 bool GameObject::hasStarted() const {
@@ -56,6 +69,10 @@ Scene const& GameObject::getScene() const {
 // --- Setters
 void GameObject::setName(const std::string& name) {
     _name = name;
+}
+
+void GameObject::setId(const boost::uuids::uuid& uuid) {
+    _id = uuid;
 }
 
 void GameObject::setScene(Scene* scene) {

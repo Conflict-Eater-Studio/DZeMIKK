@@ -18,6 +18,7 @@ class Scene;
 class GameObject {
   public:
     GameObject();
+    GameObject(const boost::uuids::uuid& uuid);
     GameObject(const GameObject& other) = delete;
     GameObject& operator=(const GameObject& other) = delete;
     GameObject(GameObject&& other) noexcept = delete;
@@ -111,11 +112,14 @@ class GameObject {
     [[nodiscard]] GameObject* getParent() const;
     [[nodiscard]] const std::vector<GameObject*>& getChildren() const;
     [[nodiscard]] std::string getName() const;
+    [[nodiscard]] boost::uuids::uuid getId() const;
     [[nodiscard]] const std::vector<MonoBehaviour*>& getMonoBehaviours() const;
+    [[nodiscard]] const std::vector<std::unique_ptr<Component>>& getAllComponents() const;
     [[nodiscard]] bool hasStarted() const;
     [[nodiscard]] const Scene& getScene() const;
 
     // --- Setters
+    void setId(const boost::uuids::uuid& uuid);
     void setName(const std::string& name);
     void setScene(Scene* scene);
     void markStarted();
@@ -164,6 +168,7 @@ class GameObject {
     void removeSceneActive(MonoBehaviour* mono);
 
   private:
+    boost::uuids::uuid _id;
     std::string _name;
     bool _hasStarted = false;
     GameObject* _parent = nullptr;

@@ -2,10 +2,14 @@
 #define DZEMIKK_MONOBEHAVIOUR_H
 
 #include "../component.h"
+#include "ecs/serialize/serializedRef.h"
+
+#include <functional>
+#include <vector>
 
 namespace dzemikk {
 class GameObject;
-class MonoBehaviour : public Component {
+class MonoBehaviour : public Component, public ISerializedRefRegistrar {
   public:
     using Base = Component;
 
@@ -26,8 +30,30 @@ class MonoBehaviour : public Component {
     [[nodiscard]] bool hasStarted() const;
     void markStarted();
 
+    // --- Serialization
+    using GameObjectResolverFn = std::function<GameObject*(const boost::uuids::uuid&)>;
+
+    // Called after prefab instantiation, before runtime UUID reshuffle.
+    // Scripts resolve UUID-backed references into raw pointers here.
+    virtual void resolveSerializedReferences(const GameObjectResolverFn& gameObjectResolver,
+                                             const ComponentResolverFn& componentResolver) {
+        (void)gameObjectResolver;
+        for (SerializedRefBase* ref : _serializedRefs) {
+            if (ref != nullptr) {
+                ref->resolve(componentResolver);
+            }
+        }
+    }
+
+    void registerSerializedReference(SerializedRefBase* reference) override {
+        if (reference != nullptr) {
+            _serializedRefs.push_back(reference);
+        }
+    }
+
   private:
     bool _started = false;
+    std::vector<SerializedRefBase*> _serializedRefs;
 };
 } // namespace dzemikk
 
