@@ -34,6 +34,8 @@ glm::vec3 dzemikk::AnimationTrack::interpolatePosition(float time) const {
                     factor);
 }
 glm::quat dzemikk::AnimationTrack::interpolateRotation(float time) const {
+    if (_rotations.size() == 1)
+        return _rotations[0].value;
     glm::quat result = glm::slerp(_rotations[0].value, _rotations[1].value, (time - _rotations[0].time) / (_rotations[1].time - _rotations[0].time));
     return result;
 }
