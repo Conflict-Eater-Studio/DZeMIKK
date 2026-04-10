@@ -332,11 +332,8 @@ int main() {
     std::unique_ptr<dzemikk::AnimationState> idleState = std::make_unique<dzemikk::AnimationState>("Idle");
 
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
-    dzemikk::AnimationTrack* animationTrack = new  dzemikk::AnimationTrack("Test");
-    dzemikk::AnimationTrack* animationTrack2 = new  dzemikk::AnimationTrack("Test");
-
-    animationClip->addTrack(animationTrack);
-    animationClip->addTrack(animationTrack2);
+    dzemikk::AnimationTrack* animationTrack =  animationClip->addTrack();
+    dzemikk::AnimationTrack* animationTrack2 = animationClip->addTrack();
 
     idleState->setClip(animationClip);
 

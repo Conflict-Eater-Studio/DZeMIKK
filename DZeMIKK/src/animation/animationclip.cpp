@@ -14,12 +14,15 @@ namespace dzemikk {
         return _framerate;
     }
 
-    void AnimationClip::addTrack(AnimationTrack* track) {
-        _tracks.push_back(track);
+    AnimationTrack* AnimationClip::addTrack() {
+        std::unique_ptr<AnimationTrack> track = std::make_unique<AnimationTrack>();
+        AnimationTrack* ptr = track.get();
+        _tracks.push_back(std::move(track));
+        return ptr;
     }
 
-    void AnimationClip::sample(float currentTime) const {
-        float time = currentTime * getFramerate(); // seconds in animation clip timeline
+    void AnimationClip::sample(float timeInSeconds) const {
+        float time = timeInSeconds * getFramerate();
         float keyframe = fmod(time, getDuration());
 
         if (_tracks.empty()) return;

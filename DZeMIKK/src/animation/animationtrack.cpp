@@ -5,10 +5,14 @@
 #include <animation/animationtrack.h>
 #include <glm/ext/quaternion_common.hpp>
 
-dzemikk::AnimationTrack::AnimationTrack() {}
-dzemikk::AnimationTrack::AnimationTrack(std::string name) : _name(std::move(name)) {}
+dzemikk::AnimationTrack::AnimationTrack() {
+    _name = "Track";
+}
 const std::string& dzemikk::AnimationTrack::getName() const noexcept {
     return _name;
+}
+void dzemikk::AnimationTrack::setName(const std::string& name) {
+    _name = name;
 }
 void dzemikk::AnimationTrack::interpolate(float time) {
     if (_keys.empty()) {

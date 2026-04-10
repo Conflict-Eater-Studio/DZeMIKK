@@ -12,6 +12,7 @@ class FloatProperty {
 public:
     using Getter = std::function<float()>;
     using Setter = std::function<void(float)>;
+
     FloatProperty() = default;
     FloatProperty(Getter g, Setter s)
         : _get(std::move(g)), _set(std::move(s)) {}
@@ -37,9 +38,11 @@ struct FloatPropertyKey {
 class AnimationTrack {
 public:
     AnimationTrack();
-    AnimationTrack(std::string name);
+    AnimationTrack(const AnimationTrack&) = delete;
+    AnimationTrack& operator=(const AnimationTrack&) = delete;
 
     const std::string& getName() const noexcept;
+    void setName(const std::string& name);
 
     void interpolate(float time);
 
