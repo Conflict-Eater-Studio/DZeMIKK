@@ -3,6 +3,7 @@
 
 namespace dzemikk {
 AnimationState::AnimationState() : _name("NewState") {}
+AnimationState::AnimationState(const std::string& name) : _name(name) {}
 const std::string& AnimationState::getName() const noexcept {
         return _name;
     }

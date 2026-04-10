@@ -11,6 +11,8 @@ namespace dzemikk {
     class AnimationState {
     public:
         AnimationState();
+        AnimationState(const std::string& name);
+
         ~AnimationState() = default;
 
         AnimationState(const AnimationState&) = delete;

@@ -332,11 +332,16 @@ int main() {
     std::shared_ptr<dzemikk::AnimationStateMachine> animationStateMachine = std::make_shared<dzemikk::AnimationStateMachine>();
     dzemikk::AnimationState* idleState = animationStateMachine->addState();
 
+    dzemikk::AnimationState* moveState = animationStateMachine->addState("Move");
+
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
+    dzemikk::AnimationClip* animationClip2 = new dzemikk::AnimationClip(2, 1);
+
     dzemikk::AnimationTrack* animationTrack =  animationClip->addTrack();
-    dzemikk::AnimationTrack* animationTrack2 = animationClip->addTrack();
+    dzemikk::AnimationTrack* animationTrack2 = animationClip2->addTrack();
 
     idleState->setClip(animationClip);
+    moveState->setClip(animationClip2);
 
     dzemikk::Transform* t = playerGO->transform();
     dzemikk::FloatProperty prop(
@@ -369,6 +374,7 @@ int main() {
     animationTrack->addKey({1.0f, 1.0f});
 
     animator->setStateMachine(animationStateMachine);
+    animator->play("Move");
 
     // Assimp::Importer importer;
     // const aiScene* scene = importer.ReadFile("./res/models/model.fbx", aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
