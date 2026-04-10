@@ -25,14 +25,7 @@ namespace dzemikk {
         if (_tracks.empty()) return;
 
         for (auto& track : _tracks) {
-            glm::vec3 position = track->interpolatePosition(keyframe);
-            glm::vec3 scale = track->interpolateScale(keyframe);
-            glm::quat rotation = track->interpolateRotation(keyframe);
-
-            Transform* transform = track->getTransform();
-            transform->setScale(scale);
-            transform->setRotation(rotation);
-            transform->setPosition(position);
+            track->interpolate(keyframe);
         }
     }
 

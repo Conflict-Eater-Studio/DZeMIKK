@@ -334,24 +334,26 @@ int main() {
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
     dzemikk::AnimationTrack* animationTrack = new  dzemikk::AnimationTrack("Test");
 
-    animationTrack->addScaleKey(0.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-    animationTrack->addScaleKey(0.5f, glm::vec3(1.2f, 1.2f, 1.2f));
-    animationTrack->addScaleKey(1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-
-    animationTrack->addRotationKey(0.0f, glm::vec3(0.0f, 90.0f, 0.0f));
-    animationTrack->addRotationKey(0.5f, glm::vec3(0.0f, 45.0f, 0.0f));
-    animationTrack->addRotationKey(1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
-
-    animationTrack->addPositionKey(0.0f, glm::vec3(0.0f, 0.0f, 0.0f));
-    animationTrack->addPositionKey(0.5f, glm::vec3(1.0f, 0.0f, 0.0f));
-    animationTrack->addPositionKey(1.0f, glm::vec3(2.0f, 0.0f, 0.0f));
-
     animationClip->addTrack(animationTrack);
     idleState->setClip(animationClip);
 
+    dzemikk::Transform* t = playerGO->transform();
+    dzemikk::FloatProperty prop(
+        [t]{ return t->getPosition().x; },          // getter
+        [t](float v) {                                // setter
+            auto pos = t->getPosition();              // copy
+            pos.x = v;
+            t->setPosition(pos);                      // write back
+        }
+    );
+    animationTrack->setProperty(prop);
+    animationTrack->addKey({0.0f, 0.0f});
+    animationTrack->addKey({0.5f, 0.5f});
+    animationTrack->addKey({1.0f, 1.0f});
+    animationTrack->addKey({0.5f, 0.5f});
+
     animator->setStateMachine(animationStateMachine);
     animationStateMachine->addState(std::move(idleState));
-    animationClip->transform = playerGO->transform();
 
     // Assimp::Importer importer;
     // const aiScene* scene = importer.ReadFile("./res/models/model.fbx", aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);

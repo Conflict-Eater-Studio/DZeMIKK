@@ -11,48 +11,70 @@
 
 namespace dzemikk {
 
-struct PositionKey {
-    float time;
-    glm::vec3 value;
+// class FloatProperty {
+// public:
+//     FloatProperty(float* ptr) : _ptr(ptr) {}
+//
+//     void set(float value) {
+//         *_ptr = value;
+//     }
+//
+//     float get() const {
+//         return *_ptr;
+//     }
+//
+// private:
+//     float* _ptr;
+// };
+
+class FloatProperty {
+public:
+    using Getter = std::function<float()>;
+    using Setter = std::function<void(float)>;
+    FloatProperty() = default;
+    FloatProperty(Getter g, Setter s)
+        : _get(std::move(g)), _set(std::move(s)) {}
+
+    void set(float value) {
+        _set(value);
+    }
+
+    float get() const {
+        return _get();
+    }
+
+private:
+    Getter _get;
+    Setter _set;
 };
 
-struct RotationKey {
+struct FloatPropertyKey {
     float time;
-    glm::quat value;
-};
-
-struct ScaleKey {
-    float time;
-    glm::vec3 value;
+    float value;
 };
 
 class AnimationTrack {
 public:
+    AnimationTrack();
     AnimationTrack(std::string name);
 
     const std::string& getName() const noexcept;
 
-    void addPositionKey(float time, const glm::vec3& value);
-    void addRotationKey(float time, const glm::quat& value);
-    void addScaleKey(float time, const glm::vec3& value);
+    void interpolate(float time);
 
-    glm::vec3 interpolatePosition(float time) const;
-    glm::quat interpolateRotation(float time) const;
-    glm::vec3 interpolateScale(float time) const;
+    void setProperty(const FloatProperty& property);
+    FloatProperty getProperty() const;
 
-    void setTransform(Transform* transform);
-    Transform* getTransform() const;
+    const std::vector<FloatPropertyKey>& getKeys() const noexcept;
+    void addKey(FloatPropertyKey key);
+    void setKeys(std::vector<FloatPropertyKey> keys);
 
 private:
     std::string _name;
-    Transform* _transform;
-    std::vector<PositionKey> _positions;
-    std::vector<RotationKey> _rotations;
-    std::vector<ScaleKey> _scales;
+    FloatProperty _property;
+    std::vector<FloatPropertyKey> _keys;
 
-    size_t findPositionIndex(float time) const;
-    size_t findRotationIndex(float time) const;
-    size_t findScaleIndex(float time) const;
+    size_t findPropertyIndex(float time) const;
 };
 
 }
