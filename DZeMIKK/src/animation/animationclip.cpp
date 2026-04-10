@@ -29,6 +29,7 @@ namespace dzemikk {
             glm::vec3 scale = track->interpolateScale(keyframe);
             glm::quat rotation = track->interpolateRotation(keyframe);
 
+            Transform* transform = track->getTransform();
             transform->setScale(scale);
             transform->setRotation(rotation);
             transform->setPosition(position);

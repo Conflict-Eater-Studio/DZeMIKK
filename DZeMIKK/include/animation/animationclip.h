@@ -9,11 +9,6 @@ class AnimationTrack;
 class Transform;
 class AnimationClip {
     public:
-        // If you reading this, imagine line below doesn't exist
-        Transform* transform;
-        static const int DEFAULT_FRAMERATE = 30;
-        static const int DEFAULT_LENGTH = 100;
-
         AnimationClip() = default;
         AnimationClip(int duration, int framerate);
         float getDuration() const;

@@ -55,6 +55,12 @@ glm::vec3 dzemikk::AnimationTrack::interpolateScale(float time) const {
                     _scales[next].value,
                     factor);
 }
+void dzemikk::AnimationTrack::setTransform(Transform* transform) {
+    _transform = transform;
+}
+dzemikk::Transform* dzemikk::AnimationTrack::getTransform() const {
+    return _transform;
+}
 
 size_t dzemikk::AnimationTrack::findPositionIndex(float time) const {
     for (size_t i = 0; i < _positions.size() - 1; i++) {

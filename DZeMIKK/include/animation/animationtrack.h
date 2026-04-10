@@ -2,10 +2,12 @@
 #define DZEMIKK_ANIMATIONTRACK_H
 #pragma once
 
-#include <vector>
-#include <string>
+#include "ecs/components/transform.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <string>
+#include <vector>
 
 namespace dzemikk {
 
@@ -38,9 +40,12 @@ public:
     glm::quat interpolateRotation(float time) const;
     glm::vec3 interpolateScale(float time) const;
 
+    void setTransform(Transform* transform);
+    Transform* getTransform() const;
+
 private:
     std::string _name;
-
+    Transform* _transform;
     std::vector<PositionKey> _positions;
     std::vector<RotationKey> _rotations;
     std::vector<ScaleKey> _scales;
