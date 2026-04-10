@@ -22,6 +22,8 @@ namespace dzemikk {
 
     AnimationState* AnimationStateMachine::addState() {
         std::unique_ptr<AnimationState> state = std::make_unique<AnimationState>();
+        state->setName("NewState" + std::to_string(_statesCount++));
+
         AnimationState* ptr = state.get();
         if (_currentState == nullptr) {
             _currentState = ptr;
@@ -29,18 +31,30 @@ namespace dzemikk {
         _states.emplace(state->getName(), std::move(state));
         return ptr;
     }
+AnimationState* AnimationStateMachine::addState(std::string name) {
+        std::unique_ptr<AnimationState> state = std::make_unique<AnimationState>(name);
+       _statesCount++;
+
+        AnimationState* ptr = state.get();
+        if (_currentState == nullptr) {
+            _currentState = ptr;
+        }
+
+        _states.emplace(state->getName(), std::move(state));
+        return ptr;
+    }
 
     void AnimationStateMachine::setState(const std::string& stateName) {
-        auto it = _states.find(stateName);
-        if (it == _states.end()) {
-            spdlog::error("State {} not found", stateName);
-            return;
-        }
-        if (it->second == nullptr) {
+        auto it = _states.at(stateName).get();
+
+        if (it == _currentState) return;
+        if (it == nullptr) {
+#if DZEMIKK_DEV_TOOLS
             spdlog::error("State {} is nullptr", stateName);
+#endif
             return;
         }
 
-        _currentState = it->second.get();
+        _currentState = it;
     }
 }

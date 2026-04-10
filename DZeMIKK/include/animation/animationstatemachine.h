@@ -21,10 +21,12 @@ class AnimationState;
         [[nodiscard]] AnimationState* getCurrentState() const;
 
         AnimationState* addState();
+        AnimationState* addState(std::string name);
         void setState(const std::string& stateName);
     private:
-        std::unordered_map<std::string, std::unique_ptr<AnimationState>> _states = std::unordered_map<std::string, std::unique_ptr<AnimationState>>();
+        std::unordered_map<std::string, std::unique_ptr<AnimationState>> _states;
         AnimationState* _currentState = nullptr;
+        int _statesCount = 0;
     };
 }
 #endif
