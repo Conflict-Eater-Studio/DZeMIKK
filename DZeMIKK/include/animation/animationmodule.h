@@ -2,10 +2,9 @@
 #ifndef DZEMIKK_ANIMATIONMODULE_H
 #define DZEMIKK_ANIMATIONMODULE_H
 
+#include <vector>
 #include "core/iEngineModule.h"
 
-#include <memory>
-#include <vector>
 namespace dzemikk {
     class Animator;
     class AnimationModule : public IEngineModule  {

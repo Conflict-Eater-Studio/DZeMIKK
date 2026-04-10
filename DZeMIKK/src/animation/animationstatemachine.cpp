@@ -20,11 +20,14 @@ namespace dzemikk {
         return _currentState;
     }
 
-    void AnimationStateMachine::addState(std::unique_ptr<AnimationState> state) {
-        if (!state) return;
-        auto name = state->getName();
-        _currentState = _currentState ? _currentState : state.get();
-        _states.emplace(std::move(name), std::move(state));
+    AnimationState* AnimationStateMachine::addState() {
+        std::unique_ptr<AnimationState> state = std::make_unique<AnimationState>();
+        AnimationState* ptr = state.get();
+        if (_currentState == nullptr) {
+            _currentState = ptr;
+        }
+        _states.emplace(state->getName(), std::move(state));
+        return ptr;
     }
 
     void AnimationStateMachine::setState(const std::string& stateName) {
@@ -40,4 +43,4 @@ namespace dzemikk {
 
         _currentState = it->second.get();
     }
-} // namespace dzemikk
+}

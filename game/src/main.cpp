@@ -328,8 +328,9 @@ int main() {
     playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
 
     dzemikk::Animator* animator =  playerGO->addComponent<dzemikk::Animator>();
+
     std::shared_ptr<dzemikk::AnimationStateMachine> animationStateMachine = std::make_shared<dzemikk::AnimationStateMachine>();
-    std::unique_ptr<dzemikk::AnimationState> idleState = std::make_unique<dzemikk::AnimationState>("Idle");
+    dzemikk::AnimationState* idleState = animationStateMachine->addState();
 
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
     dzemikk::AnimationTrack* animationTrack =  animationClip->addTrack();
@@ -368,7 +369,6 @@ int main() {
     animationTrack->addKey({1.0f, 1.0f});
 
     animator->setStateMachine(animationStateMachine);
-    animationStateMachine->addState(std::move(idleState));
 
     // Assimp::Importer importer;
     // const aiScene* scene = importer.ReadFile("./res/models/model.fbx", aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);

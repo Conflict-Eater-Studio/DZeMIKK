@@ -27,7 +27,7 @@ public:
     /**
      * @brief Constructs an animation clip with duration and framerate.
      *
-     * @param duration Total duration of the clip (in ticks).
+     * @param duration Total duration of the clip (in seconds).
      * @param framerate Playback framerate (ticks per second).
      */
     AnimationClip(int duration, int framerate);
@@ -65,7 +65,7 @@ public:
     void sample(float timeInSeconds) const;
 
 private:
-    /// Collection of animation tracks (non-owning).
+    /// Collection of animation tracks.
     std::vector<std::unique_ptr<AnimationTrack>> _tracks;
 
     /// Total duration of the animation (in ticks).

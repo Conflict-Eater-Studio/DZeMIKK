@@ -2,9 +2,8 @@
 #include "animation/animationstate.h"
 
 namespace dzemikk {
-    AnimationState::AnimationState(std::string name) : _name(std::move(name)) {}
-
-    const std::string& AnimationState::getName() const noexcept {
+AnimationState::AnimationState() : _name("NewState") {}
+const std::string& AnimationState::getName() const noexcept {
         return _name;
     }
     void AnimationState::setName(const std::string& name) {
