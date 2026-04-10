@@ -103,8 +103,10 @@ void Engine::start() {
         ImGui::NewFrame();
 
         ImGui::Begin("Renderer");
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", _time->deltaTime,
-                    1.0f / _time->deltaTime);
+        float dt_ms = deltaTime * 1000.0f;
+        ImGui::Text("Application %.3f ms/frame (%.1f FPS)",
+            dt_ms,
+            1.0f / deltaTime);
         ImGui::Separator();
         
         const auto& stats = Profiler::rendererStats;
