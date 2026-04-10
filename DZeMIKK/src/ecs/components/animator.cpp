@@ -7,7 +7,6 @@
 #include "animation/animationstate.h"
 #include "animation/animationstatemachine.h"
 
-
 namespace dzemikk {
     void Animator::update(float deltaTime) {
         if (_stateMachine == nullptr) {
@@ -19,7 +18,10 @@ namespace dzemikk {
         _stateMachine->update(deltaTime);
         AnimationState* _state = _stateMachine->getCurrentState();
         if (_state == nullptr) {
+#if DZEMIKK_DEV_TOOLS
             spdlog::warn("AnimationStateMachine has no states!");
+#endif
+
             return;
         }
         AnimationClip* _currentClip = _state->getClip();
