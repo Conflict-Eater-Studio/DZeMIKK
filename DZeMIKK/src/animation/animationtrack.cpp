@@ -1,12 +1,22 @@
-#include "animation/animationtrack.h"
-dzemikk::AnimationTrack::AnimationTrack() {}
-dzemikk::AnimationTrack::AnimationTrack(std::string name) : _name(std::move(name)) {
+#if DZEMIKK_DEV_TOOLS
+#include <spdlog/spdlog.h>
+#endif
 
-}
+#include <animation/animationtrack.h>
+#include <glm/ext/quaternion_common.hpp>
+
+dzemikk::AnimationTrack::AnimationTrack() {}
+dzemikk::AnimationTrack::AnimationTrack(std::string name) : _name(std::move(name)) {}
 const std::string& dzemikk::AnimationTrack::getName() const noexcept {
     return _name;
 }
 void dzemikk::AnimationTrack::interpolate(float time) {
+    if (_keys.empty()) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[AnimationTrack] Animation track {} has no keys!", _name);
+#endif
+        return;
+    }
       if (_keys.size() == 1) {
           _property.set(_keys[0].value);
           return;
@@ -25,56 +35,6 @@ void dzemikk::AnimationTrack::interpolate(float time) {
                      factor);
     _property.set(value);
 }
-// void dzemikk::AnimationTrack::addPositionKey(float time, const glm::vec3& value) {
-//     PositionKey key = {time, value};
-//     _positions.push_back(key);
-// }
-// void dzemikk::AnimationTrack::addRotationKey(float time, const glm::quat& value) {
-//     RotationKey key = {time, value};
-//     _rotations.push_back(key);
-// }
-// void dzemikk::AnimationTrack::addScaleKey(float time, const glm::vec3& value) {
-//     ScaleKey key = {time, value};
-//     _scales.push_back(key);
-// }
-// glm::vec3 dzemikk::AnimationTrack::interpolatePosition(float time) const {
-//     if (_positions.size() == 1)
-//         return _positions[0].value;
-//
-//     size_t index = findPositionIndex(time);
-//     size_t next = index + 1;
-//
-//     float t1 = _positions[index].time;
-//     float t2 = _positions[next].time;
-//
-//     float factor = (time - t1) / (t2 - t1);
-//
-//     return glm::mix(_positions[index].value,
-//                     _positions[next].value,
-//                     factor);
-// }
-// glm::quat dzemikk::AnimationTrack::interpolateRotation(float time) const {
-//     if (_rotations.size() == 1)
-//         return _rotations[0].value;
-//     glm::quat result = glm::slerp(_rotations[0].value, _rotations[1].value, (time - _rotations[0].time) / (_rotations[1].time - _rotations[0].time));
-//     return result;
-// }
-// glm::vec3 dzemikk::AnimationTrack::interpolateScale(float time) const {
-//     if (_scales.size() == 1)
-//         return _scales[0].value;
-//
-//     size_t index = findScaleIndex(time);
-//     size_t next = index + 1;
-//
-//     float t1 = _scales[index].time;
-//     float t2 = _scales[next].time;
-//
-//     float factor = (time - t1) / (t2 - t1);
-//
-//     return glm::mix(_scales[index].value,
-//                     _scales[next].value,
-//                     factor);
-// }
 
 void dzemikk::AnimationTrack::setProperty(const FloatProperty& property) {
     _property = property;

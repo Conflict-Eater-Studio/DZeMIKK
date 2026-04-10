@@ -333,8 +333,11 @@ int main() {
 
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
     dzemikk::AnimationTrack* animationTrack = new  dzemikk::AnimationTrack("Test");
+    dzemikk::AnimationTrack* animationTrack2 = new  dzemikk::AnimationTrack("Test");
 
     animationClip->addTrack(animationTrack);
+    animationClip->addTrack(animationTrack2);
+
     idleState->setClip(animationClip);
 
     dzemikk::Transform* t = playerGO->transform();
@@ -344,13 +347,28 @@ int main() {
             auto pos = t->getPosition();              // copy
             pos.x = v;
             t->setPosition(pos);                      // write back
-        }
-    );
-    animationTrack->setProperty(prop);
+        });
+
+    dzemikk::FloatProperty prop2(
+        [t] {return t->getRotation().x; },
+        [t](float eulerAngles) {
+            auto rot = t->getRotation();
+            auto newRot = glm::quat(glm::vec3(eulerAngles, 0.0f, 0.0f));
+
+            newRot.y = rot.y;
+            newRot.z = rot.z;
+
+            t->setRotation(newRot);
+        });
+    animationTrack2->setProperty(prop);
+    animationTrack2->addKey({0.0f, 0.0f});
+    animationTrack2->addKey({0.5f, 0.5f});
+    animationTrack2->addKey({1.0f, 1.0f});
+
+    animationTrack->setProperty(prop2);
     animationTrack->addKey({0.0f, 0.0f});
     animationTrack->addKey({0.5f, 0.5f});
     animationTrack->addKey({1.0f, 1.0f});
-    animationTrack->addKey({0.5f, 0.5f});
 
     animator->setStateMachine(animationStateMachine);
     animationStateMachine->addState(std::move(idleState));

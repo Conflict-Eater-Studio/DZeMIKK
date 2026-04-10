@@ -2,30 +2,11 @@
 #define DZEMIKK_ANIMATIONTRACK_H
 #pragma once
 
-#include "ecs/components/transform.h"
-
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
+#include <functional>
 #include <string>
 #include <vector>
 
 namespace dzemikk {
-
-// class FloatProperty {
-// public:
-//     FloatProperty(float* ptr) : _ptr(ptr) {}
-//
-//     void set(float value) {
-//         *_ptr = value;
-//     }
-//
-//     float get() const {
-//         return *_ptr;
-//     }
-//
-// private:
-//     float* _ptr;
-// };
 
 class FloatProperty {
 public:
