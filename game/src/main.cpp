@@ -12,11 +12,13 @@
 #include "ecs/components/textRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
+#include "ecs/scenemanager.h"
 #include "renderer/font.h"
 #include "renderer/material.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
 #include "spdlog/spdlog.h"
+
 #include <GLFW/glfw3.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -118,6 +120,8 @@ int main() {
     }
 
     auto mainScenePtr = std::make_shared<dzemikk::Scene>();
+    engine->getSceneManager()->loadScene(mainScenePtr);
+    engine->getSceneManager()->setActiveScene(mainScenePtr);
 
     // --- Scene Camera
     auto cameraGO = mainScenePtr->createGameObject();
@@ -209,7 +213,7 @@ int main() {
 
     auto cubeMesh = createCubeMesh();
 
-    auto tileMesh = loadMeshFromFile("Debug/res/models/pole.fbx");
+    auto tileMesh = loadMeshFromFile("./res/models/pole.fbx");
     
     createHexIsland(*mainScenePtr, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
