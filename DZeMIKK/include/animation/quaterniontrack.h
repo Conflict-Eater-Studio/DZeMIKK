@@ -3,37 +3,15 @@
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include "IAnimationTrack.h"
+#include "property.h"
+#include "propertykey.h"
+
 #include <glm/gtx/quaternion.hpp>
-#include <functional>
 
 namespace dzemikk {
 
-struct QuaternionPropertyKey {
-    float time;
-    glm::quat value;
-};
-
-class QuaternionProperty {
-public:
-    using Getter = std::function<glm::quat()>;
-    using Setter = std::function<void(glm::quat)>;
-
-    QuaternionProperty() = default;
-    QuaternionProperty(Getter g, Setter s)
-        : _get(std::move(g)), _set(std::move(s)) {}
-
-    void set(glm::quat value) {
-        _set(value);
-    }
-
-    glm::quat get() const {
-        return _get();
-    }
-
-private:
-    Getter _get;
-    Setter _set;
-};
+using QuaternionPropertyKey = PropertyKey<glm::quat>;
+using QuaternionProperty = Property<glm::quat>;
 
 class QuaternionTrack : public IAnimationTrack {
     public:
