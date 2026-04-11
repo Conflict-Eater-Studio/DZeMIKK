@@ -335,8 +335,8 @@ int main() {
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
     dzemikk::AnimationClip* animationClip2 = new dzemikk::AnimationClip(2, 1);
 
-    dzemikk::AnimationTrack* animationTrack =  animationClip->addTrack();
-    dzemikk::AnimationTrack* animationTrack2 = animationClip2->addTrack();
+    dzemikk::FloatTrack* animationTrack =  animationClip->addFloatTrack();
+    dzemikk::FloatTrack* animationTrack2 = animationClip2->addFloatTrack();
 
     idleState->setClip(animationClip);
     moveState->setClip(animationClip2);

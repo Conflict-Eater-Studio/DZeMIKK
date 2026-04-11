@@ -2,9 +2,12 @@
 #ifndef DZEMIKK_ANIMATIONCLIP_H
 #define DZEMIKK_ANIMATIONCLIP_H
 
+#include "floattrack.h"
+
 #include <memory>
 #include <vector>
 
+class IAnimationTrack;
 struct aiAnimation;
 namespace dzemikk {
 class AnimationTrack;
@@ -54,7 +57,7 @@ public:
      * The track is initially empty. The returned pointer remains valid
      * as long as the track exists within this clip.
      */
-    AnimationTrack* addTrack();
+    FloatTrack* addFloatTrack();
 
     /**
     * @brief Samples the animation clip at a given time.
@@ -63,11 +66,11 @@ public:
     *
     * @param timeInSeconds Current time within the animation (in seconds).
     */
-    void sample(float timeInSeconds) const;
+    void apply(float timeInSeconds) const;
 
 private:
     /// Collection of animation tracks.
-    std::vector<std::unique_ptr<AnimationTrack>> _tracks;
+    std::vector<std::unique_ptr<IAnimationTrack>> _tracks;
 
     /// Total duration of the animation (in seconds).
     float _duration = 0;

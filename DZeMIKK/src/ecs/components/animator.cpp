@@ -34,7 +34,7 @@ namespace dzemikk {
 
         _currentTime += deltaTime;
 
-        _currentClip->sample(_currentTime);
+        _currentClip->apply(_currentTime);
     }
     void Animator::play(const std::string& stateName) {
         _currentTime = 0.0f;
