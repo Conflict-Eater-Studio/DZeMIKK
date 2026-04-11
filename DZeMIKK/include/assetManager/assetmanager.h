@@ -43,6 +43,10 @@ class AssetManager : public IEngineModule {
     template <typename T> T* Get(const std::string& id);
     void Unload(const std::string& id);
 
+    enum class PrimitiveMesh { Cube, Quad, Sphere, Capsule };
+
+    Mesh* GetPrimitive(PrimitiveMesh type);
+
 #pragma endregion
 
   private:
@@ -51,9 +55,22 @@ class AssetManager : public IEngineModule {
         std::type_index type = typeid(void);
     };
 
+    struct PrimitiveMeshHash {
+        std::size_t operator()(PrimitiveMesh m) const {
+            return std::hash<int>()(static_cast<int>(m));
+        }
+    };
+
     std::unordered_map<std::string, AssetEntry> _assets;
+    std::unordered_map<PrimitiveMesh, Mesh*, PrimitiveMeshHash> _builtinMeshes;
 
 #pragma region Internal
+
+    void initPrimitiveMeshes();
+    Mesh* createCubeMesh();
+    Mesh* createQuadMesh();
+    Mesh* createSphereMesh();
+    Mesh* createCapsuleMesh();
 
     void* LoadInternal(const std::string& id, std::type_index type);
     Mesh* loadMeshFromFile(const std::string& path);

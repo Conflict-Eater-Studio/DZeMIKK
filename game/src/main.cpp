@@ -60,12 +60,6 @@ class SpriteUpdater: public dzemikk::MonoBehaviour {
 
 };
 
-dzemikk::Mesh* createCubeMesh();
-dzemikk::Mesh* createQuadMesh();
-void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& scene,
-                     dzemikk::Mesh* cubeMesh, dzemikk::Material* materialA,
-                     dzemikk::Material* materialB, int rows, int cols, float spacing);
-
 void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int tileCount, float size, float spacing = 0.1f,
                      float maxHeight = 0.3f); 
@@ -82,23 +76,15 @@ int main() {
     engine->getSceneManager()->loadScene(mainScenePtr);
     engine->getSceneManager()->setActiveScene(mainScenePtr);
 
-    auto playerGO = mainScenePtr->createGameObject();
-    playerGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-    playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
-    playerGO->transform()->setScale(glm::vec3(1.0f));
-
     // --- Scene Camera
     auto cameraGO = mainScenePtr->createGameObject();
     cameraGO->transform()->setPosition(glm::vec3(1.5f, 1.5f, 3.0f));
     auto camera = cameraGO->addComponent<dzemikk::Camera>();
     camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
-
-    // Rejestracja kamery w rendererze
     engine->getRenderer()->setActiveSceneCamera(camera);
 
-    // --- Cube GameObject
+    // --- Tiles
     auto shaderA = engine->getAssetManager()->Get<dzemikk::Shader>("shaders/tile1");
-
     auto materialA = new dzemikk::Material();
     materialA->setShader(shaderA);
 
@@ -106,22 +92,25 @@ int main() {
     auto materialB = new dzemikk::Material();
     materialB->setShader(shaderB);
 
-    auto cubeMesh = createCubeMesh();
-
     auto tileMesh = engine->getAssetManager()->Get<dzemikk::Mesh>("models/pole.fbx");
     
     createHexIsland(*mainScenePtr, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
+    // --- Player
+    auto playerGO = mainScenePtr->createGameObject();
+    playerGO->transform()->setPosition(glm::vec3(0.0f, 2.5f, 0.0f));
+    auto playerMeshR = playerGO->addComponent<dzemikk::MeshRenderer>();
+    auto playerMesh = engine->getAssetManager()->GetPrimitive(dzemikk::AssetManager::PrimitiveMesh::Capsule);
+    playerMeshR->setMesh(playerMesh);
+    playerMeshR->setTransform(playerGO->transform());
+    playerMeshR->setMaterial(materialA);
+
     // UI Camera
     auto cameraUIGO = mainScenePtr->createGameObject();
     cameraUIGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 1.0f));
-
     auto cameraUI = cameraUIGO->addComponent<dzemikk::Camera>();
 
-    cameraUI->setOrthographic(0.0f, 1920.0f, 
-                            0.0f, 1080.0f, 
-                            -1.0f, 1.0f  
-    );
+    cameraUI->setOrthographic(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f);
     engine->getRenderer()->setActiveUICamera(cameraUI);
 
     // --- Quad GameObject
@@ -130,10 +119,10 @@ int main() {
     quadGO->transform()->setScale(glm::vec3(100.0f, 100.0f, 1.0f)); 
     quadGO->transform()->setRotation(glm::quat());
 
-    auto quadMesh = createQuadMesh();
+    auto quadMesh =
+        engine->getAssetManager()->GetPrimitive(dzemikk::AssetManager::PrimitiveMesh::Quad);
 
     auto quadShader = engine->getAssetManager()->Get<dzemikk::Shader>("shaders/quad");
-
     auto quadMaterial = new dzemikk::Material();
     quadMaterial->setShader(quadShader);
 
@@ -186,91 +175,6 @@ int main() {
     engine->start();
 
     return 0;
-}
-
-dzemikk::Mesh* createCubeMesh() {
-    dzemikk::Mesh* mesh = new dzemikk::Mesh();
-
-    float vertices[] = {// --- Front face
-                        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-                        0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-
-                        0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-                        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-
-                        // --- Back face
-                        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.5f, 0.5f, -0.5f, 0.0f, 0.0f,
-                        -1.0f, 0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-
-                        0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-                        -1.0f, -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
-
-                        // --- Left face
-                        -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, -0.5f, -0.5f, 0.5f, -1.0f, 0.0f,
-                        0.0f, -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
-
-                        -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-                        -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-
-                        // --- Right face
-                        0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-                        0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-
-                        0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-                        0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-
-                        // --- Top face
-                        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-                        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-
-                        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-                        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-
-                        // --- Bottom face
-                        -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.5f, -0.5f, 0.5f, 0.0f, -1.0f,
-                        0.0f, -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
-
-                        0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,
-                        0.0f, 0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f};
-
-    mesh->create(vertices, 36, 6);
-    return mesh;
-}
-
-dzemikk::Mesh* createQuadMesh() {
-    dzemikk::Mesh* mesh = new dzemikk::Mesh();
-    float vertices[] = {0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-                        1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-
-    mesh->create(vertices, 6, 3);
-    return mesh;
-}
-
-void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& scene,
-                     dzemikk::Mesh* cubeMesh, dzemikk::Material* materialA,
-                     dzemikk::Material* materialB, int rows, int cols, float spacing) {
-    for (int row = 0; row < rows; ++row) {
-        for (int col = 0; col < cols; ++col) {
-            auto cubeGO = scene.createGameObject();
-
-            float x = -col * spacing;
-            float y = 0.0f;
-            float z = -row * spacing;
-
-            cubeGO->transform()->setPosition(glm::vec3(x, y, z));
-            cubeGO->transform()->setScale(glm::vec3(1.0f));
-
-            auto cubeRenderer = cubeGO->addComponent<dzemikk::MeshRenderer>();
-            cubeRenderer->setMesh(cubeMesh);
-            cubeRenderer->setTransform(cubeGO->transform());
-            cubeGO->transform()->setScale(glm::vec3(1.f));
-
-            if ((row + col) % 2 == 0)
-                cubeRenderer->setMaterial(materialA);
-            else
-                cubeRenderer->setMaterial(materialB);
-        }
-    }
 }
 
 struct Hex {
