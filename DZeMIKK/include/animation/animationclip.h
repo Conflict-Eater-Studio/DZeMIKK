@@ -10,6 +10,7 @@
 class IAnimationTrack;
 struct aiAnimation;
 namespace dzemikk {
+class VectorTrack;
 class AnimationTrack;
 class Transform;
 
@@ -58,7 +59,7 @@ public:
      * as long as the track exists within this clip.
      */
     FloatTrack* addFloatTrack();
-
+    VectorTrack* addVectorTrack();
     /**
     * @brief Samples the animation clip at a given time.
     *

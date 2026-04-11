@@ -3,6 +3,7 @@
 #include "animation/animationstate.h"
 #include "animation/animationstatemachine.h"
 #include "animation/animationtrack.h"
+#include "animation/vectortrack.h"
 #include "core/engine.h"
 #include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
@@ -330,50 +331,27 @@ int main() {
     std::shared_ptr<dzemikk::AnimationStateMachine> animationStateMachine = std::make_shared<dzemikk::AnimationStateMachine>();
     dzemikk::AnimationState* idleState = animationStateMachine->addState();
 
-    dzemikk::AnimationState* moveState = animationStateMachine->addState("Move");
-
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
-    dzemikk::AnimationClip* animationClip2 = new dzemikk::AnimationClip(2, 1);
 
-    dzemikk::FloatTrack* animationTrack =  animationClip->addFloatTrack();
-    dzemikk::FloatTrack* animationTrack2 = animationClip2->addFloatTrack();
+    dzemikk::VectorTrack* animationTrack =  animationClip->addVectorTrack();
 
     idleState->setClip(animationClip);
-    moveState->setClip(animationClip2);
 
     dzemikk::Transform* t = playerGO->transform();
-    dzemikk::FloatProperty prop(
-        [t]{ return t->getPosition().x; },          // getter
-        [t](float v) {                                // setter
-            auto pos = t->getPosition();              // copy
-            pos.x = v;
-            t->setPosition(pos);                      // write back
-        });
+    dzemikk::VectorProperty prop(
+        [t] {return t->getScale(); },
+        [t](glm::vec3 scale) {
+            t->setScale(scale);
+        }
+    );
 
-    dzemikk::FloatProperty prop2(
-        [t] {return t->getRotation().x; },
-        [t](float eulerAngles) {
-            auto rot = t->getRotation();
-            auto newRot = glm::quat(glm::vec3(eulerAngles, 0.0f, 0.0f));
-
-            newRot.y = rot.y;
-            newRot.z = rot.z;
-
-            t->setRotation(newRot);
-        });
-
-    animationTrack2->setProperty(prop);
-    animationTrack2->addKey({0.0f, 0.0f});
-    animationTrack2->addKey({0.5f, 0.5f});
-    animationTrack2->addKey({1.0f, 1.0f});
-
-    animationTrack->setProperty(prop2);
-    animationTrack->addKey({0.0f, 0.0f});
-    animationTrack->addKey({0.5f, 0.5f});
-    animationTrack->addKey({1.0f, 1.0f});
+    animationTrack->setProperty(prop);
+    animationTrack->addKey({0.0f, glm::vec3(1.0f, 1.0f, 1.0f)});
+    animationTrack->addKey({0.5f, glm::vec3(0.5f, 0.5f, 0.5f)});
+    animationTrack->addKey({1.0f, glm::vec3(0.1f, 0.1f, 0.1f)});
+    animationTrack->addKey({1.5f, glm::vec3(0.5f, 0.5f, 0.5f)});
 
     animator->setStateMachine(animationStateMachine);
-    animator->play("Move");
 
     // Assimp::Importer importer;
     // const aiScene* scene = importer.ReadFile("./res/models/model.fbx", aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);

@@ -1,33 +1,34 @@
-#ifndef DZEMIKK_FLOATTRACK_H
-#define DZEMIKK_FLOATTRACK_H
+#ifndef DZEMIKK_VECTORTRACK_H
+#define DZEMIKK_VECTORTRACK_H
 
 #include "IAnimationTrack.h"
 #include "glm/ext/quaternion_common.hpp"
+#include "glm/vec3.hpp"
 #include "spdlog/spdlog.h"
 
 #include <functional>
 
 namespace dzemikk {
 
-struct FloatPropertyKey {
+struct VectorPropertyKey {
     float time;
-    float value;
+    glm::vec3 value;
 };
 
-class FloatProperty {
+class VectorProperty {
 public:
-    using Getter = std::function<float()>;
-    using Setter = std::function<void(float)>;
+    using Getter = std::function<glm::vec3()>;
+    using Setter = std::function<void(glm::vec3)>;
 
-    FloatProperty() = default;
-    FloatProperty(Getter g, Setter s)
+    VectorProperty() = default;
+    VectorProperty(Getter g, Setter s)
         : _get(std::move(g)), _set(std::move(s)) {}
 
-    void set(float value) {
+    void set(glm::vec3 value) {
         _set(value);
     }
 
-    float get() const {
+    glm::vec3 get() const {
         return _get();
     }
 
@@ -36,29 +37,29 @@ private:
     Setter _set;
 };
 
-class FloatTrack : public IAnimationTrack {
+class VectorTrack : public IAnimationTrack {
     public:
         void apply(float time) override {
             if (_keys.empty()) {
                 return;
             }
-            float value = sample(time);
+            glm::vec3 value = sample(time);
             _property.set(value);
         }
-        void addKey(FloatPropertyKey key) {
+        void addKey(VectorPropertyKey key) {
                 _keys.push_back(key);
         }
-        void setProperty(const FloatProperty& property) {
+        void setProperty(const VectorProperty& property) {
             _property = property;
         }
-        FloatProperty getProperty() const {
+        VectorProperty getProperty() const {
             return _property;
         }
     private:
-        FloatProperty _property;
-        std::vector<FloatPropertyKey> _keys;
+        VectorProperty _property;
+        std::vector<VectorPropertyKey> _keys;
 
-        float sample(float time) const {
+        glm::vec3 sample(float time) const {
             if (_keys.size() == 1) {
                 return _keys[0].value;
             }
@@ -71,7 +72,7 @@ class FloatTrack : public IAnimationTrack {
 
             float factor = (time - t1) / (t2 - t1);
 
-            float value = glm::mix(_keys[index].value,
+            glm::vec3 value = glm::mix(_keys[index].value,
                             _keys[next].value,
                             factor);
             return value;
@@ -86,3 +87,4 @@ class FloatTrack : public IAnimationTrack {
 };
 }
 #endif
+

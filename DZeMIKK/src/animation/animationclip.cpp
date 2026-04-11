@@ -3,6 +3,7 @@
 #include "animation/IAnimationTrack.h"
 #include "animation/animationtrack.h"
 #include "animation/floattrack.h"
+#include "animation/vectortrack.h"
 #include "ecs/components/transform.h"
 #include "spdlog/spdlog.h"
 
@@ -22,6 +23,12 @@ namespace dzemikk {
     FloatTrack* AnimationClip::addFloatTrack() {
         std::unique_ptr<FloatTrack> track = std::make_unique<FloatTrack>();
         FloatTrack* ptr = track.get();
+        _tracks.push_back(std::move(track));
+        return ptr;
+    }
+    VectorTrack* AnimationClip::addVectorTrack() {
+        std::unique_ptr<VectorTrack> track = std::make_unique<VectorTrack>();
+        VectorTrack* ptr = track.get();
         _tracks.push_back(std::move(track));
         return ptr;
     }
