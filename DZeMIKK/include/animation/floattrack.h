@@ -2,6 +2,7 @@
 #define DZEMIKK_FLOATTRACK_H
 #include "IAnimationTrack.h"
 #include "glm/ext/quaternion_common.hpp"
+#include "spdlog/spdlog.h"
 
 #include <functional>
 
@@ -37,8 +38,9 @@ struct FloatPropertyKey {
 class FloatTrack : public IAnimationTrack {
     public:
         void apply(float time) override {
-            if (!_property.get() || _keys.empty()) return;
-
+            if (_keys.empty()) {
+                return;
+            }
             float value = sample(time);
             _property.set(value);
         }
@@ -54,6 +56,7 @@ class FloatTrack : public IAnimationTrack {
     private:
         FloatProperty _property;
         std::vector<FloatPropertyKey> _keys;
+
         float sample(float time) const {
             if (_keys.size() == 1) {
                 return _keys[0].value;

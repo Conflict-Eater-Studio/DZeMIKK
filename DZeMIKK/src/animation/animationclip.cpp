@@ -4,6 +4,7 @@
 #include "animation/animationtrack.h"
 #include "animation/floattrack.h"
 #include "ecs/components/transform.h"
+#include "spdlog/spdlog.h"
 
 #include <assimp/anim.h>
 
@@ -29,8 +30,12 @@ namespace dzemikk {
         float time = timeInSeconds * getFramerate();
         float keyframe = fmod(time, getDuration());
 
-        if (_tracks.empty()) return;
-
+        if (_tracks.empty()) {
+            #if DZEMIKK_DEV_TOOLS
+            spdlog::warn("AnimationClip has no tracks!");
+            #endif
+            return;
+        }
         for (auto& track : _tracks) {
             track->apply(keyframe);
         }
