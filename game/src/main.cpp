@@ -17,15 +17,11 @@
 #include <memory>
 #include "renderer/font.h"
 #include <ecs/scenemanager.h>
+#include <assetManager/assetmanager.h>
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-#include <iostream>
 #include <filesystem>
-#include <glad/glad.h>
-#include <stb/stb_image.h>
-#include "spdlog/spdlog.h"
+#include <iostream>
+
 
 class TextUpdater : public dzemikk::MonoBehaviour {
   public:
@@ -71,9 +67,6 @@ dzemikk::Mesh* createQuadMesh();
 void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& scene,
                      dzemikk::Mesh* cubeMesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int rows, int cols, float spacing);
-
-dzemikk::Mesh* loadMeshFromFile(const std::string& path);
-GLuint loadTextureFromFile(const std::string& path, bool flipVertical = true);
 
 void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int tileCount, float size, float spacing = 0.1f,
@@ -215,7 +208,7 @@ int main() {
 
     auto cubeMesh = createCubeMesh();
 
-    auto tileMesh = loadMeshFromFile("Debug/res/models/pole.fbx");
+    auto tileMesh = engine->getAssetManager()->Get<dzemikk::Mesh>("models/pole.fbx");
     
     createHexIsland(*mainScenePtr, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
@@ -411,50 +404,6 @@ void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& sc
     }
 }
 
-dzemikk::Mesh* loadMeshFromFile(const std::string& path) {
-    Assimp::Importer importer;
-
-    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals |
-                                                       aiProcess_JoinIdenticalVertices);
-
-    if (!scene) {
-        std::cerr << "ASSIMP ERROR: " << importer.GetErrorString() << std::endl;
-    }
-
-    if (!scene->HasMeshes()) {
-        std::cerr << "NO MESHES IN FILE" << std::endl;
-    }
-
-    aiMesh* ai_mesh = scene->mMeshes[0];
-
-    std::vector<float> vertices;
-
-    for (unsigned int i = 0; i < ai_mesh->mNumVertices; i++) {
-        // pozycja
-        vertices.push_back(ai_mesh->mVertices[i].x);
-        vertices.push_back(ai_mesh->mVertices[i].y);
-        vertices.push_back(ai_mesh->mVertices[i].z);
-
-        // normal
-        vertices.push_back(ai_mesh->mNormals[i].x);
-        vertices.push_back(ai_mesh->mNormals[i].y);
-        vertices.push_back(ai_mesh->mNormals[i].z);
-    }
-
-    std::vector<unsigned int> indices;
-    for (unsigned int i = 0; i < ai_mesh->mNumFaces; i++) {
-        aiFace face = ai_mesh->mFaces[i];
-        for (unsigned int j = 0; j < face.mNumIndices; j++) {
-            indices.push_back(face.mIndices[j]);
-        }
-    }
-
-    auto mesh = new dzemikk::Mesh();
-    mesh->createIndexed(vertices.data(), ai_mesh->mNumVertices, indices.data(), indices.size(), 6);
-
-    return mesh;
-}
-
 #include <queue>
 #include <random>
 #include <set>
@@ -542,41 +491,4 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Materi
         else
             renderer->setMaterial(materialB);
     }
-}
-
-GLuint loadTextureFromFile(const std::string& path, bool flipVertical) {
-    int width, height, channels;
-
-    stbi_set_flip_vertically_on_load(flipVertical ? 1 : 0);
-
-    unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-    if (!data) {
-        std::cerr << "Failed to load texture: " << path << std::endl;
-        return 0; 
-    }
-
-    GLenum format = GL_RGB;
-    if (channels == 1)
-        format = GL_RED;
-    else if (channels == 3)
-        format = GL_RGB;
-    else if (channels == 4)
-        format = GL_RGBA;
-
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    stbi_image_free(data);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    return textureID;
 }

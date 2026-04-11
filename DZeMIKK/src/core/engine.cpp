@@ -16,6 +16,7 @@
 #include "ecs/gameobject.h"
 #include "ecs/scenemanager.h"
 #include "renderer/renderer.h"
+#include "assetManager/assetmanager.h"
 
 #include "core/profiler.h"
 
@@ -32,11 +33,13 @@ Engine::~Engine() {
 
 void Engine::init() {
     _mainWindow = std::make_shared<Window>(1920, 1080, "DZeMIKK");
+    _assetManager = std::make_shared<AssetManager>();
     _renderer = std::make_shared<Renderer>();
     _sceneManager = std::make_shared<SceneManager>();
     _time = std::make_shared<Time>();
     _animationSystem = std::make_shared<AnimationModule>();
 
+    _modules.push_back(_assetManager);
     _modules.push_back(_mainWindow);
     _modules.push_back(_renderer);
     _modules.push_back(_sceneManager);
@@ -155,6 +158,10 @@ std::shared_ptr<Time> Engine::getTime() {
 }
 std::shared_ptr<AnimationModule> Engine::getAnimationSystem() {
     return _animationSystem;
+}
+
+std::shared_ptr<AssetManager> Engine::getAssetManager() {
+    return _assetManager;
 }
 
 template <std::derived_from<IEngineModule> T>
