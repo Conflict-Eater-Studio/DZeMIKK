@@ -1,3 +1,4 @@
+#pragma once
 #ifndef DZEMIKK_IANIMATIONTRACK_H
 #define DZEMIKK_IANIMATIONTRACK_H
 class IAnimationTrack {

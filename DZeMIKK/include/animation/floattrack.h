@@ -1,40 +1,15 @@
+#pragma once
 #ifndef DZEMIKK_FLOATTRACK_H
 #define DZEMIKK_FLOATTRACK_H
 
-#include "IAnimationTrack.h"
 #include "glm/ext/quaternion_common.hpp"
-#include "spdlog/spdlog.h"
+#include "property.h"
+#include "propertykey.h"
 
-#include <functional>
 
 namespace dzemikk {
-
-struct FloatPropertyKey {
-    float time;
-    float value;
-};
-
-class FloatProperty {
-public:
-    using Getter = std::function<float()>;
-    using Setter = std::function<void(float)>;
-
-    FloatProperty() = default;
-    FloatProperty(Getter g, Setter s)
-        : _get(std::move(g)), _set(std::move(s)) {}
-
-    void set(float value) {
-        _set(value);
-    }
-
-    float get() const {
-        return _get();
-    }
-
-private:
-    Getter _get;
-    Setter _set;
-};
+using FloatPropertyKey = PropertyKey<float>;
+using FloatProperty = Property<float>;
 
 class FloatTrack : public IAnimationTrack {
     public:

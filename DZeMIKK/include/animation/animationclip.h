@@ -2,17 +2,15 @@
 #ifndef DZEMIKK_ANIMATIONCLIP_H
 #define DZEMIKK_ANIMATIONCLIP_H
 
-#include "floattrack.h"
-#include "quaterniontrack.h"
-
 #include <memory>
 #include <vector>
+#include "IAnimationTrack.h"
 
-class IAnimationTrack;
 struct aiAnimation;
 namespace dzemikk {
+class FloatTrack;
 class VectorTrack;
-class AnimationTrack;
+class QuaternionTrack;
 class Transform;
 
 /**
@@ -37,7 +35,6 @@ public:
      * @param framerate Playback framerate (ticks per second).
      */
     AnimationClip(float duration, float framerate);
-    AnimationClip(const aiAnimation* animation);
     /**
      * @brief Gets the total duration of the animation clip.
      *
@@ -71,6 +68,8 @@ public:
     * @param timeInSeconds Current time within the animation (in seconds).
     */
     void apply(float timeInSeconds) const;
+
+    void fromAssimp(aiAnimation* animation);
 
 private:
     /// Collection of animation tracks.

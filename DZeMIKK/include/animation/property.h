@@ -1,3 +1,4 @@
+#pragma once
 #ifndef DZEMIKK_PROPERTY_H
 #define DZEMIKK_PROPERTY_H
 #include <functional>

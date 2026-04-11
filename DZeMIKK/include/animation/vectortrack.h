@@ -1,40 +1,14 @@
+#pragma once
 #ifndef DZEMIKK_VECTORTRACK_H
 #define DZEMIKK_VECTORTRACK_H
 
 #include "IAnimationTrack.h"
-#include "glm/ext/quaternion_common.hpp"
-#include "glm/vec3.hpp"
-
-#include <functional>
+#include <glm/glm.hpp>
 
 namespace dzemikk {
 
-struct VectorPropertyKey {
-    float time;
-    glm::vec3 value;
-};
-
-class VectorProperty {
-public:
-    using Getter = std::function<glm::vec3()>;
-    using Setter = std::function<void(glm::vec3)>;
-
-    VectorProperty() = default;
-    VectorProperty(Getter g, Setter s)
-        : _get(std::move(g)), _set(std::move(s)) {}
-
-    void set(glm::vec3 value) {
-        _set(value);
-    }
-
-    glm::vec3 get() const {
-        return _get();
-    }
-
-private:
-    Getter _get;
-    Setter _set;
-};
+using VectorPropertyKey = PropertyKey<glm::vec3>;
+using VectorProperty = Property<glm::vec3>;
 
 class VectorTrack : public IAnimationTrack {
     public:

@@ -80,6 +80,12 @@ set(ENGINE_HEADERS
         "${INC_DIR}/animation/animationtrack.h"
         "${INC_DIR}/ecs/componentRegistry.h"
         "${INC_DIR}/ecs/scenemanager.h"
+        "${INC_DIR}/animation/IAnimationTrack.h"
+        "${INC_DIR}/animation/floattrack.h"
+        "${INC_DIR}/animation/vectortrack.h"
+        "${INC_DIR}/animation/quaterniontrack.h"
+        "${INC_DIR}/animation/property.h"
+        "${INC_DIR}/animation/propertykey.h"
 )
 
 target_sources(DZeMIKK

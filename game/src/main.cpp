@@ -355,13 +355,14 @@ int main() {
 
     animator->setStateMachine(animationStateMachine);
 
-    // Assimp::Importer importer;
-    // const aiScene* scene = importer.ReadFile("./res/models/model.fbx", aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
-    // if (!scene || !scene->mRootNode) {
-    //     spdlog::error("Failed to load model: {}", importer.GetErrorString());
-    // }
-    // spdlog::info("\n=== Animation Info ===");
-    // printAnimationInfo(scene);
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile("./res/models/model.fbx", aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+    if (!scene || !scene->mRootNode) {
+        spdlog::error("Failed to load model: {}", importer.GetErrorString());
+    }
+    printAnimationInfo(scene);
+    aiAnimation* anim = scene->mAnimations[0];
+
     engine->start();
     return 0;
 }
