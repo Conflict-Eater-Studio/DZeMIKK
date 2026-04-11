@@ -51,6 +51,7 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/serialize/sceneSerializer.cpp"
         "${SRC_DIR}/ecs/serialize/prefabSerializer.cpp"
         "${SRC_DIR}/assetManager/assetmanager.cpp"
+        "${SRC_DIR}/audio/sound.cpp"
 )
 
 set(ENGINE_HEADERS
@@ -94,6 +95,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/transformSerializer.h"
         "${INC_DIR}/ecs/serialize/uuid.h"
         "${INC_DIR}/assetManager/assetmanager.h"
+        "${INC_DIR}/audio/sound.h"
 )
 
 target_sources(DZeMIKK

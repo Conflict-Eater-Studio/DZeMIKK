@@ -4,6 +4,7 @@
 #include "renderer/font.h"
 #include "renderer/skybox.h"
 #include "renderer/texture.h"
+#include "audio/sound.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -90,6 +91,10 @@ void* dzemikk::AssetManager::LoadInternal(const std::string& id, std::type_index
 
     if (type == std::type_index(typeid(Texture))) {
         return loadTextureFromFile(resolvePath(id));
+    }
+
+    if (type == std::type_index(typeid(Sound))) {
+        return loadSoundFromFile(resolvePath(id));
     }
 
     return nullptr;
@@ -232,7 +237,9 @@ void dzemikk::AssetManager::Unload(const std::string& id) {
         delete static_cast<Skybox*>(entry.data);
     } else if (entry.type == std::type_index(typeid(Texture))) {
         delete static_cast<Texture*>(entry.data);
-    }
+    } else if (entry.type == std::type_index(typeid(Sound))) {
+        delete static_cast<Sound*>(entry.data);
+    }  
 
     _assets.erase(it);
 }
@@ -466,4 +473,15 @@ dzemikk::Mesh* dzemikk::AssetManager::createCapsuleMesh() {
     mesh->createIndexed(vertices.data(), vertices.size() / 6, indices.data(), indices.size(), 6);
 
     return mesh;
+}
+
+dzemikk::Sound* dzemikk::AssetManager::loadSoundFromFile(const std::string& path) {
+    FMOD::Sound* fmodSound = nullptr;
+
+    system->createSound(path.c_str(), FMOD_DEFAULT, nullptr, &fmodSound);
+
+    auto sound = new Sound();
+    sound->init(fmodSound);
+
+    return sound;
 }

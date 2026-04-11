@@ -12,7 +12,8 @@
 #include "renderer/font.h"
 #include "renderer/texture.h"
 #include <ecs/scenemanager.h>
-#include <assetManager/assetmanager.h>
+#include "assetManager/assetmanager.h"
+#include "audio/sound.h"
 
 #include <filesystem>
 #include <iostream>
@@ -176,6 +177,16 @@ int main() {
 
     auto updater = textGO->addComponent<TextUpdater>();
     updater->text = text;
+
+    // FOR TEST ONLY - DELETE THIS
+    FMOD::System* system;
+    FMOD::System_Create(&system);
+    system->init(512, FMOD_INIT_NORMAL, nullptr);
+
+    engine->getAssetManager()->system = system;
+
+    auto sound = engine->getAssetManager()->Get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
+    sound->play(system);
 
     engine->start();
 

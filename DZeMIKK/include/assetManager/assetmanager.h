@@ -10,12 +10,15 @@
 #include <optional>
 #include <filesystem>
 
+#include<fmod/include/fmod/fmod.hpp>
+
 namespace dzemikk {
 class Mesh;
 class Shader; 
 class Font;
 class Skybox;
 class Texture;
+class Sound;
 
 class AssetManager : public IEngineModule {
   public:
@@ -47,6 +50,9 @@ class AssetManager : public IEngineModule {
 
     Mesh* GetPrimitive(PrimitiveMesh type);
 
+    //FOR TEST ONLY - DELETE THIS
+    FMOD::System* system;
+
 #pragma endregion
 
   private:
@@ -74,10 +80,11 @@ class AssetManager : public IEngineModule {
 
     void* LoadInternal(const std::string& id, std::type_index type);
     Mesh* loadMeshFromFile(const std::string& path);
-    dzemikk::Texture* loadTextureFromFile(const std::string& path, bool flipVertical = true);
-    dzemikk::Shader* loadShaderFromFile(const std::string& path);
-    dzemikk::Font* loadFontFromFile(const std::string& path);
-    dzemikk::Skybox* loadSkyboxFromFile(const std::string& basePath);
+    Texture* loadTextureFromFile(const std::string& path, bool flipVertical = true);
+    Shader* loadShaderFromFile(const std::string& path);
+    Font* loadFontFromFile(const std::string& path);
+    Skybox* loadSkyboxFromFile(const std::string& basePath);
+    Sound* loadSoundFromFile(const std::string& path);
 
     std::string resolvePath(const std::string& id);
     std::optional<std::filesystem::path> findResRoot();
