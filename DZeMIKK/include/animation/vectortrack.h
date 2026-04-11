@@ -4,7 +4,6 @@
 #include "IAnimationTrack.h"
 #include "glm/ext/quaternion_common.hpp"
 #include "glm/vec3.hpp"
-#include "spdlog/spdlog.h"
 
 #include <functional>
 
@@ -72,10 +71,17 @@ class VectorTrack : public IAnimationTrack {
 
             float factor = (time - t1) / (t2 - t1);
 
-            glm::vec3 value = glm::mix(_keys[index].value,
-                            _keys[next].value,
-                            factor);
-            return value;
+            float x = glm::mix(_keys[index].value.x,
+                _keys[next].value.x,
+                factor);
+            float y = glm::mix(_keys[index].value.y,
+                _keys[next].value.y,
+                factor);
+            float z = glm::mix(_keys[index].value.z,
+                _keys[next].value.z,
+                factor);
+
+            return glm::vec3(x, y, z);
         }
         size_t findPropertyIndex(float time) const {
             for (size_t i = 0; i < _keys.size() - 1; i++) {

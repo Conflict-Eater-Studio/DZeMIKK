@@ -3,6 +3,7 @@
 #include "animation/animationstate.h"
 #include "animation/animationstatemachine.h"
 #include "animation/animationtrack.h"
+#include "animation/quaterniontrack.h"
 #include "animation/vectortrack.h"
 #include "core/engine.h"
 #include "ecs/components/animator.h"
@@ -333,15 +334,15 @@ int main() {
 
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
 
-    dzemikk::VectorTrack* animationTrack =  animationClip->addVectorTrack();
+    dzemikk::QuaternionTrack* animationTrack =  animationClip->addQuaternionTrack();
 
     idleState->setClip(animationClip);
 
     dzemikk::Transform* t = playerGO->transform();
-    dzemikk::VectorProperty prop(
-        [t] {return t->getScale(); },
-        [t](glm::vec3 scale) {
-            t->setScale(scale);
+    dzemikk::QuaternionProperty prop(
+        [t] {return t->getRotation(); },
+        [t](glm::quat rot) {
+            t->setRotation(rot);
         }
     );
 
@@ -350,6 +351,7 @@ int main() {
     animationTrack->addKey({0.5f, glm::vec3(0.5f, 0.5f, 0.5f)});
     animationTrack->addKey({1.0f, glm::vec3(0.1f, 0.1f, 0.1f)});
     animationTrack->addKey({1.5f, glm::vec3(0.5f, 0.5f, 0.5f)});
+    animationTrack->addKey({2.0f, glm::vec3(1.0f, 1.0f, 1.0f)});
 
     animator->setStateMachine(animationStateMachine);
 

@@ -32,6 +32,12 @@ namespace dzemikk {
         _tracks.push_back(std::move(track));
         return ptr;
     }
+    QuaternionTrack* AnimationClip::addQuaternionTrack() {
+        std::unique_ptr<QuaternionTrack> track = std::make_unique<QuaternionTrack>();
+        QuaternionTrack* ptr = track.get();
+        _tracks.push_back(std::move(track));
+        return ptr;
+    }
 
     void AnimationClip::apply(float timeInSeconds) const {
         float time = timeInSeconds * getFramerate();

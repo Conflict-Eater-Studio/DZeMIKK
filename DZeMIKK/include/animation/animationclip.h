@@ -3,6 +3,7 @@
 #define DZEMIKK_ANIMATIONCLIP_H
 
 #include "floattrack.h"
+#include "quaterniontrack.h"
 
 #include <memory>
 #include <vector>
@@ -60,6 +61,8 @@ public:
      */
     FloatTrack* addFloatTrack();
     VectorTrack* addVectorTrack();
+    QuaternionTrack* addQuaternionTrack();
+
     /**
     * @brief Samples the animation clip at a given time.
     *
