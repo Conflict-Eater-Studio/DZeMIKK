@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+struct aiAnimation;
 namespace dzemikk {
 class AnimationTrack;
 class Transform;
@@ -30,8 +31,8 @@ public:
      * @param duration Total duration of the clip (in seconds).
      * @param framerate Playback framerate (ticks per second).
      */
-    AnimationClip(int duration, int framerate);
-
+    AnimationClip(float duration, float framerate);
+    AnimationClip(const aiAnimation* animation);
     /**
      * @brief Gets the total duration of the animation clip.
      *
@@ -44,7 +45,7 @@ public:
      *
      * @return Framerate (ticks per second).
      */
-    int getFramerate() const;
+    float getFramerate() const;
 
     /**
      * @brief Creates and adds a new animation track.
@@ -68,11 +69,11 @@ private:
     /// Collection of animation tracks.
     std::vector<std::unique_ptr<AnimationTrack>> _tracks;
 
-    /// Total duration of the animation (in ticks).
-    int _duration = 0;
+    /// Total duration of the animation (in seconds).
+    float _duration = 0;
 
     /// Playback framerate (ticks per second).
-    int _framerate = 0;
+    float _framerate = 0;
 };
 
 }

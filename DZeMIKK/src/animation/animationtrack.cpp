@@ -2,11 +2,14 @@
 #include <spdlog/spdlog.h>
 #endif
 
-#include <animation/animationtrack.h>
 #include <glm/ext/quaternion_common.hpp>
+#include "animation/animationtrack.h"
+#include "assimp/anim.h"
 
 dzemikk::AnimationTrack::AnimationTrack() {
     _name = "Track";
+}
+dzemikk::AnimationTrack::AnimationTrack(const aiNodeAnim* track) {
 }
 const std::string& dzemikk::AnimationTrack::getName() const noexcept {
     return _name;

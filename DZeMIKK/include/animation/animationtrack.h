@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+struct aiNodeAnim;
 namespace dzemikk {
 
 class FloatProperty {
@@ -38,6 +39,7 @@ struct FloatPropertyKey {
 class AnimationTrack {
 public:
     AnimationTrack();
+    AnimationTrack(const aiNodeAnim* track);
     AnimationTrack(const AnimationTrack&) = delete;
     AnimationTrack& operator=(const AnimationTrack&) = delete;
 

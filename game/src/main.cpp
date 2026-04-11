@@ -264,7 +264,6 @@ int main() {
     auto quadShader = new dzemikk::Shader(vertexSrcUI, fragmentSrcUI);
     auto quadMaterial = new dzemikk::Material();
     quadMaterial->setShader(quadShader);
-
     auto quadRenderer = quadGO->addComponent<dzemikk::SpriteRenderer>();
     quadRenderer->setMesh(quadMesh);
     quadRenderer->setMaterial(quadMaterial);
@@ -298,7 +297,6 @@ int main() {
 
     auto quadSpriteUpdater = quadGO3->addComponent<SpriteUpdater>();
     quadSpriteUpdater->transform = quadGO3->transform();
-
     auto textGO = mainScene.createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
 
@@ -363,6 +361,7 @@ int main() {
 
             t->setRotation(newRot);
         });
+
     animationTrack2->setProperty(prop);
     animationTrack2->addKey({0.0f, 0.0f});
     animationTrack2->addKey({0.5f, 0.5f});

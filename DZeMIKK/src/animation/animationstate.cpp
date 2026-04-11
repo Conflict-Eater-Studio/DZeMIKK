@@ -1,5 +1,8 @@
-#include <utility>
 #include "animation/animationstate.h"
+
+#include "animation/animationclip.h"
+
+#include <utility>
 
 namespace dzemikk {
 AnimationState::AnimationState() : _name("NewState") {}
@@ -23,7 +26,5 @@ const std::string& AnimationState::getName() const noexcept {
         _transitions.push_back(transition);
     }
     void AnimationState::update(float deltaTime) {
-
     }
-
-    } // namespace dzemikk
+}
