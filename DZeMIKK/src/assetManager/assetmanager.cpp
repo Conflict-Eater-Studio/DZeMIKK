@@ -1,6 +1,7 @@
 #include "assetManager/assetmanager.h"
 #include "renderer/mesh.h"
 #include "renderer/shader.h"
+#include "renderer/font.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -72,6 +73,10 @@ void* dzemikk::AssetManager::LoadInternal(const std::string& id, std::type_index
 
     if (type == std::type_index(typeid(Shader))) {
         return loadShaderFromFile(id);
+    }
+
+    if (type == std::type_index(typeid(Font))) {
+        return loadFontFromFile(resolvePath(id));
     }
 
     if (type == std::type_index(typeid(unsigned int))) {
@@ -187,4 +192,38 @@ dzemikk::Shader* dzemikk::AssetManager::loadShaderFromFile(const std::string& ba
     std::string fragSrc((std::istreambuf_iterator<char>(fFile)), std::istreambuf_iterator<char>());
 
     return new dzemikk::Shader(vertSrc.c_str(), fragSrc.c_str());
+}
+
+dzemikk::Font* dzemikk::AssetManager::loadFontFromFile(const std::string& path) {
+    auto font = new dzemikk::Font();
+
+    if (!font->load(path)) {
+        std::cerr << "Failed to load font: " << path << std::endl;
+        delete font;
+        return nullptr;
+    }
+
+    return font;
+}
+
+void dzemikk::AssetManager::Unload(const std::string& id) {
+    auto it = _assets.find(id);
+    if (it == _assets.end())
+        return;
+
+    AssetEntry& entry = it->second;
+
+    if (entry.type == std::type_index(typeid(Mesh))) {
+        delete static_cast<Mesh*>(entry.data);
+    } else if (entry.type == std::type_index(typeid(Shader))) {
+        delete static_cast<Shader*>(entry.data);
+    } else if (entry.type == std::type_index(typeid(Font))) {
+        delete static_cast<Font*>(entry.data);
+    } else if (entry.type == std::type_index(typeid(unsigned int))) {
+        GLuint tex = *static_cast<GLuint*>(entry.data);
+        glDeleteTextures(1, &tex);
+        delete static_cast<GLuint*>(entry.data);
+    }
+
+    _assets.erase(it);
 }

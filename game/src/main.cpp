@@ -83,10 +83,7 @@ int main() {
 
     engine->getRenderer()->setSkybox(std::move(customSkybox));
 
-    auto font = new dzemikk::Font();
-    if (!font->load("Debug/res/fonts/UncialAntiqua-Regular.ttf")) {
-        std::cout << "Failed to load font\n";
-    }
+    auto font = engine->getAssetManager()->Get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
 
     auto mainScenePtr = std::make_shared<dzemikk::Scene>();
     engine->getSceneManager()->loadScene(mainScenePtr);
@@ -108,6 +105,7 @@ int main() {
 
     // --- Cube GameObject
     auto shaderA = engine->getAssetManager()->Get<dzemikk::Shader>("shaders/tile1");
+
     auto materialA = new dzemikk::Material();
     materialA->setShader(shaderA);
 

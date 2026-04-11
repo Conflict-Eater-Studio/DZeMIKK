@@ -14,6 +14,7 @@
 namespace dzemikk {
 class Mesh;
 class Shader; 
+class Font;
 
 class AssetManager : public IEngineModule {
   public:
@@ -39,6 +40,7 @@ class AssetManager : public IEngineModule {
 #pragma region Public API
 
     template <typename T> T* Get(const std::string& id);
+    void Unload(const std::string& id);
 
 #pragma endregion
 
@@ -56,6 +58,8 @@ class AssetManager : public IEngineModule {
     Mesh* loadMeshFromFile(const std::string& path);
     GLuint loadTextureFromFile(const std::string& path, bool flipVertical = true);
     dzemikk::Shader* loadShaderFromFile(const std::string& path);
+    dzemikk::Font* loadFontFromFile(const std::string& path);
+
     std::string resolvePath(const std::string& id);
     std::optional<std::filesystem::path> findResRoot();
 
