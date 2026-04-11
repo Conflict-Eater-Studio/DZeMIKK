@@ -15,6 +15,7 @@ namespace dzemikk {
 class Mesh;
 class Shader; 
 class Font;
+class Skybox;
 
 class AssetManager : public IEngineModule {
   public:
@@ -59,6 +60,7 @@ class AssetManager : public IEngineModule {
     GLuint loadTextureFromFile(const std::string& path, bool flipVertical = true);
     dzemikk::Shader* loadShaderFromFile(const std::string& path);
     dzemikk::Font* loadFontFromFile(const std::string& path);
+    dzemikk::Skybox* loadSkyboxFromFile(const std::string& basePath);
 
     std::string resolvePath(const std::string& id);
     std::optional<std::filesystem::path> findResRoot();

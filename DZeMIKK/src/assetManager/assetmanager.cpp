@@ -2,6 +2,7 @@
 #include "renderer/mesh.h"
 #include "renderer/shader.h"
 #include "renderer/font.h"
+#include "renderer/skybox.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -77,6 +78,10 @@ void* dzemikk::AssetManager::LoadInternal(const std::string& id, std::type_index
 
     if (type == std::type_index(typeid(Font))) {
         return loadFontFromFile(resolvePath(id));
+    }
+
+    if (type == std::type_index(typeid(Skybox))) {
+        return loadSkyboxFromFile(id);
     }
 
     if (type == std::type_index(typeid(unsigned int))) {
@@ -206,6 +211,25 @@ dzemikk::Font* dzemikk::AssetManager::loadFontFromFile(const std::string& path) 
     return font;
 }
 
+dzemikk::Skybox* dzemikk::AssetManager::loadSkyboxFromFile(const std::string& basePath) {
+    std::vector<std::string> faces = {
+        resolvePath(basePath + "/right.png"), resolvePath(basePath + "/left.png"),
+        resolvePath(basePath + "/top.png"),   resolvePath(basePath + "/bottom.png"),
+        resolvePath(basePath + "/front.png"), resolvePath(basePath + "/back.png")};
+
+    auto skybox = new dzemikk::Skybox();
+
+    try {
+        skybox->loadCubemap(faces);
+    } catch (const std::exception& e) {
+        std::cerr << "[AssetManager] Skybox load failed: " << e.what() << std::endl;
+        delete skybox;
+        return nullptr;
+    }
+
+    return skybox;
+}
+
 void dzemikk::AssetManager::Unload(const std::string& id) {
     auto it = _assets.find(id);
     if (it == _assets.end())
@@ -219,6 +243,8 @@ void dzemikk::AssetManager::Unload(const std::string& id) {
         delete static_cast<Shader*>(entry.data);
     } else if (entry.type == std::type_index(typeid(Font))) {
         delete static_cast<Font*>(entry.data);
+    } else if (entry.type == std::type_index(typeid(Skybox))) {
+        delete static_cast<Skybox*>(entry.data);
     } else if (entry.type == std::type_index(typeid(unsigned int))) {
         GLuint tex = *static_cast<GLuint*>(entry.data);
         glDeleteTextures(1, &tex);
