@@ -3,6 +3,7 @@
 #include "renderer/material.h"
 #include "renderer/mesh.h"
 #include "renderer/font.h"
+#include "renderer/texture.h"
 #include "ecs/componentRegistry.h"
 
 #include "ecs/components/meshRenderer.h"
@@ -209,7 +210,7 @@ void dzemikk::Renderer::render() {
     dzemikk::ComponentRegistry::get().getComponents<SpriteRenderer>(_spriteRenderers);
     glDisable(GL_DEPTH_TEST);
 
-    for (auto* r : _spriteRenderers) {
+for (auto* r : _spriteRenderers) {
         if (!r->isValid())
             continue;
 
@@ -219,19 +220,19 @@ void dzemikk::Renderer::render() {
         shader->setMat4("model", r->getTransform()->getWorldMatrix());
         shader->setMat4("projection", _uiProjection);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, r->getTexture());
-        shader->setInt("spriteTexture", 0);
+        if (r->hasTexture()) {
+            r->getTexture()->bind(0);
+            shader->setInt("spriteTexture", 0);
+            shader->setBool("useTexture", true);
+        } else {
+            shader->setBool("useTexture", false);
+        }
+
         shader->setVec4("spriteColor", r->getColor());
 
-        if (r->useTexture())
-            shader->setBool("useTexture", true);
-        else
-            shader->setBool("useTexture", false);
-
         r->getMesh()->draw();
-        Profiler::rendererStats.drawCalls++;
 
+        Profiler::rendererStats.drawCalls++;
         Profiler::rendererStats.renderedObjects++;
         Profiler::rendererStats.vertexCount += r->getMesh()->getVertexCount();
         Profiler::rendererStats.triangleCount += r->getMesh()->getVertexCount() / 3;

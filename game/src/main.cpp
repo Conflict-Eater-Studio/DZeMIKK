@@ -10,6 +10,7 @@
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
 #include "renderer/font.h"
+#include "renderer/texture.h"
 #include <ecs/scenemanager.h>
 #include <assetManager/assetmanager.h>
 
@@ -132,9 +133,9 @@ int main() {
     quadRenderer->setTransform(quadGO->transform());
     quadRenderer->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
 
-    auto tex = engine->getAssetManager()->Get<unsigned int>("textures/tex.png");
+    auto tex = engine->getAssetManager()->Get<dzemikk::Texture>("textures/tex3.png");
 
-    quadRenderer->setTexture(*tex);
+    quadRenderer->setTexture(tex);
 
     auto quadGO2 = mainScenePtr->createGameObject();
     quadGO2->transform()->setPosition(glm::vec3(1500.0f, 950.0f, 0.0f));

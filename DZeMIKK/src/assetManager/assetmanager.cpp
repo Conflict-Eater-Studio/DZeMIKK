@@ -3,6 +3,7 @@
 #include "renderer/shader.h"
 #include "renderer/font.h"
 #include "renderer/skybox.h"
+#include "renderer/texture.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -87,10 +88,8 @@ void* dzemikk::AssetManager::LoadInternal(const std::string& id, std::type_index
         return loadSkyboxFromFile(id);
     }
 
-    if (type == std::type_index(typeid(unsigned int))) {
-        auto tex = new unsigned int;
-        *tex = loadTextureFromFile(resolvePath(id));
-        return tex;
+    if (type == std::type_index(typeid(Texture))) {
+        return loadTextureFromFile(resolvePath(id));
     }
 
     return nullptr;
@@ -146,41 +145,24 @@ dzemikk::Mesh* dzemikk::AssetManager::loadMeshFromFile(const std::string& path) 
     return mesh;
 }
 
-GLuint dzemikk::AssetManager::loadTextureFromFile(const std::string& path, bool flipVertical) {
+dzemikk::Texture* dzemikk::AssetManager::loadTextureFromFile(const std::string& path, bool flipVertical) {
     int width, height, channels;
 
     stbi_set_flip_vertically_on_load(flipVertical ? 1 : 0);
 
     unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+
     if (!data) {
         std::cerr << "Failed to load texture: " << path << std::endl;
-        return 0;
+        return nullptr;
     }
 
-    GLenum format = GL_RGB;
-    if (channels == 1)
-        format = GL_RED;
-    else if (channels == 3)
-        format = GL_RGB;
-    else if (channels == 4)
-        format = GL_RGBA;
-
-    GLuint textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    auto texture = new Texture();
+    texture->initFromData(data, width, height, channels);
 
     stbi_image_free(data);
-    glBindTexture(GL_TEXTURE_2D, 0);
 
-    return textureID;
+    return texture;
 }
 
 dzemikk::Shader* dzemikk::AssetManager::loadShaderFromFile(const std::string& basePath) {
@@ -248,10 +230,8 @@ void dzemikk::AssetManager::Unload(const std::string& id) {
         delete static_cast<Font*>(entry.data);
     } else if (entry.type == std::type_index(typeid(Skybox))) {
         delete static_cast<Skybox*>(entry.data);
-    } else if (entry.type == std::type_index(typeid(unsigned int))) {
-        GLuint tex = *static_cast<GLuint*>(entry.data);
-        glDeleteTextures(1, &tex);
-        delete static_cast<GLuint*>(entry.data);
+    } else if (entry.type == std::type_index(typeid(Texture))) {
+        delete static_cast<Texture*>(entry.data);
     }
 
     _assets.erase(it);

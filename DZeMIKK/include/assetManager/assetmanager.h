@@ -6,7 +6,6 @@
 #include <string>
 #include <typeindex>
 #include <unordered_map>
-#include <glad/glad.h>
 #include <stdexcept>
 #include <optional>
 #include <filesystem>
@@ -16,6 +15,7 @@ class Mesh;
 class Shader; 
 class Font;
 class Skybox;
+class Texture;
 
 class AssetManager : public IEngineModule {
   public:
@@ -74,7 +74,7 @@ class AssetManager : public IEngineModule {
 
     void* LoadInternal(const std::string& id, std::type_index type);
     Mesh* loadMeshFromFile(const std::string& path);
-    GLuint loadTextureFromFile(const std::string& path, bool flipVertical = true);
+    dzemikk::Texture* loadTextureFromFile(const std::string& path, bool flipVertical = true);
     dzemikk::Shader* loadShaderFromFile(const std::string& path);
     dzemikk::Font* loadFontFromFile(const std::string& path);
     dzemikk::Skybox* loadSkyboxFromFile(const std::string& basePath);

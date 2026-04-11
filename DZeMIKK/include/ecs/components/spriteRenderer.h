@@ -10,6 +10,7 @@ namespace dzemikk {
 class Transform;
 class Mesh;
 class Material;
+class Texture;
 
 /**
  * @brief Component responsible for rendering 2D sprites.
@@ -65,8 +66,8 @@ class SpriteRenderer : public Component {
         return _transform;
     }
 
-    unsigned int getTexture() const {
-        return _textureID;
+    [[nodiscard]] Texture* getTexture() const {
+        return _texture;
     }
 
     glm::vec4 getColor() const {
@@ -104,9 +105,11 @@ class SpriteRenderer : public Component {
         _transform = transform;
     }
 
-    void setTexture(unsigned int texID) {
-        _textureID = texID;
-        _useTexture = true;
+    /**
+     * @brief Sets sprite texture (albedo).
+     */
+    void setTexture(Texture* texture) {
+        _texture = texture;
     }
 
     void setColor(const glm::vec4& color) {
@@ -129,6 +132,13 @@ class SpriteRenderer : public Component {
      */
     [[nodiscard]] bool isValid() const {
         return _mesh && _material && _transform;
+    }
+
+    /**
+     * @brief Checks if sprite has texture.
+     */
+    [[nodiscard]] bool hasTexture() const {
+        return _texture != nullptr;
     }
 
 #pragma endregion
@@ -157,7 +167,7 @@ class SpriteRenderer : public Component {
 
     bool _useTexture = false;
 
-    unsigned int _textureID = 0;
+    Texture* _texture = nullptr;
     glm::vec4 _color = glm::vec4(1.0f);
 
 #pragma endregion
