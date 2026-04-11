@@ -1,7 +1,4 @@
-#include "animation/animationclip.h"
-#include "animation/animationstate.h"
 #include "core/engine.h"
-#include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
@@ -12,16 +9,17 @@
 #include "renderer/material.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
-#include "animation/animationcurve.h"
-#include <GLFW/glfw3.h>
-#include <memory>
 #include "renderer/font.h"
 #include <ecs/scenemanager.h>
 #include <assetManager/assetmanager.h>
 
 #include <filesystem>
 #include <iostream>
-
+#include <queue>
+#include <random>
+#include <set>
+#include <GLFW/glfw3.h>
+#include <memory>
 
 class TextUpdater : public dzemikk::MonoBehaviour {
   public:
@@ -99,25 +97,6 @@ int main() {
     playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
     playerGO->transform()->setScale(glm::vec3(1.0f));
 
-    dzemikk::Animator* animator =  playerGO->addComponent<dzemikk::Animator>();
-    dzemikk::AnimationStateMachine* animationStateMachine = new dzemikk::AnimationStateMachine();
-    dzemikk::AnimationState* animationState = new dzemikk::AnimationState("Idle");
-    dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
-
-    dzemikk::AnimationCurve animationCurve;
-    animationCurve.addValue(1.0f);
-    animationCurve.addValue(2.0f);
-    animationCurve.addValue(3.0f);
-
-    animationClip->addCurve(animationCurve);
-
-    animationState->setClip(animationClip);
-    animationStateMachine->addState(animationState);
-//    animationStateMachine->setState("Idle");
-    animator->setStateMachine(animationStateMachine);
-
-    //dzemikk::AnimationClip* idleClip = new dzemikk::AnimationClip("idle", 0.1f);
-
     // --- Scene Camera
     auto cameraGO = mainScenePtr->createGameObject();
     cameraGO->transform()->setPosition(glm::vec3(1.5f, 1.5f, 3.0f));
@@ -128,81 +107,11 @@ int main() {
     engine->getRenderer()->setActiveSceneCamera(camera);
 
     // --- Cube GameObject
-    const char* vertexSrc3D = R"(
-    #version 330 core
-    layout(location = 0) in vec3 aPos;
-    layout(location = 1) in vec3 aNormal;
-
-    // Atrybut instancji: model mat4 (4 wektory)
-    layout(location = 2) in vec4 aModelRow0;
-    layout(location = 3) in vec4 aModelRow1;
-    layout(location = 4) in vec4 aModelRow2;
-    layout(location = 5) in vec4 aModelRow3;
-
-    layout (std140) uniform Matrices
-    {
-        mat4 projection;
-        mat4 view;
-    };
-
-    out vec3 FragPos;
-    out vec3 Normal;
-
-    void main() {
-        mat4 model = mat4(aModelRow0, aModelRow1, aModelRow2, aModelRow3);
-        FragPos = vec3(model * vec4(aPos,1.0));
-        Normal = mat3(transpose(inverse(model))) * aNormal;
-        gl_Position = projection * view * vec4(FragPos,1.0);
-    }
-    )";
-
-    const char* fragmentSrc3D = R"(
-    #version 330 core
-    out vec4 FragColor;
-
-    in vec3 FragPos;
-    in vec3 Normal;
-
-    uniform vec3 lightDir;      // Kierunek �wiat�a (np. glm::normalize(glm::vec3(-1.0, -1.0, -1.0)))
-    uniform vec3 lightColor;    // Kolor �wiat�a (np. vec3(1.0,1.0,1.0))
-    uniform vec3 objectColor;   // Kolor kostki (np. vec3(1.0,0.5,0.2))
-
-    void main() {
-        // Lambert: max(dot(N,L),0)
-        vec3 norm = normalize(Normal);
-        vec3 lightDirNorm = normalize(-lightDir); // je�li �wiat�o "idzie w kierunku"
-        float diff = max(dot(norm, lightDirNorm), 0.0);
-
-        vec3 diffuse = diff * lightColor;
-
-        vec3 result = diffuse * objectColor;
-        FragColor = vec4(result, 1.0);
-    }
-    )";
-
-    auto shaderA = new dzemikk::Shader(vertexSrc3D, fragmentSrc3D); 
+    auto shaderA = engine->getAssetManager()->Get<dzemikk::Shader>("shaders/tile1");
     auto materialA = new dzemikk::Material();
     materialA->setShader(shaderA);
 
-    const char* fragmentSrc3D_B = R"(
-    #version 330 core
-    out vec4 FragColor;
-
-    in vec3 FragPos;
-    in vec3 Normal;
-
-    uniform vec3 lightDir;
-    uniform vec3 lightColor;
-
-    void main() {
-        vec3 norm = normalize(Normal);
-        vec3 lightDirNorm = normalize(-lightDir);
-        float diff = max(dot(norm, lightDirNorm), 0.0);
-        vec3 diffuse = diff * lightColor;
-        FragColor = vec4(diffuse * vec3(0.2,0.5,1.0), 1.0); // niebieska kostka
-    }
-    )";
-    auto shaderB = new dzemikk::Shader(vertexSrc3D, fragmentSrc3D_B);
+    auto shaderB = engine->getAssetManager()->Get<dzemikk::Shader>("shaders/tile2");
     auto materialB = new dzemikk::Material();
     materialB->setShader(shaderB);
 
@@ -232,39 +141,8 @@ int main() {
 
     auto quadMesh = createQuadMesh();
 
-    const char* vertexSrcUI = R"(
-    #version 330 core
-    layout(location = 0) in vec3 aPos;
-    layout(location = 1) in vec2 aTexCoords;
+    auto quadShader = engine->getAssetManager()->Get<dzemikk::Shader>("shaders/quad");
 
-    out vec2 TexCoords;
-
-    uniform mat4 model;
-    uniform mat4 projection;
-
-    void main()
-    {
-        gl_Position = projection * model * vec4(aPos, 1.0);
-        TexCoords = aTexCoords;
-    }
-    )";
-
-    const char* fragmentSrcUI = R"(
-    #version 330 core
-    in vec2 TexCoords;
-    out vec4 FragColor;
-
-    uniform sampler2D spriteTexture;
-    uniform vec4 spriteColor; // RGBA
-
-    void main()
-    {
-        vec4 texColor = texture(spriteTexture, TexCoords);
-        FragColor = vec4(spriteColor.rgb, spriteColor.a * texColor.a);
-    }
-    )";
-
-    auto quadShader = new dzemikk::Shader(vertexSrcUI, fragmentSrcUI);
     auto quadMaterial = new dzemikk::Material();
     quadMaterial->setShader(quadShader);
 
@@ -403,10 +281,6 @@ void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& sc
         }
     }
 }
-
-#include <queue>
-#include <random>
-#include <set>
 
 struct Hex {
     int q, r;

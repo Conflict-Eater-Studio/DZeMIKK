@@ -1,11 +1,14 @@
 #include "assetManager/assetmanager.h"
 #include "renderer/mesh.h"
+#include "renderer/shader.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <iostream>
 #include <stb/stb_image.h>
+#include <fstream>
+#include <iterator>
 
 void dzemikk::AssetManager::Initialize() {
     _pathIndex.clear();
@@ -65,6 +68,10 @@ void dzemikk::AssetManager::UnInitialize() {
 void* dzemikk::AssetManager::LoadInternal(const std::string& id, std::type_index type) {
     if (type == std::type_index(typeid(Mesh))) {
         return loadMeshFromFile(resolvePath(id));
+    }
+
+    if (type == std::type_index(typeid(Shader))) {
+        return loadShaderFromFile(id);
     }
 
     if (type == std::type_index(typeid(unsigned int))) {
@@ -161,4 +168,23 @@ GLuint dzemikk::AssetManager::loadTextureFromFile(const std::string& path, bool 
     glBindTexture(GL_TEXTURE_2D, 0);
 
     return textureID;
+}
+
+dzemikk::Shader* dzemikk::AssetManager::loadShaderFromFile(const std::string& basePath) {
+    std::string vertPath = resolvePath(basePath + ".vert");
+    std::string fragPath = resolvePath(basePath + ".frag");
+
+    std::ifstream vFile(vertPath);
+    std::ifstream fFile(fragPath);
+
+    if (!vFile.is_open() || !fFile.is_open()) {
+        std::cerr << "Failed to open shader:\n" << vertPath << "\n" << fragPath << "\n";
+        return nullptr;
+    }
+
+    std::string vertSrc((std::istreambuf_iterator<char>(vFile)), std::istreambuf_iterator<char>());
+
+    std::string fragSrc((std::istreambuf_iterator<char>(fFile)), std::istreambuf_iterator<char>());
+
+    return new dzemikk::Shader(vertSrc.c_str(), fragSrc.c_str());
 }

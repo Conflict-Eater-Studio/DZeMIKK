@@ -13,6 +13,7 @@
 
 namespace dzemikk {
 class Mesh;
+class Shader; 
 
 class AssetManager : public IEngineModule {
   public:
@@ -54,6 +55,7 @@ class AssetManager : public IEngineModule {
     void* LoadInternal(const std::string& id, std::type_index type);
     Mesh* loadMeshFromFile(const std::string& path);
     GLuint loadTextureFromFile(const std::string& path, bool flipVertical = true);
+    dzemikk::Shader* loadShaderFromFile(const std::string& path);
     std::string resolvePath(const std::string& id);
     std::optional<std::filesystem::path> findResRoot();
 
