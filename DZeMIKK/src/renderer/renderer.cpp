@@ -224,6 +224,11 @@ void dzemikk::Renderer::render() {
         shader->setInt("spriteTexture", 0);
         shader->setVec4("spriteColor", r->getColor());
 
+        if (r->useTexture())
+            shader->setBool("useTexture", true);
+        else
+            shader->setBool("useTexture", false);
+
         r->getMesh()->draw();
         Profiler::rendererStats.drawCalls++;
 

@@ -106,10 +106,15 @@ class SpriteRenderer : public Component {
 
     void setTexture(unsigned int texID) {
         _textureID = texID;
+        _useTexture = true;
     }
 
     void setColor(const glm::vec4& color) {
         _color = color;
+    }
+
+    bool useTexture() {
+        return _useTexture;
     }
 
 #pragma endregion
@@ -149,6 +154,8 @@ class SpriteRenderer : public Component {
      * @brief Non-owning pointer to transform component.
      */
     Transform* _transform = nullptr;
+
+    bool _useTexture = false;
 
     unsigned int _textureID = 0;
     glm::vec4 _color = glm::vec4(1.0f);

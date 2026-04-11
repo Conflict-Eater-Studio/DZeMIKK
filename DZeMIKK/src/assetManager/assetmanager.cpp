@@ -323,10 +323,12 @@ dzemikk::Mesh* dzemikk::AssetManager::GetPrimitive(PrimitiveMesh type) {
 
 dzemikk::Mesh* dzemikk::AssetManager::createQuadMesh() {
     dzemikk::Mesh* mesh = new dzemikk::Mesh();
-    float vertices[] = {0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-                        1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+    float vertices[] = {// pos        // uv
+                        0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
 
-    mesh->create(vertices, 6, 3);
+                        1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+
+    mesh->create2D(vertices, 6);
     return mesh;
 }
 

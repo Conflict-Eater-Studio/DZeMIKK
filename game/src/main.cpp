@@ -132,6 +132,10 @@ int main() {
     quadRenderer->setTransform(quadGO->transform());
     quadRenderer->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
 
+    auto tex = engine->getAssetManager()->Get<unsigned int>("textures/tex.png");
+
+    quadRenderer->setTexture(*tex);
+
     auto quadGO2 = mainScenePtr->createGameObject();
     quadGO2->transform()->setPosition(glm::vec3(1500.0f, 950.0f, 0.0f));
     quadGO2->transform()->setScale(glm::vec3(400.0f, 50.0f, 1.0f));

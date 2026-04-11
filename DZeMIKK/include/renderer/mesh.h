@@ -138,6 +138,8 @@ namespace dzemikk {
          */
         void create(const float* vertices, uint32_t vertexCount, uint32_t stride);
 
+        void create2D(const float* vertices, uint32_t vertexCount);
+
         /**
          * @brief Creates a mesh with an index buffer from raw data.
          *

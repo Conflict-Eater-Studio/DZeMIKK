@@ -1,12 +1,21 @@
-    #version 330 core
-    in vec2 TexCoords;
-    out vec4 FragColor;
+#version 330 core
 
-    uniform sampler2D spriteTexture;
-    uniform vec4 spriteColor; // RGBA
+in vec2 TexCoords;
+out vec4 FragColor;
 
-    void main()
+uniform sampler2D spriteTexture;
+uniform vec4 spriteColor;
+uniform bool useTexture;
+
+void main()
+{
+    if (useTexture)
     {
         vec4 texColor = texture(spriteTexture, TexCoords);
-        FragColor = vec4(spriteColor.rgb, spriteColor.a * texColor.a);
+        FragColor = texColor * spriteColor;
     }
+    else
+    {
+        FragColor = spriteColor;
+    }
+}

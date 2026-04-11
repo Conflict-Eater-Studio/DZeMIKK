@@ -116,3 +116,22 @@ void dzemikk::Mesh::drawInstanced(const std::vector<glm::mat4>& models, GLuint i
     }
     glBindVertexArray(0);
 }
+
+void dzemikk::Mesh::create2D(const float* vertices, uint32_t vertexCount) {
+    _vertexCount = vertexCount;
+
+    glGenVertexArrays(1, &_vao);
+    glBindVertexArray(_vao);
+
+    glGenBuffers(1, &_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+    glBufferData(GL_ARRAY_BUFFER, vertexCount * 4 * sizeof(float), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glBindVertexArray(0);
+}
