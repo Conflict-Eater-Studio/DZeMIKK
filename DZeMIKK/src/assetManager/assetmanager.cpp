@@ -108,10 +108,10 @@ std::string dzemikk::AssetManager::resolvePath(const std::string& id) {
     return id;
 }
 
-dzemikk::Mesh* dzemikk::AssetManager::loadMeshFromFile(const std::string& path) {
+dzemikk::Mesh* dzemikk::AssetManager::loadMeshFromFile(const std::string& id) {
     Assimp::Importer importer;
 
-    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals |
+    const aiScene* scene = importer.ReadFile(id, aiProcess_Triangulate | aiProcess_GenNormals |
                                                        aiProcess_JoinIdenticalVertices);
 
     if (!scene) {
@@ -150,15 +150,15 @@ dzemikk::Mesh* dzemikk::AssetManager::loadMeshFromFile(const std::string& path) 
     return mesh;
 }
 
-dzemikk::Texture* dzemikk::AssetManager::loadTextureFromFile(const std::string& path, bool flipVertical) {
+dzemikk::Texture* dzemikk::AssetManager::loadTextureFromFile(const std::string& id, bool flipVertical) {
     int width, height, channels;
 
     stbi_set_flip_vertically_on_load(flipVertical ? 1 : 0);
 
-    unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+    unsigned char* data = stbi_load(id.c_str(), &width, &height, &channels, 0);
 
     if (!data) {
-        std::cerr << "Failed to load texture: " << path << std::endl;
+        std::cerr << "Failed to load texture: " << id << std::endl;
         return nullptr;
     }
 
@@ -170,9 +170,9 @@ dzemikk::Texture* dzemikk::AssetManager::loadTextureFromFile(const std::string& 
     return texture;
 }
 
-dzemikk::Shader* dzemikk::AssetManager::loadShaderFromFile(const std::string& basePath) {
-    std::string vertPath = resolvePath(basePath + ".vert");
-    std::string fragPath = resolvePath(basePath + ".frag");
+dzemikk::Shader* dzemikk::AssetManager::loadShaderFromFile(const std::string& id) {
+    std::string vertPath = resolvePath(id + ".vert");
+    std::string fragPath = resolvePath(id + ".frag");
 
     std::ifstream vFile(vertPath);
     std::ifstream fFile(fragPath);
@@ -201,11 +201,11 @@ dzemikk::Font* dzemikk::AssetManager::loadFontFromFile(const std::string& path) 
     return font;
 }
 
-dzemikk::Skybox* dzemikk::AssetManager::loadSkyboxFromFile(const std::string& basePath) {
+dzemikk::Skybox* dzemikk::AssetManager::loadSkyboxFromFile(const std::string& id) {
     std::vector<std::string> faces = {
-        resolvePath(basePath + "/right.png"), resolvePath(basePath + "/left.png"),
-        resolvePath(basePath + "/top.png"),   resolvePath(basePath + "/bottom.png"),
-        resolvePath(basePath + "/front.png"), resolvePath(basePath + "/back.png")};
+        resolvePath(id + "/right.png"), resolvePath(id + "/left.png"),
+        resolvePath(id + "/top.png"),   resolvePath(id + "/bottom.png"),
+        resolvePath(id + "/front.png"), resolvePath(id + "/back.png")};
 
     auto skybox = new dzemikk::Skybox();
 
@@ -475,10 +475,10 @@ dzemikk::Mesh* dzemikk::AssetManager::createCapsuleMesh() {
     return mesh;
 }
 
-dzemikk::Sound* dzemikk::AssetManager::loadSoundFromFile(const std::string& path) {
+dzemikk::Sound* dzemikk::AssetManager::loadSoundFromFile(const std::string& id) {
     FMOD::Sound* fmodSound = nullptr;
 
-    system->createSound(path.c_str(), FMOD_DEFAULT, nullptr, &fmodSound);
+    system->createSound(id.c_str(), FMOD_DEFAULT, nullptr, &fmodSound);
 
     auto sound = new Sound();
     sound->init(fmodSound);
@@ -501,21 +501,21 @@ void dzemikk::AssetManager::reloadInternal(const std::string& id, void* data, st
     }
 
     if (type == std::type_index(typeid(Skybox))) {
-        //reloadSkybox(id, static_cast<Skybox*>(data));
+        reloadSkybox(id, static_cast<Skybox*>(data));
     }
 
     if (type == std::type_index(typeid(Texture))) {
-        //reloadTexture(id, static_cast<Texture*>(data));
+        reloadTexture(id, static_cast<Texture*>(data));
     }
 
     if (type == std::type_index(typeid(Sound))) {
-        //reloadSound(id, static_cast<Sound*>(data));
+        reloadSound(id, static_cast<Sound*>(data));
     }
 }
 
-void dzemikk::AssetManager::reloadShader(const std::string& basePath, dzemikk::Shader* shader) {
-    std::string vertPath = resolvePath(basePath + ".vert");
-    std::string fragPath = resolvePath(basePath + ".frag");
+void dzemikk::AssetManager::reloadShader(const std::string& id, dzemikk::Shader* shader) {
+    std::string vertPath = resolvePath(id + ".vert");
+    std::string fragPath = resolvePath(id + ".frag");
 
     std::ifstream vFile(vertPath);
     std::ifstream fFile(fragPath);
@@ -567,4 +567,70 @@ void dzemikk::AssetManager::reloadFont(const std::string& id, dzemikk::Font* fon
     if (!font->load(path)) {
         std::cerr << "Failed to reload font: " << path << "\n";
     }
+}
+
+void dzemikk::AssetManager::reloadSkybox(const std::string& id, dzemikk::Skybox* skybox) {
+    std::vector<std::string> faces = {
+        resolvePath(id + "/right.png"), resolvePath(id + "/left.png"),
+        resolvePath(id + "/top.png"),   resolvePath(id + "/bottom.png"),
+        resolvePath(id + "/front.png"), resolvePath(id + "/back.png")};
+
+    try {
+        skybox->loadCubemap(faces);
+    } catch (const std::exception& e) {
+        std::cerr << "[AssetManager] Skybox reload failed: " << e.what() << "\n";
+    }
+}
+
+void dzemikk::AssetManager::reloadTexture(const std::string& id, dzemikk::Texture* texture) {
+    std::string path = resolvePath(id);
+
+    int width, height, channels;
+
+    stbi_set_flip_vertically_on_load(true);
+
+    unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+
+    if (!data) {
+        std::cerr << "Failed to reload texture: " << path << "\n";
+        return;
+    }
+
+    GLuint newTex;
+    glGenTextures(1, &newTex);
+    glBindTexture(GL_TEXTURE_2D, newTex);
+
+    GLenum format = (channels == 4) ? GL_RGBA : (channels == 3) ? GL_RGB : GL_RED;
+    GLenum internalFormat = (channels == 4) ? GL_RGBA8 : GL_RGB8;
+
+    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE,
+                 data);
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    stbi_image_free(data);
+
+    texture->replaceTexture(newTex, width, height, channels);
+}
+
+void dzemikk::AssetManager::reloadSound(const std::string& id, dzemikk::Sound* sound) {
+    std::string path = resolvePath(id);
+
+    FMOD::Sound* newSound = nullptr;
+
+    FMOD_RESULT result = system->createSound(path.c_str(), FMOD_DEFAULT, nullptr, &newSound);
+
+    if (result != FMOD_OK || !newSound) {
+        std::cerr << "Failed to reload sound: " << path << "\n";
+        return;
+    }
+
+    sound->replaceSound(newSound);
 }

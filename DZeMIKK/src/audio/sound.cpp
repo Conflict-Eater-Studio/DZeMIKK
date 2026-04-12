@@ -20,3 +20,11 @@ void dzemikk::Sound::play(FMOD::System* system) {
     FMOD::Channel* channel = nullptr;
     system->playSound(_sound, nullptr, false, &channel);
 }
+
+void dzemikk::Sound::replaceSound(FMOD::Sound* newSound) {
+    if (_sound) {
+        _sound->release();
+    }
+
+    _sound = newSound;
+}

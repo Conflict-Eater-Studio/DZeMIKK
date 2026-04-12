@@ -17,6 +17,8 @@
 #include "ecs/scenemanager.h"
 #include "renderer/renderer.h"
 #include "renderer/font.h"
+#include "renderer/texture.h"
+#include "audio/sound.h"
 #include "assetManager/assetmanager.h"
 
 #include "core/profiler.h"
@@ -226,7 +228,9 @@ void Engine::updateCameraArrows(float speed) {
         transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->right()));
 
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Z) == GLFW_PRESS) {
-        getAssetManager()->Reload<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
+        //getAssetManager()->Reload<dzemikk::Sound>("audio/prime_coToZaHex.wav");
+        //auto sound = getAssetManager()->Get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
+        //sound->play(getAssetManager()->system);
         std::cout<<"reload";
     }
 

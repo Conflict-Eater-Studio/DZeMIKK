@@ -108,6 +108,8 @@ namespace dzemikk {
 
         #pragma endregion
 
+        void replaceTexture(GLuint newId, int width, int height, int channels);
+
       private:
         GLuint _id = 0;
 

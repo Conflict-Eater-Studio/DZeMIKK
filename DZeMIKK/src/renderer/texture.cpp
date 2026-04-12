@@ -67,6 +67,8 @@ void dzemikk::Texture::release() {
 
 void dzemikk::Texture::initFromData(unsigned char* data, int width, int height, int channels,
                            bool generateMipmaps) {
+    release();
+
     _width = width;
     _height = height;
     _channels = channels;
@@ -94,4 +96,14 @@ void dzemikk::Texture::initFromData(unsigned char* data, int width, int height, 
     setWrap(Wrap::Repeat, Wrap::Repeat);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void dzemikk::Texture::replaceTexture(GLuint newId, int width, int height, int channels) {
+    if (_id != 0)
+        glDeleteTextures(1, &_id);
+
+    _id = newId;
+    _width = width;
+    _height = height;
+    _channels = channels;
 }

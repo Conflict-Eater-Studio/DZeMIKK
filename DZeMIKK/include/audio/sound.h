@@ -26,6 +26,8 @@ class Sound {
     void init(FMOD::Sound* sound);
     void play(FMOD::System* system);
 
+    void replaceSound(FMOD::Sound* newSound);
+
     FMOD::Sound* getRaw() const {
         return _sound;
     }

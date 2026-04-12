@@ -77,18 +77,14 @@ dzemikk::Skybox::~Skybox() {
 }
 
 void dzemikk::Skybox::loadCubemap(const std::vector<std::string>& faces) {
-    if (faces.size() != 6) {
+    if (faces.size() != 6)
         throw std::runtime_error("Skybox requires exactly 6 textures");
-    }
-
-    if (_cubemapTex != 0) {
-        glDeleteTextures(1, &_cubemapTex);
-    }
-
-    glGenTextures(1, &_cubemapTex);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, _cubemapTex);
 
     stbi_set_flip_vertically_on_load(false);
+
+    unsigned int newTex;
+    glGenTextures(1, &newTex);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, newTex);
 
     int width, height, channels;
 
@@ -96,6 +92,7 @@ void dzemikk::Skybox::loadCubemap(const std::vector<std::string>& faces) {
         unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &channels, 0);
 
         if (!data) {
+            glDeleteTextures(1, &newTex); 
             throw std::runtime_error("Failed to load cubemap: " + faces[i]);
         }
 
@@ -112,6 +109,11 @@ void dzemikk::Skybox::loadCubemap(const std::vector<std::string>& faces) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    if (_cubemapTex != 0)
+        glDeleteTextures(1, &_cubemapTex);
+
+    _cubemapTex = newTex;
 
     _mode = Mode::Cubemap;
 }

@@ -80,17 +80,20 @@ class AssetManager : public IEngineModule {
     Mesh* createCapsuleMesh();
 
     void* loadInternal(const std::string& id, std::type_index type);
-    Mesh* loadMeshFromFile(const std::string& path);
-    Texture* loadTextureFromFile(const std::string& path, bool flipVertical = true);
-    Shader* loadShaderFromFile(const std::string& path);
-    Font* loadFontFromFile(const std::string& path);
-    Skybox* loadSkyboxFromFile(const std::string& basePath);
-    Sound* loadSoundFromFile(const std::string& path);
+    Mesh* loadMeshFromFile(const std::string& id);
+    Texture* loadTextureFromFile(const std::string& id, bool flipVertical = true);
+    Shader* loadShaderFromFile(const std::string& id);
+    Font* loadFontFromFile(const std::string& id);
+    Skybox* loadSkyboxFromFile(const std::string& id);
+    Sound* loadSoundFromFile(const std::string& id);
 
     void reloadInternal(const std::string& id, void* data, std::type_index type);
-    void reloadShader(const std::string& basePath, dzemikk::Shader* shader);
+    void reloadShader(const std::string& id, dzemikk::Shader* shader);
     void reloadMesh(const std::string& id, Mesh* mesh);
     void reloadFont(const std::string& id, dzemikk::Font* font);
+    void reloadSkybox(const std::string& id, dzemikk::Skybox* skybox);
+    void reloadTexture(const std::string& id, dzemikk::Texture* texture);
+    void reloadSound(const std::string& id, dzemikk::Sound* sound);
 
     std::string resolvePath(const std::string& id);
     std::optional<std::filesystem::path> findResRoot();
