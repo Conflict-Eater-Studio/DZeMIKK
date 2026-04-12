@@ -15,11 +15,6 @@
 
 namespace dzemikk {
 class Mesh;
-class Shader; 
-class Font;
-class Skybox;
-class Texture;
-class Sound;
 
 class AssetManager : public IEngineModule {
   public:
@@ -78,10 +73,6 @@ class AssetManager : public IEngineModule {
 #pragma region Internal
 
     void initPrimitiveMeshes();
-    Mesh* createCubeMesh();
-    Mesh* createQuadMesh();
-    Mesh* createSphereMesh();
-    Mesh* createCapsuleMesh();
 
     void RegisterHandlers();
 

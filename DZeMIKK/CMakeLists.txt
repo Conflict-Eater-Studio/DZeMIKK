@@ -58,6 +58,7 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/assetManager/skyboxHandler.cpp"
         "${SRC_DIR}/assetManager/soundHandler.cpp"
         "${SRC_DIR}/assetManager/textureHandler.cpp"
+        "${SRC_DIR}/assetManager/primitiveFactory.cpp"
         "${SRC_DIR}/audio/sound.cpp"
 )
 
@@ -109,6 +110,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/assetManager/soundHandler.h"
         "${INC_DIR}/assetManager/textureHandler.h"
         "${INC_DIR}/assetManager/iAssetHandler.h"
+        "${INC_DIR}/assetManager/primitiveFactory.h"
         "${INC_DIR}/audio/sound.h"
 )
 

@@ -11,9 +11,6 @@ void* dzemikk::MeshHandler::load(const std::string& path) {
 }
 
 dzemikk::Mesh* dzemikk::MeshHandler::loadMeshFromFile(const std::string& path) {
-
-    std::cout << "Load Mesh";
-
     Assimp::Importer importer;
 
     const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals |
