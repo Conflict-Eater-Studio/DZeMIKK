@@ -1,3 +1,7 @@
+#if DZEMIKK_DEV_TOOLS
+#include <spdlog/spdlog.h>
+#endif
+
 #include "assetManager/assetmanager.h"
 #include "renderer/mesh.h"
 #include "renderer/shader.h"
@@ -14,35 +18,59 @@
 #include <fstream>
 #include <iterator>
 #include <corecrt_math_defines.h>
+#include <assimp/version.h>
 
 void dzemikk::AssetManager::Initialize() {
+#if DZEMIKK_DEV_TOOLS
+    auto t0 = std::chrono::high_resolution_clock::now();
+    spdlog::info("[AssetManager] Initialization started");
+
+    spdlog::info("Assimp version: {}.{}.{}", aiGetVersionMajor(), aiGetVersionMinor(),
+                 aiGetVersionRevision());
+#endif
+
     _pathIndex.clear();
 
     auto rootOpt = findResRoot();
-
     if (!rootOpt) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error("[AssetManager] Cannot find 'res' folder!");
+#else
         std::cerr << "[AssetManager] ERROR: cannot find 'res' folder!\n";
+#endif
         return;
     }
 
     _rootPath = rootOpt->string();
     std::replace(_rootPath.begin(), _rootPath.end(), '\\', '/');
 
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[AssetManager] Resource root: {}", _rootPath);
+#endif
+
+    size_t fileCount = 0;
+
     for (auto& p : std::filesystem::recursive_directory_iterator(_rootPath)) {
         if (!p.is_regular_file())
             continue;
 
         std::string fullPath = p.path().string();
-
         std::replace(fullPath.begin(), fullPath.end(), '\\', '/');
 
         std::string relative = std::filesystem::relative(p.path(), _rootPath).string();
         std::replace(relative.begin(), relative.end(), '\\', '/');
 
         _pathIndex[relative] = fullPath;
+        ++fileCount;
     }
 
     initPrimitiveMeshes();
+
+#if DZEMIKK_DEV_TOOLS
+    auto t1 = std::chrono::high_resolution_clock::now();
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
+    spdlog::info("[AssetManager] Initialization finished in {} ms", ms);
+#endif
 }
 
 std::optional<std::filesystem::path> dzemikk::AssetManager::findResRoot() {
