@@ -107,8 +107,8 @@ bool GameObject::hasStarted() const {
     return _hasStarted;
 }
 
-Scene const& GameObject::getScene() const {
-    return *_scene;
+Scene* GameObject::getScene() {
+    return _scene;
 }
 
 // --- Setters
@@ -163,20 +163,30 @@ void GameObject::setParent(GameObject* parent) {
         _parent->_children.push_back(this);
     }
 
-    // If a parent has a RectTransform, then it's in a canvas space
-    // We need to remove existing Transform and replace it with RectTransform
-    if (!_rectTransform && parent->getComponent<RectTransform>()) {
-        removeComponent(_transform);
-        _transform = nullptr;
-        _rectTransform = addComponent<RectTransform>();
-    }
+    if (parent) {
+        // If a parent has a RectTransform, then it's in a canvas space
+        // We need to remove existing Transform and replace it with RectTransform
+        if (!_rectTransform && parent->getComponent<RectTransform>()) {
+            removeComponent(_transform);
+            _transform = nullptr;
+            _rectTransform = addComponent<RectTransform>();
+        }
 
-    // If a parent has a Transform, then it's in a world space
-    // We need to remove existing RectTransform and replace it with Transform
-    if (!_transform && parent->getComponent<Transform>()) {
-        removeComponent(_rectTransform);
-        _rectTransform = nullptr;
-        _transform = addComponent<Transform>();
+        // If a parent has a Transform, then it's in a world space
+        // We need to remove existing RectTransform and replace it with Transform
+        if (!_transform && parent->getComponent<Transform>()) {
+            removeComponent(_rectTransform);
+            _rectTransform = nullptr;
+            _transform = addComponent<Transform>();
+        }
+    } else {
+        // If we have no parent or set it to nullptr, we default to world space, so ensure we have a
+        // Transform
+        if (!_transform) {
+            removeComponent(_rectTransform);
+            _rectTransform = nullptr;
+            _transform = addComponent<Transform>();
+        }
     }
 
     if (_transform) {

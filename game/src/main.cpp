@@ -12,7 +12,9 @@
 #include "ecs/components/textRenderer.h"
 #include "ecs/components/ui/canvas.h"
 #include "ecs/components/ui/rectTransform.h"
+#include "ecs/components/ui/uiButton.h"
 #include "ecs/components/ui/uiSpriteRenderer.h"
+#include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
@@ -306,32 +308,40 @@ int main() {
     auto quadSpriteUpdater = quadGO3->addComponent<SpriteUpdater>();
     quadSpriteUpdater->transform = quadGO3->transform();
 
-    auto* canvas = mainScenePtr->createGameObject();
-    canvas->setName("Canvas");
-    canvas->addComponent<dzemikk::Canvas>();
-    canvas->rectTransform()->setSize(glm::vec2(1920.0F, 1080.0F));
-    canvas->rectTransform()->setPosition(glm::vec2(0.0F, 0.0F));
-    auto* uiSprite = mainScenePtr->createGameObject();
-    uiSprite->setName("UI Sprite");
-    canvas->addChild(uiSprite);
-    uiSprite->rectTransform()->setSize({1280.0F, 720.0F});
-    auto* uiSpriteRenderer = uiSprite->addComponent<dzemikk::UISpriteRenderer>();
-    uiSpriteRenderer->setMesh(quadMesh);
-    uiSpriteRenderer->setMaterial(quadMaterial);
-    uiSpriteRenderer->setRectTransform(uiSprite->rectTransform());
-    uiSpriteRenderer->setColor(glm::vec4(1.0F, 0.0F, 0.0F, 1.0F));
-    auto* spriteChild = mainScenePtr->createGameObject();
-    spriteChild->setName("Sprite Child");
-    uiSprite->addChild(spriteChild);
-    spriteChild->rectTransform()->setSize({200.0F, 100.0F});
-    spriteChild->rectTransform()->setAnchorMin({.5F, .5F});
-    spriteChild->rectTransform()->setAnchorMax({.5F, .5F});
-    spriteChild->rectTransform()->setPivot({0.0F, 0.0F});
-    auto* spriteChildRenderer = spriteChild->addComponent<dzemikk::UISpriteRenderer>();
-    spriteChildRenderer->setMesh(quadMesh);
-    spriteChildRenderer->setMaterial(quadMaterial);
-    spriteChildRenderer->setRectTransform(spriteChild->rectTransform());
-    spriteChildRenderer->setColor(glm::vec4(0.0F, 1.0F, 0.0F, 1.0F));
+    auto* canvasGo = mainScenePtr->createGameObject("Canvas");
+    auto* canvas = canvasGo->addComponent<dzemikk::Canvas>();
+    auto* canvasRect = canvasGo->rectTransform();
+    canvasRect->setSize({1920.0F, 1080.0F});
+
+    auto* buttonGo = mainScenePtr->createGameObject("Button", canvasGo);
+    dzemikk::UIButton::build(*buttonGo, dzemikk::UIButtonParams{
+                                            .onClick = []() { spdlog::info("Button click"); },
+                                            .onEnter = []() { spdlog::info("Button hover"); },
+                                            .onExit = []() { spdlog::info("Button exit"); },
+                                            .rectTransformParams =
+                                                {
+                                                    .size = {300.0F, 150.0F},
+                                                    .pivot = {0.5F, 0.5F},
+                                                    .anchorMin = {0.5F, 0.5F},
+                                                    .anchorMax = {0.5F, 0.5F},
+                                                },
+                                            .mesh = quadMesh,
+                                            .material = quadMaterial,
+                                        });
+    auto* buttonText = mainScenePtr->createGameObject("ButtonText", buttonGo);
+    auto* buttonTextRect = buttonText->rectTransform();
+    buttonTextRect->setSize({0.0F, 0.0F});
+    buttonTextRect->setAnchorMin({0.0F, 0.0F});
+    buttonTextRect->setAnchorMax({1.0F, 1.0F});
+    buttonTextRect->setPosition({0.0F, 0.0F});
+    buttonTextRect->setPivot({0.5F, 0.5F});
+    auto* buttonTextRenderer = buttonText->addComponent<dzemikk::UITextRenderer>();
+    buttonTextRenderer->text = "Click Me!";
+    buttonTextRenderer->font = font;
+    buttonTextRenderer->scale = 1.0F;
+    buttonTextRenderer->color = glm::vec3(0.0F, 0.0F, 0.0F);
+    buttonTextRenderer->horizontalAlign = dzemikk::UITextRenderer::HorizontalAlign::Center;
+    buttonTextRenderer->verticalAlign = dzemikk::UITextRenderer::VerticalAlign::Middle;
 
     auto textGO = mainScenePtr->createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));

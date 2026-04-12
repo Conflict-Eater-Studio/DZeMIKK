@@ -52,6 +52,7 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/serialize/prefabSerializer.cpp"
         "${SRC_DIR}/ecs/components/ui/canvas.cpp"
         "${SRC_DIR}/ecs/components/ui/rectTransform.cpp"
+        "${SRC_DIR}/ecs/components/ui/uiButton.cpp"
 )
 
 set(ENGINE_HEADERS
@@ -95,8 +96,11 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/transformSerializer.h"
         "${INC_DIR}/ecs/serialize/uuid.h"
         "${INC_DIR}/ecs/components/ui/uiSpriteRenderer.h"
+        "${INC_DIR}/ecs/components/ui/uiTextRenderer.h"
         "${INC_DIR}/ecs/components/ui/canvas.h"
         "${INC_DIR}/ecs/components/ui/rectTransform.h"
+        "${INC_DIR}/ecs/components/ui/iUIInteractable.h"
+        "${INC_DIR}/ecs/components/ui/uiButton.h"
 )
 
 target_sources(DZeMIKK

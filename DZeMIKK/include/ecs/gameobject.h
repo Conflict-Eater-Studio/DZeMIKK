@@ -169,7 +169,7 @@ class GameObject {
     [[nodiscard]] const std::vector<MonoBehaviour*>& getMonoBehaviours() const;
     [[nodiscard]] const std::vector<std::unique_ptr<Component>>& getAllComponents() const;
     [[nodiscard]] bool hasStarted() const;
-    [[nodiscard]] const Scene& getScene() const;
+    [[nodiscard]] Scene* getScene();
 
     // --- Setters
     void setId(const boost::uuids::uuid& uuid);
@@ -191,6 +191,10 @@ class GameObject {
      * @param child The child GameObject to add. Must not be null or this Game Object itself.
      */
     void addChild(GameObject* child);
+    /**
+     * @brief Creates a new child GameObject with the specified name and adds it to this GameObject.
+     * @param name The name of the new child GameObject.
+     */
     [[deprecated("Deprecated")]] void removeChild(GameObject* child);
     /*
      * @brief Detaches a child GameObject from this GameObject. The child will no longer have a
