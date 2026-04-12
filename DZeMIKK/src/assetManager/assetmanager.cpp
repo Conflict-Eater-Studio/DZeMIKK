@@ -93,11 +93,9 @@ std::optional<std::filesystem::path> dzemikk::AssetManager::findResRoot() {
 
 void dzemikk::AssetManager::UnInitialize() {
     for (auto& [id, entry] : _assets) {
-        if (entry.type == std::type_index(typeid(Mesh))) {
-            delete static_cast<Mesh*>(entry.data);
-        }
-        else if (entry.type == std::type_index(typeid(unsigned int))) {
-            delete static_cast<unsigned int*>(entry.data);
+        auto handlerIt = _handlers.find(entry.type);
+        if (handlerIt != _handlers.end()) {
+            handlerIt->second->unload(entry.data);
         }
     }
 
