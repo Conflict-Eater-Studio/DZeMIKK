@@ -1,5 +1,6 @@
 #include "ecs/serialize/componentSerializerRegistry.h"
 
+#include "ecs/serialize/rectTransformSerializer.h"
 #include "ecs/serialize/transformSerializer.h"
 
 #include <stdexcept>
@@ -11,6 +12,7 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     ComponentSerializerRegistry registry;
 
     registerTransformSerializer(registry);
+    registerRectTransformSerializer(registry);
 
     return registry;
 }
