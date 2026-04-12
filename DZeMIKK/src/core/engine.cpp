@@ -21,6 +21,7 @@
 #include "core/profiler.h"
 
 #include <GLFW/glfw3.h>
+#include <iostream>
 namespace dzemikk {
 
 Engine::Engine() {
@@ -223,7 +224,10 @@ void Engine::updateCameraArrows(float speed) {
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_DOWN) == GLFW_PRESS)
         transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->right()));
 
-    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Z) == GLFW_PRESS)
-        getAssetManager()->Reload<dzemikk::Shader>("shaders/quad");
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Z) == GLFW_PRESS) {
+            getAssetManager()->Reload<dzemikk::Mesh>("models/pole.fbx");
+        std::cout<<"reload";
+    }
+
 }
 }

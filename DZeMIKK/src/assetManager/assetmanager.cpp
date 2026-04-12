@@ -488,7 +488,7 @@ dzemikk::Sound* dzemikk::AssetManager::loadSoundFromFile(const std::string& path
 
 void dzemikk::AssetManager::reloadInternal(const std::string& id, void* data, std::type_index type) {
     if (type == std::type_index(typeid(Mesh))) {
-        //reloadMesh(id, static_cast<Mesh*>(data));
+        reloadMesh(id, static_cast<Mesh*>(data));
     }
 
     if (type == std::type_index(typeid(Shader))) {
@@ -529,4 +529,34 @@ void dzemikk::AssetManager::reloadShader(const std::string& basePath, dzemikk::S
     std::string fragSrc((std::istreambuf_iterator<char>(fFile)), {});
 
     shader->recompile(vertSrc.c_str(), fragSrc.c_str());
+}
+
+void dzemikk::AssetManager::reloadMesh(const std::string& id, dzemikk::Mesh* mesh) {
+    auto path = resolvePath(id);
+
+    Assimp::Importer importer;
+    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals |
+                                                       aiProcess_JoinIdenticalVertices);
+
+    if (!scene || !scene->HasMeshes())
+        return;
+
+    auto* ai_mesh = scene->mMeshes[0];
+
+    std::vector<float> vertices;
+    std::vector<unsigned int> indices;
+
+    for (unsigned i = 0; i < ai_mesh->mNumVertices; i++) {
+        vertices.insert(vertices.end(),
+                        {ai_mesh->mVertices[i].x, ai_mesh->mVertices[i].y, ai_mesh->mVertices[i].z,
+                         ai_mesh->mNormals[i].x, ai_mesh->mNormals[i].y, ai_mesh->mNormals[i].z});
+    }
+
+    for (unsigned i = 0; i < ai_mesh->mNumFaces; i++) {
+        auto& f = ai_mesh->mFaces[i];
+        for (unsigned j = 0; j < f.mNumIndices; j++)
+            indices.push_back(f.mIndices[j]);
+    }
+
+    mesh->recreate(vertices.data(), indices.data(), ai_mesh->mNumVertices, indices.size(), 6);
 }
