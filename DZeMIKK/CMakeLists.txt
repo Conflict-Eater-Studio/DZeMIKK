@@ -50,7 +50,14 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/serialize/gameobjectSerializer.cpp"
         "${SRC_DIR}/ecs/serialize/sceneSerializer.cpp"
         "${SRC_DIR}/ecs/serialize/prefabSerializer.cpp"
-        "${SRC_DIR}/assetManager/assetmanager.cpp"
+        "${SRC_DIR}/assetManager/assetManager.cpp"
+        "${SRC_DIR}/assetManager/iAssetHandler.cpp"
+        "${SRC_DIR}/assetManager/fontHandler.cpp"
+        "${SRC_DIR}/assetManager/meshHandler.cpp"
+        "${SRC_DIR}/assetManager/shaderHandler.cpp"
+        "${SRC_DIR}/assetManager/skyboxHandler.cpp"
+        "${SRC_DIR}/assetManager/soundHandler.cpp"
+        "${SRC_DIR}/assetManager/textureHandler.cpp"
         "${SRC_DIR}/audio/sound.cpp"
 )
 
@@ -94,7 +101,14 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/monoBehaviourSerializer.h"
         "${INC_DIR}/ecs/serialize/transformSerializer.h"
         "${INC_DIR}/ecs/serialize/uuid.h"
-        "${INC_DIR}/assetManager/assetmanager.h"
+        "${INC_DIR}/assetManager/assetManager.h"
+        "${INC_DIR}/assetManager/fontHandler.h"
+        "${INC_DIR}/assetManager/meshHandler.h"
+        "${INC_DIR}/assetManager/shaderHandler.h"
+        "${INC_DIR}/assetManager/skyboxHandler.h"
+        "${INC_DIR}/assetManager/soundHandler.h"
+        "${INC_DIR}/assetManager/textureHandler.h"
+        "${INC_DIR}/assetManager/iAssetHandler.h"
         "${INC_DIR}/audio/sound.h"
 )
 

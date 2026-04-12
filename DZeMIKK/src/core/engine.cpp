@@ -228,7 +228,7 @@ void Engine::updateCameraArrows(float speed) {
         transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->right()));
 
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Z) == GLFW_PRESS) {
-        //getAssetManager()->Reload<dzemikk::Sound>("audio/prime_coToZaHex.wav");
+        getAssetManager()->Reload<dzemikk::Mesh>("models/pole.fbx");
         //auto sound = getAssetManager()->Get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
         //sound->play(getAssetManager()->system);
         std::cout<<"reload";

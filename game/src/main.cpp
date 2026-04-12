@@ -69,6 +69,13 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Materi
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
 
+    auto m1 = engine->getAssetManager()->Get<dzemikk::Mesh>("models/pole.fbx");
+
+    engine->getAssetManager()->Unload("models/pole.fbx");
+
+    auto m2 = engine->getAssetManager()->Get<dzemikk::Mesh>("models/pole.fbx");
+    auto m3 = engine->getAssetManager()->Get<dzemikk::Mesh>("models/pole.fbx");
+
     auto skybox = engine->getAssetManager()->Get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
     engine->getRenderer()->setSkybox(std::unique_ptr<dzemikk::Skybox>(skybox));
 
@@ -183,7 +190,7 @@ int main() {
     FMOD::System_Create(&system);
     system->init(512, FMOD_INIT_NORMAL, nullptr);
 
-    engine->getAssetManager()->system = system;
+    engine->getAssetManager()->setFMODSystem(system);
 
     auto sound = engine->getAssetManager()->Get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
     sound->play(system);

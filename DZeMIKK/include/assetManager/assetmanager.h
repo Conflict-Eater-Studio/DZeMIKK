@@ -2,6 +2,7 @@
 #define DZEMIKK_ASSET_MANAGER_H
 
 #include "core/iEngineModule.h"
+#include "assetManager/iAssetHandler.h"
 
 #include <string>
 #include <typeindex>
@@ -53,6 +54,7 @@ class AssetManager : public IEngineModule {
 
     //FOR TEST ONLY - DELETE THIS
     FMOD::System* system;
+    void setFMODSystem(FMOD::System* system);
 
 #pragma endregion
 
@@ -68,6 +70,8 @@ class AssetManager : public IEngineModule {
         }
     };
 
+    std::unordered_map<std::type_index, std::unique_ptr<IAssetHandler>> _handlers;
+
     std::unordered_map<std::string, AssetEntry> _assets;
     std::unordered_map<PrimitiveMesh, Mesh*, PrimitiveMeshHash> _builtinMeshes;
 
@@ -79,21 +83,11 @@ class AssetManager : public IEngineModule {
     Mesh* createSphereMesh();
     Mesh* createCapsuleMesh();
 
-    void* loadInternal(const std::string& id, std::type_index type);
-    Mesh* loadMeshFromFile(const std::string& id);
-    Texture* loadTextureFromFile(const std::string& id, bool flipVertical = true);
-    Shader* loadShaderFromFile(const std::string& id);
-    Font* loadFontFromFile(const std::string& id);
-    Skybox* loadSkyboxFromFile(const std::string& id);
-    Sound* loadSoundFromFile(const std::string& id);
+    void RegisterHandlers();
 
-    void reloadInternal(const std::string& id, void* data, std::type_index type);
-    void reloadShader(const std::string& id, dzemikk::Shader* shader);
-    void reloadMesh(const std::string& id, Mesh* mesh);
-    void reloadFont(const std::string& id, dzemikk::Font* font);
-    void reloadSkybox(const std::string& id, dzemikk::Skybox* skybox);
-    void reloadTexture(const std::string& id, dzemikk::Texture* texture);
-    void reloadSound(const std::string& id, dzemikk::Sound* sound);
+    void* loadInternal(const std::string& path, std::type_index type);
+
+    void reloadInternal(const std::string& path, void* data, std::type_index type);
 
     std::string resolvePath(const std::string& id);
     std::optional<std::filesystem::path> findResRoot();
