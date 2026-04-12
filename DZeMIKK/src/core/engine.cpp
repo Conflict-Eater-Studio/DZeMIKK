@@ -16,6 +16,7 @@
 #include "ecs/gameobject.h"
 #include "ecs/scenemanager.h"
 #include "renderer/renderer.h"
+#include "renderer/font.h"
 #include "assetManager/assetmanager.h"
 
 #include "core/profiler.h"
@@ -225,7 +226,7 @@ void Engine::updateCameraArrows(float speed) {
         transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->right()));
 
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Z) == GLFW_PRESS) {
-            getAssetManager()->Reload<dzemikk::Mesh>("models/pole.fbx");
+        getAssetManager()->Reload<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
         std::cout<<"reload";
     }
 

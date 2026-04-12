@@ -497,7 +497,7 @@ void dzemikk::AssetManager::reloadInternal(const std::string& id, void* data, st
     }
 
     if (type == std::type_index(typeid(Font))) {
-        //reloadFont(id, static_cast<Font*>(data));
+        reloadFont(id, static_cast<Font*>(data));
     }
 
     if (type == std::type_index(typeid(Skybox))) {
@@ -559,4 +559,12 @@ void dzemikk::AssetManager::reloadMesh(const std::string& id, dzemikk::Mesh* mes
     }
 
     mesh->recreate(vertices.data(), indices.data(), ai_mesh->mNumVertices, indices.size(), 6);
+}
+
+void dzemikk::AssetManager::reloadFont(const std::string& id, dzemikk::Font* font) {
+    std::string path = resolvePath(id);
+
+    if (!font->load(path)) {
+        std::cerr << "Failed to reload font: " << path << "\n";
+    }
 }

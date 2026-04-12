@@ -90,6 +90,7 @@ class AssetManager : public IEngineModule {
     void reloadInternal(const std::string& id, void* data, std::type_index type);
     void reloadShader(const std::string& basePath, dzemikk::Shader* shader);
     void reloadMesh(const std::string& id, Mesh* mesh);
+    void reloadFont(const std::string& id, dzemikk::Font* font);
 
     std::string resolvePath(const std::string& id);
     std::optional<std::filesystem::path> findResRoot();
