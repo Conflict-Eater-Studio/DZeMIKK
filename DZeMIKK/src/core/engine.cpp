@@ -222,5 +222,8 @@ void Engine::updateCameraArrows(float speed) {
 
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_DOWN) == GLFW_PRESS)
         transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->right()));
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Z) == GLFW_PRESS)
+        getAssetManager()->Reload<dzemikk::Shader>("shaders/quad");
 }
 }

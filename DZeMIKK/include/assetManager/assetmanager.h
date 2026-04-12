@@ -44,6 +44,7 @@ class AssetManager : public IEngineModule {
 #pragma region Public API
 
     template <typename T> T* Get(const std::string& id);
+    template <typename T> T* Reload(const std::string& id);
     void Unload(const std::string& id);
 
     enum class PrimitiveMesh { Cube, Quad, Sphere, Capsule };
@@ -78,13 +79,16 @@ class AssetManager : public IEngineModule {
     Mesh* createSphereMesh();
     Mesh* createCapsuleMesh();
 
-    void* LoadInternal(const std::string& id, std::type_index type);
+    void* loadInternal(const std::string& id, std::type_index type);
     Mesh* loadMeshFromFile(const std::string& path);
     Texture* loadTextureFromFile(const std::string& path, bool flipVertical = true);
     Shader* loadShaderFromFile(const std::string& path);
     Font* loadFontFromFile(const std::string& path);
     Skybox* loadSkyboxFromFile(const std::string& basePath);
     Sound* loadSoundFromFile(const std::string& path);
+
+    void reloadInternal(const std::string& id, void* data, std::type_index type);
+    void reloadShader(const std::string& basePath, dzemikk::Shader* shader);
 
     std::string resolvePath(const std::string& id);
     std::optional<std::filesystem::path> findResRoot();
@@ -106,7 +110,7 @@ template <typename T> inline T* AssetManager::Get(const std::string& id) {
         return static_cast<T*>(it->second.data);
     }
 
-    void* rawData = LoadInternal(id, std::type_index(typeid(T)));
+    void* rawData = loadInternal(id, std::type_index(typeid(T)));
 
     if (!rawData)
         return nullptr;
@@ -118,6 +122,24 @@ template <typename T> inline T* AssetManager::Get(const std::string& id) {
     _assets[id] = entry;
 
     return static_cast<T*>(rawData);
+}
+
+template <typename T> inline T* AssetManager::Reload(const std::string& id) {
+    auto it = _assets.find(id);
+
+    if (it == _assets.end()) {
+        return Get<T>(id);
+    }
+
+    if (it->second.type != std::type_index(typeid(T))) {
+        throw std::runtime_error("Asset type mismatch on reload: " + id);
+    }
+
+    T* asset = static_cast<T*>(it->second.data);
+
+    reloadInternal(id, asset, std::type_index(typeid(T)));
+
+    return asset;
 }
 
 } // namespace dzemikk

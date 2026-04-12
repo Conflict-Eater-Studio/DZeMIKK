@@ -72,7 +72,7 @@ void dzemikk::AssetManager::UnInitialize() {
     _assets.clear();
 }
 
-void* dzemikk::AssetManager::LoadInternal(const std::string& id, std::type_index type) {
+void* dzemikk::AssetManager::loadInternal(const std::string& id, std::type_index type) {
     if (type == std::type_index(typeid(Mesh))) {
         return loadMeshFromFile(resolvePath(id));
     }
@@ -484,4 +484,49 @@ dzemikk::Sound* dzemikk::AssetManager::loadSoundFromFile(const std::string& path
     sound->init(fmodSound);
 
     return sound;
+}
+
+void dzemikk::AssetManager::reloadInternal(const std::string& id, void* data, std::type_index type) {
+    if (type == std::type_index(typeid(Mesh))) {
+        //reloadMesh(id, static_cast<Mesh*>(data));
+    }
+
+    if (type == std::type_index(typeid(Shader))) {
+        std::cout << "Recompile shader";
+        reloadShader(id, static_cast<Shader*>(data));
+    }
+
+    if (type == std::type_index(typeid(Font))) {
+        //reloadFont(id, static_cast<Font*>(data));
+    }
+
+    if (type == std::type_index(typeid(Skybox))) {
+        //reloadSkybox(id, static_cast<Skybox*>(data));
+    }
+
+    if (type == std::type_index(typeid(Texture))) {
+        //reloadTexture(id, static_cast<Texture*>(data));
+    }
+
+    if (type == std::type_index(typeid(Sound))) {
+        //reloadSound(id, static_cast<Sound*>(data));
+    }
+}
+
+void dzemikk::AssetManager::reloadShader(const std::string& basePath, dzemikk::Shader* shader) {
+    std::string vertPath = resolvePath(basePath + ".vert");
+    std::string fragPath = resolvePath(basePath + ".frag");
+
+    std::ifstream vFile(vertPath);
+    std::ifstream fFile(fragPath);
+
+    if (!vFile.is_open() || !fFile.is_open()) {
+        std::cerr << "Failed to reload shader\n";
+        return;
+    }
+
+    std::string vertSrc((std::istreambuf_iterator<char>(vFile)), {});
+    std::string fragSrc((std::istreambuf_iterator<char>(fFile)), {});
+
+    shader->recompile(vertSrc.c_str(), fragSrc.c_str());
 }
