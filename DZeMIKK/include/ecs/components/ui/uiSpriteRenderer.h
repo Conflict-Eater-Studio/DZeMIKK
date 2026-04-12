@@ -1,0 +1,85 @@
+#ifndef DZEMIKK_UISPRITERENDERER_H
+#define DZEMIKK_UISPRITERENDERER_H
+
+#include "ecs/component.h"
+
+#include <glm/glm.hpp>
+
+namespace dzemikk {
+
+class RectTransform;
+class Mesh;
+class Material;
+
+class UISpriteRenderer : public Component {
+  public:
+    using Base = Component;
+
+    UISpriteRenderer() = default;
+    ~UISpriteRenderer() override = default;
+
+    UISpriteRenderer(const UISpriteRenderer& other) = delete;
+    UISpriteRenderer(UISpriteRenderer&& other) noexcept = delete;
+    UISpriteRenderer& operator=(const UISpriteRenderer& other) = delete;
+    UISpriteRenderer& operator=(UISpriteRenderer&& other) noexcept = delete;
+
+    [[nodiscard]] Mesh* getMesh() const {
+        return _mesh;
+    }
+
+    [[nodiscard]] Material* getMaterial() const {
+        return _material;
+    }
+
+    [[nodiscard]] RectTransform* getRectTransform() const {
+        return _rectTransform;
+    }
+
+    [[nodiscard]] unsigned int getTexture() const {
+        return _textureID;
+    }
+
+    [[nodiscard]] glm::vec4 getColor() const {
+        return _color;
+    }
+
+    void setMesh(Mesh* mesh) {
+        _mesh = mesh;
+    }
+
+    void setMaterial(Material* material) {
+        _material = material;
+    }
+
+    void setRectTransform(RectTransform* transform) {
+        _rectTransform = transform;
+    }
+
+    void setTexture(unsigned int texID) {
+        _textureID = texID;
+    }
+
+    void setColor(const glm::vec4& color) {
+        _color = color;
+    }
+
+    [[nodiscard]] bool isValid() const {
+        return _mesh && _material && _rectTransform;
+    }
+
+    [[nodiscard]] std::string typeName() const override {
+        return "UISpriteRenderer";
+    };
+
+  private:
+    Mesh* _mesh = nullptr;
+
+    Material* _material = nullptr;
+
+    RectTransform* _rectTransform = nullptr;
+
+    unsigned int _textureID = 0;
+    glm::vec4 _color = glm::vec4(1.0F);
+};
+} // namespace dzemikk
+#endif // DZEMIKK_UISPRITERENDERER_H

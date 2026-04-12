@@ -10,6 +10,9 @@
 #include "ecs/components/monobehaviour.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
+#include "ecs/components/ui/canvas.h"
+#include "ecs/components/ui/rectTransform.h"
+#include "ecs/components/ui/uiSpriteRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
@@ -46,26 +49,25 @@ class TextUpdater : public dzemikk::MonoBehaviour {
     };
 };
 
-class SpriteUpdater: public dzemikk::MonoBehaviour {
+class SpriteUpdater : public dzemikk::MonoBehaviour {
   public:
-      using Base = MonoBehaviour;
+    using Base = MonoBehaviour;
 
-      dzemikk::Transform* transform = nullptr;
-      float time = 0.0f;
+    dzemikk::Transform* transform = nullptr;
+    float time = 0.0f;
 
-      void update(double deltaTime) override {
-          time += deltaTime;
+    void update(double deltaTime) override {
+        time += deltaTime;
 
-          float scaleX = 0.5f + 0.5f * sin(time);
-          float scaleY = 1.0f;
+        float scaleX = 0.5f + 0.5f * sin(time);
+        float scaleY = 1.0f;
 
-          transform->setScale(glm::vec3(scaleX, scaleY, 1.0f));
-      }
+        transform->setScale(glm::vec3(scaleX, scaleY, 1.0f));
+    }
 
     [[nodiscard]] std::string typeName() const override {
-          return "SpriteUpdater";
-      };
-
+        return "SpriteUpdater";
+    };
 };
 
 dzemikk::Mesh* createCubeMesh();
@@ -79,7 +81,7 @@ GLuint loadTextureFromFile(const std::string& path, bool flipVertical = true);
 
 void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int tileCount, float size, float spacing = 0.1f,
-                     float maxHeight = 0.3f); 
+                     float maxHeight = 0.3f);
 void printAnimationInfo(const aiScene* scene) {
     spdlog::info("Animations: {}", scene->mNumAnimations);
 
@@ -214,7 +216,7 @@ int main() {
     auto cubeMesh = createCubeMesh();
 
     auto tileMesh = loadMeshFromFile("./res/models/pole.fbx");
-    
+
     createHexIsland(*mainScenePtr, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
     // UI Camera
@@ -223,10 +225,7 @@ int main() {
 
     auto cameraUI = cameraUIGO->addComponent<dzemikk::Camera>();
 
-    cameraUI->setOrthographic(0.0f, 1920.0f,
-                            0.0f, 1080.0f,
-                            -1.0f, 1.0f
-    );
+    cameraUI->setOrthographic(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f);
     engine->getRenderer()->setActiveUICamera(cameraUI);
 
     // --- Quad GameObject
@@ -307,6 +306,33 @@ int main() {
     auto quadSpriteUpdater = quadGO3->addComponent<SpriteUpdater>();
     quadSpriteUpdater->transform = quadGO3->transform();
 
+    auto* canvas = mainScenePtr->createGameObject();
+    canvas->setName("Canvas");
+    canvas->addComponent<dzemikk::Canvas>();
+    canvas->rectTransform()->setSize(glm::vec2(1920.0F, 1080.0F));
+    canvas->rectTransform()->setPosition(glm::vec2(0.0F, 0.0F));
+    auto* uiSprite = mainScenePtr->createGameObject();
+    uiSprite->setName("UI Sprite");
+    canvas->addChild(uiSprite);
+    uiSprite->rectTransform()->setSize({1280.0F, 720.0F});
+    auto* uiSpriteRenderer = uiSprite->addComponent<dzemikk::UISpriteRenderer>();
+    uiSpriteRenderer->setMesh(quadMesh);
+    uiSpriteRenderer->setMaterial(quadMaterial);
+    uiSpriteRenderer->setRectTransform(uiSprite->rectTransform());
+    uiSpriteRenderer->setColor(glm::vec4(1.0F, 0.0F, 0.0F, 1.0F));
+    auto* spriteChild = mainScenePtr->createGameObject();
+    spriteChild->setName("Sprite Child");
+    uiSprite->addChild(spriteChild);
+    spriteChild->rectTransform()->setSize({200.0F, 100.0F});
+    spriteChild->rectTransform()->setAnchorMin({.5F, .5F});
+    spriteChild->rectTransform()->setAnchorMax({.5F, .5F});
+    spriteChild->rectTransform()->setPivot({0.0F, 0.0F});
+    auto* spriteChildRenderer = spriteChild->addComponent<dzemikk::UISpriteRenderer>();
+    spriteChildRenderer->setMesh(quadMesh);
+    spriteChildRenderer->setMaterial(quadMaterial);
+    spriteChildRenderer->setRectTransform(spriteChild->rectTransform());
+    spriteChildRenderer->setColor(glm::vec4(0.0F, 1.0F, 0.0F, 1.0F));
+
     auto textGO = mainScenePtr->createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
 
@@ -318,8 +344,6 @@ int main() {
 
     auto updater = textGO->addComponent<TextUpdater>();
     updater->text = text;
-
-
 
     auto playerGO = mainScenePtr->createGameObject();
     playerGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -335,12 +359,14 @@ int main() {
     playerGO->transform()->setScale(glm::vec3(1.f));
     playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
 
-    dzemikk::Animator* animator =  playerGO->addComponent<dzemikk::Animator>();
-    std::shared_ptr<dzemikk::AnimationStateMachine> animationStateMachine = std::make_shared<dzemikk::AnimationStateMachine>();
-    std::unique_ptr<dzemikk::AnimationState> idleState = std::make_unique<dzemikk::AnimationState>("Idle");
+    dzemikk::Animator* animator = playerGO->addComponent<dzemikk::Animator>();
+    std::shared_ptr<dzemikk::AnimationStateMachine> animationStateMachine =
+        std::make_shared<dzemikk::AnimationStateMachine>();
+    std::unique_ptr<dzemikk::AnimationState> idleState =
+        std::make_unique<dzemikk::AnimationState>("Idle");
 
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
-    dzemikk::AnimationTrack* animationTrack = new  dzemikk::AnimationTrack("Test");
+    dzemikk::AnimationTrack* animationTrack = new dzemikk::AnimationTrack("Test");
 
     animationTrack->addScaleKey(0.0f, glm::vec3(1.0f, 1.0f, 1.0f));
     animationTrack->addScaleKey(0.5f, glm::vec3(1.2f, 1.2f, 1.2f));
@@ -362,8 +388,8 @@ int main() {
     animationClip->transform = playerGO->transform();
 
     // Assimp::Importer importer;
-    // const aiScene* scene = importer.ReadFile("./res/models/model.fbx", aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
-    // if (!scene || !scene->mRootNode) {
+    // const aiScene* scene = importer.ReadFile("./res/models/model.fbx", aiProcess_Triangulate |
+    // aiProcess_GenNormals | aiProcess_FlipUVs); if (!scene || !scene->mRootNode) {
     //     spdlog::error("Failed to load model: {}", importer.GetErrorString());
     // }
     // spdlog::info("\n=== Animation Info ===");
@@ -598,7 +624,7 @@ GLuint loadTextureFromFile(const std::string& path, bool flipVertical) {
     unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
     if (!data) {
         std::cerr << "Failed to load texture: " << path << std::endl;
-        return 0; 
+        return 0;
     }
 
     GLenum format = GL_RGB;

@@ -1,13 +1,16 @@
 #ifndef DZEMIKK_GAMEOBJECT_H
 #define DZEMIKK_GAMEOBJECT_H
 
+#include <stdexcept>
 #include <vcruntime_typeinfo.h>
+
 #pragma once
 #include "component.h"
 #include "componentRegistry.h"
 #include "components/transform.h"
 
 #include <memory>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -15,6 +18,8 @@
 namespace dzemikk {
 class MonoBehaviour;
 class Scene;
+class Canvas;
+class RectTransform;
 class GameObject {
   public:
     GameObject();
@@ -29,6 +34,9 @@ class GameObject {
     Transform* transform();
     [[nodiscard]] const Transform* transform() const;
 
+    RectTransform* rectTransform();
+    [[nodiscard]] const RectTransform* rectTransform() const;
+
     // --- Component operations
     /*
      * @brief Gets the first component of type T attached to this GameObject. Returns null if no
@@ -37,6 +45,16 @@ class GameObject {
     template <typename T> T* getComponent() {
         for (const auto& component : _components) {
             T* result = dynamic_cast<T*>(component.get());
+            if (result) {
+                return result;
+            }
+        }
+        return nullptr;
+    }
+
+    template <typename T> const T* getComponent() const {
+        for (const auto& component : _components) {
+            const T* result = dynamic_cast<const T*>(component.get());
             if (result) {
                 return result;
             }
@@ -65,6 +83,41 @@ class GameObject {
      * @return A pointer to the added component.
      */
     template <typename T, typename... Args> T* addComponent(Args&&... args) {
+        if (std::is_same_v<T, Transform> && _transform != nullptr) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::error("[{}] GameObject '{}' already has a Transform component. "
+                          "GameObject::addComponent<Transform>() was called.",
+                          boost::uuids::to_string(_id), _name);
+#endif
+            throw std::runtime_error("Transform component cannot be added manually");
+        }
+
+        if (std::is_same_v<T, RectTransform> && _rectTransform != nullptr) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::error("[{}] GameObject '{}' already has a RectTransform component. "
+                          "GameObject::addComponent<RectTransform>() was called.",
+                          boost::uuids::to_string(_id), _name);
+#endif
+            throw std::runtime_error("RectTransform component cannot be added manually");
+        }
+
+        // When we add a Canvas, make this gameobject have a RectTransform
+        if (std::is_same_v<T, Canvas>) {
+            if (_rectTransform != nullptr) {
+#if DZEMIKK_DEV_TOOLS
+                spdlog::error("[{}] GameObject '{}' already has a RectTransform component. "
+                              "GameObject::addComponent<Canvas>() was called, which means this "
+                              "canvas would be nested.",
+                              boost::uuids::to_string(_id), _name);
+#endif
+                throw std::runtime_error("Canvas components cannot be nested");
+            }
+
+            removeComponent(_transform);
+            _transform = nullptr;
+            _rectTransform = addComponent<RectTransform>();
+        }
+
         auto component = std::make_unique<T>(std::forward<Args>(args)...);
         T* result = component.get();
         if constexpr (std::is_base_of_v<MonoBehaviour, T>) {
@@ -176,7 +229,8 @@ class GameObject {
 
     Scene* _scene = nullptr;
 
-    Transform* _transform;
+    Transform* _transform = nullptr;
+    RectTransform* _rectTransform = nullptr;
 
     std::vector<std::unique_ptr<Component>> _components;
     std::vector<MonoBehaviour*> _monoBehaviours;

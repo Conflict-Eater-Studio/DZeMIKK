@@ -1,22 +1,25 @@
 #include "renderer/renderer.h"
-#include "renderer/shader.h"
-#include "renderer/material.h"
-#include "renderer/mesh.h"
-#include "renderer/font.h"
-#include "ecs/componentRegistry.h"
 
+#include "core/profiler.h"
+#include "ecs/component.h"
+#include "ecs/componentRegistry.h"
+#include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
-#include "ecs/components/camera.h"
 #include "ecs/components/transform.h"
+#include "ecs/components/ui/rectTransform.h"
+#include "ecs/components/ui/uiSpriteRenderer.h"
 #include "ecs/gameobject.h"
-#include "core/profiler.h"
+#include "renderer/font.h"
+#include "renderer/material.h"
+#include "renderer/mesh.h"
+#include "renderer/shader.h"
+
+#include <GLFW/glfw3.h>
+#include <filesystem>
 #include <iostream>
 #include <map>
-
-#include <filesystem>
-#include <GLFW/glfw3.h>
 
 void dzemikk::Renderer::Initialize() {
     _view = glm::mat4(1.0f);
@@ -31,7 +34,6 @@ void dzemikk::Renderer::Initialize() {
 
     glBindBufferRange(GL_UNIFORM_BUFFER, 0, _uboMatrices, 0, 2 * sizeof(glm::mat4));
 
-    
     glEnable(GL_MULTISAMPLE);
 
     _skybox = std::make_unique<Skybox>();
@@ -81,7 +83,6 @@ void dzemikk::Renderer::Initialize() {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
 }
 
 void dzemikk::Renderer::UnInitialize() {
@@ -109,7 +110,7 @@ void dzemikk::Renderer::render() {
 
     if (_skybox && _sceneCamera) {
 
-        float time = glfwGetTime(); 
+        float time = glfwGetTime();
 
         glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), time * 0.1f, glm::vec3(0, 1, 0));
         glm::mat4 viewNoTrans = _sceneCamera->getView() * rotation;
@@ -205,7 +206,6 @@ void dzemikk::Renderer::render() {
     if (_uiCamera)
         _uiProjection = _uiCamera->getProjection();
 
-
     dzemikk::ComponentRegistry::get().getComponents<SpriteRenderer>(_spriteRenderers);
     glDisable(GL_DEPTH_TEST);
 
@@ -232,9 +232,36 @@ void dzemikk::Renderer::render() {
         Profiler::rendererStats.triangleCount += r->getMesh()->getVertexCount() / 3;
     }
 
+    std::vector<UISpriteRenderer*> uiSprites;
+    ComponentRegistry::get().getComponents<UISpriteRenderer>(uiSprites);
+
+    for (auto* r : uiSprites) {
+        if (!r->isValid()) {
+            continue;
+        }
+
+        Shader* shader = r->getMaterial()->getShader();
+        shader->bind();
+
+        shader->setMat4("model", r->getRectTransform()->getWorldMatrix());
+        shader->setMat4("projection", _uiProjection);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, r->getTexture());
+        shader->setInt("spriteTexture", 0);
+        shader->setVec4("spriteColor", r->getColor());
+
+        r->getMesh()->draw();
+        Profiler::rendererStats.drawCalls++;
+
+        Profiler::rendererStats.renderedObjects++;
+        Profiler::rendererStats.vertexCount += r->getMesh()->getVertexCount();
+        Profiler::rendererStats.triangleCount += r->getMesh()->getVertexCount() / 3;
+    }
+
     std::vector<TextRenderer*> texts;
     ComponentRegistry::get().getComponents<TextRenderer>(texts);
-    
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
