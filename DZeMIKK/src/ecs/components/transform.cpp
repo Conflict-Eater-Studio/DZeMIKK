@@ -10,28 +10,31 @@ namespace dzemikk {
     : _position(params.position)
     , _rotation(glm::quat(glm::radians(params.rotation)))
     , _scale(params.scale)
-    , _owner(params.owner)
     {}
 
     // --- Setters
     void Transform::setPosition(const glm::vec3& position) {
         _position = position;
-        _dirty = true;
+        _localDirty = true;
+        markDirty();
     }
 
     void Transform::setRotation(const glm::quat& rotation) {
         _rotation = rotation;
-        _dirty = true;
+        _localDirty = true;
+        markDirty();
     }
 
     void Transform::setScale(const glm::vec3& scale) {
         _scale = scale;
-        _dirty = true;
+        _localDirty = true;
+        markDirty();
     }
 
     void Transform::setEulerAngles(const glm::vec3& rotation) {
         _rotation = glm::quat(glm::radians(rotation));
-        _dirty = true;
+        _localDirty = true;
+        markDirty();
     }
 
     // --- Getters
@@ -54,12 +57,14 @@ namespace dzemikk {
     // --- Modifiers
     void Transform::translate(const glm::vec3& delta) {
         _position += delta;
-        _dirty = true;
+        _localDirty = true;
+        markDirty();
     }
 
     void Transform::rotate(const glm::quat& quat) {
         _rotation = quat * _rotation;
-        _dirty = true;
+        _localDirty = true;
+        markDirty();
     }
 
     void Transform::rotateEuler(const glm::vec3& degrees) {
@@ -72,7 +77,8 @@ namespace dzemikk {
 
     void Transform::scale(const glm::vec3& scale) {
         _scale *= scale;
-        _dirty = true;
+        _localDirty = true;
+        markDirty();
     }
 
     void Transform::scale(float uniform) {
@@ -94,20 +100,37 @@ namespace dzemikk {
 
     // --- Matrix
     const glm::mat4& Transform::getLocalMatrix() const {
-        if (_dirty) {
+        if (_localDirty) {
             glm::mat4 translation = glm::translate(glm::mat4(1.0F), _position);
             glm::mat4 rotation = glm::toMat4(_rotation);
             glm::mat4 scale = glm::scale(glm::mat4(1.0F), _scale);
             _cachedLocalMatrix = translation * rotation * scale;
-            _dirty = false;
+            _localDirty = false;
         }
         return _cachedLocalMatrix;
     }
 
     glm::mat4 Transform::getWorldMatrix() const {
-        if (_owner && _owner->getParent()) {
-            return _owner->getParent()->transform()->getWorldMatrix() * getLocalMatrix();
+        if (_worldDirty) {
+            if (_owner && _owner->getParent()) {
+                _cachedWorldMatrix = _owner->getParent()->transform()->getWorldMatrix() * getLocalMatrix();
+            } else {
+                _cachedWorldMatrix = getLocalMatrix();
+            }
+            _worldDirty = false;
         }
-        return getLocalMatrix();
+        return _cachedWorldMatrix;
+    }
+    
+    void Transform::markDirty() {
+        if (_worldDirty) {
+            return;
+        }
+
+        _worldDirty = true;
+
+        for (auto* child : _owner->getChildren()) {
+            child->transform()->markDirty();
+        }
     }
 }

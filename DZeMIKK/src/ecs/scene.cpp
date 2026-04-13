@@ -1,79 +1,162 @@
 #include "ecs/scene.h"
+
+#include "ecs/components/monoBehaviour.h"
+#include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
-#include "ecs/components/monobehaviour.h"
-#include <type_traits>
+
+#include <algorithm>
+#include <stack>
+#include <unordered_set>
 
 namespace dzemikk {
-    GameObject* Scene::createGameObject() {
-        auto object = std::make_unique<GameObject>();
-        GameObject* result = object.get();
-        _objects.push_back(std::move(object));
-        return result;
+Scene::Scene() : _id(boost::uuids::random_generator()()) {};
+
+GameObject* Scene::createGameObject() {
+    auto object = std::make_unique<GameObject>();
+    GameObject* result = object.get();
+    result->setScene(this);
+    _objects.push_back(std::move(object));
+    return result;
+}
+
+void Scene::destroyGameObject(GameObject* object) {
+    // Check if object is valid, not already pending destruction and belongs to this scene
+    if (!object || std::ranges::find(_pendingDestroy, object) != _pendingDestroy.end() ||
+        std::ranges::find_if(_objects, [object](const auto& obj) { return obj.get() == object; }) ==
+            _objects.end()) {
+        return;
     }
 
-    void Scene::destroyGameObject(GameObject* object) {
-        // Runs lieanr search
-        // Unless we delete a ton of objects each frame, this *should* be fine
-        if (!object) { return; }
+    std::vector<GameObject*> toDestroy;
+    std::stack<GameObject*> stack;
+    std::unordered_set<GameObject*> visited;
+    stack.push(object);
 
-        // Call onDestroy on all monobehaviours
-        auto* mono = object->getComponent<MonoBehaviour>();
-        if (mono) {
-            mono->onDestroy();
+    // Collect all children in DFS order
+    while (!stack.empty()) {
+        GameObject* current = stack.top();
+        stack.pop();
+
+        if (!current || !visited.insert(current).second) {
+            continue;
         }
 
-        // Copy for safety
-        auto children = object->getChildren();
-
-        // Delete children first
-        for (const auto& child : children) {
-            destroyGameObject(child);
-        }
-
-        // Detach from parent
-        if(object->getParent()) {
-            object->getParent()->removeChild(object);
-        }
-
-        // Erase from scene
-        auto iter = std::ranges::find_if(_objects.begin(), _objects.end(),
-            [object](const std::unique_ptr<GameObject>& obj) { return obj.get() == object; }
-        );
-        if (iter != _objects.end()) {
-            _objects.erase(iter);
-        }
-    }
-
-    void Scene::update(double deltaTime) {
-        // Update all behaviours
-        for (const auto& object : _objects) {
-            for (const auto& mono : object->getMonoBehaviours()) {
-                if (!mono->hasStarted()) {
-                    mono->start();
-                    mono->markStarted();
-                }
-                mono->update(deltaTime);
-            }
-        }
-
-        // Late Update all behaviours
-        for (const auto& object : _objects) {
-            for (const auto& behaviour : object->getMonoBehaviours()) {
-                behaviour->lateUpdate();
-            }
+        toDestroy.push_back(current);
+        for (const auto& child : current->getChildren()) {
+            stack.push(child);
         }
     }
 
-    void Scene::fixedUpdate(double deltaTime) {
-        // Fixed update also starts components that haven't started since it runs at a fixed interval
-        for (const auto& object : _objects) {
-            for (const auto& mono : object->getMonoBehaviours()) {
-                if (!mono->hasStarted()) {
-                    mono->start();
-                    mono->markStarted();
-                }
-                mono->fixedUpdate(deltaTime);
-            }
+    // Destroy children first
+    std::ranges::reverse(toDestroy);
+
+    // Check for duplicates in _pendingDestroy to avoid double deletion
+    // And append to _pendingDestroy if not already present
+    std::unordered_set<GameObject*> pendingSet(_pendingDestroy.begin(), _pendingDestroy.end());
+    for (GameObject* obj : toDestroy) {
+        if (pendingSet.insert(obj).second) {
+            _pendingDestroy.push_back(obj);
         }
     }
 }
+
+void Scene::update(double deltaTime) {
+    // Update all behaviours
+    processPendingStart();
+
+    const auto active_snapshot = _active;
+    for (auto* mono : active_snapshot) {
+        if (!mono || std::ranges::find(_active, mono) == _active.end()) {
+            continue;
+        }
+        mono->update(deltaTime);
+    }
+
+    // Late Update all behaviours
+    for (auto* mono : active_snapshot) {
+        if (!mono || std::ranges::find(_active, mono) == _active.end()) {
+            continue;
+        }
+        mono->lateUpdate();
+    }
+
+    processDelete();
+}
+
+void Scene::fixedUpdate(double deltaTime) {
+    // Fixed update also starts components that haven't started since it runs at a fixed interval
+    processPendingStart();
+
+    const auto active_snapshot = _active;
+    for (auto* mono : active_snapshot) {
+        if (!mono || std::ranges::find(_active, mono) == _active.end()) {
+            continue;
+        }
+        mono->fixedUpdate(deltaTime);
+    }
+
+    processDelete();
+}
+
+void Scene::processPendingStart() {
+    while (!_pendingStart.empty()) {
+        std::vector<MonoBehaviour*> start;
+        std::swap(start, _pendingStart);
+
+        auto filtered =
+            std::ranges::remove_if(start, [](MonoBehaviour* mono) { return !mono->hasStarted(); });
+        for (const auto& mono : filtered) {
+            mono->start();
+            mono->markStarted();
+            _active.push_back(mono);
+        }
+    }
+}
+
+void Scene::processDelete() {
+    for (auto* obj : _pendingDestroy) {
+        const auto& monos = obj->getMonoBehaviours();
+        for (const auto& mono : monos) {
+            mono->onDestroy();
+        }
+        auto inMonos = [&](MonoBehaviour* mono) {
+            return std::ranges::find(monos, mono) != monos.end();
+        };
+        std::erase_if(_active, inMonos);
+        std::erase_if(_pendingStart, inMonos);
+
+        if (obj->getParent()) {
+            obj->getParent()->detachChild(obj);
+        }
+
+        std::erase_if(_objects, [obj](const auto& lObj) { return lObj.get() == obj; });
+    }
+
+    _pendingDestroy.clear();
+}
+
+void Scene::addPending(MonoBehaviour* mono) {
+    if (!mono || std::ranges::find(_pendingStart, mono) != _pendingStart.end() ||
+        std::ranges::find(_active, mono) != _active.end()) {
+        return;
+    }
+    _pendingStart.push_back(mono);
+}
+
+void Scene::removeActive(MonoBehaviour* mono) {
+    std::erase(_active, mono);
+    std::erase(_pendingStart, mono);
+}
+
+boost::uuids::uuid Scene::getId() const {
+    return _id;
+}
+
+const std::vector<std::unique_ptr<GameObject>>& Scene::getObjects() const {
+    return _objects;
+}
+
+void Scene::setId(const boost::uuids::uuid& uuid) {
+    _id = uuid;
+}
+} // namespace dzemikk

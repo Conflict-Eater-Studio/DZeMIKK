@@ -9,7 +9,8 @@ Checks: >
   -cppcoreguidelines-avoid-magic-numbers,
   readability-identifier-naming,
   -readability-implicit-bool-conversion,
-  -modernize-use-trailing-return-type
+  -modernize-use-trailing-return-type,
+  -cppcoreguidelines-non-private-member-variables-in-classes
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 FormatStyle: file
@@ -44,6 +45,8 @@ CheckOptions:
     value: camelBack
   - key: readability-identifier-naming.PrivateMemberPrefix
     value: _
+  - key: readability-identifier-naming.ProtectedMemberPrefix
+    value: _
 
   - key: readability-identifier-naming.GlobalConstantCase
     value: CamelCase
@@ -54,7 +57,7 @@ CheckOptions:
   - key: readability-identifier-naming.StaticConstantPrefix
     value: k
   - key: readability-identifier-naming.LocalConstantCase
-    value: lower_case
+    value: camelBack
 
   - key: readability-identifier-naming.MacroDefinitionCase
     value: UPPER_CASE

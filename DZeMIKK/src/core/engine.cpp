@@ -1,6 +1,3 @@
-#include <assimp/version.h>
-#include <glm/detail/setup.hpp>
-
 #if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
 #include <imgui.h>
@@ -10,121 +7,215 @@
 #include FT_FREETYPE_H
 #endif
 
+#include "animation/animationmodule.h"
 #include "core/engine.h"
 #include "core/time.h"
+#include "core/window.h"
+#include "ecs/components/camera.h"
+#include "ecs/components/transform.h"
+#include "ecs/gameobject.h"
+#include "ecs/scenemanager.h"
+#include "renderer/renderer.h"
 
-#include "fmod/fmod.hpp"
-#include "fmod/fmod_errors.h"
+#include "core/profiler.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <GLFW/glfw3.h>
+namespace dzemikk {
 
-dzemikk::Engine::Engine() {
+Engine::Engine() {
     init();
-    FMOD_RESULT result;
-    FMOD::System *system = NULL;
-
-    result = FMOD::System_Create(&system);      // Create the main system object.
-    if (result != FMOD_OK)
-    {
-        printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-
-    }
-
-    result = system->init(512, FMOD_INIT_NORMAL, 0);    // Initialize FMOD.
-    if (result != FMOD_OK)
-    {
-        printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-        exit(-1);
-    }
-
-    unsigned int version = 0;
-    result = system->getVersion(&version);
-
-    unsigned int major = (version >> 16) & 0xFFFF;
-    unsigned int minor = (version >> 8) & 0xFF;
-    unsigned int patch = version & 0xFF;
-
-    spdlog::info("FMOD Version: {}.{}.{}", major, minor, patch);
 }
 
-void dzemikk::Engine::update() const {
+Engine::~Engine() {
+    shutdown();
+}
+
+void Engine::init() {
+    _mainWindow = std::make_shared<Window>(1920, 1080, "DZeMIKK");
+    _renderer = std::make_shared<Renderer>();
+    _sceneManager = std::make_shared<SceneManager>();
+    _time = std::make_shared<Time>();
+    _animationSystem = std::make_shared<AnimationModule>();
+
+    _modules.push_back(_mainWindow);
+    _modules.push_back(_renderer);
+    _modules.push_back(_sceneManager);
+    _modules.push_back(_time);
+    _modules.push_back(_animationSystem);
+
+    for (const auto& module : _modules) {
+        module->Initialize();
+    }
+
 #if DZEMIKK_DEV_TOOLS
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    (void)io;
     ImGui::StyleColorsDark();
 
-    ImGui_ImplGlfw_InitForOpenGL(mainWindow->nativeHandle(), true);
+    ImGui_ImplGlfw_InitForOpenGL(_mainWindow->nativeHandle(), true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
-    ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
+    spdlog::info("DZeMIKK version: {}.{}.{}",
+        DZeMIKK_VERSION_MAJOR,
+        DZeMIKK_VERSION_MINOR,
+        DZeMIKK_VERSION_REVISION);
 #endif
-    while (!mainWindow->shouldClose()) {
-        Time::update();
-#if DZEMIKK_DEV_TOOLS
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
+}
 
-        ImGui::Begin("Renderer");
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", Time::deltaTime, 1.0f/Time::deltaTime);
-        ImGui::Text("Background");
-        ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
-        ImGui::End();
-
-        mainWindow->clear(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-#else
-        mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
-#endif
-        _renderer->render();
-        mainWindow->swapBuffers();
-        mainWindow->pollEvents();
-    }
-
-    _renderer->UnInitialize();
-
+void Engine::shutdown() {
 #if DZEMIKK_DEV_TOOLS
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 #endif
+
+    for (const auto& module : _modules) {
+        module->UnInitialize();
+    }
 }
 
-dzemikk::Engine::~Engine() = default;
+void Engine::start() {
 
-void dzemikk::Engine::init() {
 #if DZEMIKK_DEV_TOOLS
-    spdlog::info("DZeMIKK version: {}.{}.{}", DZeMIKK_VERSION_MAJOR, DZeMIKK_VERSION_MINOR, DZeMIKK_VERSION_REVISION);
-    spdlog::info("GLM version: {}.{}.{}", GLM_VERSION_MAJOR, GLM_VERSION_MINOR, GLM_VERSION_PATCH);
-    spdlog::info("Assimp version: {}.{}.{}",
-                 aiGetVersionMajor(),
-                 aiGetVersionMinor(),
-                 aiGetVersionRevision());
-    spdlog::info("spdlog version: {}.{}.{}",
-                 SPDLOG_VER_MAJOR,
-                 SPDLOG_VER_MINOR,
-                 SPDLOG_VER_PATCH);
-    FT_Library ft = nullptr;
-    if (FT_Init_FreeType(&ft) == 0) {
-        FT_Int major = 0;
-        FT_Int minor = 0;
-        FT_Int patch = 0;
-        FT_Library_Version(ft, &major, &minor, &patch);
-        spdlog::info("FreeType version: {}.{}.{}", major, minor, patch);
-        FT_Done_FreeType(ft);
-    } else {
-        spdlog::warn("Failed to initialize FreeType (version unavailable)");
-    }
+    ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
 #endif
 
-    mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
+    float fixedDeltaTime = _time->getFixedDeltaTime();
+    while (!_mainWindow->shouldClose()) {
+        _time->update();
 
-    _renderer = std::make_shared<Renderer>();
-    _renderer->Initialize();
+        float deltaTime = _time->getDeltaTime();
+        _accumulator += deltaTime;
+
+        _sceneManager->update(deltaTime);
+
+        _animationSystem->update(deltaTime);
+
+        if (_accumulator >= fixedDeltaTime) {
+            _sceneManager->fixedUpdate(fixedDeltaTime);
+            _accumulator -= fixedDeltaTime;
+        }
+
+#if DZEMIKK_DEV_TOOLS
+        // ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("Renderer");
+        float dt_ms = deltaTime * 1000.0f;
+        ImGui::Text("Application %.3f ms/frame (%.1f FPS)",
+            dt_ms,
+            1.0f / deltaTime);
+        ImGui::Separator();
+        
+        const auto& stats = Profiler::rendererStats;
+        ImGui::Text("Render Stats:");
+        ImGui::Text("Draw Calls:      %u", stats.drawCalls);
+        ImGui::Text("Objects:         %u", stats.renderedObjects);
+        ImGui::Text("Triangles:       %u", stats.triangleCount);
+        ImGui::Text("Vertices:        %u", stats.vertexCount);
+        ImGui::Text("State Changes:   %u", stats.stateChanges);
+        
+        ImGui::Separator();
+        ImGui::Text("Background");
+        ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
+        ImGui::End();
+
+        _mainWindow->clear(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+
+#else
+        _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
+#endif
+        updateCameraWASD(1.f);
+        updateCameraArrows(1.1f);
+        _renderer->render();
+#if DZEMIKK_DEV_TOOLS
+        glDisable(GL_DEPTH_TEST);
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
+        _mainWindow->swapBuffers();
+        _mainWindow->pollEvents();
+    }
+}
+
+std::shared_ptr<Renderer> Engine::getRenderer() {
+    return _renderer;
+}
+
+std::shared_ptr<Window> Engine::getWindow() {
+    return _mainWindow;
+}
+
+std::shared_ptr<SceneManager> Engine::getSceneManager() {
+    return _sceneManager;
+}
+
+std::shared_ptr<Time> Engine::getTime() {
+    return _time;
+}
+std::shared_ptr<AnimationModule> Engine::getAnimationSystem() {
+    return _animationSystem;
+}
+
+template <std::derived_from<IEngineModule> T>
+std::shared_ptr<T> Engine::getModule() const {
+    for (const auto& module : _modules) {
+        if (auto casted = std::dynamic_pointer_cast<T>(module)) {
+            return casted;
+        }
+    }
+    return nullptr;
+}
+
+void Engine::updateCameraWASD(float speed) {
+    auto* transform = _renderer->getActiveSceneCamera()->getOwner()->transform();
+
+    glm::vec3 move(0.0f);
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_W) == GLFW_PRESS)
+        move += transform->forward();
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_S) == GLFW_PRESS)
+        move -= transform->forward();
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_A) == GLFW_PRESS)
+        move -= transform->right();
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_D) == GLFW_PRESS)
+        move += transform->right();
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Q) == GLFW_PRESS)
+        move -= transform->up();
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_E) == GLFW_PRESS)
+        move += transform->up();
+
+    if (glm::length(move) > 0.0f) {
+        move = glm::normalize(move);
+        transform->translate(move * speed * 0.016f);
+    }
+}
+
+void Engine::updateCameraArrows(float speed) {
+    auto* camera = _renderer->getActiveSceneCamera();
+    if (!camera)
+        return;
+    auto* transform = camera->getOwner()->transform();
+
+    float deltaAngle = speed;
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_LEFT) == GLFW_PRESS)
+        transform->rotate(glm::angleAxis(glm::radians(deltaAngle), transform->up()));
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_RIGHT) == GLFW_PRESS)
+        transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->up()));
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_UP) == GLFW_PRESS)
+        transform->rotate(glm::angleAxis(glm::radians(deltaAngle), transform->right()));
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_DOWN) == GLFW_PRESS)
+        transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->right()));
+}
 }
