@@ -1,6 +1,7 @@
 #include "ecs/components/ui/uiButton.h"
 
 #include "ecs/components/ui/rectTransform.h"
+#include "ecs/components/ui/uiButtonActionRegistry.h"
 #include "ecs/components/ui/uiSpriteRenderer.h"
 #include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
@@ -9,6 +10,7 @@
 
 #include <glm/geometric.hpp>
 #include <glm/matrix.hpp>
+
 
 namespace dzemikk {
 namespace {
@@ -19,6 +21,9 @@ void UIButton::build(GameObject& gameObject, const UIButtonParams& params) {
     button->setNormalColor(params.normalColor);
     button->setHoverColor(params.hoverColor);
     button->setPressedColor(params.pressedColor);
+    button->setOnClickActionId(params.onClickActionId);
+    button->setOnEnterActionId(params.onEnterActionId);
+    button->setOnExitActionId(params.onExitActionId);
     button->setOnClick(params.onClick);
     button->setOnEnter(params.onEnter);
     button->setOnExit(params.onExit);
@@ -89,18 +94,30 @@ void UIButton::processPointer(const glm::vec2& point, bool isDown, bool pressedT
 }
 
 void UIButton::onClick() {
+    if (!_onClick && !_onClickActionId.empty()) {
+        tryBindActionsFromIds();
+    }
+
     if (_onClick) {
         _onClick();
     }
 }
 
 void UIButton::onEnter() {
+    if (!_onEnter && !_onEnterActionId.empty()) {
+        tryBindActionsFromIds();
+    }
+
     if (_onEnter) {
         _onEnter();
     }
 }
 
 void UIButton::onExit() {
+    if (!_onExit && !_onExitActionId.empty()) {
+        tryBindActionsFromIds();
+    }
+
     if (_onExit) {
         _onExit();
     }
@@ -136,6 +153,43 @@ void UIButton::setOnEnter(std::function<void()> onEnter) {
 
 void UIButton::setOnExit(std::function<void()> onExit) {
     _onExit = std::move(onExit);
+}
+
+void UIButton::setOnClickActionId(std::string actionId) {
+    _onClickActionId = std::move(actionId);
+    if (_onClick == nullptr) {
+        tryBindActionsFromIds();
+    }
+}
+
+void UIButton::setOnEnterActionId(std::string actionId) {
+    _onEnterActionId = std::move(actionId);
+    if (_onEnter == nullptr) {
+        tryBindActionsFromIds();
+    }
+}
+
+void UIButton::setOnExitActionId(std::string actionId) {
+    _onExitActionId = std::move(actionId);
+    if (_onExit == nullptr) {
+        tryBindActionsFromIds();
+    }
+}
+
+void UIButton::tryBindActionsFromIds() {
+    auto& registry = UIButtonActionRegistry::get();
+
+    if (_onClick == nullptr && !_onClickActionId.empty()) {
+        _onClick = registry.bind(_onClickActionId, *this);
+    }
+
+    if (_onEnter == nullptr && !_onEnterActionId.empty()) {
+        _onEnter = registry.bind(_onEnterActionId, *this);
+    }
+
+    if (_onExit == nullptr && !_onExitActionId.empty()) {
+        _onExit = registry.bind(_onExitActionId, *this);
+    }
 }
 
 void UIButton::applyVisualState() {

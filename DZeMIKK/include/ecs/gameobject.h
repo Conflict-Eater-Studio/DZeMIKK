@@ -1,12 +1,16 @@
 #ifndef DZEMIKK_GAMEOBJECT_H
 #define DZEMIKK_GAMEOBJECT_H
 
+#include "ecs/components/ui/rectTransform.h"
+
 #include <stdexcept>
 #include <vcruntime_typeinfo.h>
+
 
 #pragma once
 #include "component.h"
 #include "componentRegistry.h"
+#include "components/monoBehaviour.h"
 #include "components/transform.h"
 
 #include <memory>
@@ -16,7 +20,6 @@
 #include <vector>
 
 namespace dzemikk {
-class MonoBehaviour;
 class Scene;
 class Canvas;
 class RectTransform;

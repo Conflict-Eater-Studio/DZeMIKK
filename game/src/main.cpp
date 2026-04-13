@@ -13,6 +13,7 @@
 #include "ecs/components/ui/canvas.h"
 #include "ecs/components/ui/rectTransform.h"
 #include "ecs/components/ui/uiButton.h"
+#include "ecs/components/ui/uiButtonActionRegistry.h"
 #include "ecs/components/ui/uiSpriteRenderer.h"
 #include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
@@ -310,14 +311,34 @@ int main() {
 
     auto* canvasGo = mainScenePtr->createGameObject("Canvas");
     auto* canvas = canvasGo->addComponent<dzemikk::Canvas>();
+    (void)canvas;
+
+    dzemikk::UIButtonActionRegistry::get().registerAction(
+        "demo.button.click", [](dzemikk::UIButton& button) {
+            return [&button]() {
+                const auto* owner = button.getOwner();
+                if (owner != nullptr) {
+                    spdlog::info("Button click on '{}'", owner->getName());
+                } else {
+                    spdlog::info("Button click");
+                }
+            };
+        });
+    dzemikk::UIButtonActionRegistry::get().registerAction(
+        "demo.button.enter",
+        [](dzemikk::UIButton&) { return []() { spdlog::info("Button hover"); }; });
+    dzemikk::UIButtonActionRegistry::get().registerAction(
+        "demo.button.exit",
+        [](dzemikk::UIButton&) { return []() { spdlog::info("Button exit"); }; });
+
     auto* canvasRect = canvasGo->rectTransform();
     canvasRect->setSize({1920.0F, 1080.0F});
 
     auto* buttonGo = mainScenePtr->createGameObject("Button", canvasGo);
     dzemikk::UIButton::build(*buttonGo, dzemikk::UIButtonParams{
-                                            .onClick = []() { spdlog::info("Button click"); },
-                                            .onEnter = []() { spdlog::info("Button hover"); },
-                                            .onExit = []() { spdlog::info("Button exit"); },
+                                            .onClickActionId = "demo.button.click",
+                                            .onEnterActionId = "demo.button.enter",
+                                            .onExitActionId = "demo.button.exit",
                                             .rectTransformParams =
                                                 {
                                                     .size = {300.0F, 150.0F},

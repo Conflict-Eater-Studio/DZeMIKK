@@ -19,9 +19,9 @@ struct UIButtonParams {
     glm::vec4 normalColor = glm::vec4(1.0F);
     glm::vec4 hoverColor = glm::vec4(0.9F, 0.9F, 0.9F, 1.0F);
     glm::vec4 pressedColor = glm::vec4(0.8F, 0.8F, 0.8F, 1.0F);
-    std::function<void()> onClick;
-    std::function<void()> onEnter;
-    std::function<void()> onExit;
+    std::string onClickActionId;
+    std::string onEnterActionId;
+    std::string onExitActionId;
     RectTransformParams rectTransformParams;
     Mesh* mesh;
     Material* material;
@@ -65,12 +65,36 @@ class UIButton : public IUIInteractable {
     void setNormalColor(const glm::vec4& color);
     void setHoverColor(const glm::vec4& color);
     void setPressedColor(const glm::vec4& color);
+    [[nodiscard]] const glm::vec4& getNormalColor() const {
+        return _normalColor;
+    }
+    [[nodiscard]] const glm::vec4& getHoverColor() const {
+        return _hoverColor;
+    }
+    [[nodiscard]] const glm::vec4& getPressedColor() const {
+        return _pressedColor;
+    }
 
     void setOnClick(std::function<void()> onClick);
     void setOnEnter(std::function<void()> onEnter);
     void setOnExit(std::function<void()> onExit);
 
+    void setOnClickActionId(std::string actionId);
+    void setOnEnterActionId(std::string actionId);
+    void setOnExitActionId(std::string actionId);
+    [[nodiscard]] const std::string& getOnClickActionId() const {
+        return _onClickActionId;
+    }
+    [[nodiscard]] const std::string& getOnEnterActionId() const {
+        return _onEnterActionId;
+    }
+    [[nodiscard]] const std::string& getOnExitActionId() const {
+        return _onExitActionId;
+    }
+
   private:
+    void tryBindActionsFromIds();
+
     void applyVisualState();
 
     mutable UISpriteRenderer* _spriteRenderer = nullptr;
@@ -83,6 +107,10 @@ class UIButton : public IUIInteractable {
     bool _pressedInside = false;
     bool _pointerInside = false;
     bool _pointerDown = false;
+
+    std::string _onClickActionId;
+    std::string _onEnterActionId;
+    std::string _onExitActionId;
 
     std::function<void()> _onClick;
     std::function<void()> _onEnter;

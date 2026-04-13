@@ -94,6 +94,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/serializedRef.h"
         "${INC_DIR}/ecs/serialize/monoBehaviourSerializer.h"
         "${INC_DIR}/ecs/serialize/transformSerializer.h"
+        "${INC_DIR}/ecs/serialize/uiButtonSerializer.h"
         "${INC_DIR}/ecs/serialize/uuid.h"
         "${INC_DIR}/ecs/components/ui/uiSpriteRenderer.h"
         "${INC_DIR}/ecs/components/ui/uiTextRenderer.h"
@@ -101,6 +102,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/components/ui/rectTransform.h"
         "${INC_DIR}/ecs/components/ui/iUIInteractable.h"
         "${INC_DIR}/ecs/components/ui/uiButton.h"
+        "${INC_DIR}/ecs/components/ui/uiButtonActionRegistry.h"
 )
 
 target_sources(DZeMIKK

@@ -1,4 +1,6 @@
 #include "ecs/components/monoBehaviour.h"
+#include "ecs/components/ui/uiButton.h"
+#include "ecs/components/ui/uiButtonActionRegistry.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/serialize/componentSerializerRegistry.h"
@@ -218,6 +220,85 @@ TEST(MonoBehaviourSerializerSerialization, ReadBaseRejectsWrongType) {
     EXPECT_THROW(
         dzemikk::MonoBehaviourSerializer::readBase(json, owner, "SerializerRefOwnerScript"),
         std::runtime_error);
+}
+
+TEST(UIButtonSerialization, RegistrySerializeIncludesActionIdsAndColors) {
+    dzemikk::Scene scene;
+    dzemikk::GameObject* object = scene.createGameObject("Button");
+    ASSERT_NE(object, nullptr);
+
+    auto* button = object->addComponent<dzemikk::UIButton>();
+    ASSERT_NE(button, nullptr);
+
+    button->setNormalColor(glm::vec4(0.1F, 0.2F, 0.3F, 0.4F));
+    button->setHoverColor(glm::vec4(0.5F, 0.6F, 0.7F, 0.8F));
+    button->setPressedColor(glm::vec4(0.9F, 1.0F, 0.2F, 0.3F));
+    button->setOnClickActionId("test.ui.click.serialize");
+    button->setOnEnterActionId("test.ui.enter.serialize");
+    button->setOnExitActionId("test.ui.exit.serialize");
+
+    const nlohmann::json json = dzemikk::ComponentSerializerRegistry::get().serialize(*button);
+
+    ASSERT_TRUE(json.contains("type"));
+    EXPECT_EQ(json["type"], "UIButton");
+    ASSERT_TRUE(json.contains("normalColor"));
+    ASSERT_TRUE(json.contains("hoverColor"));
+    ASSERT_TRUE(json.contains("pressedColor"));
+    ASSERT_TRUE(json.contains("onClickActionId"));
+    ASSERT_TRUE(json.contains("onEnterActionId"));
+    ASSERT_TRUE(json.contains("onExitActionId"));
+
+    EXPECT_EQ(json["onClickActionId"].get<std::string>(), "test.ui.click.serialize");
+    EXPECT_EQ(json["onEnterActionId"].get<std::string>(), "test.ui.enter.serialize");
+    EXPECT_EQ(json["onExitActionId"].get<std::string>(), "test.ui.exit.serialize");
+
+    EXPECT_FLOAT_EQ(json["normalColor"][0].get<float>(), 0.1F);
+    EXPECT_FLOAT_EQ(json["normalColor"][1].get<float>(), 0.2F);
+    EXPECT_FLOAT_EQ(json["normalColor"][2].get<float>(), 0.3F);
+    EXPECT_FLOAT_EQ(json["normalColor"][3].get<float>(), 0.4F);
+}
+
+TEST(UIButtonSerialization, DeserializeBindsOnClickActionFromRegistry) {
+    dzemikk::Scene scene;
+    dzemikk::GameObject* source = scene.createGameObject("Source");
+    ASSERT_NE(source, nullptr);
+
+    auto* sourceButton = source->addComponent<dzemikk::UIButton>();
+    ASSERT_NE(sourceButton, nullptr);
+    sourceButton->setOnClickActionId("test.ui.click.deserialize");
+
+    const nlohmann::json serializedButton =
+        dzemikk::ComponentSerializerRegistry::get().serialize(*sourceButton);
+
+    dzemikk::GameObject* target = scene.createGameObject("Target");
+    ASSERT_NE(target, nullptr);
+    dzemikk::ComponentSerializerRegistry::get().deserializeIntoGameObject(*target,
+                                                                          serializedButton);
+
+    auto* button = target->getComponent<dzemikk::UIButton>();
+    ASSERT_NE(button, nullptr);
+    EXPECT_EQ(button->getOnClickActionId(), "test.ui.click.deserialize");
+
+    int clickCount = 0;
+    dzemikk::UIButtonActionRegistry::get().registerAction(
+        "test.ui.click.deserialize",
+        [&clickCount](dzemikk::UIButton&) { return [&clickCount]() { ++clickCount; }; });
+
+    button->onClick();
+    EXPECT_EQ(clickCount, 1);
+}
+
+TEST(UIButtonSerialization, UnknownOnClickActionIdIsSafeNoOp) {
+    dzemikk::Scene scene;
+    dzemikk::GameObject* object = scene.createGameObject("Button");
+    ASSERT_NE(object, nullptr);
+
+    auto* button = object->addComponent<dzemikk::UIButton>();
+    ASSERT_NE(button, nullptr);
+
+    button->setOnClickActionId("test.ui.missing.action");
+
+    EXPECT_NO_THROW(button->onClick());
 }
 
 } // namespace
