@@ -4,6 +4,7 @@
 
 #include "IAnimationTrack.h"
 #include <glm/glm.hpp>
+#include "ecs/components/transform.h"
 
 namespace dzemikk {
 
@@ -24,6 +25,18 @@ class VectorTrack : public IAnimationTrack {
         }
         void setProperty(const VectorProperty& property) {
             _property = property;
+        }
+        void bindPosition(Transform& transform) {
+            _property = VectorProperty(
+                [&transform]() { return transform.getPosition(); },
+                [&transform](const glm::vec3& value) { transform.setPosition(value); }
+            );
+        }
+        void bindScale(Transform& transform) {
+            _property = VectorProperty(
+                [&transform]() { return transform.getScale(); },
+                [&transform](const glm::vec3& value) { transform.setScale(value); }
+            );
         }
         VectorProperty getProperty() const {
             return _property;

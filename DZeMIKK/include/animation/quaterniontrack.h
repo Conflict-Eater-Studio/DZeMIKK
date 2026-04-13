@@ -6,6 +6,7 @@
 #include "IAnimationTrack.h"
 #include "property.h"
 #include "propertykey.h"
+#include "ecs/components/transform.h"
 
 #include <glm/gtx/quaternion.hpp>
 
@@ -28,6 +29,12 @@ class QuaternionTrack : public IAnimationTrack {
         }
         void setProperty(const QuaternionProperty& property) {
             _property = property;
+        }
+        void bindRotation(Transform& transform) {
+            _property = QuaternionProperty(
+                [&transform]() { return transform.getRotation(); },
+                [&transform](const glm::quat& value) { transform.setRotation(value); }
+            );
         }
         QuaternionProperty getProperty() const {
             return _property;

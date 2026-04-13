@@ -339,14 +339,7 @@ int main() {
     idleState->setClip(animationClip);
 
     dzemikk::Transform* t = playerGO->transform();
-    dzemikk::QuaternionProperty prop(
-        [t] {return t->getRotation(); },
-        [t](glm::quat rot) {
-            t->setRotation(rot);
-        }
-    );
-
-    animationTrack->setProperty(prop);
+    animationTrack->bindRotation(*t);
     animationTrack->addKey({0.0f, glm::vec3(1.0f, 1.0f, 1.0f)});
     animationTrack->addKey({0.5f, glm::vec3(0.5f, 0.5f, 0.5f)});
     animationTrack->addKey({1.0f, glm::vec3(0.1f, 0.1f, 0.1f)});
