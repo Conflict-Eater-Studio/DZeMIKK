@@ -11,9 +11,11 @@
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
 #include "ecs/components/ui/canvas.h"
+#include "ecs/components/ui/colors.h"
 #include "ecs/components/ui/rectTransform.h"
 #include "ecs/components/ui/uiButton.h"
 #include "ecs/components/ui/uiButtonActionRegistry.h"
+#include "ecs/components/ui/uiSlider.h"
 #include "ecs/components/ui/uiSpriteRenderer.h"
 #include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
@@ -26,6 +28,7 @@
 #include "spdlog/spdlog.h"
 
 #include <GLFW/glfw3.h>
+#include <algorithm>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -363,6 +366,80 @@ int main() {
     buttonTextRenderer->color = glm::vec3(0.0F, 0.0F, 0.0F);
     buttonTextRenderer->horizontalAlign = dzemikk::UITextRenderer::HorizontalAlign::Center;
     buttonTextRenderer->verticalAlign = dzemikk::UITextRenderer::VerticalAlign::Middle;
+
+    // --- slider
+    constexpr float kSliderWidth = 400.0F;
+    constexpr float kSliderTrackHeight = 20.0F;
+    constexpr float kSliderHandleSize = 40.0F;
+
+    auto* sliderGo = mainScenePtr->createGameObject("Slider", canvasGo);
+    auto* uiSlider = sliderGo->addComponent<dzemikk::UISlider>();
+    auto* backgroundGo = mainScenePtr->createGameObject("Background", sliderGo);
+    auto* fillGo = mainScenePtr->createGameObject("Fill", backgroundGo);
+    auto* handleGo = mainScenePtr->createGameObject("Handle", backgroundGo);
+
+    uiSlider->setBackgroundColor(dzemikk::Colors::White);
+    uiSlider->setHandleColor(dzemikk::Colors::White);
+    uiSlider->setHandleHoverColor(dzemikk::Colors::fromHex("#DDDDDD"));
+    uiSlider->setHandlePressedColor(dzemikk::Colors::fromHex("#BBBBBB"));
+    uiSlider->setFillColor(dzemikk::Colors::fromHex("#00BBFF"));
+
+    sliderGo->rectTransform()->setPosition({0.0F, 300.0F});
+    sliderGo->rectTransform()->setAnchorMin({0.5F, 0.5F});
+    sliderGo->rectTransform()->setAnchorMax({0.5F, 0.5F});
+    sliderGo->rectTransform()->setPivot({0.5F, 0.5F});
+    sliderGo->rectTransform()->setSize({kSliderWidth, kSliderHandleSize});
+
+    auto* bgRect = backgroundGo->rectTransform();
+    bgRect->setAnchorMin({0.5F, 0.5F});
+    bgRect->setAnchorMax({0.5F, 0.5F});
+    bgRect->setPivot({0.5F, 0.5F});
+    bgRect->setSize({kSliderWidth, kSliderTrackHeight});
+    bgRect->setZIndex(10);
+
+    auto* fillRect = fillGo->rectTransform();
+    fillRect->setAnchorMin({0.0F, 0.5F});
+    fillRect->setAnchorMax({0.0F, 0.5F});
+    fillRect->setPivot({0.0F, 0.5F});
+    fillRect->setPosition({0.0F, 0.0F});
+    fillRect->setSize({0.0F, kSliderTrackHeight});
+    fillRect->setZIndex(11);
+
+    auto* handleRect = handleGo->rectTransform();
+    handleRect->setAnchorMin({0.0F, 0.5F});
+    handleRect->setAnchorMax({0.0F, 0.5F});
+    handleRect->setPivot({0.5F, 0.5F});
+    handleRect->setPosition({0.0F, 0.0F});
+    handleRect->setSize({kSliderHandleSize, kSliderHandleSize});
+    handleRect->setZIndex(12);
+
+    auto* bgSprite = backgroundGo->addComponent<dzemikk::UISpriteRenderer>();
+    bgSprite->setMesh(quadMesh);
+    bgSprite->setMaterial(quadMaterial);
+    bgSprite->setRectTransform(bgRect);
+
+    auto* fillSprite = fillGo->addComponent<dzemikk::UISpriteRenderer>();
+    fillSprite->setMesh(quadMesh);
+    fillSprite->setMaterial(quadMaterial);
+    fillSprite->setRectTransform(fillRect);
+
+    auto* handleSprite = handleGo->addComponent<dzemikk::UISpriteRenderer>();
+    handleSprite->setMesh(quadMesh);
+    handleSprite->setMaterial(quadMaterial);
+    handleSprite->setRectTransform(handleRect);
+
+    uiSlider->setBackgroundSpriteRenderer(bgSprite);
+    uiSlider->setFillSpriteRenderer(fillSprite);
+    uiSlider->setHandleSpriteRenderer(handleSprite);
+
+    uiSlider->setOnValueChanged([fillRect, handleRect](float value) {
+        const float clamped = std::clamp(value, 0.0F, 1.0F);
+        fillRect->setSize({kSliderWidth * clamped, kSliderTrackHeight});
+        handleRect->setPosition({kSliderWidth * clamped, 0.0F});
+        spdlog::info("Slider value: {:.2f}", clamped);
+    });
+
+    uiSlider->onValueChanged(0.35F);
 
     auto textGO = mainScenePtr->createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));

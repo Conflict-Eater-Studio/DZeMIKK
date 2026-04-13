@@ -3,6 +3,7 @@
 #include "ecs/serialize/rectTransformSerializer.h"
 #include "ecs/serialize/transformSerializer.h"
 #include "ecs/serialize/uiButtonSerializer.h"
+#include "ecs/serialize/uiSliderSerializer.h"
 
 #include <stdexcept>
 #include <utility>
@@ -15,6 +16,7 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerTransformSerializer(registry);
     registerRectTransformSerializer(registry);
     registerUIButtonSerializer(registry);
+    registerUISliderSerializer(registry);
 
     return registry;
 }

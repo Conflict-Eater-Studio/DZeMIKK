@@ -52,6 +52,7 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/serialize/prefabSerializer.cpp"
         "${SRC_DIR}/ecs/components/ui/rectTransform.cpp"
         "${SRC_DIR}/ecs/components/ui/uiButton.cpp"
+        "${SRC_DIR}/ecs/components/ui/uiSlider.cpp"
 )
 
 set(ENGINE_HEADERS
@@ -102,6 +103,9 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/components/ui/iUIInteractable.h"
         "${INC_DIR}/ecs/components/ui/uiButton.h"
         "${INC_DIR}/ecs/components/ui/uiButtonActionRegistry.h"
+        "${INC_DIR}/ecs/components/ui/uiSlider.h"
+        "${INC_DIR}/ecs/components/ui/uiSliderActionRegistry.h"
+        "${INC_DIR}/ecs/components/ui/colors.h"
 )
 
 target_sources(DZeMIKK
