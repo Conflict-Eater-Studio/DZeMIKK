@@ -24,7 +24,7 @@ class QuaternionTrack : public IAnimationTrack {
             glm::quat value = sample(time);
             _property.set(value);
         }
-        void addKey(QuaternionPropertyKey key) {
+        void addKey(const QuaternionPropertyKey& key) {
                 _keys.push_back(key);
         }
         void setProperty(const QuaternionProperty& property) {
@@ -36,14 +36,14 @@ class QuaternionTrack : public IAnimationTrack {
                 [&transform](const glm::quat& value) { transform.setRotation(value); }
             );
         }
-        QuaternionProperty getProperty() const {
+        [[nodiscard]] QuaternionProperty getProperty() const {
             return _property;
         }
     private:
         QuaternionProperty _property;
         std::vector<QuaternionPropertyKey> _keys;
 
-        glm::quat sample(float time) const {
+        [[nodiscard]] glm::quat sample(float time) const {
             if (_keys.size() == 1) {
                 return _keys[0].value;
             }
@@ -60,7 +60,7 @@ class QuaternionTrack : public IAnimationTrack {
 
             return value;
         }
-        size_t findPropertyIndex(float time) const {
+        [[nodiscard]] size_t findPropertyIndex(float time) const {
             for (size_t i = 0; i < _keys.size() - 1; i++) {
                 if (time < _keys[i + 1].time)
                     return i;

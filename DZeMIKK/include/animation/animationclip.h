@@ -17,7 +17,7 @@ class Transform;
  * @brief Represents an animation clip consisting of multiple animation tracks.
  *
  * AnimationClip stores time-based animation data that can be applied to various
- * properties (e.g. transform position, rotation). Each track targets a specific
+ * properties (e.g., transform position, rotation). Each track targets a specific
  * property and is sampled during playback.
  */
 class AnimationClip {
@@ -40,14 +40,14 @@ public:
      *
      * @return Duration in ticks.
      */
-    float getDuration() const;
+    [[nodiscard]] float getDuration() const;
 
     /**
      * @brief Gets the framerate of the animation clip.
      *
      * @return Framerate (ticks per second).
      */
-    float getFramerate() const;
+    [[nodiscard]] float getFramerate() const;
 
     /**
      * @brief Creates and adds a new animation track.
@@ -74,7 +74,7 @@ public:
 private:
     /// Collection of animation tracks.
     std::vector<std::unique_ptr<IAnimationTrack>> _tracks;
-
+    std::vector<std::shared_ptr<Transform>> _transforms;
     /// Total duration of the animation (in seconds).
     float _duration = 0;
 

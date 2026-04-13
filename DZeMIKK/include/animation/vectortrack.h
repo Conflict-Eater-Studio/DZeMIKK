@@ -38,14 +38,14 @@ class VectorTrack : public IAnimationTrack {
                 [&transform](const glm::vec3& value) { transform.setScale(value); }
             );
         }
-        VectorProperty getProperty() const {
+        [[nodiscard]] VectorProperty getProperty() const {
             return _property;
         }
     private:
         VectorProperty _property;
         std::vector<VectorPropertyKey> _keys;
 
-        glm::vec3 sample(float time) const {
+        [[nodiscard]] glm::vec3 sample(float time) const {
             if (_keys.size() == 1) {
                 return _keys[0].value;
             }
@@ -68,9 +68,9 @@ class VectorTrack : public IAnimationTrack {
                 _keys[next].value.z,
                 factor);
 
-            return glm::vec3(x, y, z);
+            return {x, y, z};
         }
-        size_t findPropertyIndex(float time) const {
+        [[nodiscard]] size_t findPropertyIndex(float time) const {
             for (size_t i = 0; i < _keys.size() - 1; i++) {
                 if (time < _keys[i + 1].time)
                     return i;
