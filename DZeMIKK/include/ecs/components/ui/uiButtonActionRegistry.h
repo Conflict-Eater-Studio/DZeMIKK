@@ -31,13 +31,19 @@ class UIButtonActionRegistry {
     }
 
     [[nodiscard]] std::function<void()> bind(const std::string& actionId, UIButton& button) const {
-        std::scoped_lock lock(_mutex);
-        const auto iter = _factories.find(actionId);
-        if (iter == _factories.end()) {
-            return {};
+        ActionFactory actionFactory;
+
+        {
+            std::scoped_lock lock(_mutex);
+            const auto iter = _factories.find(actionId);
+            if (iter == _factories.end()) {
+                return {};
+            }
+
+            actionFactory = iter->second;
         }
 
-        return iter->second(button);
+        return actionFactory(button);
     }
 
   private:

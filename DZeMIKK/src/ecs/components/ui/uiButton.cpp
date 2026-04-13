@@ -11,7 +11,6 @@
 #include <glm/geometric.hpp>
 #include <glm/matrix.hpp>
 
-
 namespace dzemikk {
 namespace {
 constexpr float kMinDeterminant = 1e-6F;
@@ -24,9 +23,6 @@ void UIButton::build(GameObject& gameObject, const UIButtonParams& params) {
     button->setOnClickActionId(params.onClickActionId);
     button->setOnEnterActionId(params.onEnterActionId);
     button->setOnExitActionId(params.onExitActionId);
-    button->setOnClick(params.onClick);
-    button->setOnEnter(params.onEnter);
-    button->setOnExit(params.onExit);
 
     auto* rectTransform = gameObject.rectTransform();
     rectTransform->setSize(params.rectTransformParams.size);

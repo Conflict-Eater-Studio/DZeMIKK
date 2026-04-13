@@ -11,7 +11,7 @@ set(DZeMIKK_VERSION_MINOR 0)
 set(DZeMIKK_VERSION_REVISION 0)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-    set(DZEMIKK_DEV_TOOLS ON)
+  set(DZEMIKK_DEV_TOOLS ON)
 endif()
 
 add_library(DZeMIKK STATIC)
@@ -29,8 +29,8 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/components/monobehaviour.cpp"
         "${SRC_DIR}/ecs/components/transform.cpp"
         "${SRC_DIR}/ecs/components/meshRenderer.cpp"
-		"${SRC_DIR}/ecs/components/meshRenderer.cpp"
-    	"${SRC_DIR}/ecs/components/spriteRenderer.cpp"
+        "${SRC_DIR}/ecs/components/meshRenderer.cpp"
+        "${SRC_DIR}/ecs/components/spriteRenderer.cpp"
         "${SRC_DIR}/ecs/components/camera.cpp"
         "${SRC_DIR}/ecs/components/textRenderer.cpp"
         "${SRC_DIR}/ecs/gameobject.cpp"
@@ -50,7 +50,6 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/serialize/gameobjectSerializer.cpp"
         "${SRC_DIR}/ecs/serialize/sceneSerializer.cpp"
         "${SRC_DIR}/ecs/serialize/prefabSerializer.cpp"
-        "${SRC_DIR}/ecs/components/ui/canvas.cpp"
         "${SRC_DIR}/ecs/components/ui/rectTransform.cpp"
         "${SRC_DIR}/ecs/components/ui/uiButton.cpp"
 )
@@ -177,11 +176,11 @@ set_target_properties(fmod PROPERTIES
 )
 
 if (DZEMIKK_DEV_TOOLS)
-    add_library(fmod_debug STATIC IMPORTED)
-    set_target_properties(fmod_debug PROPERTIES
+  add_library(fmod_debug STATIC IMPORTED)
+  set_target_properties(fmod_debug PROPERTIES
             IMPORTED_LOCATION "${FMOD_LIBS_PATH}/fmodL_vc.lib"
     )
-    add_library(imgui STATIC
+  add_library(imgui STATIC
             "${EXTERN_DIR}/imgui/imgui.cpp"
             "${EXTERN_DIR}/imgui/imgui_draw.cpp"
             "${EXTERN_DIR}/imgui/imgui_tables.cpp"
@@ -190,28 +189,28 @@ if (DZEMIKK_DEV_TOOLS)
             "${EXTERN_DIR}/imgui/backends/imgui_impl_opengl3.cpp"
     )
 
-    target_include_directories(imgui
+  target_include_directories(imgui
             PUBLIC
             "${EXTERN_DIR}/imgui"
             "${EXTERN_DIR}/imgui/backends"
             "${EXTERN_DIR}"
     )
 
-    target_link_libraries(imgui PUBLIC glfw opengl32)
-    if (MSVC)
-        target_compile_options(imgui PRIVATE /utf-8)
-    else()
-        target_compile_options(imgui PRIVATE -finput-charset=UTF-8)
-    endif()
+  target_link_libraries(imgui PUBLIC glfw opengl32)
+  if (MSVC)
+    target_compile_options(imgui PRIVATE /utf-8)
+  else()
+    target_compile_options(imgui PRIVATE -finput-charset=UTF-8)
+  endif()
 
 endif ()
 
 if (MSVC)
-    target_compile_options(DZeMIKK PRIVATE /utf-8)
-    target_compile_options(glad PRIVATE /utf-8)
+  target_compile_options(DZeMIKK PRIVATE /utf-8)
+  target_compile_options(glad PRIVATE /utf-8)
 else()
-    target_compile_options(DZeMIKK PRIVATE -finput-charset=UTF-8)
-    target_compile_options(glad PRIVATE -finput-charset=UTF-8)
+  target_compile_options(DZeMIKK PRIVATE -finput-charset=UTF-8)
+  target_compile_options(glad PRIVATE -finput-charset=UTF-8)
 endif()
 
 
