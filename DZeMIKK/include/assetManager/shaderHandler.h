@@ -4,6 +4,7 @@
 #include "IAssetHandler.h"
 
 #include <string>
+#include <memory>
 
 namespace dzemikk {
     class Shader;
@@ -18,10 +19,11 @@ namespace dzemikk {
         static const std::string VERT;
         static const std::string FRAG;
 
-        Shader* loadShaderFromFile(const std::string& path);
-        void reloadShader(const std::string& path, Shader* shader);
+        static std::unique_ptr<dzemikk::Shader> loadShaderFromFile(const std::string& path);
+        static void reloadShader(const std::string& path, Shader* shader);
 
-        std::pair<std::string, std::string> buildShaderPaths(const std::string& path);
+        static std::pair<std::string, std::string> buildShaderPaths(const std::string& path);
+
     };
 
 } // namespace dzemikk

@@ -19,7 +19,7 @@ class Mesh;
 class AssetManager : public IEngineModule {
   public:
     AssetManager() = default;
-    ~AssetManager() = default;
+    ~AssetManager() override = default;
 
 #pragma region Disable copy/move
 
@@ -39,17 +39,17 @@ class AssetManager : public IEngineModule {
 
 #pragma region Public API
 
-    template <typename T> T* Get(const std::string& id);
-    template <typename T> T* Reload(const std::string& id);
-    void Unload(const std::string& id);
+    template <typename T> T* get(const std::string& path);
+    template <typename T> T* reload(const std::string& path);
+    void unload(const std::string& path);
 
-    enum class PrimitiveMesh { Cube, Quad, Sphere, Capsule };
+    enum class PrimitiveMesh : std::uint8_t { Cube, Quad, Sphere, Capsule };
 
-    Mesh* GetPrimitive(PrimitiveMesh type);
+    dzemikk::Mesh* getPrimitive(PrimitiveMesh type);
 
     //FOR TEST ONLY - DELETE THIS
-    FMOD::System* system;
     void setFMODSystem(FMOD::System* system);
+    FMOD::System* getFMODSystem();
 
 #pragma endregion
 
@@ -60,28 +60,30 @@ class AssetManager : public IEngineModule {
     };
 
     struct PrimitiveMeshHash {
-        std::size_t operator()(PrimitiveMesh m) const {
-            return std::hash<int>()(static_cast<int>(m));
+        std::size_t operator()(PrimitiveMesh mesh) const {
+            return std::hash<int>()(static_cast<int>(mesh));
         }
     };
 
     std::unordered_map<std::type_index, std::unique_ptr<IAssetHandler>> _handlers;
-
     std::unordered_map<std::string, AssetEntry> _assets;
-    std::unordered_map<PrimitiveMesh, Mesh*, PrimitiveMeshHash> _builtinMeshes;
+    std::unordered_map<PrimitiveMesh, std::unique_ptr<dzemikk::Mesh>, PrimitiveMeshHash> _builtinMeshes;
+
+    // FOR TEST ONLY - DELETE THIS
+    FMOD::System* _system = nullptr;
 
 #pragma region Internal
 
     void initPrimitiveMeshes();
 
-    void RegisterHandlers();
+    void registerHandlers();
 
     void* loadInternal(const std::string& path, std::type_index type);
 
     void reloadInternal(const std::string& path, void* data, std::type_index type);
 
-    std::string resolvePath(const std::string& id);
-    std::optional<std::filesystem::path> findResRoot();
+    std::string resolvePath(const std::string& path);
+    static std::optional<std::filesystem::path> findResRoot();
 
     std::unordered_map<std::string, std::string> _pathIndex;
     std::string _rootPath;
@@ -89,45 +91,46 @@ class AssetManager : public IEngineModule {
 #pragma endregion
 };
 
-template <typename T> inline T* AssetManager::Get(const std::string& id) {
-    auto it = _assets.find(id);
+template <typename T> inline T* AssetManager::get(const std::string& path) {
+    auto assetIt = _assets.find(path);
 
-    if (it != _assets.end()) {
-        if (it->second.type != std::type_index(typeid(T))) {
-            throw std::runtime_error("Asset type mismatch for id: " + id);
+    if (assetIt != _assets.end()) {
+        if (assetIt->second.type != std::type_index(typeid(T))) {
+            throw std::runtime_error("Asset type mismatch for id: " + path);
         }
 
-        return static_cast<T*>(it->second.data);
+        return static_cast<T*>(assetIt->second.data);
     }
 
-    void* rawData = loadInternal(id, std::type_index(typeid(T)));
+    void* rawData = loadInternal(path, std::type_index(typeid(T)));
 
-    if (!rawData)
-        return nullptr;
+    if (!rawData) {
+            return nullptr;
+    }
 
     AssetEntry entry;
     entry.data = rawData;
     entry.type = std::type_index(typeid(T));
 
-    _assets[id] = entry;
+    _assets[path] = entry;
 
     return static_cast<T*>(rawData);
 }
 
-template <typename T> inline T* AssetManager::Reload(const std::string& id) {
-    auto it = _assets.find(id);
+template <typename T> inline T* AssetManager::reload(const std::string& path) {
+    auto assetIt = _assets.find(path);
 
-    if (it == _assets.end()) {
-        return Get<T>(id);
+    if (assetIt == _assets.end()) {
+        return get<T>(path);
     }
 
-    if (it->second.type != std::type_index(typeid(T))) {
-        throw std::runtime_error("Asset type mismatch on reload: " + id);
+    if (assetIt->second.type != std::type_index(typeid(T))) {
+        throw std::runtime_error("Asset type mismatch on reload: " + path);
     }
 
-    T* asset = static_cast<T*>(it->second.data);
+    T* asset = static_cast<T*>(assetIt->second.data);
 
-    reloadInternal(id, asset, std::type_index(typeid(T)));
+    reloadInternal(path, asset, std::type_index(typeid(T)));
 
     return asset;
 }

@@ -4,19 +4,18 @@
 #include <iostream>
 
 void* dzemikk::SkyboxHandler::load(const std::string& path) {
-    return loadSkyboxFromFile(path);
+    return loadSkyboxFromFile(path).release();
 }
 
-dzemikk::Skybox* dzemikk::SkyboxHandler::loadSkyboxFromFile(const std::string& path) {
+std::unique_ptr<dzemikk::Skybox> dzemikk::SkyboxHandler::loadSkyboxFromFile(const std::string& path) {
     std::vector<std::string> faces = buildFaces(path);
 
-    auto skybox = new dzemikk::Skybox();
+    auto skybox = std::make_unique<dzemikk::Skybox>();
 
     try {
         skybox->loadCubemap(faces);
     } catch (const std::exception& e) {
-        std::cerr << "[AssetManager] Skybox load failed: " << e.what() << std::endl;
-        delete skybox;
+        std::cerr << "[AssetManager] Skybox load failed: " << e.what() << "\n";
         return nullptr;
     }
 
@@ -42,7 +41,7 @@ void dzemikk::SkyboxHandler::unload(void* asset) {
 }
 
 std::vector<std::string> dzemikk::SkyboxHandler::buildFaces(const std::string& path) {
-    using namespace dzemikk::SkyboxConst;
+    using namespace dzemikk::skyboxConst;
 
     return {path + RIGHT, path + LEFT, path + TOP, path + BOTTOM, path + FRONT, path + BACK};
 }

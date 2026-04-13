@@ -69,17 +69,17 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Materi
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
 
-    auto m1 = engine->getAssetManager()->Get<dzemikk::Mesh>("models/pole.fbx");
+    auto m1 = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
 
-    engine->getAssetManager()->Unload("models/pole.fbx");
+    engine->getAssetManager()->unload("models/pole.fbx");
 
-    auto m2 = engine->getAssetManager()->Get<dzemikk::Mesh>("models/pole.fbx");
-    auto m3 = engine->getAssetManager()->Get<dzemikk::Mesh>("models/pole.fbx");
+    auto m2 = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
+    auto m3 = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
 
-    auto skybox = engine->getAssetManager()->Get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
+    auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
     engine->getRenderer()->setSkybox(std::unique_ptr<dzemikk::Skybox>(skybox));
 
-    auto font = engine->getAssetManager()->Get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
+    auto font = engine->getAssetManager()->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
 
     auto mainScenePtr = std::make_shared<dzemikk::Scene>();
     engine->getSceneManager()->loadScene(mainScenePtr);
@@ -93,15 +93,15 @@ int main() {
     engine->getRenderer()->setActiveSceneCamera(camera);
 
     // --- Tiles
-    auto shaderA = engine->getAssetManager()->Get<dzemikk::Shader>("shaders/tile1");
+    auto shaderA = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
     auto materialA = new dzemikk::Material();
     materialA->setShader(shaderA);
 
-    auto shaderB = engine->getAssetManager()->Get<dzemikk::Shader>("shaders/tile2");
+    auto shaderB = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile2");
     auto materialB = new dzemikk::Material();
     materialB->setShader(shaderB);
 
-    auto tileMesh = engine->getAssetManager()->Get<dzemikk::Mesh>("models/pole.fbx");
+    auto tileMesh = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
     
     createHexIsland(*mainScenePtr, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
@@ -109,7 +109,7 @@ int main() {
     auto playerGO = mainScenePtr->createGameObject();
     playerGO->transform()->setPosition(glm::vec3(0.0f, 2.5f, 0.0f));
     auto playerMeshR = playerGO->addComponent<dzemikk::MeshRenderer>();
-    auto playerMesh = engine->getAssetManager()->GetPrimitive(dzemikk::AssetManager::PrimitiveMesh::Capsule);
+    auto playerMesh = engine->getAssetManager()->getPrimitive(dzemikk::AssetManager::PrimitiveMesh::Capsule);
     playerMeshR->setMesh(playerMesh);
     playerMeshR->setTransform(playerGO->transform());
     playerMeshR->setMaterial(materialA);
@@ -129,9 +129,9 @@ int main() {
     quadGO->transform()->setRotation(glm::quat());
 
     auto quadMesh =
-        engine->getAssetManager()->GetPrimitive(dzemikk::AssetManager::PrimitiveMesh::Quad);
+        engine->getAssetManager()->getPrimitive(dzemikk::AssetManager::PrimitiveMesh::Quad);
 
-    auto quadShader = engine->getAssetManager()->Get<dzemikk::Shader>("shaders/quad");
+    auto quadShader = engine->getAssetManager()->get<dzemikk::Shader>("shaders/quad");
     auto quadMaterial = new dzemikk::Material();
     quadMaterial->setShader(quadShader);
 
@@ -141,7 +141,7 @@ int main() {
     quadRenderer->setTransform(quadGO->transform());
     quadRenderer->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
 
-    auto tex = engine->getAssetManager()->Get<dzemikk::Texture>("textures/tex3.png");
+    auto tex = engine->getAssetManager()->get<dzemikk::Texture>("textures/tex3.png");
 
     quadRenderer->setTexture(tex);
 
@@ -192,7 +192,7 @@ int main() {
 
     engine->getAssetManager()->setFMODSystem(system);
 
-    auto sound = engine->getAssetManager()->Get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
+    auto sound = engine->getAssetManager()->get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
     sound->play(system);
 
     engine->start();

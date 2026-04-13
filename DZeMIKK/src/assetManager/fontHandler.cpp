@@ -4,15 +4,14 @@
 #include <iostream>
 
 void* dzemikk::FontHandler::load(const std::string& path) {
-    return loadFontFromFile(path);
+    return loadFontFromFile(path).release();
 }
 
-dzemikk::Font* dzemikk::FontHandler::loadFontFromFile(const std::string& path) {
-    auto font = new dzemikk::Font();
+std::unique_ptr<dzemikk::Font> dzemikk::FontHandler::loadFontFromFile(const std::string& path) {
+    auto font = std::make_unique<dzemikk::Font>();
 
     if (!font->load(path)) {
-        std::cerr << "Failed to load font: " << path << std::endl;
-        delete font;
+        std::cerr << "Failed to load font: " << path << "\n";
         return nullptr;
     }
 

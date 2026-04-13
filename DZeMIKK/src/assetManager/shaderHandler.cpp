@@ -10,10 +10,10 @@ const std::string dzemikk::ShaderHandler::VERT = ".vert";
 const std::string dzemikk::ShaderHandler::FRAG = ".frag";
 
 void* dzemikk::ShaderHandler::load(const std::string& path) {
-    return loadShaderFromFile(path);
+    return loadShaderFromFile(path).release();
 }
 
-dzemikk::Shader* dzemikk::ShaderHandler::loadShaderFromFile(const std::string& path) {
+std::unique_ptr<dzemikk::Shader> dzemikk::ShaderHandler::loadShaderFromFile(const std::string& path) {
     auto [vertPath, fragPath] = buildShaderPaths(path);
 
     std::ifstream vFile(vertPath);
@@ -28,7 +28,7 @@ dzemikk::Shader* dzemikk::ShaderHandler::loadShaderFromFile(const std::string& p
 
     std::string fragSrc((std::istreambuf_iterator<char>(fFile)), std::istreambuf_iterator<char>());
 
-    return new dzemikk::Shader(vertSrc.c_str(), fragSrc.c_str());
+    return std::make_unique<dzemikk::Shader>(vertSrc.c_str(), fragSrc.c_str());
 }
 
 void dzemikk::ShaderHandler::reload(void* asset, const std::string& path) {
@@ -46,8 +46,8 @@ void dzemikk::ShaderHandler::reloadShader(const std::string& path, dzemikk::Shad
         return;
     }
 
-    std::string vertSrc((std::istreambuf_iterator<char>(vFile)), {});
-    std::string fragSrc((std::istreambuf_iterator<char>(fFile)), {});
+    std::string vertSrc((std::istreambuf_iterator<char>(vFile)), std::istreambuf_iterator<char>());
+    std::string fragSrc((std::istreambuf_iterator<char>(fFile)), std::istreambuf_iterator<char>());
 
     shader->recompile(vertSrc.c_str(), fragSrc.c_str());
 }

@@ -6,22 +6,24 @@
 #include <iostream>
 
 void* dzemikk::TextureHandler::load(const std::string& path) {
-    return loadTextureFromFile(path);
+    return loadTextureFromFile(path).release();
 }
 
-dzemikk::Texture* dzemikk::TextureHandler::loadTextureFromFile(const std::string& path, bool flipVertical) {
-    int width, height, channels;
+std::unique_ptr<dzemikk::Texture> dzemikk::TextureHandler::loadTextureFromFile(const std::string& path, bool flipVertical) {
+    int width = 0;
+    int height = 0;
+    int channels = 0;
 
     stbi_set_flip_vertically_on_load(flipVertical ? 1 : 0);
 
     unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 
     if (!data) {
-        std::cerr << "Failed to load texture: " << path << std::endl;
+        std::cerr << "Failed to load texture: " << path << "\n";
         return nullptr;
     }
 
-    auto texture = new Texture();
+    auto texture = std::make_unique<dzemikk::Texture>();
     texture->initFromData(data, width, height, channels);
 
     stbi_image_free(data);
@@ -34,7 +36,9 @@ void dzemikk::TextureHandler::reload(void* asset, const std::string& path) {
 }
 
 void dzemikk::TextureHandler::reloadTexture(const std::string& path, dzemikk::Texture* texture) {
-    int width, height, channels;
+    int width = 0;
+    int height = 0;
+    int channels = 0;
 
     stbi_set_flip_vertically_on_load(true);
 
@@ -45,14 +49,22 @@ void dzemikk::TextureHandler::reloadTexture(const std::string& path, dzemikk::Te
         return;
     }
 
-    GLuint newTex;
+    GLuint newTex = 0;
     glGenTextures(1, &newTex);
     glBindTexture(GL_TEXTURE_2D, newTex);
 
-    GLenum format = (channels == 4) ? GL_RGBA : (channels == 3) ? GL_RGB : GL_RED;
+    GLenum format = GL_RED;
+
+    if (channels == 4) {
+        format = GL_RGBA;
+    } else if (channels == 3) {
+        format = GL_RGB;
+    }
+
     GLenum internalFormat = (channels == 4) ? GL_RGBA8 : GL_RGB8;
 
-    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE,
+    glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(internalFormat), width, height, 0, format,
+                 GL_UNSIGNED_BYTE,
                  data);
 
     glGenerateMipmap(GL_TEXTURE_2D);

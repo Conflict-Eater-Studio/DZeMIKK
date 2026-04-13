@@ -3,81 +3,81 @@
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/gtc/constants.hpp>
 
-dzemikk::Mesh* dzemikk::PrimitiveFactory::CreateCube() {
-    dzemikk::Mesh* mesh = new dzemikk::Mesh();
+std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCube() {
+    auto mesh = std::make_unique<dzemikk::Mesh>();
 
     float vertices[] = {// --- Front face
-                        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-                        0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+                            -0.5F, -0.5F, 0.5F, 0.0F, 0.0F, 1.0F, 0.5F, -0.5F, 0.5F, 0.0F, 0.0F, 1.0F,
+                            0.5F, 0.5F, 0.5F, 0.0F, 0.0F, 1.0F,
 
-                        0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
-                        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+                            0.5F, 0.5F, 0.5F, 0.0F, 0.0F, 1.0F, -0.5F, 0.5F, 0.5F, 0.0F, 0.0F, 1.0F,
+                            -0.5F, -0.5F, 0.5F, 0.0F, 0.0F, 1.0F,
 
-                        // --- Back face
-                        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.5f, 0.5f, -0.5f, 0.0f, 0.0f,
-                        -1.0f, 0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+                            // --- Back face
+                            -0.5F, -0.5F, -0.5F, 0.0F, 0.0F, -1.0F, 0.5F, 0.5F, -0.5F, 0.0F, 0.0F,
+                            -1.0F, 0.5F, -0.5F, -0.5F, 0.0F, 0.0F, -1.0F,
 
-                        0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-                        -1.0f, -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+                            0.5F, 0.5F, -0.5F, 0.0F, 0.0F, -1.0F, -0.5F, -0.5F, -0.5F, 0.0F, 0.0F,
+                            -1.0F, -0.5F, 0.5F, -0.5F, 0.0F, 0.0F, -1.0F,
 
-                        // --- Left face
-                        -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, -0.5f, -0.5f, 0.5f, -1.0f, 0.0f,
-                        0.0f, -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+                            // --- Left face
+                            -0.5F, -0.5F, -0.5F, -1.0F, 0.0F, 0.0F, -0.5F, -0.5F, 0.5F, -1.0F, 0.0F,
+                            0.0F, -0.5F, 0.5F, 0.5F, -1.0F, 0.0F, 0.0F,
 
-                        -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
-                        -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+                            -0.5F, 0.5F, 0.5F, -1.0F, 0.0F, 0.0F, -0.5F, 0.5F, -0.5F, -1.0F, 0.0F, 0.0F,
+                            -0.5F, -0.5F, -0.5F, -1.0F, 0.0F, 0.0F,
 
-                        // --- Right face
-                        0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-                        0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+                            // --- Right face
+                            0.5F, -0.5F, -0.5F, 1.0F, 0.0F, 0.0F, 0.5F, 0.5F, 0.5F, 1.0F, 0.0F, 0.0F,
+                            0.5F, -0.5F, 0.5F, 1.0F, 0.0F, 0.0F,
 
-                        0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
-                        0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+                            0.5F, 0.5F, 0.5F, 1.0F, 0.0F, 0.0F, 0.5F, -0.5F, -0.5F, 1.0F, 0.0F, 0.0F,
+                            0.5F, 0.5F, -0.5F, 1.0F, 0.0F, 0.0F,
 
-                        // --- Top face
-                        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
-                        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+                            // --- Top face
+                            -0.5F, 0.5F, -0.5F, 0.0F, 1.0F, 0.0F, -0.5F, 0.5F, 0.5F, 0.0F, 1.0F, 0.0F,
+                            0.5F, 0.5F, 0.5F, 0.0F, 1.0F, 0.0F,
 
-                        0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-                        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+                            0.5F, 0.5F, 0.5F, 0.0F, 1.0F, 0.0F, 0.5F, 0.5F, -0.5F, 0.0F, 1.0F, 0.0F,
+                            -0.5F, 0.5F, -0.5F, 0.0F, 1.0F, 0.0F,
 
-                        // --- Bottom face
-                        -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 0.5f, -0.5f, 0.5f, 0.0f, -1.0f,
-                        0.0f, -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+                            // --- Bottom face
+                            -0.5F, -0.5F, -0.5F, 0.0F, -1.0F, 0.0F, 0.5F, -0.5F, 0.5F, 0.0F, -1.0F,
+                            0.0F, -0.5F, -0.5F, 0.5F, 0.0F, -1.0F, 0.0F,
 
-                        0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, -0.5f, -0.5f, -0.5f, 0.0f, -1.0f,
-                        0.0f, 0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f};
+                            0.5F, -0.5F, 0.5F, 0.0F, -1.0F, 0.0F, -0.5F, -0.5F, -0.5F, 0.0F, -1.0F,
+                            0.0F, 0.5F, -0.5F, -0.5F, 0.0F, -1.0F, 0.0F};
 
     mesh->create(vertices, 36, 6);
     return mesh;
 }
 
-dzemikk::Mesh* dzemikk::PrimitiveFactory::CreateQuad() {
-    dzemikk::Mesh* mesh = new dzemikk::Mesh();
+std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createQuad() {
+    auto mesh = std::make_unique<dzemikk::Mesh>();
     float vertices[] = {// pos        // uv
-                        0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+                        0.0F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 1.0F, 1.0F,
 
-                        1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+                        1.0F, 1.0F, 1.0F, 1.0F, 0.0F, 1.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F};
 
     mesh->create2D(vertices, 6);
     return mesh;
 }
 
-dzemikk::Mesh* dzemikk::PrimitiveFactory::CreateSphere() {
+std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createSphere() {
     const int stacks = 16;
     const int slices = 16;
-    const float radius = 0.5f;
+    const float radius = 0.5F;
 
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
 
     for (int i = 0; i <= stacks; ++i) {
-        float V = (float)i / stacks;
-        float phi = V * glm::pi<float>();
+        float v = (float)i / stacks;
+        float phi = v * glm::pi<float>();
 
         for (int j = 0; j <= slices; ++j) {
-            float U = (float)j / slices;
-            float theta = U * glm::two_pi<float>();
+            float u = (float)j / slices;
+            float theta = u * glm::two_pi<float>();
 
             float x = radius * sinf(phi) * cosf(theta);
             float y = radius * cosf(phi);
@@ -86,6 +86,7 @@ dzemikk::Mesh* dzemikk::PrimitiveFactory::CreateSphere() {
             glm::vec3 pos(x, y, z);
             glm::vec3 normal = glm::normalize(pos);
 
+            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
             vertices.insert(vertices.end(), {pos.x, pos.y, pos.z, normal.x, normal.y, normal.z});
         }
     }
@@ -105,20 +106,20 @@ dzemikk::Mesh* dzemikk::PrimitiveFactory::CreateSphere() {
         }
     }
 
-    auto mesh = new dzemikk::Mesh();
+    auto mesh = std::make_unique<dzemikk::Mesh>();
     mesh->createIndexed(vertices.data(), vertices.size() / 6, indices.data(), indices.size(), 6);
 
     return mesh;
 }
 
-dzemikk::Mesh* dzemikk::PrimitiveFactory::CreateCapsule() {
-    auto* mesh = new dzemikk::Mesh();
+std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
+    auto mesh = std::make_unique<dzemikk::Mesh>();
 
     const int segments = 24;
     const int rings = 12;
 
-    const float radius = 0.5f;
-    const float height = 1.0f;
+    const float radius = 0.5F;
+    const float height = 1.0F;
 
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
@@ -135,12 +136,12 @@ dzemikk::Mesh* dzemikk::PrimitiveFactory::CreateCapsule() {
         vertices.push_back(normal.z);
     };
 
-    auto indexOf = [&](int ring, int seg) { return ring * (segments + 1) + seg; };
+    auto indexOf = [&](int ring, int seg) { return (ring * (segments + 1)) + seg; };
 
-    float halfH = height * 0.5f;
+    float halfH = height * 0.5F;
 
     for (int i = 0; i <= 1; i++) {
-        float y = -halfH + i * height;
+        float y = (-halfH) + ((float)i * height);
 
         for (int j = 0; j <= segments; j++) {
             float a = (float)j / segments * glm::two_pi<float>();
@@ -160,7 +161,7 @@ dzemikk::Mesh* dzemikk::PrimitiveFactory::CreateCapsule() {
                                        (unsigned)i2, (unsigned)i3});
     }
 
-    int baseTop = vertices.size() / 6;
+    std::size_t baseTop = vertices.size() / 6;
 
     for (int i = 0; i <= rings; i++) {
         float v = (float)i / rings;
@@ -170,7 +171,7 @@ dzemikk::Mesh* dzemikk::PrimitiveFactory::CreateCapsule() {
             float u = (float)j / segments;
             float theta = u * glm::two_pi<float>();
 
-            glm::vec3 pos(cos(theta) * cos(phi) * radius, sin(phi) * radius + halfH,
+            glm::vec3 pos(cos(theta) * cos(phi) * radius, (sin(phi) * radius) + halfH,
                           sin(theta) * cos(phi) * radius);
 
             addVertex(pos);
@@ -179,7 +180,7 @@ dzemikk::Mesh* dzemikk::PrimitiveFactory::CreateCapsule() {
 
     for (int i = 0; i < rings; i++) {
         for (int j = 0; j < segments; j++) {
-            int a = baseTop + i * (segments + 1) + j;
+            int a = (int)baseTop + (i * (segments + 1)) + j;
             int b = a + segments + 1;
 
             indices.insert(indices.end(), {(unsigned)a, (unsigned)b, (unsigned)a + 1,
@@ -187,7 +188,7 @@ dzemikk::Mesh* dzemikk::PrimitiveFactory::CreateCapsule() {
         }
     }
 
-    int baseBottom = vertices.size() / 6;
+    std::size_t baseBottom = vertices.size() / 6;
 
     for (int i = 0; i <= rings; i++) {
         float v = (float)i / rings;
@@ -197,7 +198,7 @@ dzemikk::Mesh* dzemikk::PrimitiveFactory::CreateCapsule() {
             float u = (float)j / segments;
             float theta = u * glm::two_pi<float>();
 
-            glm::vec3 pos(cos(theta) * cos(phi) * radius, -sin(phi) * radius - halfH,
+            glm::vec3 pos(cos(theta) * cos(phi) * radius, ((-sin(phi)) * radius) - halfH,
                           sin(theta) * cos(phi) * radius);
 
             addVertex(pos);
@@ -206,7 +207,7 @@ dzemikk::Mesh* dzemikk::PrimitiveFactory::CreateCapsule() {
 
     for (int i = 0; i < rings; i++) {
         for (int j = 0; j < segments; j++) {
-            int a = baseBottom + i * (segments + 1) + j;
+            int a = (int)baseBottom + ((int)i * (segments + 1)) + j;
             int b = a + segments + 1;
 
             indices.insert(indices.end(), {(unsigned)a, (unsigned)a + 1, (unsigned)b,

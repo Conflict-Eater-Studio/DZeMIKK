@@ -19,6 +19,8 @@
 
 #include "assetManager/primitiveFactory.h"
 
+#include <algorithm>
+#include <ranges>
 #include <iostream>
 #include <stb/stb_image.h>
 #include <fstream>
@@ -28,7 +30,7 @@
 
 void dzemikk::AssetManager::Initialize() {
 #if DZEMIKK_DEV_TOOLS
-    auto t0 = std::chrono::high_resolution_clock::now();
+    auto timer0 = std::chrono::high_resolution_clock::now();
     spdlog::info("[AssetManager] Initialization started");
 
     spdlog::info("Assimp version: {}.{}.{}", aiGetVersionMajor(), aiGetVersionMinor(),
@@ -48,7 +50,7 @@ void dzemikk::AssetManager::Initialize() {
     }
 
     _rootPath = rootOpt->string();
-    std::replace(_rootPath.begin(), _rootPath.end(), '\\', '/');
+    std::ranges::replace(_rootPath, '\\', '/');
 
 #if DZEMIKK_DEV_TOOLS
     spdlog::info("[AssetManager] Resource root: {}", _rootPath);
@@ -56,26 +58,28 @@ void dzemikk::AssetManager::Initialize() {
 
     size_t fileCount = 0;
 
-    for (auto& p : std::filesystem::recursive_directory_iterator(_rootPath)) {
-        if (!p.is_regular_file())
+    auto dirIt = std::filesystem::recursive_directory_iterator(_rootPath);
+    for (const auto& entry : dirIt) {
+        if (!entry.is_regular_file()) {
             continue;
+        }
+            
+        std::string fullPath = entry.path().string();
+        std::ranges::replace(fullPath, '\\', '/');
 
-        std::string fullPath = p.path().string();
-        std::replace(fullPath.begin(), fullPath.end(), '\\', '/');
-
-        std::string relative = std::filesystem::relative(p.path(), _rootPath).string();
-        std::replace(relative.begin(), relative.end(), '\\', '/');
+        std::string relative = std::filesystem::relative(entry.path(), _rootPath).string();
+        std::ranges::replace(relative, '\\', '/');
 
         _pathIndex[relative] = fullPath;
         ++fileCount;
     }
-    RegisterHandlers();
+    registerHandlers();
     initPrimitiveMeshes();
 
 #if DZEMIKK_DEV_TOOLS
-    auto t1 = std::chrono::high_resolution_clock::now();
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
-    spdlog::info("[AssetManager] Initialization finished in {} ms", ms);
+    auto timer1 = std::chrono::high_resolution_clock::now();
+    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(timer1 - timer0).count();
+    spdlog::info("[AssetManager] Initialization finished in {} ms", milliseconds);
 #endif
 }
 
@@ -84,9 +88,9 @@ std::optional<std::filesystem::path> dzemikk::AssetManager::findResRoot() {
 
     fs::path start = fs::current_path();
 
-    for (auto& p : fs::recursive_directory_iterator(start)) {
-        if (p.is_directory() && p.path().filename() == "res") {
-            return fs::absolute(p.path());
+    for (const auto& entry : fs::recursive_directory_iterator(start)) {
+        if (entry.is_directory() && entry.path().filename() == "res") {
+            return fs::absolute(entry.path());
         }
     }
 
@@ -104,28 +108,31 @@ void dzemikk::AssetManager::UnInitialize() {
     _assets.clear();
 }
 
-void* dzemikk::AssetManager::loadInternal(const std::string& id, std::type_index type) {
+void* dzemikk::AssetManager::loadInternal(const std::string& path, std::type_index type) {
     auto it = _handlers.find(type);
-    if (it == _handlers.end())
+    if (it == _handlers.end()) {
         return nullptr;
+    }
 
-    std::string path = resolvePath(id); 
+    std::string pathR = resolvePath(path); 
 
-    return it->second->load(path);
+    return it->second->load(pathR);
 }
 
-std::string dzemikk::AssetManager::resolvePath(const std::string& id) {
-    auto it = _pathIndex.find(id);
-    if (it != _pathIndex.end())
+std::string dzemikk::AssetManager::resolvePath(const std::string& path) {
+    auto it = _pathIndex.find(path);
+    if (it != _pathIndex.end()) {
         return it->second;
+    }
 
-    return _rootPath + "/" + id;
+    return _rootPath + "/" + path;
 }
 
-void dzemikk::AssetManager::Unload(const std::string& id) {
-    auto it = _assets.find(id);
-    if (it == _assets.end())
+void dzemikk::AssetManager::unload(const std::string& path) {
+    auto it = _assets.find(path);
+    if (it == _assets.end()) {
         return;
+    }
 
     AssetEntry& entry = it->second;
 
@@ -138,29 +145,33 @@ void dzemikk::AssetManager::Unload(const std::string& id) {
 }
 
 void dzemikk::AssetManager::initPrimitiveMeshes() {
-    _builtinMeshes[PrimitiveMesh::Cube] = PrimitiveFactory::CreateCube();
-    _builtinMeshes[PrimitiveMesh::Quad] = PrimitiveFactory::CreateQuad();
-    _builtinMeshes[PrimitiveMesh::Sphere] = PrimitiveFactory::CreateSphere();
-    _builtinMeshes[PrimitiveMesh::Capsule] = PrimitiveFactory::CreateCapsule();
+    _builtinMeshes[PrimitiveMesh::Cube] = PrimitiveFactory::createCube();
+    _builtinMeshes[PrimitiveMesh::Quad] = PrimitiveFactory::createQuad();
+    _builtinMeshes[PrimitiveMesh::Sphere] = PrimitiveFactory::createSphere();
+    _builtinMeshes[PrimitiveMesh::Capsule] = PrimitiveFactory::createCapsule();
 }
 
-dzemikk::Mesh* dzemikk::AssetManager::GetPrimitive(PrimitiveMesh type) {
+dzemikk::Mesh* dzemikk::AssetManager::getPrimitive(PrimitiveMesh type) {
     auto it = _builtinMeshes.find(type);
     if (it != _builtinMeshes.end())
-        return it->second;
+        return it->second.get();
 
     return nullptr;
 }
 
 void dzemikk::AssetManager::setFMODSystem(FMOD::System* system) {
-    this->system = system;
+    this->_system = system;
 
-    auto it = _handlers.find(typeid(Sound));
-    auto* handler = static_cast<SoundHandler*>(it->second.get());
+    auto handlerIt = _handlers.find(typeid(Sound));
+    auto* handler = dynamic_cast<SoundHandler*>(handlerIt->second.get());
     handler->system = system;
 }
 
-void dzemikk::AssetManager::RegisterHandlers() {
+FMOD::System* dzemikk::AssetManager::getFMODSystem() {
+    return _system;
+}
+
+void dzemikk::AssetManager::registerHandlers() {
     _handlers[typeid(Mesh)] = std::make_unique<MeshHandler>();
     _handlers[typeid(Shader)] = std::make_unique<ShaderHandler>();
     _handlers[typeid(Texture)] = std::make_unique<TextureHandler>();
@@ -170,9 +181,9 @@ void dzemikk::AssetManager::RegisterHandlers() {
 }
 
 void dzemikk::AssetManager::reloadInternal(const std::string& path, void* data, std::type_index type) {
-    auto it = _handlers.find(type);
-    if (it == _handlers.end())
+    auto handlerIt = _handlers.find(type);
+    if (handlerIt == _handlers.end())
         return;
 
-    it->second->reload(data, resolvePath(path));
+    handlerIt->second->reload(data, resolvePath(path));
 }
