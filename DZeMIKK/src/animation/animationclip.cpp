@@ -11,14 +11,14 @@
 #include "animation/quaterniontrack.h"
 
 namespace dzemikk {
-AnimationClip::AnimationClip(float duration, float framerate) : _duration(duration), _framerate(framerate) {}
+AnimationClip::AnimationClip(float durationInTicks, float tickPerSecond) : _durationInTicks(durationInTicks), _ticksPerSecond(tickPerSecond) {}
 
-float AnimationClip::getDuration() const {
-    return _duration;
+float AnimationClip::getTickDuration() const {
+    return _durationInTicks;
 }
 
-float AnimationClip::getFramerate() const {
-    return _framerate;
+float AnimationClip::getTickrate() const {
+    return _ticksPerSecond;
 }
 
 FloatTrack* AnimationClip::addFloatTrack() {
@@ -41,8 +41,8 @@ QuaternionTrack* AnimationClip::addQuaternionTrack() {
 }
 
 void AnimationClip::apply(float timeInSeconds) const {
-    float time = timeInSeconds * getFramerate();
-    float keyframe = fmod(time, getDuration());
+    float time = timeInSeconds * getTickrate();
+    float keyframe = fmod(time, getTickDuration());
 
     if (_tracks.empty()) {
 #if DZEMIKK_DEV_TOOLS
@@ -54,24 +54,71 @@ void AnimationClip::apply(float timeInSeconds) const {
         track->apply(keyframe);
     }
 }
-void AnimationClip::fromAssimp(aiAnimation* animation) {
-    _duration = animation->mDuration;
-    _framerate = animation->mTicksPerSecond;
-    for (int i = 0; i < animation->mNumChannels; i++) {
+std::shared_ptr<AnimationClip> AnimationClip::fromAssimp(aiAnimation* animation) {
+    if (!animation) return nullptr;
+
+    std::shared_ptr<AnimationClip> clip = std::make_shared<AnimationClip>();
+
+    clip->_ticksPerSecond = (animation->mTicksPerSecond != 0.0) ? animation->mTicksPerSecond : 24.0f;
+
+    clip->_durationInTicks = animation->mDuration;
+
+    for (unsigned int i = 0; i < animation->mNumChannels; ++i) {
         aiNodeAnim* channel = animation->mChannels[i];
-        VectorTrack* vector_track = addVectorTrack();
-        for (int j = 0; j < channel->mNumPositionKeys; j++) {
-            VectorPropertyKey key;
-            key.time = channel->mPositionKeys[j].mTime;
-            key.value = glm::vec3(channel->mPositionKeys[j].mValue.x, channel->mPositionKeys[j].mValue.y, channel->mPositionKeys[j].mValue.z);
-            vector_track->addKey(key);
+        std::string targetBoneName = channel->mNodeName.C_Str();
+
+        if (channel->mNumPositionKeys > 0) {
+            VectorTrack* posTrack = clip->addVectorTrack();
+
+            // TODO: Get Transform from boneName and bind
+            // posTrack->setTargetName(targetBoneName);
+
+            for (unsigned int j = 0; j < channel->mNumPositionKeys; ++j) {
+                const aiVectorKey& key = channel->mPositionKeys[j];
+
+                auto time = static_cast<float>(key.mTime);
+                glm::vec3 value(key.mValue.x, key.mValue.y, key.mValue.z);
+
+                VectorPropertyKey keyFrame = {time, value};
+                posTrack->addKey(keyFrame);
+            }
         }
 
+        if (channel->mNumRotationKeys > 0) {
+            QuaternionTrack* rotTrack = clip->addQuaternionTrack();
+
+            for (unsigned int j = 0; j < channel->mNumRotationKeys; ++j) {
+                const aiQuatKey& key = channel->mRotationKeys[j];
+                auto time = static_cast<float>(key.mTime);
+
+                glm::quat value(key.mValue.w, key.mValue.x, key.mValue.y, key.mValue.z);
+
+                QuaternionPropertyKey keyFrame = {time, value};
+                rotTrack->addKey(keyFrame);
+            }
+        }
+
+        // --- EXTRACT SCALES ---
+        if (channel->mNumScalingKeys > 0) {
+            VectorTrack* scaleTrack = clip->addVectorTrack();
+
+            for (unsigned int j = 0; j < channel->mNumScalingKeys; ++j) {
+                const aiVectorKey& key = channel->mScalingKeys[j];
+                auto time = static_cast<float>(key.mTime);
+                glm::vec3 value(key.mValue.x, key.mValue.y, key.mValue.z);
+
+                VectorPropertyKey keyFrame = {time, value};
+                scaleTrack->addKey(keyFrame);
+            }
+        }
     }
+
 #if DZEMIKK_DEV_TOOLS
-    spdlog::info("AnimationClip loaded with {} tracks", _tracks.size());
-    spdlog::info("Duration: {}, Framerate: {}", _duration, _framerate);
+    spdlog::info("AnimationClip loaded with {} tracks", clip->_tracks.size());
+    spdlog::info("Duration: {}, Framerate: {}", clip->_durationInTicks, clip->_ticksPerSecond);
 #endif
+
+    return clip;
 }
 }
 

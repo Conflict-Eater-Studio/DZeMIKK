@@ -332,19 +332,18 @@ int main() {
     std::shared_ptr<dzemikk::AnimationStateMachine> animationStateMachine = std::make_shared<dzemikk::AnimationStateMachine>();
     dzemikk::AnimationState* idleState = animationStateMachine->addState();
 
-    dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
+    dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(4, 1);
 
     dzemikk::QuaternionTrack* animationTrack =  animationClip->addQuaternionTrack();
 
     idleState->setClip(animationClip);
-
     dzemikk::Transform* t = playerGO->transform();
     animationTrack->bindRotation(*t);
-    animationTrack->addKey({0.0f, glm::vec3(1.0f, 1.0f, 1.0f)});
-    animationTrack->addKey({0.5f, glm::vec3(0.5f, 0.5f, 0.5f)});
-    animationTrack->addKey({1.0f, glm::vec3(0.1f, 0.1f, 0.1f)});
-    animationTrack->addKey({1.5f, glm::vec3(0.5f, 0.5f, 0.5f)});
-    animationTrack->addKey({2.0f, glm::vec3(1.0f, 1.0f, 1.0f)});
+    animationTrack->addKey({0.0f, glm::quat(glm::vec3(0.0f, 0.0f, 0.0f))});
+    animationTrack->addKey({1.0f, glm::quat(glm::vec3(90.0f, 45.0f, 0.0f))});
+    animationTrack->addKey({2.0f, glm::quat(glm::vec3(34.0f, 30.0f, 0.0f))});
+    animationTrack->addKey({3.0f, glm::quat(glm::vec3(25.0f, 0.0f, 0.0f))});
+    animationTrack->addKey({4.0f, glm::quat(glm::vec3(10.0f, 0.0f, 0.0f))});
 
     animator->setStateMachine(animationStateMachine);
 
@@ -355,7 +354,7 @@ int main() {
     }
     printAnimationInfo(scene);
     aiAnimation* anim = scene->mAnimations[0];
-
+    std::shared_ptr<dzemikk::AnimationClip> animationClip2 = dzemikk::AnimationClip::fromAssimp(anim);
     engine->start();
     return 0;
 }

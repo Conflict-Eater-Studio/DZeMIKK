@@ -31,23 +31,23 @@ public:
     /**
      * @brief Constructs an animation clip with duration and framerate.
      *
-     * @param duration Total duration of the clip (in seconds).
-     * @param framerate Playback framerate (ticks per second).
+     * @param durationInTicks Total duration of the clip (in ticks).
+     * @param tickPerSecond Playback framerate (ticks per second).
      */
-    AnimationClip(float duration, float framerate);
+    AnimationClip(float durationInTicks, float tickPerSecond);
     /**
      * @brief Gets the total duration of the animation clip.
      *
      * @return Duration in ticks.
      */
-    [[nodiscard]] float getDuration() const;
+    [[nodiscard]] float getTickDuration() const;
 
     /**
      * @brief Gets the framerate of the animation clip.
      *
      * @return Framerate (ticks per second).
      */
-    [[nodiscard]] float getFramerate() const;
+    [[nodiscard]] float getTickrate() const;
 
     /**
      * @brief Creates and adds a new animation track.
@@ -68,18 +68,11 @@ public:
     * @param timeInSeconds Current time within the animation (in seconds).
     */
     void apply(float timeInSeconds) const;
-
-    void fromAssimp(aiAnimation* animation);
-
+    static std::shared_ptr<AnimationClip> fromAssimp(aiAnimation* animation);
 private:
-    /// Collection of animation tracks.
     std::vector<std::unique_ptr<IAnimationTrack>> _tracks;
-    std::vector<std::shared_ptr<Transform>> _transforms;
-    /// Total duration of the animation (in seconds).
-    float _duration = 0;
-
-    /// Playback framerate (ticks per second).
-    float _framerate = 0;
+    float _durationInTicks = 0;
+    float _ticksPerSecond = 0;
 };
 
 }
