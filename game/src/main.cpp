@@ -15,6 +15,8 @@
 #include "ecs/components/ui/rectTransform.h"
 #include "ecs/components/ui/uiButton.h"
 #include "ecs/components/ui/uiButtonActionRegistry.h"
+#include "ecs/components/ui/uiCheckbox.h"
+#include "ecs/components/ui/uiCheckboxActionRegistry.h"
 #include "ecs/components/ui/uiSlider.h"
 #include "ecs/components/ui/uiSpriteRenderer.h"
 #include "ecs/components/ui/uiTextRenderer.h"
@@ -440,6 +442,49 @@ int main() {
     });
 
     uiSlider->onValueChanged(0.35F);
+
+    // --- Checkbox
+    dzemikk::UICheckboxActionRegistry::get().registerAction(
+        "demo.checkbox.click", [](dzemikk::UICheckbox& checkbox) {
+            return [&checkbox]() {
+                const auto* owner = checkbox.getOwner();
+                if (owner != nullptr) {
+                    spdlog::info("Checkbox click on '{}'", owner->getName());
+                } else {
+                    spdlog::info("Checkbox click");
+                }
+            };
+        });
+    auto* checkboxGo = mainScenePtr->createGameObject("Checkbox", canvasGo);
+    auto* uiCheckbox = checkboxGo->addComponent<dzemikk::UICheckbox>();
+    auto* checkboxRect = checkboxGo->rectTransform();
+    checkboxRect->setPosition({0.0F, -300.0F});
+    checkboxRect->setAnchorMin({0.5F, 0.5F});
+    checkboxRect->setAnchorMax({0.5F, 0.5F});
+    checkboxRect->setPivot({0.5F, 0.5F});
+    checkboxRect->setSize({30.0F, 30.0F});
+    checkboxRect->setZIndex(0);
+    auto* checkboxSprite = checkboxGo->addComponent<dzemikk::UISpriteRenderer>();
+    checkboxSprite->setMesh(quadMesh);
+    checkboxSprite->setMaterial(quadMaterial);
+    checkboxSprite->setRectTransform(checkboxRect);
+    checkboxSprite->setColor(dzemikk::Colors::White);
+    uiCheckbox->setBackgroundSpriteRenderer(checkboxSprite);
+    auto* checkmarkGo = mainScenePtr->createGameObject("Checkmark", checkboxGo);
+    auto* checkmarkRect = checkmarkGo->rectTransform();
+    checkmarkRect->setAnchorMin({0.1F, 0.1F});
+    checkmarkRect->setAnchorMax({0.9F, 0.9F});
+    checkmarkRect->setPivot({0.5F, 0.5F});
+    checkmarkRect->setPosition({0.0F, 0.0F});
+    checkmarkRect->setSize({0.0F, 0.0F});
+    checkmarkRect->setZIndex(1);
+    auto* checkmarkSprite = checkmarkGo->addComponent<dzemikk::UISpriteRenderer>();
+    checkmarkSprite->setMesh(quadMesh);
+    checkmarkSprite->setMaterial(quadMaterial);
+    checkmarkSprite->setRectTransform(checkmarkRect);
+    checkmarkSprite->setColor(dzemikk::Colors::Red);
+    uiCheckbox->setCheckmarkSpriteRenderer(checkmarkSprite);
+    uiCheckbox->setOnClickActionId("demo.checkbox.click");
 
     auto textGO = mainScenePtr->createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));

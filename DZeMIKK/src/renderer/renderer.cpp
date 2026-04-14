@@ -236,11 +236,11 @@ void dzemikk::Renderer::render() {
     }
 
     std::vector<UISpriteRenderer*> uiSprites;
-    ComponentRegistry::get().getComponents<UISpriteRenderer>(uiSprites);
+    ComponentRegistry::get().getEnabledComponents<UISpriteRenderer>(uiSprites);
 
     std::ranges::sort(uiSprites, [](UISpriteRenderer* a, UISpriteRenderer* b) {
-        int az = a->getOwner()->rectTransform()->getZIndex();
-        int bz = a->getOwner()->rectTransform()->getZIndex();
+        unsigned int az = a->getOwner()->rectTransform()->getZIndex();
+        unsigned int bz = a->getOwner()->rectTransform()->getZIndex();
         return az < bz;
     });
     for (auto* r : uiSprites) {
