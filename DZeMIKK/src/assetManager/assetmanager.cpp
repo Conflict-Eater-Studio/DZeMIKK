@@ -95,14 +95,10 @@ std::optional<std::filesystem::path> dzemikk::AssetManager::findResRoot() {
 }
 
 void dzemikk::AssetManager::UnInitialize() {
-    for (auto& [path, entry] : _assets) {
-        auto handlerIt = _handlers.find(entry.type);
-        if (handlerIt != _handlers.end()) {
-            handlerIt->second->unloadRaw(entry.handle.get());
-        }
-    }
-
     _assets.clear();
+    _builtinMeshes.clear();
+    _handlers.clear();
+    _pathIndex.clear();
 }
 
 std::string dzemikk::AssetManager::resolvePath(const std::string& path) {
@@ -118,16 +114,8 @@ void dzemikk::AssetManager::unload(const std::string& path) {
     if (it == _assets.end())
         return;
 
-    auto& entry = it->second;
-
-    auto handlerIt = _handlers.find(entry.type);
-    if (handlerIt != _handlers.end()) {
-        handlerIt->second->unloadRaw(entry.handle.get());
-    }
-
     _assets.erase(it);
 }
-
 void dzemikk::AssetManager::initPrimitiveMeshes() {
     _builtinMeshes[PrimitiveMesh::Cube] = PrimitiveFactory::createCube();
     _builtinMeshes[PrimitiveMesh::Quad] = PrimitiveFactory::createQuad();

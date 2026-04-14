@@ -21,9 +21,6 @@ template <typename T> struct AssetResult {
 
 struct IAssetHandlerBase {
     virtual ~IAssetHandlerBase() = default;
-
-    virtual void unloadRaw(void* asset) = 0;
-    virtual void reloadRaw(void* asset, const std::string& path) = 0;
 };
 
 /**
@@ -88,18 +85,6 @@ class IAssetHandler : public IAssetHandlerBase {
          * @param asset Handle to asset.
          */
         virtual void unload(Handle& asset) = 0;
-
-        void unloadRaw(void* asset) override {
-            auto* typed = static_cast<T*>(asset);
-            Handle handle(typed);
-            unload(handle);
-        }
-
-        void reloadRaw(void* asset, const std::string& path) override {
-            auto* typed = static_cast<T*>(asset);
-            Handle handle(typed);
-            reload(handle, path);
-        }
 };
 } // namespace dzemikk
 
