@@ -103,6 +103,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/transformSerializer.h"
         "${INC_DIR}/ecs/serialize/uuid.h"
         "${INC_DIR}/assetManager/assetManager.h"
+        "${INC_DIR}/assetManager/assetError.h"
         "${INC_DIR}/assetManager/fontHandler.h"
         "${INC_DIR}/assetManager/meshHandler.h"
         "${INC_DIR}/assetManager/shaderHandler.h"

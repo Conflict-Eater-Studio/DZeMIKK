@@ -10,49 +10,57 @@ namespace dzemikk {
 class Font;
 
 /**
-    * @brief Asset handler responsible for loading and managing Font resources.
-    *
-    * Loads font files into Font objects and provides runtime reload support.
-    * Uses Font::load() for parsing and initializing font data.
-    *
-    * @note Loaded fonts are heap-allocated and must be released via unload().
-    * @warning Uses void* interface — requires casting to Font*.
-    */
-class FontHandler : public IAssetHandler {
-    public:
-    /**
-        * @brief Loads a font from file.
-        *
-        * @param path Path to the font file.
-        * @return void* Pointer to Font, or nullptr if loading failed.
-        */
-    void* load(const std::string& path) override;
+ * @brief Handles loading, reloading, and unloading of Font assets.
+ *
+ * FontHandler is responsible for converting font files into runtime Font objects
+ * and integrating them into the engine asset system.
+ *
+ * Supports hot-reload and safe asset lifetime management via AssetHandle.
+ */
+class FontHandler : public IAssetHandler<Font> {
+  public:
+    using Handle = AssetHandle<Font>;
+    using Result = AssetResult<Font>;
 
     /**
-        * @brief Reloads an existing font from file.
-        *
-        * @param asset Pointer to Font (as void*).
-        * @param path Path to the font file.
-        */
-    void reload(void* asset, const std::string& path) override;
+     * @brief Loads a font asset from the given file path.
+     *
+     * @param path Path to the font file.
+     * @return AssetResult containing a valid Font handle on success,
+     *         or an error state on failure.
+     */
+    Result load(const std::string& path) override;
+
+    /**
+     * @brief Reloads an already loaded font asset from disk.
+     *
+     * Used for hot-reloading during development or runtime updates.
+     *
+     * @param asset Reference to the existing font handle.
+     * @param path Path to the font file.
+     * @return True if reload succeeded, false otherwise.
+     */
+    bool reload(Handle& asset, const std::string& path) override;
         
     /**
-        * @brief Unloads a font from memory.
-        *
-        * @param asset Pointer to Font (as void*).
-        */
-    void unload(void* asset) override;
+     * @brief Unloads a font asset from memory.
+     *
+     * Releases ownership of the underlying Font resource.
+     *
+     * @param asset Reference to the font handle to be unloaded.
+     */
+    void unload(Handle& asset) override;
 
     private:
     /**
-        * @brief Loads a font and creates a Font object.
-        */
-    static std::unique_ptr<dzemikk::Font> loadFontFromFile(const std::string& path);
+     * @brief Loads a font and creates a Font object.
+     */
+    static std::shared_ptr<Font> loadFontFromFile(const std::string& path);
 
     /**
-        * @brief Reloads font data into an existing Font object.
-        */
-    static void reloadFont(const std::string& path, Font* font);
+     * @brief Reloads font data into an existing Font object.
+     */
+    static bool reloadFont(const std::string& path, Font& font);
 };
 
 } // namespace dzemikk

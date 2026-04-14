@@ -227,12 +227,25 @@ void Engine::updateCameraArrows(float speed) {
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_DOWN) == GLFW_PRESS)
         transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->right()));
 
-    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Z) == GLFW_PRESS) {
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_R) == GLFW_PRESS) {
+        getAssetManager()->reload<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
+    }
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_T) == GLFW_PRESS) {
+        getAssetManager()->reload<dzemikk::Mesh>("models/pole.fbx");
+    }
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Y) == GLFW_PRESS) {
+        getAssetManager()->reload<dzemikk::Shader>("shaders/quad");
+    }
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_U) == GLFW_PRESS) {
+        getAssetManager()->reload<dzemikk::Skybox>("textures/Daylight Box_Pieces");
+    }
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_I) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Sound>("audio/prime_coToZaHex.wav");
         auto sound = getAssetManager()->get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
         sound->play(getAssetManager()->getFMODSystem());
-        std::cout<<"reload";
     }
-
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_O) == GLFW_PRESS) {
+        getAssetManager()->reload<dzemikk::Texture>("textures/tex3.png");
+    }
 }
 }

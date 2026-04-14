@@ -9,18 +9,25 @@
 const std::string dzemikk::ShaderHandler::VERT = ".vert";
 const std::string dzemikk::ShaderHandler::FRAG = ".frag";
 
-void* dzemikk::ShaderHandler::load(const std::string& path) {
-    return loadShaderFromFile(path).release();
+dzemikk::ShaderHandler::Result dzemikk::ShaderHandler::load(const std::string& path) {
+    auto shader = loadShaderFromFile(path);
+
+    if (!shader) {
+        std::cerr << "Failed to load shader: " << path << "\n";
+        return {Handle(), nullptr, AssetError::LoadFailed};
+    }
+
+    return {Handle(shader.get()), shader, AssetError::None};
 }
 
-std::unique_ptr<dzemikk::Shader> dzemikk::ShaderHandler::loadShaderFromFile(const std::string& path) {
+std::shared_ptr<dzemikk::Shader> dzemikk::ShaderHandler::loadShaderFromFile(const std::string& path) {
     auto [vertPath, fragPath] = buildShaderPaths(path);
 
     std::ifstream vFile(vertPath);
     std::ifstream fFile(fragPath);
 
     if (!vFile.is_open() || !fFile.is_open()) {
-        std::cerr << "Failed to open shader:\n" << vertPath << "\n" << fragPath << "\n";
+        std::cerr << "Failed to open shader files:\n" << vertPath << "\n" << fragPath << "\n";
         return nullptr;
     }
 
@@ -28,32 +35,37 @@ std::unique_ptr<dzemikk::Shader> dzemikk::ShaderHandler::loadShaderFromFile(cons
 
     std::string fragSrc((std::istreambuf_iterator<char>(fFile)), std::istreambuf_iterator<char>());
 
-    return std::make_unique<dzemikk::Shader>(vertSrc.c_str(), fragSrc.c_str());
+    return std::make_shared<Shader>(vertSrc.c_str(), fragSrc.c_str());
 }
 
-void dzemikk::ShaderHandler::reload(void* asset, const std::string& path) {
-    reloadShader(path, static_cast<Shader*>(asset));
+bool dzemikk::ShaderHandler::reload(Handle& asset, const std::string& path) {
+    if (!asset.valid())
+        return false;
+
+    return reloadShader(path, *asset);
 }
 
-void dzemikk::ShaderHandler::reloadShader(const std::string& path, dzemikk::Shader* shader) {
+bool dzemikk::ShaderHandler::reloadShader(const std::string& path, Shader& shader) {
     auto [vertPath, fragPath] = buildShaderPaths(path);
 
     std::ifstream vFile(vertPath);
     std::ifstream fFile(fragPath);
 
     if (!vFile.is_open() || !fFile.is_open()) {
-        std::cerr << "Failed to reload shader\n";
-        return;
+        std::cerr << "Failed to reload shader:\n" << vertPath << "\n" << fragPath << "\n";
+        return false;
     }
 
     std::string vertSrc((std::istreambuf_iterator<char>(vFile)), std::istreambuf_iterator<char>());
+
     std::string fragSrc((std::istreambuf_iterator<char>(fFile)), std::istreambuf_iterator<char>());
 
-    shader->recompile(vertSrc.c_str(), fragSrc.c_str());
+    shader.recompile(vertSrc.c_str(), fragSrc.c_str());
+    return true;
 }
 
-void dzemikk::ShaderHandler::unload(void* asset) {
-    delete static_cast<Shader*>(asset);
+void dzemikk::ShaderHandler::unload(Handle& asset) {
+    asset = Handle{};
 }
 
 std::pair<std::string, std::string>

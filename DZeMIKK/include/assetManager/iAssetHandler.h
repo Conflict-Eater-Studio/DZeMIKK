@@ -1,25 +1,62 @@
 #ifndef DZEMIKK_I_ASSET_HANDLE_H
 #define DZEMIKK_I_ASSET_HANDLE_H
 
+#include "assetHandle.h"
+#include "assetError.h"
+
 #include <string>
+#include <expected>
 
 namespace dzemikk {
 
-    /**
-     * @brief Base interface for all asset handlers in the engine.
-     *
-     * Defines a common API for loading, reloading, and unloading runtime assets
-     *
-     * Handlers are responsible for converting file data into engine-specific runtime objects.
-     *
-     * @note Uses void* to allow generic asset storage across different types.
-     * @warning Caller is responsible for correct casting of returned pointers.
-     */
-    class IAssetHandler {
-      public:
+template <typename T> struct AssetResult {
+    AssetHandle<T> handle;
+    std::shared_ptr<T> resource;
+    AssetError error = AssetError::None;
+
+    bool ok() const {
+        return handle.valid();
+    }
+};
+
+struct IAssetHandlerBase {
+    virtual ~IAssetHandlerBase() = default;
+
+    virtual void unloadRaw(void* asset) = 0;
+    virtual void reloadRaw(void* asset, const std::string& path) = 0;
+};
+
+/**
+ * @brief Generic interface for asset handlers.
+ *
+ * Defines a common API for loading, reloading, and unloading assets
+ * of a given type within the engine.
+ *
+ * @tparam T Type of the asset managed by the handler.
+ */
+template <typename T> 
+class IAssetHandler : public IAssetHandlerBase {
+    public:
+        /**
+         * @brief Type of asset handled by this interface.
+         */
+        using AssetType = T;
+
+        /**
+         * @brief Handle type used to reference assets.
+         */
+        using Handle = AssetHandle<T>;
+
+        /**
+         * @brief Result type returned from load operations.
+         */
+        using Result = AssetResult<T>;
+
         virtual ~IAssetHandler() = default;
 
-        
+        /**
+         * @brief Default constructor.
+         */
         IAssetHandler() = default;
 
         IAssetHandler(const IAssetHandler&) = delete;
@@ -28,30 +65,42 @@ namespace dzemikk {
         IAssetHandler(IAssetHandler&&) = delete;
         IAssetHandler& operator=(IAssetHandler&&) = delete;
 
+        /**
+         * @brief Loads an asset from file.
+         *
+         * @param path Path to asset file.
+         * @return Result containing asset handle or error.
+         */
+        virtual Result load(const std::string& path) = 0;
 
         /**
-         * @brief Loads an asset from disk.
+         * @brief Reloads an existing asset.
          *
+         * @param asset Handle to asset.
          * @param path Path to asset file.
-         * @return void* Pointer to loaded asset.
+         * @return True if reload succeeded.
          */
-        virtual void* load(const std::string& path) = 0;
-        
-        /**
-         * @brief Reloads an existing asset from disk.
-         *
-         * @param asset Pointer to existing asset instance.
-         * @param path Path to asset file.
-         */
-        virtual void reload(void* asset, const std::string& path) = 0;
-        
+        virtual bool reload(Handle& asset, const std::string& path) = 0;
+
         /**
          * @brief Unloads an asset from memory.
          *
-         * @param asset Pointer to asset instance.
+         * @param asset Handle to asset.
          */
-        virtual void unload(void* asset) = 0;
-    };
+        virtual void unload(Handle& asset) = 0;
+
+        void unloadRaw(void* asset) override {
+            auto* typed = static_cast<T*>(asset);
+            Handle handle(typed);
+            unload(handle);
+        }
+
+        void reloadRaw(void* asset, const std::string& path) override {
+            auto* typed = static_cast<T*>(asset);
+            Handle handle(typed);
+            reload(handle, path);
+        }
+};
 } // namespace dzemikk
 
 #endif // DZEMIKK_I_ASSET_HANDLE_H

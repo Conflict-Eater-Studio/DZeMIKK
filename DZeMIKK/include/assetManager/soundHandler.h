@@ -11,40 +11,42 @@ namespace dzemikk {
     class Sound;
     
     /**
-     * @brief Handles loading and management of Sound assets using FMOD.
+     * @brief Handles loading, reloading, and unloading of Sound assets using FMOD.
      *
-     * Uses FMOD::System to create sounds from files and wraps them in Sound objects.
+     * SoundHandler uses an FMOD::System instance to create and manage sound resources.
+     * Loaded sounds are wrapped in Sound objects and integrated into the engine asset system.
      *
-     * @note Requires a valid FMOD::System instance.
-     * @note Loaded sounds must be released via unload().
-     * @warning Uses void* interface — requires casting to Sound*.
+     * Supports hot-reloading and safe lifetime management via AssetHandle.
      */
-    class SoundHandler : public IAssetHandler {
+    class SoundHandler : public IAssetHandler<Sound> {
       public:
         /**
          * @brief Loads a sound from file.
          *
-         * @param path Path to the audio file.
-         * @return void* Pointer to Sound.
+         * @param path Path to audio file.
+         * @return AssetResult containing a valid Sound handle or error.
          */
-        void* load(const std::string& path) override;
+        Result load(const std::string& path) override;
         
         /**
          * @brief Reloads an existing sound.
          *
-         * Creates a new FMOD::Sound and replaces the internal handle.
+         * Recreates internal FMOD sound resource.
          *
-         * @param asset Pointer to Sound (as void*).
-         * @param path Path to the audio file.
+         * @param asset Reference to sound handle.
+         * @param path Path to audio file.
+         * @return True if reload succeeded.
          */
-        void reload(void* asset, const std::string& path) override;
+        bool reload(Handle& asset, const std::string& path) override;
         
         /**
          * @brief Unloads a sound.
          *
-         * @param asset Pointer to Sound (as void*).
+         * Releases the underlying FMOD sound resource.
+         *
+         * @param asset Sound handle to unload.
          */
-        void unload(void* asset) override;
+        void unload(Handle& asset) override;
 
         // FOR TEST ONLY - DELETE THIS
         /**
@@ -57,13 +59,20 @@ namespace dzemikk {
       private:
         /**
          * @brief Loads a sound and creates a Sound object.
+         *
+         * @param path Path to audio file.
+         * @return Shared pointer to Sound or nullptr on failure.
          */
-        [[nodiscard]] std::unique_ptr<dzemikk::Sound> loadSoundFromFile(const std::string& path) const;
-        
+        [[nodiscard]] std::shared_ptr<Sound> loadSoundFromFile(const std::string& path) const;
+
         /**
-         * @brief Reloads sound data into an existing object.
+         * @brief Reloads sound data into existing instance.
+         *
+         * @param path Path to audio file.
+         * @param sound Reference to Sound instance.
+         * @return True if reload succeeded.
          */
-        void reloadSound(const std::string& path, Sound* sound) const;
+        bool reloadSound(const std::string& path, Sound& sound) const;
     };
 
 } // namespace dzemikk

@@ -1,19 +1,24 @@
+#if DZEMIKK_DEV_TOOLS
+#include <spdlog/spdlog.h>
+#endif
+
 #ifndef DZEMIKK_ASSET_MANAGER_H
 #define DZEMIKK_ASSET_MANAGER_H
 
-#include "core/iEngineModule.h"
 #include "assetManager/iAssetHandler.h"
+#include "core/iEngineModule.h"
 
+#include <filesystem>
+#include <fmod/include/fmod/fmod.hpp>
+#include <memory>
+#include <optional>
+#include <stdexcept>
 #include <string>
 #include <typeindex>
 #include <unordered_map>
-#include <stdexcept>
-#include <optional>
-#include <filesystem>
-
-#include<fmod/include/fmod/fmod.hpp>
 
 namespace dzemikk {
+
 class Mesh;
 
 class AssetManager : public IEngineModule {
@@ -39,15 +44,17 @@ class AssetManager : public IEngineModule {
 
 #pragma region Public API
 
-    template <typename T> T* get(const std::string& path);
-    template <typename T> T* reload(const std::string& path);
+    template <typename T> AssetHandle<T> get(const std::string& path);
+
+    template <typename T> AssetHandle<T> reload(const std::string& path);
+
     void unload(const std::string& path);
 
     enum class PrimitiveMesh : std::uint8_t { Cube, Quad, Sphere, Capsule };
 
-    dzemikk::Mesh* getPrimitive(PrimitiveMesh type);
+    Mesh* getPrimitive(PrimitiveMesh type);
 
-    //FOR TEST ONLY - DELETE THIS
+    // FOR TEST ONLY
     void setFMODSystem(FMOD::System* system);
     FMOD::System* getFMODSystem();
 
@@ -55,7 +62,7 @@ class AssetManager : public IEngineModule {
 
   private:
     struct AssetEntry {
-        void* data = nullptr;
+        std::shared_ptr<void> handle;
         std::type_index type = typeid(void);
     };
 
@@ -65,22 +72,16 @@ class AssetManager : public IEngineModule {
         }
     };
 
-    std::unordered_map<std::type_index, std::unique_ptr<IAssetHandler>> _handlers;
+    std::unordered_map<std::type_index, std::unique_ptr<IAssetHandlerBase>> _handlers;
     std::unordered_map<std::string, AssetEntry> _assets;
-    std::unordered_map<PrimitiveMesh, std::unique_ptr<dzemikk::Mesh>, PrimitiveMeshHash> _builtinMeshes;
+    std::unordered_map<PrimitiveMesh, std::unique_ptr<Mesh>, PrimitiveMeshHash> _builtinMeshes;
 
-    // FOR TEST ONLY - DELETE THIS
     FMOD::System* _system = nullptr;
 
 #pragma region Internal
 
     void initPrimitiveMeshes();
-
     void registerHandlers();
-
-    void* loadInternal(const std::string& path, std::type_index type);
-
-    void reloadInternal(const std::string& path, void* data, std::type_index type);
 
     std::string resolvePath(const std::string& path);
     static std::optional<std::filesystem::path> findResRoot();
@@ -91,48 +92,71 @@ class AssetManager : public IEngineModule {
 #pragma endregion
 };
 
-template <typename T> inline T* AssetManager::get(const std::string& path) {
-    auto assetIt = _assets.find(path);
+//
+// ================= IMPLEMENTATION =================
+//
 
-    if (assetIt != _assets.end()) {
-        if (assetIt->second.type != std::type_index(typeid(T))) {
-            throw std::runtime_error("Asset type mismatch for id: " + path);
+template <typename T> AssetHandle<T> AssetManager::get(const std::string& path) {
+    auto it = _assets.find(path);
+
+    if (it != _assets.end()) {
+        if (it->second.type != typeid(T)) {
+            throw std::runtime_error("Asset type mismatch: " + path);
         }
 
-        return static_cast<T*>(assetIt->second.data);
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[AssetManager] Loaded from cache: {}", path);
+#endif
+
+        return AssetHandle<T>(static_cast<T*>(it->second.handle.get()));
     }
 
-    void* rawData = loadInternal(path, std::type_index(typeid(T)));
+    auto handlerIt = _handlers.find(typeid(T));
+    if (handlerIt == _handlers.end())
+        return {};
 
-    if (!rawData) {
-            return nullptr;
-    }
+    auto* handler = static_cast<IAssetHandler<T>*>(handlerIt->second.get());
+
+    auto result = handler->load(resolvePath(path));
+
+    if (!result.ok())
+        return {};
 
     AssetEntry entry;
-    entry.data = rawData;
-    entry.type = std::type_index(typeid(T));
+    entry.handle = result.resource;
+    entry.type = typeid(T);
 
     _assets[path] = entry;
 
-    return static_cast<T*>(rawData);
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[AssetManager] Loaded from file: {}", path);
+#endif
+
+    return AssetHandle<T>(result.handle.get());
 }
 
-template <typename T> inline T* AssetManager::reload(const std::string& path) {
-    auto assetIt = _assets.find(path);
+template <typename T> AssetHandle<T> AssetManager::reload(const std::string& path) {
+    auto it = _assets.find(path);
 
-    if (assetIt == _assets.end()) {
+    if (it == _assets.end())
         return get<T>(path);
-    }
 
-    if (assetIt->second.type != std::type_index(typeid(T))) {
+    if (it->second.type != typeid(T)) {
         throw std::runtime_error("Asset type mismatch on reload: " + path);
     }
 
-    T* asset = static_cast<T*>(assetIt->second.data);
+    T* ptr = static_cast<T*>(it->second.handle.get());
 
-    reloadInternal(path, asset, std::type_index(typeid(T)));
+    auto handlerIt = _handlers.find(typeid(T));
+    if (handlerIt == _handlers.end())
+        return {};
 
-    return asset;
+    auto* handler = static_cast<IAssetHandler<T>*>(handlerIt->second.get());
+
+    AssetHandle<T> handle(ptr);
+    handler->reload(handle, resolvePath(path));
+
+    return handle;
 }
 
 } // namespace dzemikk

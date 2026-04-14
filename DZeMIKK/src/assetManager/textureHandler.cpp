@@ -1,15 +1,24 @@
 #include "assetManager/textureHandler.h"
 
+#include "assetManager/assetError.h"
 #include "renderer/texture.h"
 
-#include <stb/stb_image.h>
 #include <iostream>
+#include <stb/stb_image.h>
 
-void* dzemikk::TextureHandler::load(const std::string& path) {
-    return loadTextureFromFile(path).release();
+dzemikk::TextureHandler::Result dzemikk::TextureHandler::load(const std::string& path) {
+    auto texture = loadTextureFromFile(path);
+
+    if (!texture) {
+        std::cerr << "Failed to load texture: " << path << "\n";
+        return {Handle(), nullptr, AssetError::LoadFailed};
+    }
+
+    return {Handle(texture.get()), texture, AssetError::None};
 }
 
-std::unique_ptr<dzemikk::Texture> dzemikk::TextureHandler::loadTextureFromFile(const std::string& path, bool flipVertical) {
+std::shared_ptr<dzemikk::Texture> dzemikk::TextureHandler::loadTextureFromFile(const std::string& path,
+                                                             bool flipVertical) {
     int width = 0;
     int height = 0;
     int channels = 0;
@@ -23,7 +32,7 @@ std::unique_ptr<dzemikk::Texture> dzemikk::TextureHandler::loadTextureFromFile(c
         return nullptr;
     }
 
-    auto texture = std::make_unique<dzemikk::Texture>();
+    auto texture = std::make_shared<Texture>();
     texture->initFromData(data, width, height, channels);
 
     stbi_image_free(data);
@@ -31,11 +40,7 @@ std::unique_ptr<dzemikk::Texture> dzemikk::TextureHandler::loadTextureFromFile(c
     return texture;
 }
 
-void dzemikk::TextureHandler::reload(void* asset, const std::string& path) {
-    reloadTexture(path, static_cast<Texture*>(asset));
-}
-
-void dzemikk::TextureHandler::reloadTexture(const std::string& path, dzemikk::Texture* texture) {
+bool dzemikk::TextureHandler::reloadTexture(const std::string& path, dzemikk::Texture& texture) {
     int width = 0;
     int height = 0;
     int channels = 0;
@@ -46,7 +51,7 @@ void dzemikk::TextureHandler::reloadTexture(const std::string& path, dzemikk::Te
 
     if (!data) {
         std::cerr << "Failed to reload texture: " << path << "\n";
-        return;
+        return false;
     }
 
     GLuint newTex = 0;
@@ -55,17 +60,15 @@ void dzemikk::TextureHandler::reloadTexture(const std::string& path, dzemikk::Te
 
     GLenum format = GL_RED;
 
-    if (channels == 4) {
+    if (channels == 4)
         format = GL_RGBA;
-    } else if (channels == 3) {
+    else if (channels == 3)
         format = GL_RGB;
-    }
 
     GLenum internalFormat = (channels == 4) ? GL_RGBA8 : GL_RGB8;
 
     glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(internalFormat), width, height, 0, format,
-                 GL_UNSIGNED_BYTE,
-                 data);
+                 GL_UNSIGNED_BYTE, data);
 
     glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -78,9 +81,18 @@ void dzemikk::TextureHandler::reloadTexture(const std::string& path, dzemikk::Te
 
     stbi_image_free(data);
 
-    texture->replaceTexture(newTex, width, height, channels);
+    texture.replaceTexture(newTex, width, height, channels);
+
+    return true;
 }
 
-void dzemikk::TextureHandler::unload(void* asset) {
-    delete static_cast<Texture*>(asset);
+bool dzemikk::TextureHandler::reload(Handle& asset, const std::string& path) {
+    if (!asset.valid())
+        return false;
+
+    return reloadTexture(path, *asset);
+}
+
+void dzemikk::TextureHandler::unload(Handle& asset) {
+    asset = Handle{};
 }

@@ -1,34 +1,50 @@
 #include "assetManager/fontHandler.h"
+#include "assetManager/assetError.h"
 
 #include "renderer/font.h"
 #include <iostream>
 
-void* dzemikk::FontHandler::load(const std::string& path) {
-    return loadFontFromFile(path).release();
+
+dzemikk::FontHandler::Result dzemikk::FontHandler::load(const std::string& path) {
+    auto font = loadFontFromFile(path);
+
+    if (!font) {
+        std::cerr << "Failed to load font: " << path << "\n";
+        return {Handle(), nullptr, AssetError::LoadFailed};
+    }
+
+    return {Handle(font.get()), font, AssetError::None};
 }
 
-std::unique_ptr<dzemikk::Font> dzemikk::FontHandler::loadFontFromFile(const std::string& path) {
-    auto font = std::make_unique<dzemikk::Font>();
+std::shared_ptr<dzemikk::Font> dzemikk::FontHandler::loadFontFromFile(const std::string& path) {
+    auto font = std::make_shared<Font>();
 
     if (!font->load(path)) {
-        std::cerr << "Failed to load font: " << path << "\n";
         return nullptr;
     }
 
     return font;
 }
 
-void dzemikk::FontHandler::reload(void* asset, const std::string& path) {
-    reloadFont(path, static_cast<Font*>(asset));
-}
-
-void dzemikk::FontHandler::reloadFont(const std::string& path, dzemikk::Font* font) {
-    if (!font->load(path)) {
-        std::cerr << "Failed to reload font: " << path << "\n";
+bool dzemikk::FontHandler::reload(Handle& asset, const std::string& path) {
+    if (!asset.valid()) {
+        return false;
     }
+
+    return reloadFont(path, *asset);
 }
 
-void dzemikk::FontHandler::unload(void* asset) {
-    delete static_cast<Font*>(asset);
+bool dzemikk::FontHandler::reloadFont(const std::string& path, Font& font) {
+    if (!font.load(path)) {
+        std::cerr << "Failed to reload font: " << path << "\n";
+        return false;
+    }
+
+    return true;
 }
+
+void dzemikk::FontHandler::unload(Handle& asset) {
+    asset = Handle(); 
+}
+
 

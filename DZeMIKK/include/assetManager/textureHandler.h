@@ -10,75 +10,70 @@ namespace dzemikk {
     class Texture;
 
     /**
-     * @brief Asset handler responsible for loading and managing Texture resources.
+     * @brief Handles loading, reloading, and unloading of Texture assets.
      *
-     * Uses stb_image to load image data from disk and OpenGL to create GPU textures.
-     * Returned assets are raw Texture pointers cast to void*, following the IAssetHandler
-     * interface.
+     * TextureHandler uses stb_image to load image data from disk and creates
+     * GPU textures using OpenGL. Loaded textures are wrapped in Texture objects
+     * and managed by the engine asset system.
      *
-     * @note Ownership: loaded textures are heap-allocated and must be released via unload().
-     * @warning Uses void* interface — caller must ensure correct casting to Texture*.
+     * Supports hot-reloading and safe lifetime management via AssetHandle.
      */
-    class TextureHandler : public IAssetHandler {
+    class TextureHandler : public IAssetHandler<Texture> {
       public:
+        using Handle = AssetHandle<Texture>;
+        using Result = AssetResult<Texture>;
+
         /**
          * @brief Loads a texture from disk.
          *
-         * Internally uses stb_image to read pixel data and creates a Texture object
-         * initialized with OpenGL texture data.
-         *
          * @param path Path to the image file.
-         * @return void* Pointer to Texture, or nullptr if loading failed.
+         * @return AssetResult containing a valid Texture handle or error.
          */
-        void* load(const std::string& path) override;
+        Result load(const std::string& path) override;
 
-        
         /**
-         * @brief Reloads an existing texture with new data from disk.
+         * @brief Reloads an existing texture.
          *
-         * Creates a new OpenGL texture and replaces the internal GPU handle
-         * of the existing Texture object.
+         * Recreates the underlying GPU texture and updates the Texture object.
          *
-         * @param asset Pointer to an existing Texture (as void*).
+         * @param asset Reference to texture handle.
          * @param path Path to the image file.
+         * @return True if reload succeeded.
          */
-        void reload(void* asset, const std::string& path) override;
+        bool reload(Handle& asset, const std::string& path) override;
         
         /**
          * @brief Unloads a texture from memory.
          *
-         * Deletes the Texture object. Assumes the pointer was created by load().
+         * Releases ownership of the Texture resource.
          *
-         * @param asset Pointer to Texture (as void*).
+         * @param asset Texture handle to unload.
          */
-        void unload(void* asset) override;
+        void unload(Handle& asset) override;
 
       private:
         /**
          * @brief Loads image data from file and creates a Texture object.
          *
-         * Uses stb_image to read pixel data, optionally flipping it vertically,
-         * then initializes a Texture with the loaded data.
+         * Uses stb_image to read pixel data and initializes a GPU texture.
          *
-         * @param path Path to the image file.
+         * @param path Path to image file.
          * @param flipVertical Whether to flip image vertically (OpenGL convention).
-         * @return Texture* New Texture instance, or nullptr on failure.
+         * @return Shared pointer to Texture or nullptr on failure.
          */
-        static std::unique_ptr<dzemikk::Texture> loadTextureFromFile(const std::string& id,
-                                                                  bool flipVertical = true);
-        
+        static std::shared_ptr<Texture> loadTextureFromFile(const std::string& path,
+                                                            bool flipVertical = true);
+
         /**
-         * @brief Reloads texture data into an existing Texture object.
+         * @brief Reloads texture data into an existing Texture instance.
          *
-         * Loads new pixel data and creates a new OpenGL texture object.
-         * The old GPU texture is replaced via Texture::replaceTexture().
+         * Loads new image data and replaces the underlying GPU texture.
          *
-         * @param path Path to the image file.
-         * @param texture Texture object to update.
-         *
-         * @note Generates mipmaps and sets default filtering/wrapping.
+         * @param path Path to image file.
+         * @param texture Reference to Texture instance.
+         * @return True if reload succeeded.
          */
-        static void reloadTexture(const std::string& path, Texture* texture);
+        static bool reloadTexture(const std::string& path, Texture& texture);
     };
 
 } // namespace dzemikk

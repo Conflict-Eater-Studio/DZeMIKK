@@ -77,9 +77,7 @@ int main() {
     auto m3 = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
 
     auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
-    engine->getRenderer()->setSkybox(std::unique_ptr<dzemikk::Skybox>(skybox));
-
-    auto font = engine->getAssetManager()->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
+    engine->getRenderer()->setSkybox(std::unique_ptr<dzemikk::Skybox>(skybox.get()));
 
     auto mainScenePtr = std::make_shared<dzemikk::Scene>();
     engine->getSceneManager()->loadScene(mainScenePtr);
@@ -95,15 +93,15 @@ int main() {
     // --- Tiles
     auto shaderA = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
     auto materialA = new dzemikk::Material();
-    materialA->setShader(shaderA);
+    materialA->setShader(shaderA.get());
 
     auto shaderB = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile2");
     auto materialB = new dzemikk::Material();
-    materialB->setShader(shaderB);
+    materialB->setShader(shaderB.get());
 
     auto tileMesh = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
     
-    createHexIsland(*mainScenePtr, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
+    createHexIsland(*mainScenePtr, tileMesh.get(), materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
     // --- Player
     auto playerGO = mainScenePtr->createGameObject();
@@ -133,7 +131,7 @@ int main() {
 
     auto quadShader = engine->getAssetManager()->get<dzemikk::Shader>("shaders/quad");
     auto quadMaterial = new dzemikk::Material();
-    quadMaterial->setShader(quadShader);
+    quadMaterial->setShader(quadShader.get());
 
     auto quadRenderer = quadGO->addComponent<dzemikk::SpriteRenderer>();
     quadRenderer->setMesh(quadMesh);
@@ -143,7 +141,7 @@ int main() {
 
     auto tex = engine->getAssetManager()->get<dzemikk::Texture>("textures/tex3.png");
 
-    quadRenderer->setTexture(tex);
+    quadRenderer->setTexture(tex.get());
 
     auto quadGO2 = mainScenePtr->createGameObject();
     quadGO2->transform()->setPosition(glm::vec3(1500.0f, 950.0f, 0.0f));
@@ -176,9 +174,11 @@ int main() {
     auto textGO = mainScenePtr->createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
 
+    auto font = engine->getAssetManager()->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
+
     auto text = textGO->addComponent<dzemikk::TextRenderer>();
     text->text = "Hello World!";
-    text->font = font;
+    text->font = font.get();
     text->scale = 1.0f;
     text->color = glm::vec3(1.0f, 1.0f, 1.0f);
 

@@ -10,49 +10,63 @@ namespace dzemikk {
     class Mesh;
 
     /**
-     * @brief Asset handler responsible for loading and managing Mesh resources.
+     * @brief Handles loading, reloading, and unloading of Mesh assets.
      *
-     * Provides loading, reloading, and unloading of mesh assets from files.
-     * Acts as a bridge between file data and Mesh runtime objects.
+     * MeshHandler converts mesh files into runtime Mesh objects
+     * and integrates them with the engine asset system.
      *
-     * @note Loaded meshes are heap-allocated and must be released via unload().
-     * @warning Uses void* interface — requires casting to Mesh*.
+     * Supports safe lifetime management via AssetHandle and hot-reload capability.
      */
-    class MeshHandler : public IAssetHandler {
+    class MeshHandler : public IAssetHandler<Mesh> {
       public:
+        using Handle = AssetHandle<Mesh>;
+        using Result = AssetResult<Mesh>;
+        
         /**
          * @brief Loads a mesh from file.
          *
          * @param path Path to the mesh file.
-         * @return void* Pointer to Mesh.
+         * @return AssetResult containing a valid Mesh handle or error.
          */
-        void* load(const std::string& path) override;
+        Result load(const std::string& path) override;
 
         /**
-         * @brief Reloads an existing mesh from file.
+         * @brief Reloads an existing mesh asset.
          *
-         * @param asset Pointer to Mesh (as void*).
+         * Used for hot-reloading during development or runtime updates.
+         *
+         * @param asset Reference to the existing mesh handle.
          * @param path Path to the mesh file.
+         * @return True if reload succeeded, false otherwise.
          */
-        void reload(void* asset, const std::string& path) override;
+        bool reload(Handle& asset, const std::string& path) override;
 
         /**
-         * @brief Unloads a mesh from memory.
+         * @brief Unloads a mesh asset from memory.
          *
-         * @param asset Pointer to Mesh (as void*).
+         * Releases ownership of the underlying Mesh resource.
+         *
+         * @param asset Reference to the mesh handle to unload.
          */
-        void unload(void* asset) override;
+        void unload(Handle& asset) override;
 
       private:
         /**
-         * @brief Loads a mesh from file and creates a Mesh object.
+         * @brief Internal helper that loads a Mesh from file.
+         *
+         * @param path Path to mesh file.
+         * @return Shared pointer to loaded Mesh or nullptr on failure.
          */
-        static std::unique_ptr<dzemikk::Mesh> loadMeshFromFile(const std::string& path);
+        static std::shared_ptr<Mesh> loadMeshFromFile(const std::string& path);
 
         /**
-         * @brief Reloads mesh data into an existing Mesh object.
+         * @brief Reloads mesh data into an existing Mesh instance.
+         *
+         * @param path Path to mesh file.
+         * @param mesh Reference to mesh instance to update.
+         * @return True if reload succeeded, false otherwise.
          */
-        void reloadMesh(const std::string& path, Mesh* mesh);
+        static bool reloadMesh(const std::string& path, Mesh& mesh);
     };
 
 } // namespace dzemikk

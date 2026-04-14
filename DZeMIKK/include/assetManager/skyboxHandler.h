@@ -26,52 +26,72 @@ namespace dzemikk {
     } // namespace SkyboxConst
 
     /**
-     * @brief Handles loading and management of Skybox (cubemap) assets.
+     * @brief Handles loading, reloading, and unloading of Skybox assets.
      *
-     * Loads six textures from a directory and creates a cubemap-based Skybox.
+     * SkyboxHandler loads six textures from a directory and creates
+     * a cubemap-based Skybox used by the rendering system.
      *
-     * @note Expects specific file names (right, left, top, bottom, front, back).
-     * @note Loaded skyboxes must be released via unload().
-     * @warning Uses void* interface — requires casting to Skybox*.
+     * Supports hot-reloading and safe lifetime management via AssetHandle.
      */
-    class SkyboxHandler : public IAssetHandler {
+    class SkyboxHandler : public IAssetHandler<Skybox> {
       public:
+        using Handle = AssetHandle<Skybox>;
+        using Result = AssetResult<Skybox>;
+
         /**
-         * @brief Loads a skybox from directory.
+         * @brief Loads a skybox from a directory.
          *
-         * @param path Path to directory containing cubemap textures.
-         * @return void* Pointer to Skybox.
+         * Expects six cubemap textures with predefined names
+         * (right, left, top, bottom, front, back).
+         *
+         * @param path Directory containing cubemap textures.
+         * @return AssetResult containing a valid Skybox handle or error.
          */
-        void* load(const std::string& path) override;
+        Result load(const std::string& path) override;
         
         /**
          * @brief Reloads an existing skybox.
          *
-         * @param asset Pointer to Skybox (as void*).
-         * @param path Path to directory with textures.
+         * Updates cubemap textures at runtime (hot-reload).
+         *
+         * @param asset Reference to skybox handle.
+         * @param path Directory containing cubemap textures.
+         * @return True if reload succeeded, false otherwise.
          */
-        void reload(void* asset, const std::string& path) override;
+        bool reload(Handle& asset, const std::string& path) override;
         
         /**
-         * @brief Unloads a skybox.
+         * @brief Unloads a skybox from memory.
          *
-         * @param asset Pointer to Skybox (as void*).
+         * Releases ownership of the skybox resource.
+         *
+         * @param asset Skybox handle to unload.
          */
-        void unload(void* asset) override;
+        void unload(Handle& asset) override;
 
       private:
         /**
          * @brief Loads skybox textures and creates a Skybox object.
+         *
+         * @param path Directory with cubemap textures.
+         * @return Shared pointer to Skybox or nullptr on failure.
          */
-        static std::unique_ptr<dzemikk::Skybox> loadSkyboxFromFile(const std::string& path);
-        
+        static std::shared_ptr<Skybox> loadSkyboxFromFile(const std::string& path);
+
         /**
-         * @brief Reloads textures into an existing skybox.
+         * @brief Reloads textures into an existing skybox instance.
+         *
+         * @param path Directory with cubemap textures.
+         * @param skybox Reference to skybox instance.
+         * @return True if reload succeeded.
          */
-        static void reloadSkybox(const std::string& path, Skybox* skybox);
+        static bool reloadSkybox(const std::string& path, Skybox& skybox);
 
         /**
          * @brief Builds file paths for all cubemap faces.
+         *
+         * @param path Base directory.
+         * @return List of file paths in correct cubemap order.
          */
         static std::vector<std::string> buildFaces(const std::string& path);
     };
