@@ -11,10 +11,10 @@ dzemikk::TextureHandler::Result dzemikk::TextureHandler::load(const std::string&
 
     if (!texture) {
         std::cerr << "Failed to load texture: " << path << "\n";
-        return {Handle(), nullptr, AssetError::LoadFailed};
+        return {nullptr, AssetError::LoadFailed};
     }
 
-    return {Handle(texture.get()), texture, AssetError::None};
+    return {texture, AssetError::None};
 }
 
 std::shared_ptr<dzemikk::Texture> dzemikk::TextureHandler::loadTextureFromFile(const std::string& path,
@@ -87,10 +87,10 @@ bool dzemikk::TextureHandler::reloadTexture(const std::string& path, dzemikk::Te
 }
 
 bool dzemikk::TextureHandler::reload(Handle& asset, const std::string& path) {
-    if (!asset.valid())
+    if (!asset)
         return false;
 
-    return reloadTexture(path, *asset);
+    return reloadTexture(path, *asset.get());
 }
 
 void dzemikk::TextureHandler::unload(Handle& asset) {

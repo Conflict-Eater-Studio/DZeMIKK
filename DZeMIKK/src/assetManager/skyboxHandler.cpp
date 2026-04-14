@@ -10,10 +10,10 @@ dzemikk::SkyboxHandler::Result dzemikk::SkyboxHandler::load(const std::string& p
 
     if (!skybox) {
         std::cerr << "[AssetManager] Skybox load failed: " << path << "\n";
-        return {Handle(), nullptr, AssetError::LoadFailed};
+        return {nullptr, AssetError::LoadFailed};
     }
 
-    return {Handle(skybox.get()), skybox, AssetError::None};
+    return {skybox, AssetError::None};
 }
 
 std::shared_ptr<dzemikk::Skybox> dzemikk::SkyboxHandler::loadSkyboxFromFile(const std::string& path) {
@@ -45,10 +45,10 @@ bool dzemikk::SkyboxHandler::reloadSkybox(const std::string& path, Skybox& skybo
 }
 
 bool dzemikk::SkyboxHandler::reload(Handle& asset, const std::string& path) {
-    if (!asset.valid())
+    if (!asset)
         return false;
 
-    return reloadSkybox(path, *asset);
+    return reloadSkybox(path, *asset.get());
 }
 
 void dzemikk::SkyboxHandler::unload(Handle& asset) {

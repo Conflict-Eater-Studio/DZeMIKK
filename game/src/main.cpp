@@ -77,7 +77,8 @@ int main() {
     auto m3 = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
 
     auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
-    engine->getRenderer()->setSkybox(std::unique_ptr<dzemikk::Skybox>(skybox.get()));
+    skybox.get()->setShader(engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox").get());
+    engine->getRenderer()->setSkybox(skybox.get());
 
     auto mainScenePtr = std::make_shared<dzemikk::Scene>();
     engine->getSceneManager()->loadScene(mainScenePtr);
@@ -193,7 +194,7 @@ int main() {
     engine->getAssetManager()->setFMODSystem(system);
 
     auto sound = engine->getAssetManager()->get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
-    sound->play(system);
+    sound.get()->play(system);
 
     engine->start();
 

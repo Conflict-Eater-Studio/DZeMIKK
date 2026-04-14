@@ -11,10 +11,10 @@ dzemikk::MeshHandler::Result dzemikk::MeshHandler::load(const std::string& path)
 
     if (!mesh) {
         std::cerr << "Failed to load mesh: " << path << "\n";
-        return {Handle(), nullptr, AssetError::LoadFailed};
+        return {nullptr, AssetError::LoadFailed};
     }
 
-    return {Handle(mesh.get()), mesh, AssetError::None};
+    return {mesh, AssetError::None};
 }
 
 std::shared_ptr<dzemikk::Mesh> dzemikk::MeshHandler::loadMeshFromFile(const std::string& path) {
@@ -63,10 +63,10 @@ std::shared_ptr<dzemikk::Mesh> dzemikk::MeshHandler::loadMeshFromFile(const std:
 }
 
 bool dzemikk::MeshHandler::reload(Handle& asset, const std::string& path) {
-    if (!asset.valid())
+    if (!asset)
         return false;
 
-    return reloadMesh(path, *asset);
+    return reloadMesh(path, *asset.get());
 }
 
 bool dzemikk::MeshHandler::reloadMesh(const std::string& path, Mesh& mesh) {

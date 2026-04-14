@@ -77,7 +77,7 @@ void Engine::shutdown() {
 #endif
 
     for (const auto& module : _modules) {
-        module->UnInitialize();
+        //module->UnInitialize();
     }
 }
 
@@ -242,7 +242,7 @@ void Engine::updateCameraArrows(float speed) {
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_I) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Sound>("audio/prime_coToZaHex.wav");
         auto sound = getAssetManager()->get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
-        sound->play(getAssetManager()->getFMODSystem());
+        sound.get()->play(getAssetManager()->getFMODSystem());
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_O) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Texture>("textures/tex3.png");

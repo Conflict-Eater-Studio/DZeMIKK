@@ -35,7 +35,7 @@ void dzemikk::Renderer::Initialize() {
     
     glEnable(GL_MULTISAMPLE);
 
-    _skybox = std::make_unique<Skybox>();
+    _skybox = new Skybox();
 
     const char* vertexSrc = R"(
     #version 330 core
@@ -333,14 +333,14 @@ void dzemikk::Renderer::setActiveUICameraById(int cameraId) {
     std::cerr << "[Renderer] Warning: UI camera with ID " << cameraId << " not found.\n";
 }
 
-void dzemikk::Renderer::setSkybox(std::unique_ptr<Skybox> skybox) {
+void dzemikk::Renderer::setSkybox(Skybox* skybox) {
     if (!skybox) {
-        _skybox.reset();
+        _skybox = nullptr;
         return;
     }
-    _skybox = std::move(skybox);
+    _skybox = skybox;
 }
 
 const dzemikk::Skybox* dzemikk::Renderer::getSkybox() const {
-    return _skybox.get();
+    return _skybox;
 }

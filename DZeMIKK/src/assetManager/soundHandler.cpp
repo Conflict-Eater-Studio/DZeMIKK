@@ -10,10 +10,10 @@ dzemikk::SoundHandler::Result dzemikk::SoundHandler::load(const std::string& pat
 
     if (!sound) {
         std::cerr << "Failed to load sound: " << path << "\n";
-        return {Handle(), nullptr, AssetError::LoadFailed};
+        return {nullptr, AssetError::LoadFailed};
     }
 
-    return {Handle(sound.get()), sound, AssetError::None};
+    return {sound, AssetError::None};
 }
 
 std::shared_ptr<dzemikk::Sound> dzemikk::SoundHandler::loadSoundFromFile(const std::string& path) const {
@@ -55,10 +55,10 @@ bool dzemikk::SoundHandler::reloadSound(const std::string& path, Sound& sound) c
 }
 
 bool dzemikk::SoundHandler::reload(Handle& asset, const std::string& path) {
-    if (!asset.valid())
+    if (!asset)
         return false;
 
-    return reloadSound(path, *asset);
+    return reloadSound(path, *asset.get());
 }
 
 void dzemikk::SoundHandler::unload(Handle& asset) {

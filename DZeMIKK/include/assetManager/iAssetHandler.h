@@ -10,12 +10,11 @@
 namespace dzemikk {
 
 template <typename T> struct AssetResult {
-    AssetHandle<T> handle;
     std::shared_ptr<T> resource;
     AssetError error = AssetError::None;
 
-    bool ok() const {
-        return handle.valid();
+    bool isValid() const {
+        return resource && error == AssetError::None;
     }
 };
 

@@ -92,10 +92,6 @@ class AssetManager : public IEngineModule {
 #pragma endregion
 };
 
-//
-// ================= IMPLEMENTATION =================
-//
-
 template <typename T> AssetHandle<T> AssetManager::get(const std::string& path) {
     auto it = _assets.find(path);
 
@@ -108,7 +104,8 @@ template <typename T> AssetHandle<T> AssetManager::get(const std::string& path) 
         spdlog::info("[AssetManager] Loaded from cache: {}", path);
 #endif
 
-        return AssetHandle<T>(static_cast<T*>(it->second.handle.get()));
+        auto shared = std::static_pointer_cast<T>(it->second.handle);
+        return AssetHandle<T>(shared);
     }
 
     auto handlerIt = _handlers.find(typeid(T));
@@ -119,7 +116,7 @@ template <typename T> AssetHandle<T> AssetManager::get(const std::string& path) 
 
     auto result = handler->load(resolvePath(path));
 
-    if (!result.ok())
+    if (!result.isValid())
         return {};
 
     AssetEntry entry;
@@ -132,7 +129,7 @@ template <typename T> AssetHandle<T> AssetManager::get(const std::string& path) 
     spdlog::info("[AssetManager] Loaded from file: {}", path);
 #endif
 
-    return AssetHandle<T>(result.handle.get());
+    return AssetHandle<T>(result.resource);
 }
 
 template <typename T> AssetHandle<T> AssetManager::reload(const std::string& path) {
@@ -145,15 +142,15 @@ template <typename T> AssetHandle<T> AssetManager::reload(const std::string& pat
         throw std::runtime_error("Asset type mismatch on reload: " + path);
     }
 
-    T* ptr = static_cast<T*>(it->second.handle.get());
-
     auto handlerIt = _handlers.find(typeid(T));
     if (handlerIt == _handlers.end())
         return {};
 
     auto* handler = static_cast<IAssetHandler<T>*>(handlerIt->second.get());
 
-    AssetHandle<T> handle(ptr);
+    auto shared = std::static_pointer_cast<T>(it->second.handle);
+    AssetHandle<T> handle(shared);
+
     handler->reload(handle, resolvePath(path));
 
     return handle;

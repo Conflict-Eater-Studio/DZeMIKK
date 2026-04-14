@@ -106,7 +106,7 @@ std::string dzemikk::AssetManager::resolvePath(const std::string& path) {
     if (it != _pathIndex.end())
         return it->second;
 
-    return _rootPath + "/" + path;
+    return (std::filesystem::path(_rootPath) / path).generic_string();
 }
 
 void dzemikk::AssetManager::unload(const std::string& path) {

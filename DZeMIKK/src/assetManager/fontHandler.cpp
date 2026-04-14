@@ -10,10 +10,10 @@ dzemikk::FontHandler::Result dzemikk::FontHandler::load(const std::string& path)
 
     if (!font) {
         std::cerr << "Failed to load font: " << path << "\n";
-        return {Handle(), nullptr, AssetError::LoadFailed};
+        return {nullptr, AssetError::LoadFailed};
     }
 
-    return {Handle(font.get()), font, AssetError::None};
+    return {font, AssetError::None};
 }
 
 std::shared_ptr<dzemikk::Font> dzemikk::FontHandler::loadFontFromFile(const std::string& path) {
@@ -27,11 +27,11 @@ std::shared_ptr<dzemikk::Font> dzemikk::FontHandler::loadFontFromFile(const std:
 }
 
 bool dzemikk::FontHandler::reload(Handle& asset, const std::string& path) {
-    if (!asset.valid()) {
+    if (!asset) {
         return false;
     }
 
-    return reloadFont(path, *asset);
+    return reloadFont(path, *asset.get());
 }
 
 bool dzemikk::FontHandler::reloadFont(const std::string& path, Font& font) {

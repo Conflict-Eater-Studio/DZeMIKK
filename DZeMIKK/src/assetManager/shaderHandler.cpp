@@ -14,10 +14,10 @@ dzemikk::ShaderHandler::Result dzemikk::ShaderHandler::load(const std::string& p
 
     if (!shader) {
         std::cerr << "Failed to load shader: " << path << "\n";
-        return {Handle(), nullptr, AssetError::LoadFailed};
+        return {nullptr, AssetError::LoadFailed};
     }
 
-    return {Handle(shader.get()), shader, AssetError::None};
+    return {shader, AssetError::None};
 }
 
 std::shared_ptr<dzemikk::Shader> dzemikk::ShaderHandler::loadShaderFromFile(const std::string& path) {
@@ -39,10 +39,10 @@ std::shared_ptr<dzemikk::Shader> dzemikk::ShaderHandler::loadShaderFromFile(cons
 }
 
 bool dzemikk::ShaderHandler::reload(Handle& asset, const std::string& path) {
-    if (!asset.valid())
+    if (!asset)
         return false;
 
-    return reloadShader(path, *asset);
+    return reloadShader(path, *asset.get());
 }
 
 bool dzemikk::ShaderHandler::reloadShader(const std::string& path, Shader& shader) {
