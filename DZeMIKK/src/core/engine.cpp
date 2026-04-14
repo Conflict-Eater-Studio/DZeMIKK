@@ -77,7 +77,7 @@ void Engine::shutdown() {
 #endif
 
     for (const auto& module : _modules) {
-        //module->UnInitialize();
+        module->UnInitialize();
     }
 }
 

@@ -151,7 +151,8 @@ template <typename T> AssetHandle<T> AssetManager::reload(const std::string& pat
     auto shared = std::static_pointer_cast<T>(it->second.handle);
     AssetHandle<T> handle(shared);
 
-    handler->reload(handle, resolvePath(path));
+    if (!handler->reload(handle, resolvePath(path)))
+        return {};
 
     return handle;
 }
