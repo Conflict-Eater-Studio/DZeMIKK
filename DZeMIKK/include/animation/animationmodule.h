@@ -3,7 +3,6 @@
 #define DZEMIKK_ANIMATIONMODULE_H
 
 #include <vector>
-#include <algorithm>
 #include "core/iEngineModule.h"
 
 namespace dzemikk {
@@ -19,7 +18,6 @@ public:
     AnimationModule() = default;
     ~AnimationModule() override = default;
 
-    // --- IEngineModule Implementation ---
     void Initialize() override;
     void UnInitialize() override;
 
@@ -47,7 +45,5 @@ private:
      */
     std::vector<Animator*> _animators;
 };
-
-} // namespace dzemikk
-
-#endif // DZEMIKK_ANIMATIONMODULE_H
+}
+#endif
