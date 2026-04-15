@@ -247,5 +247,12 @@ void Engine::updateCameraArrows(float speed) {
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_O) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Texture>("textures/tex3.png");
     }
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_J) == GLFW_PRESS) {
+        getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
+    }
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_K) == GLFW_PRESS) {
+        getAssetManager()->unload("models/pole.fbx");
+    }
 }
 }

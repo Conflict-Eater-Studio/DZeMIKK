@@ -1,26 +1,34 @@
+#ifndef DZEMIKK_ASSET_MANAGER_H
+#define DZEMIKK_ASSET_MANAGER_H
+
 #if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
 #endif
 
-#ifndef DZEMIKK_ASSET_MANAGER_H
-#define DZEMIKK_ASSET_MANAGER_H
-
-#include "assetManager/iAssetHandler.h"
 #include "core/iEngineModule.h"
 
-#include <filesystem>
 #include <fmod/include/fmod/fmod.hpp>
-#include <memory>
-#include <optional>
 #include <stdexcept>
 #include <string>
-#include <typeindex>
-#include <unordered_map>
+
+#include "assetManager/assetDatabase.h"
+#include "assetManager/assetLoaderRegistry.h"
+#include "assetManager/resourceIndex.h"
+#include "assetManager/primitiveMeshLibrary.h"
 
 namespace dzemikk {
 
 class Mesh;
 
+/**
+ * @brief Central asset management system.
+ *
+ * Responsible for:
+ * - Loading assets via registered handlers
+ * - Caching assets in AssetDatabase
+ * - Providing lightweight handles (AssetHandle)
+ * - Managing reload/unload lifecycle
+ */
 class AssetManager : public IEngineModule {
   public:
     AssetManager() = default;
@@ -44,86 +52,92 @@ class AssetManager : public IEngineModule {
 
 #pragma region Public API
 
-    template <typename T> AssetHandle<T> get(const std::string& path);
+    /**
+     * @brief Gets an asset handle. Loads it if not cached.
+     */
+    template <typename T> 
+    AssetHandle<T> get(const std::string& path);
 
-    template <typename T> AssetHandle<T> reload(const std::string& path);
+    /**
+     * @brief Reloads an already loaded asset.
+     */
+    template <typename T> 
+    AssetHandle<T> reload(const std::string& path);
 
+    /**
+     * @brief Unloads asset from cache.
+     */
     void unload(const std::string& path);
 
-    enum class PrimitiveMesh : std::uint8_t { Cube, Quad, Sphere, Capsule };
-
-    Mesh* getPrimitive(PrimitiveMesh type);
+    /**
+     * @brief Returns built-in primitive mesh.
+     */
+    Mesh* getPrimitive(PrimitiveMeshLibrary::PrimitiveMesh type);
 
     // FOR TEST ONLY
+    /**
+     * @brief Sets FMOD system (temporary / testing).
+     */
     void setFMODSystem(FMOD::System* system);
-    FMOD::System* getFMODSystem();
+
+    /**
+     * @brief Gets FMOD system.
+     */
+    [[nodiscard]] FMOD::System* getFMODSystem() const;
 
 #pragma endregion
 
   private:
-    struct AssetEntry {
-        std::shared_ptr<void> handle;
-        std::type_index type = typeid(void);
-    };
+    /** @brief Asset cache */
+    AssetDatabase _database;
 
-    struct PrimitiveMeshHash {
-        std::size_t operator()(PrimitiveMesh mesh) const {
-            return std::hash<int>()(static_cast<int>(mesh));
-        }
-    };
+    /** @brief Loader registry */
+    AssetLoaderRegistry _loaders;
 
-    std::unordered_map<std::type_index, std::unique_ptr<IAssetHandlerBase>> _handlers;
-    std::unordered_map<std::string, AssetEntry> _assets;
-    std::unordered_map<PrimitiveMesh, std::unique_ptr<Mesh>, PrimitiveMeshHash> _builtinMeshes;
+    /** @brief Resource path resolver */
+    ResourceIndex _resources;
+      
+    /** @brief Built-in primitives */
+    PrimitiveMeshLibrary _primitiveMeshLibrary;
 
+    /** @brief External audio system (non-owning) */
     FMOD::System* _system = nullptr;
 
 #pragma region Internal
 
-    void initPrimitiveMeshes();
+    /**
+     * @brief Registers all asset loaders in the registry.
+     *
+     * This function initializes and binds concrete AssetHandler implementations
+     * to their corresponding asset types (e.g. textures, meshes, audio).
+     * It is typically called during AssetManager::Initialize().
+     */
     void registerHandlers();
-
-    std::string resolvePath(const std::string& path);
-    static std::optional<std::filesystem::path> findResRoot();
-
-    std::unordered_map<std::string, std::string> _pathIndex;
-    std::string _rootPath;
 
 #pragma endregion
 };
 
+// ================= IMPLEMENTATION =================
+
 template <typename T> AssetHandle<T> AssetManager::get(const std::string& path) {
-    auto it = _assets.find(path);
-
-    if (it != _assets.end()) {
-        if (it->second.type != typeid(T)) {
-            throw std::runtime_error("Asset type mismatch: " + path);
-        }
-
+    if (auto cached = _database.get<T>(path)) {
 #if DZEMIKK_DEV_TOOLS
         spdlog::info("[AssetManager] Loaded from cache: {}", path);
 #endif
-
-        auto shared = std::static_pointer_cast<T>(it->second.handle);
-        return AssetHandle<T>(shared);
+        return AssetHandle<T>(cached);
     }
 
-    auto handlerIt = _handlers.find(typeid(T));
-    if (handlerIt == _handlers.end())
+    auto* handler = _loaders.get<T>();
+    if (!handler) {
         return {};
+    }
 
-    auto* handler = static_cast<IAssetHandler<T>*>(handlerIt->second.get());
-
-    auto result = handler->load(resolvePath(path));
-
-    if (!result.isValid())
+    auto result = handler->load(_resources.resolve(path));
+    if (!result.isValid()) {
         return {};
+    }
 
-    AssetEntry entry;
-    entry.handle = result.resource;
-    entry.type = typeid(T);
-
-    _assets[path] = entry;
+    _database.store<T>(path, result.resource);
 
 #if DZEMIKK_DEV_TOOLS
     spdlog::info("[AssetManager] Loaded from file: {}", path);
@@ -133,30 +147,26 @@ template <typename T> AssetHandle<T> AssetManager::get(const std::string& path) 
 }
 
 template <typename T> AssetHandle<T> AssetManager::reload(const std::string& path) {
-    auto it = _assets.find(path);
 
-    if (it == _assets.end())
+    auto shared = _database.get<T>(path);
+
+    if (!shared) {
         return get<T>(path);
-
-    if (it->second.type != typeid(T)) {
-        throw std::runtime_error("Asset type mismatch on reload: " + path);
     }
 
-    auto handlerIt = _handlers.find(typeid(T));
-    if (handlerIt == _handlers.end())
+    auto* handler = _loaders.get<T>();
+    if (!handler) {
         return {};
+    }
 
-    auto* handler = static_cast<IAssetHandler<T>*>(handlerIt->second.get());
-
-    auto shared = std::static_pointer_cast<T>(it->second.handle);
     AssetHandle<T> handle(shared);
 
-    if (!handler->reload(handle, resolvePath(path)))
+    if (!handler->reload(handle, _resources.resolve(path))) {
         return {};
+    }
 
     return handle;
 }
-
 } // namespace dzemikk
 
 #endif // DZEMIKK_ASSET_MANAGER_H

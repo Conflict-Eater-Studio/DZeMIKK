@@ -45,8 +45,6 @@ class FontHandler : public IAssetHandler<Font> {
     /**
      * @brief Unloads a font asset from memory.
      *
-     * Releases ownership of the underlying Font resource.
-     *
      * @param asset Reference to the font handle to be unloaded.
      */
     void unload(Handle& asset) override;

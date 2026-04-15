@@ -45,8 +45,6 @@ namespace dzemikk {
         /**
          * @brief Unloads a texture from memory.
          *
-         * Releases ownership of the Texture resource.
-         *
          * @param asset Texture handle to unload.
          */
         void unload(Handle& asset) override;

@@ -59,6 +59,10 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/assetManager/soundHandler.cpp"
         "${SRC_DIR}/assetManager/textureHandler.cpp"
         "${SRC_DIR}/assetManager/primitiveFactory.cpp"
+        "${SRC_DIR}/assetManager/assetDatabase.cpp"
+        "${SRC_DIR}/assetManager/assetLoaderRegistry.cpp"
+        "${SRC_DIR}/assetManager/primitiveMeshLibrary.cpp"
+        "${SRC_DIR}/assetManager/resourceIndex.cpp"
         "${SRC_DIR}/audio/sound.cpp"
 )
 
@@ -112,6 +116,11 @@ set(ENGINE_HEADERS
         "${INC_DIR}/assetManager/textureHandler.h"
         "${INC_DIR}/assetManager/iAssetHandler.h"
         "${INC_DIR}/assetManager/primitiveFactory.h"
+        "${INC_DIR}/assetManager/assetHandle.h"
+        "${INC_DIR}/assetManager/assetDatabase.h"
+        "${INC_DIR}/assetManager/assetLoaderRegistry.h"
+        "${INC_DIR}/assetManager/primitiveMeshLibrary.h"
+        "${INC_DIR}/assetManager/resourceIndex.h"
         "${INC_DIR}/audio/sound.h"
 )
 

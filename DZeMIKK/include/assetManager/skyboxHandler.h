@@ -16,7 +16,7 @@ namespace dzemikk {
      * Used to construct full file paths when loading a skybox from a directory.
      * Each file corresponds to one face of the cubemap.
      */
-    namespace skyboxConst {
+    namespace skyboxconst {
         inline constexpr const char* RIGHT = "/right.png";
         inline constexpr const char* LEFT = "/left.png";
         inline constexpr const char* TOP = "/top.png";

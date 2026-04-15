@@ -11,7 +11,7 @@ namespace dzemikk {
  *
  * @note AssetError::None indicates a successful operation (no error occurred).
  */
-enum class AssetError {
+enum class AssetError : std::uint8_t {
     FileNotFound,
     LoadFailed,
     InvalidFormat,

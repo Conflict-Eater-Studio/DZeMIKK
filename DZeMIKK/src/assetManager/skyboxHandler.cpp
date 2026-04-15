@@ -45,8 +45,9 @@ bool dzemikk::SkyboxHandler::reloadSkybox(const std::string& path, Skybox& skybo
 }
 
 bool dzemikk::SkyboxHandler::reload(Handle& asset, const std::string& path) {
-    if (!asset)
+    if (!asset) {
         return false;
+    }
 
     return reloadSkybox(path, *asset.get());
 }
@@ -56,7 +57,7 @@ void dzemikk::SkyboxHandler::unload(Handle& asset) {
 }
 
 std::vector<std::string> dzemikk::SkyboxHandler::buildFaces(const std::string& path) {
-    using namespace dzemikk::skyboxConst;
+    using namespace dzemikk::skyboxconst;
 
     return {path + RIGHT, path + LEFT, path + TOP, path + BOTTOM, path + FRONT, path + BACK};
 }

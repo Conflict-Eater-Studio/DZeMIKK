@@ -54,7 +54,7 @@ namespace dzemikk {
          *
          * @warning Temporary public field (for testing).
          */
-        FMOD::System* system;
+        FMOD::System* system = nullptr;
 
       private:
         /**

@@ -9,17 +9,54 @@
 
 namespace dzemikk {
 
+/**
+ * @brief Result wrapper for asset loading operations.
+ *
+ * Encapsulates both the loaded resource and potential error state,
+ * allowing consistent handling of success/failure cases in the asset pipeline.
+ */
 template <typename T> struct AssetResult {
+    /** @brief Loaded asset resource (if successful). */
     std::shared_ptr<T> resource;
+
+    /** @brief Error state of the loading operation. */
     AssetError error = AssetError::None;
 
-    bool isValid() const {
+    /**
+     * @brief Checks whether the result is valid.
+     *
+     * @return true if resource is valid and no error occurred.
+     */
+    [[nodiscard]] bool isValid() const noexcept {
         return resource && error == AssetError::None;
     }
 };
 
+/**
+ * @brief Base interface for all asset handlers.
+ *
+ * Provides type-erased operations required for generic asset management,
+ * such as unloading assets without knowing their concrete type.
+ */
 struct IAssetHandlerBase {
     virtual ~IAssetHandlerBase() = default;
+    IAssetHandlerBase() = default;
+
+    IAssetHandlerBase(const IAssetHandlerBase&) = delete;
+    IAssetHandlerBase& operator=(const IAssetHandlerBase&) = delete;
+
+    IAssetHandlerBase(IAssetHandlerBase&&) = delete;
+    IAssetHandlerBase& operator=(IAssetHandlerBase&&) = delete;
+
+    /**
+     * @brief Unloads a type-erased asset instance.
+     *
+     * Called by the asset system when an asset should be released
+     * without knowing its concrete type.
+     *
+     * @param asset Type-erased shared pointer to the asset.
+     */
+    virtual void unloadUntyped(std::shared_ptr<void> asset) = 0;
 };
 
 /**
@@ -84,6 +121,12 @@ class IAssetHandler : public IAssetHandlerBase {
          * @param asset Handle to asset.
          */
         virtual void unload(Handle& asset) = 0;
+
+        void unloadUntyped(std::shared_ptr<void> asset) override {
+            auto typed = std::static_pointer_cast<T>(asset);
+            Handle handle(typed);
+            unload(handle);
+        }
 };
 } // namespace dzemikk
 

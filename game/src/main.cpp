@@ -108,7 +108,7 @@ int main() {
     auto playerGO = mainScenePtr->createGameObject();
     playerGO->transform()->setPosition(glm::vec3(0.0f, 2.5f, 0.0f));
     auto playerMeshR = playerGO->addComponent<dzemikk::MeshRenderer>();
-    auto playerMesh = engine->getAssetManager()->getPrimitive(dzemikk::AssetManager::PrimitiveMesh::Capsule);
+    auto playerMesh = engine->getAssetManager()->getPrimitive(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Capsule);
     playerMeshR->setMesh(playerMesh);
     playerMeshR->setTransform(playerGO->transform());
     playerMeshR->setMaterial(materialA);
@@ -128,7 +128,7 @@ int main() {
     quadGO->transform()->setRotation(glm::quat());
 
     auto quadMesh =
-        engine->getAssetManager()->getPrimitive(dzemikk::AssetManager::PrimitiveMesh::Quad);
+        engine->getAssetManager()->getPrimitive(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
 
     auto quadShader = engine->getAssetManager()->get<dzemikk::Shader>("shaders/quad");
     auto quadMaterial = new dzemikk::Material();

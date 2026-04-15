@@ -10,7 +10,9 @@
 #include "assetManager/skyboxHandler.h"
 #include "assetManager/soundHandler.h"
 #include "assetManager/textureHandler.h"
+
 #include "audio/sound.h"
+
 #include "renderer/font.h"
 #include "renderer/mesh.h"
 #include "renderer/shader.h"
@@ -35,43 +37,14 @@ void dzemikk::AssetManager::Initialize() {
                  aiGetVersionRevision());
 #endif
 
-    _pathIndex.clear();
-
-    auto rootOpt = findResRoot();
-    if (!rootOpt) {
+    if (!_resources.initialize()) {
 #if DZEMIKK_DEV_TOOLS
-        spdlog::error("[AssetManager] Cannot find 'res' folder!");
-#else
-        std::cerr << "[AssetManager] ERROR: cannot find 'res' folder!\n";
+        spdlog::error("[AssetManager] ResourceIndex init failed!");
 #endif
         return;
     }
 
-    _rootPath = rootOpt->string();
-    std::ranges::replace(_rootPath, '\\', '/');
-
-#if DZEMIKK_DEV_TOOLS
-    spdlog::info("[AssetManager] Resource root: {}", _rootPath);
-#endif
-
-    size_t fileCount = 0;
-
-    for (const auto& entry : std::filesystem::recursive_directory_iterator(_rootPath)) {
-        if (!entry.is_regular_file())
-            continue;
-
-        std::string fullPath = entry.path().string();
-        std::ranges::replace(fullPath, '\\', '/');
-
-        std::string relative = std::filesystem::relative(entry.path(), _rootPath).string();
-        std::ranges::replace(relative, '\\', '/');
-
-        _pathIndex[relative] = fullPath;
-        ++fileCount;
-    }
-
     registerHandlers();
-    initPrimitiveMeshes();
 
 #if DZEMIKK_DEV_TOOLS
     auto timer1 = std::chrono::high_resolution_clock::now();
@@ -80,76 +53,57 @@ void dzemikk::AssetManager::Initialize() {
 #endif
 }
 
-std::optional<std::filesystem::path> dzemikk::AssetManager::findResRoot() {
-    namespace fs = std::filesystem;
-
-    fs::path start = fs::current_path();
-
-    for (const auto& entry : fs::recursive_directory_iterator(start)) {
-        if (entry.is_directory() && entry.path().filename() == "res") {
-            return fs::absolute(entry.path());
-        }
-    }
-
-    return std::nullopt;
-}
-
 void dzemikk::AssetManager::UnInitialize() {
-    _assets.clear();
-    _builtinMeshes.clear();
-    _handlers.clear();
-    _pathIndex.clear();
-}
-
-std::string dzemikk::AssetManager::resolvePath(const std::string& path) {
-    auto it = _pathIndex.find(path);
-    if (it != _pathIndex.end())
-        return it->second;
-
-    return (std::filesystem::path(_rootPath) / path).generic_string();
+    _database.clear();
+    _loaders.clear();
+    _resources.clear();
+    _primitiveMeshLibrary.clear();
 }
 
 void dzemikk::AssetManager::unload(const std::string& path) {
-    auto it = _assets.find(path);
-    if (it == _assets.end())
+    auto type = _database.getType(path);
+    if (type == typeid(void)) {
         return;
+    }
 
-    _assets.erase(it);
+    auto asset = _database.getRaw(path);
+    if (!asset) {
+        return;
+    }
+
+    auto* handler = _loaders.getByType(type);
+    if (!handler) {
+        return;
+    }
+
+    handler->unloadUntyped(asset);
+
+    _database.remove(path);
 }
-void dzemikk::AssetManager::initPrimitiveMeshes() {
-    _builtinMeshes[PrimitiveMesh::Cube] = PrimitiveFactory::createCube();
-    _builtinMeshes[PrimitiveMesh::Quad] = PrimitiveFactory::createQuad();
-    _builtinMeshes[PrimitiveMesh::Sphere] = PrimitiveFactory::createSphere();
-    _builtinMeshes[PrimitiveMesh::Capsule] = PrimitiveFactory::createCapsule();
-}
 
-dzemikk::Mesh* dzemikk::AssetManager::getPrimitive(PrimitiveMesh type) {
-    auto it = _builtinMeshes.find(type);
-    if (it != _builtinMeshes.end())
-        return it->second.get();
-
-    return nullptr;
+dzemikk::Mesh* dzemikk::AssetManager::getPrimitive(PrimitiveMeshLibrary::PrimitiveMesh type) {
+    return _primitiveMeshLibrary.get(type);
 }
 
 void dzemikk::AssetManager::setFMODSystem(FMOD::System* system) {
     _system = system;
 
-    auto it = _handlers.find(typeid(Sound));
-    if (it != _handlers.end()) {
-        auto* handler = static_cast<SoundHandler*>(it->second.get());
+    auto* base = _loaders.get<Sound>();
+    if (base) {
+        auto* handler = dynamic_cast<SoundHandler*>(base);
         handler->system = system;
     }
 }
 
-FMOD::System* dzemikk::AssetManager::getFMODSystem() {
+FMOD::System* dzemikk::AssetManager::getFMODSystem() const{
     return _system;
 }
 
 void dzemikk::AssetManager::registerHandlers() {
-    _handlers[typeid(Mesh)] = std::make_unique<MeshHandler>();
-    _handlers[typeid(Shader)] = std::make_unique<ShaderHandler>();
-    _handlers[typeid(Texture)] = std::make_unique<TextureHandler>();
-    _handlers[typeid(Skybox)] = std::make_unique<SkyboxHandler>();
-    _handlers[typeid(Font)] = std::make_unique<FontHandler>();
-    _handlers[typeid(Sound)] = std::make_unique<SoundHandler>();
+    _loaders.registerHandler<Mesh>(std::make_unique<MeshHandler>());
+    _loaders.registerHandler<Shader>(std::make_unique<ShaderHandler>());
+    _loaders.registerHandler<Texture>(std::make_unique<TextureHandler>());
+    _loaders.registerHandler<Skybox>(std::make_unique<SkyboxHandler>());
+    _loaders.registerHandler<Font>(std::make_unique<FontHandler>());
+    _loaders.registerHandler<Sound>(std::make_unique<SoundHandler>());
 }
