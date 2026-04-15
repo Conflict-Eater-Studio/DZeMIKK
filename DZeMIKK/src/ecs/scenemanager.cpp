@@ -3,12 +3,12 @@
 #include "ecs/gameobject.h"
 
 namespace dzemikk {
-void SceneManager::Initialize() {
+void SceneManager::initialize() {
     std::shared_ptr<Scene> scene = std::make_shared<Scene>();
     loadScene(scene);
     setActiveScene(scene);
 }
-void SceneManager::UnInitialize() {}
+void SceneManager::uninitialize() {}
 void SceneManager::loadScene(const std::shared_ptr<Scene>& scene) {
     _scenes.push_back(scene);
 }

@@ -31,7 +31,7 @@
 #include <limits>
 #include <map>
 
-void dzemikk::Renderer::Initialize() {
+void dzemikk::Renderer::initialize() {
     _view = glm::mat4(1.0f);
     _projection = glm::mat4(1.0f);
     _uiProjection = glm::ortho(0.0f, 1920.0f, 0.0f, 1080.0f);
@@ -95,7 +95,7 @@ void dzemikk::Renderer::Initialize() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void dzemikk::Renderer::UnInitialize() {
+void dzemikk::Renderer::uninitialize() {
     for (auto& batch : _batches) {
         if (batch.instanceVBO != 0) {
             glDeleteBuffers(1, &batch.instanceVBO);

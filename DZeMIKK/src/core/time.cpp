@@ -20,14 +20,14 @@ float Time::getFixedDeltaTime() const {
 float Time::getTime() const {
     return time;
 }
-void Time::Initialize() {
+void Time::initialize() {
     time = 0.0f;
     deltaTime = 0.0f;
     _lastFrameTime = 0.0f;
 
 
 };
-void Time::UnInitialize() {
+void Time::uninitialize() {
 
 };
 }

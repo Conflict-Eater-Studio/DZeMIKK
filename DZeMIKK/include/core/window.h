@@ -18,8 +18,8 @@ namespace dzemikk {
         void swapBuffers() const;
         void clear(float red, float green, float blue, float alpha) const;
         GLFWwindow* nativeHandle() const;
-        void Initialize() override;
-        void UnInitialize() override;
+        void initialize() override;
+        void uninitialize() override;
     };
 }
 
