@@ -4,6 +4,7 @@
 #include "renderer/mesh.h"
 #include "renderer/font.h"
 #include "renderer/texture.h"
+#include "renderer/model.h"
 #include "ecs/componentRegistry.h"
 
 #include "ecs/components/meshRenderer.h"
@@ -154,35 +155,53 @@ void dzemikk::Renderer::render() {
         if (!r->isValid())
             continue;
 
-        glm::vec3 pos = r->getTransform()->getPosition();
+        Model* model = r->getModel();
+        glm::mat4 transform = r->getTransform()->getWorldMatrix();
+
         float radius = r->getCullingRadius();
 
-        if (!_frustum.isSphereVisible(pos, radius))
+        if (!_frustum.isSphereVisible(r->getTransform()->getPosition(), radius))
             continue;
 
-        Batch* batch = nullptr;
+        for (size_t i = 0; i < model->getSubMeshes().size(); i++) {
+            const auto* sub = model->getSubMesh(i);
+            if (!sub)
+                continue;
 
-        for (auto& b : _batches) {
-            if (b.mesh == r->getMesh() && b.material == r->getMaterial()) {
-                batch = &b;
-                break;
+            Mesh* mesh = sub->mesh.get();
+
+            Material* material = nullptr;
+
+            if (i < r->getMaterials().size())
+                material = r->getMaterial(i);
+
+            if (!material && !r->getMaterials().empty())
+                material = r->getMaterial(0);
+
+            if (!material)
+                continue;
+
+            Batch* batch = nullptr;
+
+            for (auto& b : _batches) {
+                if (b.mesh == mesh && b.material == material) {
+                    batch = &b;
+                    break;
+                }
             }
+
+            if (!batch) {
+                _batches.push_back({});
+                batch = &_batches.back();
+
+                batch->mesh = mesh;
+                batch->material = material;
+
+                glGenBuffers(1, &batch->instanceVBO);
+            }
+
+            batch->models.push_back(transform);
         }
-
-        if (!batch) {
-            _batches.push_back({});
-            batch = &_batches.back();
-            batch->mesh = r->getMesh();
-            batch->material = r->getMaterial();
-
-            glGenBuffers(1, &batch->instanceVBO);
-        }
-
-        batch->models.push_back(r->getTransform()->getWorldMatrix());
-
-        Profiler::rendererStats.renderedObjects++;
-        Profiler::rendererStats.vertexCount += batch->mesh->getVertexCount();
-        Profiler::rendererStats.triangleCount += batch->mesh->getVertexCount() / 3;
     }
 
     for (auto& batch : _batches) {
@@ -195,12 +214,20 @@ void dzemikk::Renderer::render() {
 
         shader->bind();
 
-        shader->setVec3("lightDir", glm::vec3(1.0f, -1.0f, 1.0f));
+        shader->setVec3("lightDir", glm::vec3(1.0f, -1.0f, -1.0f));
         shader->setVec3("lightColor", glm::vec3(1.0f));
         shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
 
         mesh->drawInstanced(batch.models, batch.instanceVBO);
+
         Profiler::rendererStats.drawCalls++;
+
+        Profiler::rendererStats.renderedObjects += batch.models.size();
+
+        const size_t vertexCount = mesh->getVertexCount() * batch.models.size();
+        Profiler::rendererStats.vertexCount += vertexCount;
+
+        Profiler::rendererStats.triangleCount += (vertexCount / 3);
     }
 
     if (_uiCamera)

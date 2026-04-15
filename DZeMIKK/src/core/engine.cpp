@@ -18,6 +18,7 @@
 #include "renderer/renderer.h"
 #include "renderer/font.h"
 #include "renderer/texture.h"
+#include "renderer/Model.h"
 #include "audio/sound.h"
 #include "assetManager/assetmanager.h"
 
@@ -231,7 +232,7 @@ void Engine::updateCameraArrows(float speed) {
         getAssetManager()->reload<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_T) == GLFW_PRESS) {
-        getAssetManager()->reload<dzemikk::Mesh>("models/pole.fbx");
+        getAssetManager()->reload<dzemikk::Model>("models/Body Block.fbx");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Y) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Shader>("shaders/quad");
@@ -249,10 +250,10 @@ void Engine::updateCameraArrows(float speed) {
     }
 
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_J) == GLFW_PRESS) {
-        getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
+        getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_K) == GLFW_PRESS) {
-        getAssetManager()->unload("models/pole.fbx");
+        getAssetManager()->unload("models/Body Block.fbx");
     }
 }
 }

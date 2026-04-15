@@ -11,6 +11,8 @@
 #include "renderer/shader.h"
 #include "renderer/font.h"
 #include "renderer/texture.h"
+#include "renderer/model.h"
+#include "renderer/mesh.h"
 #include <ecs/scenemanager.h>
 #include "assetManager/assetmanager.h"
 #include "audio/sound.h"
@@ -62,19 +64,19 @@ class SpriteUpdater: public dzemikk::MonoBehaviour {
 
 };
 
-void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Material* materialA,
+void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int tileCount, float size, float spacing = 0.1f,
                      float maxHeight = 0.3f); 
 
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
 
-    auto m1 = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
+    auto m1 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
     engine->getAssetManager()->unload("models/pole.fbx");
 
-    auto m2 = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
-    auto m3 = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
+    auto m2 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
+    auto m3 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
     auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
     skybox.get()->setShader(engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox").get());
@@ -100,7 +102,7 @@ int main() {
     auto materialB = new dzemikk::Material();
     materialB->setShader(shaderB.get());
 
-    auto tileMesh = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
+    auto tileMesh = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
     
     createHexIsland(*mainScenePtr, tileMesh.get(), materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
@@ -109,9 +111,20 @@ int main() {
     playerGO->transform()->setPosition(glm::vec3(0.0f, 2.5f, 0.0f));
     auto playerMeshR = playerGO->addComponent<dzemikk::MeshRenderer>();
     auto playerMesh = engine->getAssetManager()->getPrimitive(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Capsule);
-    playerMeshR->setMesh(playerMesh);
+    playerMeshR->setModel(new dzemikk::Model());
+    playerMeshR->getModel()->addMesh(std::shared_ptr<dzemikk::Mesh>(playerMesh), 0);
     playerMeshR->setTransform(playerGO->transform());
-    playerMeshR->setMaterial(materialA);
+    playerMeshR->setMaterial(0, materialA);
+
+    auto enemyGO = mainScenePtr->createGameObject();
+    enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 0.0f));
+    enemyGO->transform()->setScale(glm::vec3(.01f, .01f, 0.01f));
+    auto enemyMeshR = enemyGO->addComponent<dzemikk::MeshRenderer>();
+    auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
+    enemyMeshR->setModel(enemyMesh.get());
+    enemyMeshR->setTransform(enemyGO->transform());
+    enemyMeshR->setMaterial(0, materialA);
+    enemyMeshR->setMaterial(1, materialB);
 
     // UI Camera
     auto cameraUIGO = mainScenePtr->createGameObject();
@@ -229,7 +242,7 @@ glm::vec3 hexToWorld(int q, int r, float size, float spacing = 0.1f, float maxHe
     return glm::vec3(x, y, z);
 }
 
-void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Material* materialA,
+void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int tileCount, float size, float spacing,
                      float maxHeight) {
     std::set<Hex> island;
@@ -276,12 +289,12 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Materi
         tile->transform()->setRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
         auto renderer = tile->addComponent<dzemikk::MeshRenderer>();
-        renderer->setMesh(mesh);
+        renderer->setModel(mesh);
         renderer->setTransform(tile->transform());
 
         if ((hex.q + hex.r) % 2 == 0)
-            renderer->setMaterial(materialA);
+            renderer->setMaterial(0, materialA);
         else
-            renderer->setMaterial(materialB);
+            renderer->setMaterial(0, materialB);
     }
 }

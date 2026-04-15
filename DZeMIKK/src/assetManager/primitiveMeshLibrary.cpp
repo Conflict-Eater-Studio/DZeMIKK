@@ -1,6 +1,7 @@
 #include "assetManager/primitiveMeshLibrary.h"
 #include "assetManager/primitiveFactory.h"
 #include "renderer/mesh.h"
+#include <iostream>
 
 dzemikk::PrimitiveMeshLibrary::PrimitiveMeshLibrary() {
     init();
