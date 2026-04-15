@@ -5,19 +5,24 @@
 #include <vector>
 
 namespace dzemikk {
-    class AnimationClip {
+class AnimationTrack;
+class Transform;
+class AnimationClip {
     public:
-        AnimationClip(int length, int framerate);
-        int getLength() const;
+        // If you reading this, imagine line below doesn't exist
+        Transform* transform;
+        static const int DEFAULT_FRAMERATE = 30;
+        static const int DEFAULT_LENGTH = 100;
+
+        AnimationClip() = default;
+        AnimationClip(int duration, int framerate);
+        float getDuration() const;
         int getFramerate() const;
-        void clear();
-        void addCurve(const AnimationCurve& curve);
-        AnimationCurve getCurve(int index) const;
-        void setCurve(int index, const AnimationCurve& curve);
-        float sample(float timeInTicks) const; // TODO: Blending shape
+        void addTrack(AnimationTrack* track);
+        void sample(float timeInTicks) const;
     private:
-        std::vector<AnimationCurve> _curves;
-        int _length = 0;
+        std::vector<AnimationTrack*> _tracks;
+        int _duration = 0;
         int _framerate = 0;
     };
 };

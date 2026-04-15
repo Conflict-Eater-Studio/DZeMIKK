@@ -4,6 +4,7 @@
 #include "ecs/componentRegistry.h"
 #include "ecs/components/monoBehaviour.h"
 #include "ecs/components/transform.h"
+#include "ecs/components/ui/rectTransform.h"
 #include "ecs/scene.h"
 
 #include <algorithm>
@@ -26,11 +27,55 @@ GameObject::~GameObject() {
 }
 
 Transform* GameObject::transform() {
+    if (!_transform && _rectTransform) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error("[{}] GameObject '{}' is a UI element and has a RectTransform but "
+                      "GameObject::transform() was called.",
+                      boost::uuids::to_string(_id), _name);
+#endif
+        throw std::runtime_error("This GameObject is a UI element. Call rectTransform() instead");
+    }
+
     return _transform;
 }
 
 const Transform* GameObject::transform() const {
+    if (!_transform && _rectTransform) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error("[{}] GameObject '{}' is a UI element and has a RectTransform but "
+                      "GameObject::transform() was called.",
+                      boost::uuids::to_string(_id), _name);
+#endif
+        throw std::runtime_error("This GameObject is a UI element. Call rectTransform() instead");
+    }
+
     return _transform;
+}
+
+RectTransform* GameObject::rectTransform() {
+    if (_transform && !_rectTransform) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error("[{}] GameObject '{}' is a world object and has a Transform but "
+                      "GameObject::rectTransform() was called.",
+                      boost::uuids::to_string(_id), _name);
+#endif
+        throw std::runtime_error("This GameObject is a world object. Call transform() instead");
+    }
+
+    return _rectTransform;
+}
+
+const RectTransform* GameObject::rectTransform() const {
+    if (_transform && !_rectTransform) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error("[{}] GameObject '{}' is a world object and has a Transform but "
+                      "GameObject::rectTransform() was called.",
+                      boost::uuids::to_string(_id), _name);
+#endif
+        throw std::runtime_error("This GameObject is a world object. Call transform() instead");
+    }
+
+    return _rectTransform;
 }
 
 // --- Getters
@@ -62,8 +107,8 @@ bool GameObject::hasStarted() const {
     return _hasStarted;
 }
 
-Scene const& GameObject::getScene() const {
-    return *_scene;
+Scene* GameObject::getScene() {
+    return _scene;
 }
 
 // --- Setters
@@ -118,7 +163,38 @@ void GameObject::setParent(GameObject* parent) {
         _parent->_children.push_back(this);
     }
 
-    transform()->markDirty();
+    if (parent) {
+        // If a parent has a RectTransform, then it's in a canvas space
+        // We need to remove existing Transform and replace it with RectTransform
+        if (!_rectTransform && parent->getComponent<RectTransform>()) {
+            removeComponent(_transform);
+            _transform = nullptr;
+            _rectTransform = addComponent<RectTransform>();
+        }
+
+        // If a parent has a Transform, then it's in a world space
+        // We need to remove existing RectTransform and replace it with Transform
+        if (!_transform && parent->getComponent<Transform>()) {
+            removeComponent(_rectTransform);
+            _rectTransform = nullptr;
+            _transform = addComponent<Transform>();
+        }
+    } else {
+        // If we have no parent or set it to nullptr, we default to world space, so ensure we have a
+        // Transform
+        if (!_transform) {
+            removeComponent(_rectTransform);
+            _rectTransform = nullptr;
+            _transform = addComponent<Transform>();
+        }
+    }
+
+    if (_transform) {
+        _transform->markDirty();
+    }
+    if (_rectTransform) {
+        _rectTransform->markDirty();
+    }
 }
 
 void GameObject::addChild(GameObject* child) {

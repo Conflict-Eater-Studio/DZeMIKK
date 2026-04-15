@@ -15,23 +15,11 @@ class Renderer;
 class AnimationModule;
 class AssetManager;
 class Engine {
-    public:
-        Engine();
-        ~Engine();
+  public:
+    Engine();
+    ~Engine();
 
-        void start();
-
-        std::shared_ptr<Renderer> getRenderer();
-        std::shared_ptr<Window> getWindow();
-        std::shared_ptr<SceneManager> getSceneManager();
-        std::shared_ptr<Time> getTime();
-        std::shared_ptr<AnimationModule> getAnimationSystem();
-        std::shared_ptr<AssetManager> getAssetManager();
-        template <std::derived_from<IEngineModule> T>
-        std::shared_ptr<T> getModule() const;
-          // --- Only for test DELETE THIS
-        void updateCameraWASD(float speed);
-        void updateCameraArrows(float speed);
+    void start();
 
     private:
         void init();
@@ -44,9 +32,23 @@ class Engine {
         std::shared_ptr<AnimationModule> _animationSystem;
         std::shared_ptr<AssetManager> _assetManager;
 
-        float _accumulator = 0.0f;
+		std::shared_ptr<Renderer> getRenderer();
+		std::shared_ptr<Window> getWindow();
+		std::shared_ptr<SceneManager> getSceneManager();
+		std::shared_ptr<Time> getTime();
+		std::shared_ptr<AnimationModule> getAnimationSystem();
+		std::shared_ptr<AssetManager> getAssetManager();
+		template <std::derived_from<IEngineModule> T> std::shared_ptr<T> getModule() const;
+		// --- Only for test DELETE THIS
+		void updateCameraWASD(float speed);
+		void updateCameraArrows(float speed);
+		void updateMouseUI(float deltaTime);
 
-    };
+
+    float _accumulator = 0.0f;
+    // --- DEBUG: REMOVE THIS WHEN INPUT SYSTEM IS IMPLEMENTED
+    bool _wasLeftMouseDown = false;
+};
 } // namespace dzemikk
 
 #endif

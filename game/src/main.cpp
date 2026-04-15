@@ -1,11 +1,29 @@
+
+#include "animation/animationclip.h"
+#include "animation/animationcurve.h"
+#include "animation/animationstate.h"
+#include "animation/animationstatemachine.h"
+#include "animation/animationtrack.h"
 #include "core/engine.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
+#include "ecs/components/monobehaviour.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
-#include "ecs/components/monobehaviour.h"
+#include "ecs/components/ui/canvas.h"
+#include "ecs/components/ui/colors.h"
+#include "ecs/components/ui/rectTransform.h"
+#include "ecs/components/ui/uiButton.h"
+#include "ecs/components/ui/uiButtonActionRegistry.h"
+#include "ecs/components/ui/uiCheckbox.h"
+#include "ecs/components/ui/uiCheckboxActionRegistry.h"
+#include "ecs/components/ui/uiSlider.h"
+#include "ecs/components/ui/uiSpriteRenderer.h"
+#include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
+#include "ecs/scenemanager.h"
+#include "renderer/font.h"
 #include "renderer/material.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
@@ -24,6 +42,18 @@
 #include <set>
 #include <GLFW/glfw3.h>
 #include <memory>
+#include "spdlog/spdlog.h"
+
+#include <GLFW/glfw3.h>
+#include <algorithm>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <filesystem>
+#include <glad/glad.h>
+#include <iostream>
+#include <memory>
+#include <stb/stb_image.h>
 
 class TextUpdater : public dzemikk::MonoBehaviour {
   public:
@@ -42,32 +72,51 @@ class TextUpdater : public dzemikk::MonoBehaviour {
     };
 };
 
-class SpriteUpdater: public dzemikk::MonoBehaviour {
+class SpriteUpdater : public dzemikk::MonoBehaviour {
   public:
-      using Base = MonoBehaviour;
+    using Base = MonoBehaviour;
 
-      dzemikk::Transform* transform = nullptr;
-      float time = 0.0f;
+    dzemikk::Transform* transform = nullptr;
+    float time = 0.0f;
 
-      void update(double deltaTime) override {
-          time += deltaTime;
+    void update(double deltaTime) override {
+        time += deltaTime;
 
-          float scaleX = 0.5f + 0.5f * sin(time);
-          float scaleY = 1.0f;
+        float scaleX = 0.5f + 0.5f * sin(time);
+        float scaleY = 1.0f;
 
-          transform->setScale(glm::vec3(scaleX, scaleY, 1.0f));
-      }
+        transform->setScale(glm::vec3(scaleX, scaleY, 1.0f));
+    }
 
     [[nodiscard]] std::string typeName() const override {
-          return "SpriteUpdater";
-      };
-
+        return "SpriteUpdater";
+    };
 };
 
 void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int tileCount, float size, float spacing = 0.1f,
-                     float maxHeight = 0.3f); 
+                     float maxHeight = 0.3f);
+void printAnimationInfo(const aiScene* scene) {
+    spdlog::info("Animations: {}", scene->mNumAnimations);
 
+    for (unsigned int i = 0; i < scene->mNumAnimations; i++) {
+        aiAnimation* anim = scene->mAnimations[i];
+
+        spdlog::info("Animation {}:", i);
+        spdlog::info("  Duration: {}", anim->mDuration);
+        spdlog::info("  TicksPerSecond: {}", anim->mTicksPerSecond);
+        spdlog::info("  Channels: {}", anim->mNumChannels);
+
+        for (unsigned int j = 0; j < anim->mNumChannels; j++) {
+            aiNodeAnim* channel = anim->mChannels[j];
+
+            spdlog::info("    Channel {}: {}", j, channel->mNodeName.C_Str());
+            spdlog::info("      Position keys: {}", channel->mNumPositionKeys);
+            spdlog::info("      Rotation keys: {}", channel->mNumRotationKeys);
+            spdlog::info("      Scaling keys: {}", channel->mNumScalingKeys);
+        }
+    }
+}
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
 
@@ -93,7 +142,6 @@ int main() {
     camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
     engine->getRenderer()->setActiveSceneCamera(camera);
 
-    // --- Tiles
     auto shaderA = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
     auto materialA = new dzemikk::Material();
     materialA->setShader(shaderA.get());
@@ -137,7 +185,7 @@ int main() {
     // --- Quad GameObject
     auto quadGO = new dzemikk::GameObject();
     quadGO->transform()->setPosition(glm::vec3(100.0f, 300.0f, 0.0f));
-    quadGO->transform()->setScale(glm::vec3(100.0f, 100.0f, 1.0f)); 
+    quadGO->transform()->setScale(glm::vec3(100.0f, 100.0f, 1.0f));
     quadGO->transform()->setRotation(glm::quat());
 
     auto quadMesh =
@@ -185,6 +233,178 @@ int main() {
     auto quadSpriteUpdater = quadGO3->addComponent<SpriteUpdater>();
     quadSpriteUpdater->transform = quadGO3->transform();
 
+    auto* canvasGo = mainScenePtr->createGameObject("Canvas");
+    auto* canvas = canvasGo->addComponent<dzemikk::Canvas>();
+    (void)canvas;
+
+    dzemikk::UIButtonActionRegistry::get().registerAction(
+        "demo.button.click", [](dzemikk::UIButton& button) {
+            return [&button]() {
+                const auto* owner = button.getOwner();
+                if (owner != nullptr) {
+                    spdlog::info("Button click on '{}'", owner->getName());
+                } else {
+                    spdlog::info("Button click");
+                }
+            };
+        });
+    dzemikk::UIButtonActionRegistry::get().registerAction(
+        "demo.button.enter",
+        [](dzemikk::UIButton&) { return []() { spdlog::info("Button hover"); }; });
+    dzemikk::UIButtonActionRegistry::get().registerAction(
+        "demo.button.exit",
+        [](dzemikk::UIButton&) { return []() { spdlog::info("Button exit"); }; });
+
+    auto* canvasRect = canvasGo->rectTransform();
+    canvasRect->setSize({1920.0F, 1080.0F});
+
+    auto* buttonGo = mainScenePtr->createGameObject("Button", canvasGo);
+    dzemikk::UIButton::build(*buttonGo, dzemikk::UIButtonParams{
+                                            .onClickActionId = "demo.button.click",
+                                            .onEnterActionId = "demo.button.enter",
+                                            .onExitActionId = "demo.button.exit",
+                                            .rectTransformParams =
+                                                {
+                                                    .size = {300.0F, 150.0F},
+                                                    .pivot = {0.5F, 0.5F},
+                                                    .anchorMin = {0.5F, 0.5F},
+                                                    .anchorMax = {0.5F, 0.5F},
+                                                },
+                                            .mesh = quadMesh,
+                                            .material = quadMaterial,
+                                        });
+    auto* buttonText = mainScenePtr->createGameObject("ButtonText", buttonGo);
+    auto* buttonTextRect = buttonText->rectTransform();
+    buttonTextRect->setSize({0.0F, 0.0F});
+    buttonTextRect->setAnchorMin({0.0F, 0.0F});
+    buttonTextRect->setAnchorMax({1.0F, 1.0F});
+    buttonTextRect->setPosition({0.0F, 0.0F});
+    buttonTextRect->setPivot({0.5F, 0.5F});
+    auto* buttonTextRenderer = buttonText->addComponent<dzemikk::UITextRenderer>();
+    buttonTextRenderer->text = "Click Me!";
+    buttonTextRenderer->font = font;
+    buttonTextRenderer->scale = 1.0F;
+    buttonTextRenderer->color = glm::vec3(0.0F, 0.0F, 0.0F);
+    buttonTextRenderer->horizontalAlign = dzemikk::UITextRenderer::HorizontalAlign::Center;
+    buttonTextRenderer->verticalAlign = dzemikk::UITextRenderer::VerticalAlign::Middle;
+
+    // --- slider
+    constexpr float kSliderWidth = 400.0F;
+    constexpr float kSliderTrackHeight = 20.0F;
+    constexpr float kSliderHandleSize = 40.0F;
+
+    auto* sliderGo = mainScenePtr->createGameObject("Slider", canvasGo);
+    auto* uiSlider = sliderGo->addComponent<dzemikk::UISlider>();
+    auto* backgroundGo = mainScenePtr->createGameObject("Background", sliderGo);
+    auto* fillGo = mainScenePtr->createGameObject("Fill", backgroundGo);
+    auto* handleGo = mainScenePtr->createGameObject("Handle", backgroundGo);
+
+    uiSlider->setBackgroundColor(dzemikk::Colors::White);
+    uiSlider->setHandleColor(dzemikk::Colors::White);
+    uiSlider->setHandleHoverColor(dzemikk::Colors::fromHex("#DDDDDD"));
+    uiSlider->setHandlePressedColor(dzemikk::Colors::fromHex("#BBBBBB"));
+    uiSlider->setFillColor(dzemikk::Colors::fromHex("#00BBFF"));
+
+    sliderGo->rectTransform()->setPosition({0.0F, 300.0F});
+    sliderGo->rectTransform()->setAnchorMin({0.5F, 0.5F});
+    sliderGo->rectTransform()->setAnchorMax({0.5F, 0.5F});
+    sliderGo->rectTransform()->setPivot({0.5F, 0.5F});
+    sliderGo->rectTransform()->setSize({kSliderWidth, kSliderHandleSize});
+
+    auto* bgRect = backgroundGo->rectTransform();
+    bgRect->setAnchorMin({0.5F, 0.5F});
+    bgRect->setAnchorMax({0.5F, 0.5F});
+    bgRect->setPivot({0.5F, 0.5F});
+    bgRect->setSize({kSliderWidth, kSliderTrackHeight});
+    bgRect->setZIndex(10);
+
+    auto* fillRect = fillGo->rectTransform();
+    fillRect->setAnchorMin({0.0F, 0.5F});
+    fillRect->setAnchorMax({0.0F, 0.5F});
+    fillRect->setPivot({0.0F, 0.5F});
+    fillRect->setPosition({0.0F, 0.0F});
+    fillRect->setSize({0.0F, kSliderTrackHeight});
+    fillRect->setZIndex(11);
+
+    auto* handleRect = handleGo->rectTransform();
+    handleRect->setAnchorMin({0.0F, 0.5F});
+    handleRect->setAnchorMax({0.0F, 0.5F});
+    handleRect->setPivot({0.5F, 0.5F});
+    handleRect->setPosition({0.0F, 0.0F});
+    handleRect->setSize({kSliderHandleSize, kSliderHandleSize});
+    handleRect->setZIndex(12);
+
+    auto* bgSprite = backgroundGo->addComponent<dzemikk::UISpriteRenderer>();
+    bgSprite->setMesh(quadMesh);
+    bgSprite->setMaterial(quadMaterial);
+    bgSprite->setRectTransform(bgRect);
+
+    auto* fillSprite = fillGo->addComponent<dzemikk::UISpriteRenderer>();
+    fillSprite->setMesh(quadMesh);
+    fillSprite->setMaterial(quadMaterial);
+    fillSprite->setRectTransform(fillRect);
+
+    auto* handleSprite = handleGo->addComponent<dzemikk::UISpriteRenderer>();
+    handleSprite->setMesh(quadMesh);
+    handleSprite->setMaterial(quadMaterial);
+    handleSprite->setRectTransform(handleRect);
+
+    uiSlider->setBackgroundSpriteRenderer(bgSprite);
+    uiSlider->setFillSpriteRenderer(fillSprite);
+    uiSlider->setHandleSpriteRenderer(handleSprite);
+
+    uiSlider->setOnValueChanged([fillRect, handleRect](float value) {
+        const float clamped = std::clamp(value, 0.0F, 1.0F);
+        fillRect->setSize({kSliderWidth * clamped, kSliderTrackHeight});
+        handleRect->setPosition({kSliderWidth * clamped, 0.0F});
+        spdlog::info("Slider value: {:.2f}", clamped);
+    });
+
+    uiSlider->onValueChanged(0.35F);
+
+    // --- Checkbox
+    dzemikk::UICheckboxActionRegistry::get().registerAction(
+        "demo.checkbox.click", [](dzemikk::UICheckbox& checkbox) {
+            return [&checkbox]() {
+                const auto* owner = checkbox.getOwner();
+                if (owner != nullptr) {
+                    spdlog::info("Checkbox click on '{}'", owner->getName());
+                } else {
+                    spdlog::info("Checkbox click");
+                }
+            };
+        });
+    auto* checkboxGo = mainScenePtr->createGameObject("Checkbox", canvasGo);
+    auto* uiCheckbox = checkboxGo->addComponent<dzemikk::UICheckbox>();
+    auto* checkboxRect = checkboxGo->rectTransform();
+    checkboxRect->setPosition({0.0F, -300.0F});
+    checkboxRect->setAnchorMin({0.5F, 0.5F});
+    checkboxRect->setAnchorMax({0.5F, 0.5F});
+    checkboxRect->setPivot({0.5F, 0.5F});
+    checkboxRect->setSize({30.0F, 30.0F});
+    checkboxRect->setZIndex(0);
+    auto* checkboxSprite = checkboxGo->addComponent<dzemikk::UISpriteRenderer>();
+    checkboxSprite->setMesh(quadMesh);
+    checkboxSprite->setMaterial(quadMaterial);
+    checkboxSprite->setRectTransform(checkboxRect);
+    checkboxSprite->setColor(dzemikk::Colors::White);
+    uiCheckbox->setBackgroundSpriteRenderer(checkboxSprite);
+    auto* checkmarkGo = mainScenePtr->createGameObject("Checkmark", checkboxGo);
+    auto* checkmarkRect = checkmarkGo->rectTransform();
+    checkmarkRect->setAnchorMin({0.1F, 0.1F});
+    checkmarkRect->setAnchorMax({0.9F, 0.9F});
+    checkmarkRect->setPivot({0.5F, 0.5F});
+    checkmarkRect->setPosition({0.0F, 0.0F});
+    checkmarkRect->setSize({0.0F, 0.0F});
+    checkmarkRect->setZIndex(1);
+    auto* checkmarkSprite = checkmarkGo->addComponent<dzemikk::UISpriteRenderer>();
+    checkmarkSprite->setMesh(quadMesh);
+    checkmarkSprite->setMaterial(quadMaterial);
+    checkmarkSprite->setRectTransform(checkmarkRect);
+    checkmarkSprite->setColor(dzemikk::Colors::Red);
+    uiCheckbox->setCheckmarkSpriteRenderer(checkmarkSprite);
+    uiCheckbox->setOnClickActionId("demo.checkbox.click");
+
     auto textGO = mainScenePtr->createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
 
@@ -209,8 +429,56 @@ int main() {
     auto sound = engine->getAssetManager()->get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
     sound.get()->play(system);
 
-    engine->start();
+    auto playerGO = mainScenePtr->createGameObject();
+    playerGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
+    playerGO->transform()->setScale(glm::vec3(10.0f));
 
+    auto playerMesh = createCubeMesh();
+    auto renderer = playerGO->addComponent<dzemikk::MeshRenderer>();
+    renderer->setMesh(playerMesh);
+    renderer->setMaterial(materialA);
+    renderer->setTransform(playerGO->transform());
+
+    playerGO->transform()->setScale(glm::vec3(1.f));
+    playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
+
+    dzemikk::Animator* animator = playerGO->addComponent<dzemikk::Animator>();
+    std::shared_ptr<dzemikk::AnimationStateMachine> animationStateMachine =
+        std::make_shared<dzemikk::AnimationStateMachine>();
+    std::unique_ptr<dzemikk::AnimationState> idleState =
+        std::make_unique<dzemikk::AnimationState>("Idle");
+
+    dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
+    dzemikk::AnimationTrack* animationTrack = new dzemikk::AnimationTrack("Test");
+
+    animationTrack->addScaleKey(0.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    animationTrack->addScaleKey(0.5f, glm::vec3(1.2f, 1.2f, 1.2f));
+    animationTrack->addScaleKey(1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+
+    animationTrack->addRotationKey(0.0f, glm::vec3(0.0f, 90.0f, 0.0f));
+    animationTrack->addRotationKey(0.5f, glm::vec3(0.0f, 45.0f, 0.0f));
+    animationTrack->addRotationKey(1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+
+    animationTrack->addPositionKey(0.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+    animationTrack->addPositionKey(0.5f, glm::vec3(1.0f, 0.0f, 0.0f));
+    animationTrack->addPositionKey(1.0f, glm::vec3(2.0f, 0.0f, 0.0f));
+
+    animationClip->addTrack(animationTrack);
+    idleState->setClip(animationClip);
+
+    animator->setStateMachine(animationStateMachine);
+    animationStateMachine->addState(std::move(idleState));
+    animationClip->transform = playerGO->transform();
+
+    // Assimp::Importer importer;
+    // const aiScene* scene = importer.ReadFile("./res/models/model.fbx", aiProcess_Triangulate |
+    // aiProcess_GenNormals | aiProcess_FlipUVs); if (!scene || !scene->mRootNode) {
+    //     spdlog::error("Failed to load model: {}", importer.GetErrorString());
+    // }
+    // spdlog::info("\n=== Animation Info ===");
+    // printAnimationInfo(scene);
+    engine->start();
     return 0;
 }
 
@@ -297,4 +565,5 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Mater
         else
             renderer->setMaterial(0, materialB);
     }
+
 }

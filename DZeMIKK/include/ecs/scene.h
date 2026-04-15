@@ -23,6 +23,32 @@ class Scene {
      * @brief Creates a new GameObject in this scene and returns a pointer to it.
      */
     GameObject* createGameObject();
+
+    /**
+     * @brief Creates a new GameObject in this scene with a specific name and returns a pointer to
+     * it.
+     * @param name The name for the new GameObject.
+     * @return A pointer to the newly created GameObject.
+     */
+    GameObject* createGameObject(const std::string& name);
+
+    /**
+     * @brief Creates a new GameObject in this scene with a specific name and parent, and returns a
+     * pointer to it.
+     * @param name The name for the new GameObject.
+     * @param parent The parent GameObject for the new GameObject.
+     * @return A pointer to the newly created GameObject.
+     */
+    GameObject* createGameObject(const std::string& name, GameObject* parent);
+
+    /**
+     * @brief Creates a new GameObject in this scene with a specific parent, and returns a pointer
+     * to it.
+     * @param parent The parent GameObject for the new GameObject.
+     * @return A pointer to the newly created GameObject.
+     */
+    GameObject* createGameObject(GameObject* parent);
+
     /**
      * @brief Destroys a GameObject in this scene.
      * The destroy is deffered until the end of the current update loop (update or fixedUpdate,

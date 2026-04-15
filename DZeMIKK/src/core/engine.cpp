@@ -1,14 +1,18 @@
+#include "ecs/componentRegistry.h"
+#include "ecs/components/ui/iUIInteractable.h"
 #if DZEMIKK_DEV_TOOLS
-#include <spdlog/spdlog.h>
-#include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <ft2build.h>
+#include <imgui.h>
+#include <spdlog/spdlog.h>
+
 #include FT_FREETYPE_H
 #endif
 
 #include "animation/animationmodule.h"
 #include "core/engine.h"
+#include "core/profiler.h"
 #include "core/time.h"
 #include "core/window.h"
 #include "ecs/components/camera.h"
@@ -22,10 +26,9 @@
 #include "audio/sound.h"
 #include "assetManager/assetmanager.h"
 
-#include "core/profiler.h"
-
 #include <GLFW/glfw3.h>
 #include <iostream>
+
 namespace dzemikk {
 
 Engine::Engine() {
@@ -63,10 +66,8 @@ void Engine::init() {
     ImGui_ImplGlfw_InitForOpenGL(_mainWindow->nativeHandle(), true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
-    spdlog::info("DZeMIKK version: {}.{}.{}",
-        DZeMIKK_VERSION_MAJOR,
-        DZeMIKK_VERSION_MINOR,
-        DZeMIKK_VERSION_REVISION);
+    spdlog::info("DZeMIKK version: {}.{}.{}", DZeMIKK_VERSION_MAJOR, DZeMIKK_VERSION_MINOR,
+                 DZeMIKK_VERSION_REVISION);
 #endif
 }
 
@@ -111,10 +112,10 @@ void Engine::start() {
         ImGui::NewFrame();
 
         ImGui::Begin("Renderer");
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", _time->deltaTime,
-                    1.0f / _time->deltaTime);
+        float dt_ms = deltaTime * 1000.0f;
+        ImGui::Text("Application %.3f ms/frame (%.1f FPS)", dt_ms, 1.0f / deltaTime);
         ImGui::Separator();
-        
+
         const auto& stats = Profiler::rendererStats;
         ImGui::Text("Render Stats:");
         ImGui::Text("Draw Calls:      %u", stats.drawCalls);
@@ -122,7 +123,7 @@ void Engine::start() {
         ImGui::Text("Triangles:       %u", stats.triangleCount);
         ImGui::Text("Vertices:        %u", stats.vertexCount);
         ImGui::Text("State Changes:   %u", stats.stateChanges);
-        
+
         ImGui::Separator();
         ImGui::Text("Background");
         ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
@@ -135,6 +136,7 @@ void Engine::start() {
 #endif
         updateCameraWASD(1.f);
         updateCameraArrows(1.1f);
+        updateMouseUI(deltaTime);
         _renderer->render();
 #if DZEMIKK_DEV_TOOLS
         glDisable(GL_DEPTH_TEST);
@@ -169,8 +171,7 @@ std::shared_ptr<AssetManager> Engine::getAssetManager() {
     return _assetManager;
 }
 
-template <std::derived_from<IEngineModule> T>
-std::shared_ptr<T> Engine::getModule() const {
+template <std::derived_from<IEngineModule> T> std::shared_ptr<T> Engine::getModule() const {
     for (const auto& module : _modules) {
         if (auto casted = std::dynamic_pointer_cast<T>(module)) {
             return casted;
@@ -256,4 +257,37 @@ void Engine::updateCameraArrows(float speed) {
         getAssetManager()->unload("models/Body Block.fbx");
     }
 }
+
+void Engine::updateMouseUI(float deltaTime) {
+    (void)deltaTime;
+
+    auto* camera = _renderer->getActiveUICamera();
+    if (!camera) {
+        return;
+    }
+
+    double mouseX, mouseY;
+    glfwGetCursorPos(_mainWindow->nativeHandle(), &mouseX, &mouseY);
+
+    int width = 0;
+    int height = 0;
+    glfwGetWindowSize(_mainWindow->nativeHandle(), &width, &height);
+
+    const glm::vec2 pointerPos(static_cast<float>(mouseX),
+                               static_cast<float>(height) - static_cast<float>(mouseY));
+
+    const bool isLeftDown =
+        glfwGetMouseButton(_mainWindow->nativeHandle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    const bool pressedThisFrame = isLeftDown && !_wasLeftMouseDown;
+    const bool releasedThisFrame = !isLeftDown && _wasLeftMouseDown;
+
+    std::vector<IUIInteractable*> uiElements;
+    ComponentRegistry::get().getComponents<IUIInteractable>(uiElements);
+    for (auto* element : uiElements) {
+        element->processPointer(pointerPos, isLeftDown, pressedThisFrame, releasedThisFrame);
+    }
+
+    _wasLeftMouseDown = isLeftDown;
 }
+
+} // namespace dzemikk

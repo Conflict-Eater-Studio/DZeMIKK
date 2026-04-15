@@ -16,11 +16,19 @@ void Component::setId(const boost::uuids::uuid& uuid) {
     _id = uuid;
 }
 
+void Component::enabled(bool enabled) {
+    _isEnabled = enabled;
+}
+
 GameObject* Component::getOwner() const {
     return _owner;
 }
 
 boost::uuids::uuid Component::getId() const {
     return _id;
+}
+
+bool Component::isEnabled() const {
+    return _isEnabled;
 }
 } // namespace dzemikk

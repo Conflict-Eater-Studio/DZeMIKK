@@ -7,18 +7,29 @@
 #include "renderer/model.h"
 #include "ecs/componentRegistry.h"
 
+#include "core/profiler.h"
+#include "ecs/component.h"
+#include "ecs/componentRegistry.h"
+#include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
-#include "ecs/components/camera.h"
 #include "ecs/components/transform.h"
+#include "ecs/components/ui/rectTransform.h"
+#include "ecs/components/ui/uiSpriteRenderer.h"
+#include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
-#include "core/profiler.h"
-#include <iostream>
-#include <map>
+#include "renderer/font.h"
+#include "renderer/material.h"
+#include "renderer/mesh.h"
+#include "renderer/shader.h"
 
-#include <filesystem>
 #include <GLFW/glfw3.h>
+#include <algorithm>
+#include <filesystem>
+#include <iostream>
+#include <limits>
+#include <map>
 
 void dzemikk::Renderer::Initialize() {
     _view = glm::mat4(1.0f);
@@ -33,7 +44,6 @@ void dzemikk::Renderer::Initialize() {
 
     glBindBufferRange(GL_UNIFORM_BUFFER, 0, _uboMatrices, 0, 2 * sizeof(glm::mat4));
 
-    
     glEnable(GL_MULTISAMPLE);
 
     _skybox = new Skybox();
@@ -83,7 +93,6 @@ void dzemikk::Renderer::Initialize() {
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
 }
 
 void dzemikk::Renderer::UnInitialize() {
@@ -111,7 +120,7 @@ void dzemikk::Renderer::render() {
 
     if (_skybox && _sceneCamera) {
 
-        float time = glfwGetTime(); 
+        float time = glfwGetTime();
 
         glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), time * 0.1f, glm::vec3(0, 1, 0));
         glm::mat4 viewNoTrans = _sceneCamera->getView() * rotation;
@@ -233,7 +242,6 @@ void dzemikk::Renderer::render() {
     if (_uiCamera)
         _uiProjection = _uiCamera->getProjection();
 
-
     dzemikk::ComponentRegistry::get().getComponents<SpriteRenderer>(_spriteRenderers);
     glDisable(GL_DEPTH_TEST);
 
@@ -265,9 +273,41 @@ for (auto* r : _spriteRenderers) {
         Profiler::rendererStats.triangleCount += r->getMesh()->getVertexCount() / 3;
     }
 
+    std::vector<UISpriteRenderer*> uiSprites;
+    ComponentRegistry::get().getEnabledComponents<UISpriteRenderer>(uiSprites);
+
+    std::ranges::sort(uiSprites, [](UISpriteRenderer* a, UISpriteRenderer* b) {
+        unsigned int az = a->getOwner()->rectTransform()->getZIndex();
+        unsigned int bz = a->getOwner()->rectTransform()->getZIndex();
+        return az < bz;
+    });
+    for (auto* r : uiSprites) {
+        if (!r->isValid()) {
+            continue;
+        }
+
+        Shader* shader = r->getMaterial()->getShader();
+        shader->bind();
+
+        shader->setMat4("model", r->getRectTransform()->getWorldMatrix());
+        shader->setMat4("projection", _uiProjection);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, r->getTexture());
+        shader->setInt("spriteTexture", 0);
+        shader->setVec4("spriteColor", r->getColor());
+
+        r->getMesh()->draw();
+        Profiler::rendererStats.drawCalls++;
+
+        Profiler::rendererStats.renderedObjects++;
+        Profiler::rendererStats.vertexCount += r->getMesh()->getVertexCount();
+        Profiler::rendererStats.triangleCount += r->getMesh()->getVertexCount() / 3;
+    }
+
     std::vector<TextRenderer*> texts;
     ComponentRegistry::get().getComponents<TextRenderer>(texts);
-    
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -287,6 +327,132 @@ for (auto* r : _spriteRenderers) {
         glBindVertexArray(textVAO);
         for (char c : t->text) {
             Character ch = t->font->characters[c];
+
+            float xpos = x + ch.bearing.x * t->scale;
+            float ypos = y - (ch.size.y - ch.bearing.y) * t->scale;
+
+            float w = ch.size.x * t->scale;
+            float h = ch.size.y * t->scale;
+
+            float vertices[6][4] = {{xpos, ypos + h, 0.0f, 0.0f},    {xpos, ypos, 0.0f, 1.0f},
+                                    {xpos + w, ypos, 1.0f, 1.0f},
+
+                                    {xpos, ypos + h, 0.0f, 0.0f},    {xpos + w, ypos, 1.0f, 1.0f},
+                                    {xpos + w, ypos + h, 1.0f, 0.0f}};
+
+            glBindTexture(GL_TEXTURE_2D, ch.textureID);
+
+            glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+
+            Profiler::rendererStats.drawCalls++;
+
+            Profiler::rendererStats.renderedObjects++;
+            Profiler::rendererStats.vertexCount += 6;
+            Profiler::rendererStats.triangleCount += 2;
+
+            x += (ch.advance >> 6) * t->scale;
+        }
+        glBindVertexArray(0);
+    }
+
+    std::vector<UITextRenderer*> uiTexts;
+    ComponentRegistry::get().getComponents<UITextRenderer>(uiTexts);
+
+    for (auto* t : uiTexts) {
+        if (!t->isValid()) {
+            continue;
+        }
+
+        auto* owner = t->getOwner();
+        if (!owner) {
+            continue;
+        }
+
+        auto* rect = owner->getComponent<RectTransform>();
+        if (!rect) {
+            continue;
+        }
+
+        const glm::mat4 world = rect->getWorldMatrix();
+        const glm::vec4 p0 = world * glm::vec4(0.0F, 0.0F, 0.0F, 1.0F);
+        const float originX = p0[0];
+        const float originY = p0[1];
+        const glm::vec2 rectSize = rect->getSize();
+
+        float penX = 0.0F;
+        float minY = std::numeric_limits<float>::max();
+        float maxY = std::numeric_limits<float>::lowest();
+
+        for (char c : t->text) {
+            auto glyphIt = t->font->characters.find(c);
+            if (glyphIt == t->font->characters.end()) {
+                continue;
+            }
+
+            const Character& ch = glyphIt->second;
+            const float ypos = -(ch.size.y - ch.bearing.y) * t->scale;
+            const float h = ch.size.y * t->scale;
+
+            minY = std::min(minY, ypos);
+            maxY = std::max(maxY, ypos + h);
+
+            penX += (ch.advance >> 6) * t->scale;
+        }
+
+        if (minY > maxY) {
+            minY = 0.0F;
+            maxY = 0.0F;
+        }
+
+        const float textWidth = penX;
+        const float textHeight = maxY - minY;
+
+        float offsetX = 0.0F;
+        switch (t->horizontalAlign) {
+        case UITextRenderer::HorizontalAlign::Left:
+            offsetX = 0.0F;
+            break;
+        case UITextRenderer::HorizontalAlign::Center:
+            offsetX = (rectSize.x - textWidth) * 0.5F;
+            break;
+        case UITextRenderer::HorizontalAlign::Right:
+            offsetX = rectSize.x - textWidth;
+            break;
+        }
+
+        float offsetY = 0.0F;
+        switch (t->verticalAlign) {
+        case UITextRenderer::VerticalAlign::Bottom:
+            offsetY = -minY;
+            break;
+        case UITextRenderer::VerticalAlign::Middle:
+            offsetY = (rectSize.y - textHeight) * 0.5F - minY;
+            break;
+        case UITextRenderer::VerticalAlign::Top:
+            offsetY = rectSize.y - textHeight - minY;
+            break;
+        }
+
+        Shader* shader = _textShader;
+        shader->bind();
+
+        shader->setMat4("projection", _uiProjection);
+        shader->setVec3("textColor", t->color);
+
+        float x = originX + offsetX;
+        float y = originY + offsetY;
+
+        glBindVertexArray(textVAO);
+        for (char c : t->text) {
+            auto glyphIt = t->font->characters.find(c);
+            if (glyphIt == t->font->characters.end()) {
+                continue;
+            }
+
+            const Character& ch = glyphIt->second;
 
             float xpos = x + ch.bearing.x * t->scale;
             float ypos = y - (ch.size.y - ch.bearing.y) * t->scale;
