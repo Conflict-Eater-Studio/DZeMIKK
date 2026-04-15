@@ -20,11 +20,11 @@ namespace dzemikk {
             _animators.pop_back();
         }
     }
-    void AnimationModule::Initialize() {
+    void AnimationModule::initialize() {
 
         //TODO: Get all animators components from component registry
     }
-    void AnimationModule::UnInitialize() {
+    void AnimationModule::uninitialize() {
         _animators.clear();
         //TODO: Clear _animators vector
     }

@@ -43,12 +43,12 @@ void Engine::init() {
     _time = std::make_unique<Time>();
     _animationModule = std::make_unique<AnimationModule>();
 
-    _mainWindow->Initialize();
-    _assetManager->Initialize();
-    _renderer->Initialize();
-    _sceneManager->Initialize();
-    _time->Initialize();
-    _animationModule->Initialize();
+    _mainWindow->initialize();
+    _assetManager->initialize();
+    _renderer->initialize();
+    _sceneManager->initialize();
+    _time->initialize();
+    _animationModule->initialize();
 
     // _modules.push_back(std::move(_assetManager));
     // _modules.push_back(_mainWindow);
@@ -83,15 +83,15 @@ void Engine::shutdown() {
     ImGui::DestroyContext();
 #endif
 
-    _mainWindow->UnInitialize();
-    _assetManager->UnInitialize();
-    _renderer->UnInitialize();
-    _sceneManager->UnInitialize();
-    _time->UnInitialize();
-    _animationModule->UnInitialize();
+    _mainWindow->uninitialize();
+    _assetManager->uninitialize();
+    _renderer->uninitialize();
+    _sceneManager->uninitialize();
+    _time->uninitialize();
+    _animationModule->uninitialize();
 
     for (const auto& module : _modules) {
-        module->UnInitialize();
+        module->uninitialize();
     }
 }
 

@@ -41,12 +41,12 @@ namespace dzemikk {
         /**
          * @brief Initializes renderer resources (UBO, OpenGL states).
          */
-        void Initialize() override;
+        void initialize() override;
 
         /**
          * @brief Releases GPU resources and clears batches.
          */
-        void UnInitialize() override;
+        void uninitialize() override;
 
         #pragma endregion
 

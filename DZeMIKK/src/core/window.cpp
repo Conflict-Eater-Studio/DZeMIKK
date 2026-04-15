@@ -83,10 +83,10 @@ namespace dzemikk {
     GLFWwindow* Window::nativeHandle() const {
         return window_;
     }
-    void Window::Initialize() {
+    void Window::initialize() {
 
     }
-    void Window::UnInitialize() {
+    void Window::uninitialize() {
 
         }
     } // namespace dzemikk

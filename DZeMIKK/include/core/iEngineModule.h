@@ -12,7 +12,7 @@ namespace dzemikk {
         IEngineModule(IEngineModule&&) = delete;
         IEngineModule& operator=(IEngineModule&&) = delete;
 
-        virtual void Initialize() = 0;
-        virtual void UnInitialize() = 0;
+        virtual void initialize() = 0;
+        virtual void uninitialize() = 0;
     };
 } 

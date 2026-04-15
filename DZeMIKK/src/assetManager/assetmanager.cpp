@@ -28,7 +28,7 @@
 #include <ranges>
 #include <stb/stb_image.h>
 
-void dzemikk::AssetManager::Initialize() {
+void dzemikk::AssetManager::initialize() {
 #if DZEMIKK_DEV_TOOLS
     auto timer0 = std::chrono::high_resolution_clock::now();
     spdlog::info("[AssetManager] Initialization started");
@@ -53,7 +53,7 @@ void dzemikk::AssetManager::Initialize() {
 #endif
 }
 
-void dzemikk::AssetManager::UnInitialize() {
+void dzemikk::AssetManager::uninitialize() {
     _database.clear();
     _loaders.clear();
     _resources.clear();

@@ -18,8 +18,8 @@ public:
     AnimationModule() = default;
     ~AnimationModule() override = default;
 
-    void Initialize() override;
-    void UnInitialize() override;
+    void initialize() override;
+    void uninitialize() override;
 
     /**
      * @brief Updates all registered animators.

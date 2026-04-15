@@ -45,8 +45,8 @@ class AssetManager : public IEngineModule {
 
 #pragma region Initialization / Uninitialization
 
-    void Initialize() override;
-    void UnInitialize() override;
+    void initialize() override;
+    void uninitialize() override;
 
 #pragma endregion
 
