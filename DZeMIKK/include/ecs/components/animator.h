@@ -85,7 +85,7 @@ namespace dzemikk {
          * @return Shared pointer to the state machine.
          */
         [[nodiscard]] std::shared_ptr<AnimationStateMachine> getStateMachine() const noexcept;
-
+        std::string typeName() const override;
     private:
         /// Shared animation state machine defining states and transitions.
         std::shared_ptr<AnimationStateMachine> _stateMachine = nullptr;

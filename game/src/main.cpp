@@ -1,10 +1,13 @@
-#include "core/engine.h"
 #include "animation/animationclip.h"
 #include "animation/animationstate.h"
 #include "animation/animationstatemachine.h"
 #include "animation/animationtrack.h"
 #include "animation/quaterniontrack.h"
 #include "animation/vectortrack.h"
+#include "assetManager/assetmanager.h"
+#include "audio/sound.h"
+#include "core/engine.h"
+#include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
@@ -15,19 +18,16 @@
 #include "renderer/material.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
-#include "renderer/font.h"
 #include "renderer/texture.h"
-#include <ecs/scenemanager.h>
-#include "assetManager/assetmanager.h"
-#include "audio/sound.h"
 
+#include <GLFW/glfw3.h>
+#include <ecs/scenemanager.h>
 #include <filesystem>
 #include <iostream>
+#include <memory>
 #include <queue>
 #include <random>
 #include <set>
-#include <GLFW/glfw3.h>
-#include <memory>
 
 class TextUpdater : public dzemikk::MonoBehaviour {
   public:
@@ -47,24 +47,25 @@ class TextUpdater : public dzemikk::MonoBehaviour {
 };
 
 class SpriteUpdater: public dzemikk::MonoBehaviour {
-  public:
-      using Base = MonoBehaviour;
+public:
+    using Base = MonoBehaviour;
 
-      dzemikk::Transform* transform = nullptr;
-      float time = 0.0f;
+    dzemikk::Transform* transform = nullptr;
+    float time = 0.0f;
 
-      void update(double deltaTime) override {
-          time += deltaTime;
+    void update(double deltaTime) override {
+        time += deltaTime;
 
-          float scaleX = 0.5f + 0.5f * sin(time);
-          float scaleY = 1.0f;
+        float scaleX = 0.5f + 0.5f * sin(time);
+        float scaleY = 1.0f;
 
-          transform->setScale(glm::vec3(scaleX, scaleY, 1.0f));
-      }
+        transform->setScale(glm::vec3(scaleX, scaleY, 1.0f));
+    }
 
     [[nodiscard]] std::string typeName() const override {
-          return "SpriteUpdater";
-      };
+        return "SpriteUpdater";
+    };
+};
 
 dzemikk::Mesh* createCubeMesh();
 dzemikk::Mesh* createQuadMesh();
@@ -211,14 +212,14 @@ int main() {
 
 
 
-    auto playerGO = mainScenePtr->createGameObject();
-    playerGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-    playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
-    playerGO->transform()->setScale(glm::vec3(10.0f));
+    auto test = mainScenePtr->createGameObject();
+    test->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+    test->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
+    test->transform()->setScale(glm::vec3(10.0f));
 
-    auto playerMesh = createCubeMesh();
-    auto renderer = playerGO->addComponent<dzemikk::MeshRenderer>();
-    renderer->setMesh(playerMesh);
+    auto tMesh =  engine->getAssetManager()->getPrimitive(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Cube);
+    auto renderer = test->addComponent<dzemikk::MeshRenderer>();
+    renderer->setMesh(tMesh);
     renderer->setMaterial(materialA);
     renderer->setTransform(playerGO->transform());
 
@@ -244,15 +245,6 @@ int main() {
     animationTrack->addKey({4.0f, glm::quat(glm::vec3(10.0f, 0.0f, 0.0f))});
 
     animator->setStateMachine(animationStateMachine);
-
-    Assimp::Importer importer;
-    const aiScene* scene = importer.ReadFile("./res/models/model.fbx", aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
-    if (!scene || !scene->mRootNode) {
-        spdlog::error("Failed to load model: {}", importer.GetErrorString());
-    }
-    printAnimationInfo(scene);
-    aiAnimation* anim = scene->mAnimations[0];
-    std::shared_ptr<dzemikk::AnimationClip> animationClip2 = dzemikk::AnimationClip::fromAssimp(anim);
     engine->start();
 
     return 0;
