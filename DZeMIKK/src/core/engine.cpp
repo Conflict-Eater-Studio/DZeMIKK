@@ -12,7 +12,7 @@
 
 #include "core/engine.h"
 #include "core/time.h"
-#include "core/input.h"
+#include "input/input.h"
 
 #include "fmod/fmod.hpp"
 #include "fmod/fmod_errors.h"
@@ -51,9 +51,9 @@ dzemikk::Engine::Engine() {
 }
 
 void dzemikk::Engine::OnEvent(Event& e) {
-#if DZEMIKK_DEV_TOOLS
-   // spdlog::info("Event: {}", e.ToString()); // zakomentowane aby nie spamować konsoli
-#endif
+    if (_input) {
+        _input->OnEvent(e);
+    }
 }
 
 void dzemikk::Engine::update() const {
@@ -136,7 +136,9 @@ void dzemikk::Engine::init() {
     mainWindow = std::make_shared<Window>(800, 600, "DZeMIKK");
     mainWindow->setEventCallback(std::bind(&Engine::OnEvent, this, std::placeholders::_1));
 
-    Input::Initialize(mainWindow->nativeHandle());
+    _input = std::make_shared<Input>();
+    _input->setInputWindow(mainWindow->nativeHandle());
+    _input->Initialize();
 
     _renderer = std::make_shared<Renderer>();
     _renderer->Initialize();

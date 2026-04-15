@@ -7,8 +7,11 @@
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
 
-#include "core/input.h"
+#include "input/input.h"
+#include "events/mouse_event.h"
+#include "events/key_event.h"
 #include "core/time.h"
+#include <GLFW/glfw3.h>
 
 #include <memory>
 
@@ -98,29 +101,28 @@ int main() {
     glm::mat4 uiOrtho = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
     engine->GetRenderer()->setUIProjection(uiOrtho);
 
-    glm::vec2 lastMousePos = dzemikk::Input::GetMousePosition();
-
-    engine->SetUserUpdateCallback([&]() {
-        glm::vec2 currentMousePos = dzemikk::Input::GetMousePosition();
+    engine->GetInput()->OnMouseMoved.addListener([&](dzemikk::MouseMovedEvent& event) {
+        static glm::vec2 lastMousePos = engine->GetInput()->GetMousePosition();
+        glm::vec2 currentMousePos(event.GetX(), event.GetY());
         glm::vec2 delta = currentMousePos - lastMousePos;
         lastMousePos = currentMousePos;
 
-        // Jeśli wciśnięty Lewy Przycisk Myszy, obracaj sześcian myszką
-        if (dzemikk::Input::IsMouseButtonPressed(dzemikk::Mouse::ButtonLeft)) {
+        if (engine->GetInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
             glm::vec3 rot = cubeTransform->getEulerAngles();
             rot.y += delta.x * 0.5f;
             rot.x += delta.y * 0.5f;
             cubeTransform->setEulerAngles(rot);
         }
+    });
 
-        // Poruszanie za pomocą WSAD
+    engine->GetInput()->OnKeyPressed.addListener([&](dzemikk::KeyPressedEvent& event) {
         glm::vec3 pos = cubeTransform->getPosition();
-        float speed = 2.0f * dzemikk::Time::deltaTime;
+        float speed = 0.5f;
 
-        if (dzemikk::Input::IsKeyPressed(dzemikk::Key::W)) pos.z -= speed;
-        if (dzemikk::Input::IsKeyPressed(dzemikk::Key::S)) pos.z += speed;
-        if (dzemikk::Input::IsKeyPressed(dzemikk::Key::A)) pos.x -= speed;
-        if (dzemikk::Input::IsKeyPressed(dzemikk::Key::D)) pos.x += speed;
+        if (event.GetKeyCode() == GLFW_KEY_W) pos.z -= speed;
+        if (event.GetKeyCode() == GLFW_KEY_S) pos.z += speed;
+        if (event.GetKeyCode() == GLFW_KEY_A) pos.x -= speed;
+        if (event.GetKeyCode() == GLFW_KEY_D) pos.x += speed;
 
         cubeTransform->setPosition(pos);
     });

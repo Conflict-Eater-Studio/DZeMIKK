@@ -4,6 +4,7 @@
 #include "window.h"
 #include "renderer/renderer.h"
 #include "events/event.h"
+#include "input/input.h"
 #include <functional>
 
 namespace dzemikk {
@@ -11,6 +12,7 @@ namespace dzemikk {
     private:
         std::shared_ptr<Window> mainWindow;
         std::shared_ptr<Renderer> _renderer;
+        std::shared_ptr<Input> _input;
         std::function<void()> m_UserUpdateCallback;
         void init();
     public:
@@ -23,6 +25,10 @@ namespace dzemikk {
 
         std::shared_ptr<Renderer> GetRenderer() {
             return _renderer;
+        }
+
+        std::shared_ptr<Input> GetInput() {
+            return _input;
         }
     };
 }
