@@ -36,23 +36,30 @@ Engine::~Engine() {
 }
 
 void Engine::init() {
-    _mainWindow = std::make_shared<Window>(1920, 1080, "DZeMIKK");
-    _assetManager = std::make_shared<AssetManager>();
-    _renderer = std::make_shared<Renderer>();
-    _sceneManager = std::make_shared<SceneManager>();
-    _time = std::make_shared<Time>();
-    _animationSystem = std::make_shared<AnimationModule>();
+    _mainWindow = std::make_unique<Window>(1920, 1080, "DZeMIKK");
+    _assetManager = std::make_unique<AssetManager>();
+    _renderer = std::make_unique<Renderer>();
+    _sceneManager = std::make_unique<SceneManager>();
+    _time = std::make_unique<Time>();
+    _animationModule = std::make_unique<AnimationModule>();
 
-    _modules.push_back(_assetManager);
-    _modules.push_back(_mainWindow);
-    _modules.push_back(_renderer);
-    _modules.push_back(_sceneManager);
-    _modules.push_back(_time);
-    _modules.push_back(_animationSystem);
+    _mainWindow->Initialize();
+    _assetManager->Initialize();
+    _renderer->Initialize();
+    _sceneManager->Initialize();
+    _time->Initialize();
+    _animationModule->Initialize();
 
-    for (const auto& module : _modules) {
-        module->Initialize();
-    }
+    // _modules.push_back(std::move(_assetManager));
+    // _modules.push_back(_mainWindow);
+    // _modules.push_back(_renderer);
+    // _modules.push_back(_sceneManager);
+    // _modules.push_back(_time);
+    // _modules.push_back(_animationModule);
+    //
+    // for (const auto& module : _modules) {
+    //     module->Initialize();
+    // }
 
 #if DZEMIKK_DEV_TOOLS
     IMGUI_CHECKVERSION();
@@ -76,6 +83,13 @@ void Engine::shutdown() {
     ImGui::DestroyContext();
 #endif
 
+    _mainWindow->UnInitialize();
+    _assetManager->UnInitialize();
+    _renderer->UnInitialize();
+    _sceneManager->UnInitialize();
+    _time->UnInitialize();
+    _animationModule->UnInitialize();
+
     for (const auto& module : _modules) {
         module->UnInitialize();
     }
@@ -96,7 +110,7 @@ void Engine::start() {
 
         _sceneManager->update(deltaTime);
 
-        _animationSystem->update(deltaTime);
+        _animationModule->update(deltaTime);
 
         if (_accumulator >= fixedDeltaTime) {
             _sceneManager->fixedUpdate(fixedDeltaTime);
@@ -144,39 +158,39 @@ void Engine::start() {
         _mainWindow->pollEvents();
     }
 }
-
-std::shared_ptr<Renderer> Engine::getRenderer() {
-    return _renderer;
+Renderer* Engine::getRenderer() const {
+    return _renderer.get();
 }
 
-std::shared_ptr<Window> Engine::getWindow() {
-    return _mainWindow;
+Window* Engine::getWindow() const {
+    return _mainWindow.get();
+}
+SceneManager* Engine::getSceneManager() const {
+    return _sceneManager.get();
+
 }
 
-std::shared_ptr<SceneManager> Engine::getSceneManager() {
-    return _sceneManager;
+Time* Engine::getTime() const {
+    return _time.get();
 }
 
-std::shared_ptr<Time> Engine::getTime() {
-    return _time;
-}
-std::shared_ptr<AnimationModule> Engine::getAnimationSystem() {
-    return _animationSystem;
+AnimationModule* Engine::getAnimationSystem() const{
+    return _animationModule.get();
 }
 
-std::shared_ptr<AssetManager> Engine::getAssetManager() {
-    return _assetManager;
+AssetManager* Engine::getAssetManager() const {
+    return _assetManager.get();
 }
 
-template <std::derived_from<IEngineModule> T>
-std::shared_ptr<T> Engine::getModule() const {
-    for (const auto& module : _modules) {
-        if (auto casted = std::dynamic_pointer_cast<T>(module)) {
-            return casted;
-        }
-    }
-    return nullptr;
-}
+// template <std::derived_from<IEngineModule> T>
+// std::shared_ptr<T> Engine::getModule() const {
+//     for (const auto& module : _modules) {
+//         if (auto casted = std::dynamic_pointer_cast<T>(module)) {
+//             return casted;
+//         }
+//     }
+//     return nullptr;
+// }
 
 void Engine::updateCameraWASD(float speed) {
     auto* transform = _renderer->getActiveSceneCamera()->getOwner()->transform();
