@@ -1,15 +1,16 @@
-
 #include "animation/animationclip.h"
 #include "animation/animationcurve.h"
 #include "animation/animationstate.h"
 #include "animation/animationstatemachine.h"
 #include "animation/animationtrack.h"
+
 #include "core/engine.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/monobehaviour.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
+#include "ecs/components/animator.h"
 #include "ecs/components/ui/canvas.h"
 #include "ecs/components/ui/colors.h"
 #include "ecs/components/ui/rectTransform.h"
@@ -23,16 +24,17 @@
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
+
 #include "renderer/font.h"
 #include "renderer/material.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
-#include "renderer/font.h"
 #include "renderer/texture.h"
 #include "renderer/model.h"
 #include "renderer/mesh.h"
-#include <ecs/scenemanager.h>
+
 #include "assetManager/assetmanager.h"
+
 #include "audio/sound.h"
 
 #include <filesystem>
@@ -49,10 +51,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
-#include <filesystem>
 #include <glad/glad.h>
-#include <iostream>
-#include <memory>
 #include <stb/stb_image.h>
 
 class TextUpdater : public dzemikk::MonoBehaviour {
@@ -233,6 +232,8 @@ int main() {
     auto quadSpriteUpdater = quadGO3->addComponent<SpriteUpdater>();
     quadSpriteUpdater->transform = quadGO3->transform();
 
+    auto font = engine->getAssetManager()->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
+
     auto* canvasGo = mainScenePtr->createGameObject("Canvas");
     auto* canvas = canvasGo->addComponent<dzemikk::Canvas>();
     (void)canvas;
@@ -282,7 +283,7 @@ int main() {
     buttonTextRect->setPivot({0.5F, 0.5F});
     auto* buttonTextRenderer = buttonText->addComponent<dzemikk::UITextRenderer>();
     buttonTextRenderer->text = "Click Me!";
-    buttonTextRenderer->font = font;
+    buttonTextRenderer->font = font.get();
     buttonTextRenderer->scale = 1.0F;
     buttonTextRenderer->color = glm::vec3(0.0F, 0.0F, 0.0F);
     buttonTextRenderer->horizontalAlign = dzemikk::UITextRenderer::HorizontalAlign::Center;
@@ -408,8 +409,6 @@ int main() {
     auto textGO = mainScenePtr->createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
 
-    auto font = engine->getAssetManager()->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
-
     auto text = textGO->addComponent<dzemikk::TextRenderer>();
     text->text = "Hello World!";
     text->font = font.get();
@@ -429,21 +428,7 @@ int main() {
     auto sound = engine->getAssetManager()->get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
     sound.get()->play(system);
 
-    auto playerGO = mainScenePtr->createGameObject();
-    playerGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-    playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
-    playerGO->transform()->setScale(glm::vec3(10.0f));
-
-    auto playerMesh = createCubeMesh();
-    auto renderer = playerGO->addComponent<dzemikk::MeshRenderer>();
-    renderer->setMesh(playerMesh);
-    renderer->setMaterial(materialA);
-    renderer->setTransform(playerGO->transform());
-
-    playerGO->transform()->setScale(glm::vec3(1.f));
-    playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
-
-    dzemikk::Animator* animator = playerGO->addComponent<dzemikk::Animator>();
+    dzemikk::Animator* animator = enemyGO->addComponent<dzemikk::Animator>();
     std::shared_ptr<dzemikk::AnimationStateMachine> animationStateMachine =
         std::make_shared<dzemikk::AnimationStateMachine>();
     std::unique_ptr<dzemikk::AnimationState> idleState =
@@ -452,24 +437,26 @@ int main() {
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(2, 1);
     dzemikk::AnimationTrack* animationTrack = new dzemikk::AnimationTrack("Test");
 
-    animationTrack->addScaleKey(0.0f, glm::vec3(1.0f, 1.0f, 1.0f));
-    animationTrack->addScaleKey(0.5f, glm::vec3(1.2f, 1.2f, 1.2f));
-    animationTrack->addScaleKey(1.0f, glm::vec3(1.0f, 1.0f, 1.0f));
+    animationTrack->addScaleKey(0.0f, glm::vec3(0.01f, 0.01f, .01f));
 
     animationTrack->addRotationKey(0.0f, glm::vec3(0.0f, 90.0f, 0.0f));
     animationTrack->addRotationKey(0.5f, glm::vec3(0.0f, 45.0f, 0.0f));
     animationTrack->addRotationKey(1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+    animationTrack->addRotationKey(1.5f, glm::vec3(0.0f, 45.0f, 0.0f));
+    animationTrack->addRotationKey(2.0f, glm::vec3(0.0f, 90.0f, 0.0f));
 
-    animationTrack->addPositionKey(0.0f, glm::vec3(0.0f, 0.0f, 0.0f));
-    animationTrack->addPositionKey(0.5f, glm::vec3(1.0f, 0.0f, 0.0f));
-    animationTrack->addPositionKey(1.0f, glm::vec3(2.0f, 0.0f, 0.0f));
+    animationTrack->addPositionKey(0.0f, glm::vec3(2.0f, 1.5f, 0.0f));
+    animationTrack->addPositionKey(0.5f, glm::vec3(3.0f, 1.5f, 0.0f));
+    animationTrack->addPositionKey(1.0f, glm::vec3(4.0f, 1.5f, 0.0f));
+    animationTrack->addPositionKey(1.5f, glm::vec3(3.0f, 1.5f, 0.0f));
+    animationTrack->addPositionKey(2.0f, glm::vec3(2.0f, 1.5f, 0.0f));
 
     animationClip->addTrack(animationTrack);
     idleState->setClip(animationClip);
 
     animator->setStateMachine(animationStateMachine);
     animationStateMachine->addState(std::move(idleState));
-    animationClip->transform = playerGO->transform();
+    animationClip->transform = enemyGO->transform();
 
     // Assimp::Importer importer;
     // const aiScene* scene = importer.ReadFile("./res/models/model.fbx", aiProcess_Triangulate |

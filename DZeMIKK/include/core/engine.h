@@ -20,29 +20,28 @@ class Engine {
     ~Engine();
 
     void start();
+    std::shared_ptr<Renderer> getRenderer();
+    std::shared_ptr<Window> getWindow();
+    std::shared_ptr<SceneManager> getSceneManager();
+    std::shared_ptr<Time> getTime();
+    std::shared_ptr<AnimationModule> getAnimationSystem();
+    std::shared_ptr<AssetManager> getAssetManager();
+    template <std::derived_from<IEngineModule> T> std::shared_ptr<T> getModule() const;
 
-    private:
-        void init();
-        void shutdown();
-        std::vector<std::shared_ptr<IEngineModule>> _modules;
-        std::shared_ptr<Window> _mainWindow;
-        std::shared_ptr<Renderer> _renderer;
-        std::shared_ptr<SceneManager> _sceneManager;
-        std::shared_ptr<Time> _time;
-        std::shared_ptr<AnimationModule> _animationSystem;
-        std::shared_ptr<AssetManager> _assetManager;
-
-		std::shared_ptr<Renderer> getRenderer();
-		std::shared_ptr<Window> getWindow();
-		std::shared_ptr<SceneManager> getSceneManager();
-		std::shared_ptr<Time> getTime();
-		std::shared_ptr<AnimationModule> getAnimationSystem();
-		std::shared_ptr<AssetManager> getAssetManager();
-		template <std::derived_from<IEngineModule> T> std::shared_ptr<T> getModule() const;
-		// --- Only for test DELETE THIS
-		void updateCameraWASD(float speed);
-		void updateCameraArrows(float speed);
-		void updateMouseUI(float deltaTime);
+   private:
+    void init();
+    void shutdown();
+    std::vector<std::shared_ptr<IEngineModule>> _modules;
+    std::shared_ptr<Window> _mainWindow;
+    std::shared_ptr<Renderer> _renderer;
+    std::shared_ptr<SceneManager> _sceneManager;
+    std::shared_ptr<Time> _time;
+    std::shared_ptr<AnimationModule> _animationSystem;
+    std::shared_ptr<AssetManager> _assetManager;
+	// --- Only for test DELETE THIS
+	void updateCameraWASD(float speed);
+	void updateCameraArrows(float speed);
+	void updateMouseUI(float deltaTime);
 
 
     float _accumulator = 0.0f;
