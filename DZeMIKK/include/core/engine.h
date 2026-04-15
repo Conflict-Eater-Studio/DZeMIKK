@@ -13,6 +13,7 @@ class Time;
 class Window;
 class Renderer;
 class AnimationModule;
+class AssetManager;
 class Engine {
     public:
         Engine();
@@ -25,13 +26,13 @@ class Engine {
         std::shared_ptr<SceneManager> getSceneManager();
         std::shared_ptr<Time> getTime();
         std::shared_ptr<AnimationModule> getAnimationSystem();
+        std::shared_ptr<AssetManager> getAssetManager();
         template <std::derived_from<IEngineModule> T>
         std::shared_ptr<T> getModule() const;
           // --- Only for test DELETE THIS
         void updateCameraWASD(float speed);
         void updateCameraArrows(float speed);
 
-         Scene* scene;
     private:
         void init();
         void shutdown();
@@ -41,6 +42,7 @@ class Engine {
         std::shared_ptr<SceneManager> _sceneManager;
         std::shared_ptr<Time> _time;
         std::shared_ptr<AnimationModule> _animationSystem;
+        std::shared_ptr<AssetManager> _assetManager;
 
         float _accumulator = 0.0f;
 

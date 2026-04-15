@@ -5,14 +5,16 @@ Checks: >
   modernize-*,
   readability-*,
   -readability-magic-numbers,
+  -readability-identifier-length,
   cppcoreguidelines-*,
   -cppcoreguidelines-avoid-magic-numbers,
   readability-identifier-naming,
   -readability-implicit-bool-conversion,
   -modernize-use-trailing-return-type,
-  -cppcoreguidelines-non-private-member-variables-in-classes
-WarningsAsErrors: '*'
-HeaderFilterRegex: '.*'
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -bugprone-easily-swappable-parameters
+WarningsAsErrors: "*"
+HeaderFilterRegex: ".*"
 FormatStyle: file
 
 CheckOptions:
@@ -55,9 +57,9 @@ CheckOptions:
   - key: readability-identifier-naming.StaticConstantCase
     value: CamelCase
   - key: readability-identifier-naming.StaticConstantPrefix
-    value: k
+    value: ""
   - key: readability-identifier-naming.LocalConstantCase
-    value: lower_case
+    value: camelBack
 
   - key: readability-identifier-naming.MacroDefinitionCase
     value: UPPER_CASE

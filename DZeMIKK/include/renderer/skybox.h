@@ -19,7 +19,6 @@ namespace dzemikk {
     class Skybox {
     public:
         using MeshPtr = std::unique_ptr<Mesh>;
-        using ShaderPtr = std::unique_ptr<Shader>;
 
         /**
          * @brief Defines skybox rendering mode.
@@ -88,13 +87,15 @@ namespace dzemikk {
             return _color;
         }
 
+        void setShader(Shader* shader);
+
         #pragma endregion
 
     private:
         Mode _mode = Mode::Color;
 
         MeshPtr _cubeMesh;
-        ShaderPtr _shader;
+        Shader* _shader = nullptr;
 
         GLuint _cubemapTex = 0;
         glm::vec3 _color = glm::vec3(0.5f, 0.7f, 1.0f);
@@ -102,7 +103,6 @@ namespace dzemikk {
         #pragma region Initialization
 
         void initCube();
-        void initShader();
 
         #pragma endregion
     };

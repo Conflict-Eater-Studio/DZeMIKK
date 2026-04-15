@@ -12,10 +12,19 @@
 #include "core/time.h"
 #include "core/window.h"
 #include "ecs/components/camera.h"
+#include "ecs/components/transform.h"
+#include "ecs/gameobject.h"
 #include "ecs/scenemanager.h"
 #include "renderer/renderer.h"
+#include "renderer/font.h"
+#include "renderer/texture.h"
+#include "audio/sound.h"
+#include "assetManager/assetmanager.h"
+
+#include "core/profiler.h"
 
 #include <GLFW/glfw3.h>
+#include <iostream>
 namespace dzemikk {
 
 Engine::Engine() {
@@ -28,11 +37,13 @@ Engine::~Engine() {
 
 void Engine::init() {
     _mainWindow = std::make_shared<Window>(1920, 1080, "DZeMIKK");
+    _assetManager = std::make_shared<AssetManager>();
     _renderer = std::make_shared<Renderer>();
     _sceneManager = std::make_shared<SceneManager>();
     _time = std::make_shared<Time>();
     _animationSystem = std::make_shared<AnimationModule>();
 
+    _modules.push_back(_assetManager);
     _modules.push_back(_mainWindow);
     _modules.push_back(_renderer);
     _modules.push_back(_sceneManager);
@@ -99,31 +110,28 @@ void Engine::start() {
         ImGui::NewFrame();
 
         ImGui::Begin("Renderer");
-
-        float dt_ms = deltaTime * 1000.0f;
-        ImGui::Text("Application %.3f ms/frame (%.1f FPS)",
-            dt_ms,
-            1.0f / deltaTime);
-
-        ImGui::ColorEdit4("Clear Color",
-            reinterpret_cast<float*>(&clear_color));
-
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", _time->deltaTime,
+                    1.0f / _time->deltaTime);
+        ImGui::Separator();
+        
+        const auto& stats = Profiler::rendererStats;
+        ImGui::Text("Render Stats:");
+        ImGui::Text("Draw Calls:      %u", stats.drawCalls);
+        ImGui::Text("Objects:         %u", stats.renderedObjects);
+        ImGui::Text("Triangles:       %u", stats.triangleCount);
+        ImGui::Text("Vertices:        %u", stats.vertexCount);
+        ImGui::Text("State Changes:   %u", stats.stateChanges);
+        
+        ImGui::Separator();
+        ImGui::Text("Background");
+        ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
         ImGui::End();
 
-        _mainWindow->clear(
-            clear_color.x,
-            clear_color.y,
-            clear_color.z,
-            clear_color.w
-        );
+        _mainWindow->clear(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
 #else
         _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
-        // --- Only for test DELETE THIS
-        if (scene)
-            scene->update(_time->getDeltaTime());
-
         updateCameraWASD(1.f);
         updateCameraArrows(1.1f);
         _renderer->render();
@@ -154,6 +162,10 @@ std::shared_ptr<Time> Engine::getTime() {
 }
 std::shared_ptr<AnimationModule> Engine::getAnimationSystem() {
     return _animationSystem;
+}
+
+std::shared_ptr<AssetManager> Engine::getAssetManager() {
+    return _assetManager;
 }
 
 template <std::derived_from<IEngineModule> T>
@@ -214,5 +226,33 @@ void Engine::updateCameraArrows(float speed) {
 
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_DOWN) == GLFW_PRESS)
         transform->rotate(glm::angleAxis(glm::radians(-deltaAngle), transform->right()));
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_R) == GLFW_PRESS) {
+        getAssetManager()->reload<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
+    }
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_T) == GLFW_PRESS) {
+        getAssetManager()->reload<dzemikk::Mesh>("models/pole.fbx");
+    }
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Y) == GLFW_PRESS) {
+        getAssetManager()->reload<dzemikk::Shader>("shaders/quad");
+    }
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_U) == GLFW_PRESS) {
+        getAssetManager()->reload<dzemikk::Skybox>("textures/Daylight Box_Pieces");
+    }
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_I) == GLFW_PRESS) {
+        getAssetManager()->reload<dzemikk::Sound>("audio/prime_coToZaHex.wav");
+        auto sound = getAssetManager()->get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
+        sound.get()->play(getAssetManager()->getFMODSystem());
+    }
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_O) == GLFW_PRESS) {
+        getAssetManager()->reload<dzemikk::Texture>("textures/tex3.png");
+    }
+
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_J) == GLFW_PRESS) {
+        getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
+    }
+    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_K) == GLFW_PRESS) {
+        getAssetManager()->unload("models/pole.fbx");
+    }
 }
 }

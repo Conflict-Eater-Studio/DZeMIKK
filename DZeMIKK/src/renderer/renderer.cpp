@@ -3,6 +3,7 @@
 #include "renderer/material.h"
 #include "renderer/mesh.h"
 #include "renderer/font.h"
+#include "renderer/texture.h"
 #include "ecs/componentRegistry.h"
 
 #include "ecs/components/meshRenderer.h"
@@ -11,6 +12,7 @@
 #include "ecs/components/camera.h"
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
+#include "core/profiler.h"
 #include <iostream>
 #include <map>
 
@@ -33,7 +35,7 @@ void dzemikk::Renderer::Initialize() {
     
     glEnable(GL_MULTISAMPLE);
 
-    _skybox = std::make_unique<Skybox>();
+    _skybox = new Skybox();
 
     const char* vertexSrc = R"(
     #version 330 core
@@ -100,6 +102,7 @@ void dzemikk::Renderer::UnInitialize() {
 }
 
 void dzemikk::Renderer::render() {
+    Profiler::resetFrame();
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
@@ -113,6 +116,11 @@ void dzemikk::Renderer::render() {
         glm::mat4 viewNoTrans = _sceneCamera->getView() * rotation;
 
         _skybox->render(viewNoTrans, _sceneCamera->getProjection());
+
+        Profiler::rendererStats.drawCalls++;
+        Profiler::rendererStats.renderedObjects++;
+        Profiler::rendererStats.vertexCount += 36;
+        Profiler::rendererStats.triangleCount += 12;
     }
 
     glEnable(GL_CULL_FACE);
@@ -171,6 +179,10 @@ void dzemikk::Renderer::render() {
         }
 
         batch->models.push_back(r->getTransform()->getWorldMatrix());
+
+        Profiler::rendererStats.renderedObjects++;
+        Profiler::rendererStats.vertexCount += batch->mesh->getVertexCount();
+        Profiler::rendererStats.triangleCount += batch->mesh->getVertexCount() / 3;
     }
 
     for (auto& batch : _batches) {
@@ -188,6 +200,7 @@ void dzemikk::Renderer::render() {
         shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
 
         mesh->drawInstanced(batch.models, batch.instanceVBO);
+        Profiler::rendererStats.drawCalls++;
     }
 
     if (_uiCamera)
@@ -197,7 +210,7 @@ void dzemikk::Renderer::render() {
     dzemikk::ComponentRegistry::get().getComponents<SpriteRenderer>(_spriteRenderers);
     glDisable(GL_DEPTH_TEST);
 
-    for (auto* r : _spriteRenderers) {
+for (auto* r : _spriteRenderers) {
         if (!r->isValid())
             continue;
 
@@ -207,12 +220,22 @@ void dzemikk::Renderer::render() {
         shader->setMat4("model", r->getTransform()->getWorldMatrix());
         shader->setMat4("projection", _uiProjection);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, r->getTexture());
-        shader->setInt("spriteTexture", 0);
+        if (r->hasTexture()) {
+            r->getTexture()->bind(0);
+            shader->setInt("spriteTexture", 0);
+            shader->setBool("useTexture", true);
+        } else {
+            shader->setBool("useTexture", false);
+        }
+
         shader->setVec4("spriteColor", r->getColor());
 
         r->getMesh()->draw();
+
+        Profiler::rendererStats.drawCalls++;
+        Profiler::rendererStats.renderedObjects++;
+        Profiler::rendererStats.vertexCount += r->getMesh()->getVertexCount();
+        Profiler::rendererStats.triangleCount += r->getMesh()->getVertexCount() / 3;
     }
 
     std::vector<TextRenderer*> texts;
@@ -256,6 +279,12 @@ void dzemikk::Renderer::render() {
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 
             glDrawArrays(GL_TRIANGLES, 0, 6);
+
+            Profiler::rendererStats.drawCalls++;
+
+            Profiler::rendererStats.renderedObjects++;
+            Profiler::rendererStats.vertexCount += 6;
+            Profiler::rendererStats.triangleCount += 2;
 
             x += (ch.advance >> 6) * t->scale;
         }
@@ -304,14 +333,14 @@ void dzemikk::Renderer::setActiveUICameraById(int cameraId) {
     std::cerr << "[Renderer] Warning: UI camera with ID " << cameraId << " not found.\n";
 }
 
-void dzemikk::Renderer::setSkybox(std::unique_ptr<Skybox> skybox) {
+void dzemikk::Renderer::setSkybox(Skybox* skybox) {
     if (!skybox) {
-        _skybox.reset();
+        _skybox = nullptr;
         return;
     }
-    _skybox = std::move(skybox);
+    _skybox = skybox;
 }
 
 const dzemikk::Skybox* dzemikk::Renderer::getSkybox() const {
-    return _skybox.get();
+    return _skybox;
 }

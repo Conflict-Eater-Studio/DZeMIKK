@@ -2,24 +2,30 @@
 #define DZEMIKK_TEXT_RENDERER_H
 
 #include "../component.h"
-#include <string>
+
 #include <glm/ext/vector_float3.hpp>
+#include <string>
+
 
 namespace dzemikk {
-    class Font;
+class Font;
 
-	class TextRenderer : public Component {
-    public:
-        std::string text = "Hello";
-        float scale = 1.0f;
-        glm::vec3 color = glm::vec3(1.0f);
+class TextRenderer : public Component {
+  public:
+    std::string text = "Hello";
+    float scale = 1.0f;
+    glm::vec3 color = glm::vec3(1.0f);
 
-        Font* font = nullptr;
+    Font* font = nullptr;
 
-        bool isValid() const {
-            return font != nullptr && !text.empty();
-        }
-	};	
+    bool isValid() const {
+        return font != nullptr && !text.empty();
+    }
+
+    [[nodiscard]] std::string typeName() const override {
+        return "TextRenderer";
+    };
+};
 
 } // namespace dzemikk
 

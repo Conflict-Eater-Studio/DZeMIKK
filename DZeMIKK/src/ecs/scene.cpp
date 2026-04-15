@@ -9,6 +9,7 @@
 #include <unordered_set>
 
 namespace dzemikk {
+Scene::Scene() : _id(boost::uuids::random_generator()()) {};
 
 GameObject* Scene::createGameObject() {
     auto object = std::make_unique<GameObject>();
@@ -90,22 +91,11 @@ void Scene::fixedUpdate(double deltaTime) {
     for (auto* mono : active_snapshot) {
         if (!mono || std::ranges::find(_active, mono) == _active.end()) {
             continue;
-            if (_objects.empty()) return;
-            // Update all behaviours
-            for (const auto& object : _objects) {
-                for (const auto& mono : object->getMonoBehaviours()) {
-                    if (!mono->hasStarted()) {
-                        mono->start();
-                        mono->markStarted();
-                    }
-                    mono->update(deltaTime);
-                }
-            }
-            mono->fixedUpdate(deltaTime);
-
-            processDelete();
         }
+        mono->fixedUpdate(deltaTime);
     }
+
+    processDelete();
 }
 
 void Scene::processPendingStart() {
@@ -137,9 +127,12 @@ void Scene::processDelete() {
 
         if (obj->getParent()) {
             obj->getParent()->detachChild(obj);
-            _pendingDestroy.clear();
         }
+
+        std::erase_if(_objects, [obj](const auto& lObj) { return lObj.get() == obj; });
     }
+
+    _pendingDestroy.clear();
 }
 
 void Scene::addPending(MonoBehaviour* mono) {
@@ -153,5 +146,17 @@ void Scene::addPending(MonoBehaviour* mono) {
 void Scene::removeActive(MonoBehaviour* mono) {
     std::erase(_active, mono);
     std::erase(_pendingStart, mono);
+}
+
+boost::uuids::uuid Scene::getId() const {
+    return _id;
+}
+
+const std::vector<std::unique_ptr<GameObject>>& Scene::getObjects() const {
+    return _objects;
+}
+
+void Scene::setId(const boost::uuids::uuid& uuid) {
+    _id = uuid;
 }
 } // namespace dzemikk

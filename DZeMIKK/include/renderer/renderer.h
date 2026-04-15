@@ -102,7 +102,7 @@ namespace dzemikk {
         /**
          * @brief Sets a custom skybox using a cubemap texture.
          */
-        void setSkybox(std::unique_ptr<Skybox> skybox);
+        void setSkybox(Skybox* skybox);
 
         /**
          * @brief Returns the currently active skybox.
@@ -145,7 +145,7 @@ namespace dzemikk {
         unsigned int _uboMatrices;
         Frustum _frustum;
 
-        std::unique_ptr<Skybox> _skybox;
+        Skybox* _skybox;
 
         Shader* _textShader = nullptr;
         GLuint textVAO = 0;

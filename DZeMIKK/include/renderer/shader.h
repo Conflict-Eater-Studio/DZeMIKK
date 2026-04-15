@@ -92,6 +92,8 @@ namespace dzemikk {
 
         #pragma endregion
 
+        void recompile(const char* vertSrc, const char* fragSrc);
+
     private:
         #pragma region Internal state
 
