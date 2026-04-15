@@ -5,11 +5,19 @@
 #include "spdlog/spdlog.h"
 
 namespace dzemikk {
-    void AnimationModule::update(float deltaTime) const {
-        std::vector<Animator*> out;
-        ComponentRegistry::get().getComponents<Animator>(out);
-        for (const auto& element : out) {
+    void AnimationModule::update(float deltaTime)  {
+        for (const auto& element : _animators) {
             element->update(deltaTime);
+        }
+    }
+    void AnimationModule::registerAnimator(Animator* animator) {
+        _animators.push_back(animator);
+    }
+    void AnimationModule::unregisterAnimator(const Animator* animator) {
+        auto it = std::find(_animators.begin(), _animators.end(), animator);
+        if (it != _animators.end()) {
+            *it = _animators.back();
+            _animators.pop_back();
         }
     }
     void AnimationModule::Initialize() {
