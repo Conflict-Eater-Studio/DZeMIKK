@@ -4,6 +4,8 @@
 #include "animation/animationtrack.h"
 #include "animation/quaterniontrack.h"
 #include "animation/vectortrack.h"
+#include "animation/animationmodule.h"
+
 #include "assetManager/assetmanager.h"
 #include "audio/sound.h"
 
@@ -103,12 +105,12 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Mater
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
 
-    auto m1 = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
+    auto m1 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
     engine->getAssetManager()->unload("models/pole.fbx");
 
-    auto m2 = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
-    auto m3 = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
+    auto m2 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
+    auto m3 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
     auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
     skybox.get()->setShader(engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox").get());
@@ -413,41 +415,37 @@ int main() {
     auto sound = engine->getAssetManager()->get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
     sound.get()->play(system);
 
-    auto test = mainScenePtr->createGameObject();
-    test->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-    test->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
-    test->transform()->setScale(glm::vec3(10.0f));
-
-    auto tMesh =  engine->getAssetManager()->getPrimitive(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Cube);
-    auto renderer = test->addComponent<dzemikk::MeshRenderer>();
-    renderer->setMesh(tMesh);
-    renderer->setMaterial(materialA);
-    renderer->setTransform(playerGO->transform());
-
-    playerGO->transform()->setScale(glm::vec3(1.f));
-    playerGO->transform()->setRotation(glm::quat(glm::vec3(0.0f, 0.0f, 0.0f)));
-
-    dzemikk::Animator* animator =  playerGO->addComponent<dzemikk::Animator>();
+    dzemikk::Animator* animator = enemyGO->addComponent<dzemikk::Animator>();
+    engine->getAnimationSystem()->registerAnimator(animator);
 
     std::shared_ptr<dzemikk::AnimationStateMachine> animationStateMachine = std::make_shared<dzemikk::AnimationStateMachine>();
     dzemikk::AnimationState* idleState = animationStateMachine->addState();
 
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(4, 1);
 
-    dzemikk::QuaternionTrack* animationTrack =  animationClip->addQuaternionTrack();
+    //dzemikk::QuaternionTrack* animationTrack =  animationClip->addQuaternionTrack();
+    dzemikk::VectorTrack* animationTrack2 = animationClip->addVectorTrack();
 
     idleState->setClip(animationClip);
-    dzemikk::Transform* t = playerGO->transform();
-    animationTrack->bindRotation(*t);
-    animationTrack->addKey({0.0f, glm::quat(glm::vec3(0.0f, 0.0f, 0.0f))});
-    animationTrack->addKey({1.0f, glm::quat(glm::vec3(90.0f, 45.0f, 0.0f))});
-    animationTrack->addKey({2.0f, glm::quat(glm::vec3(34.0f, 30.0f, 0.0f))});
-    animationTrack->addKey({3.0f, glm::quat(glm::vec3(25.0f, 0.0f, 0.0f))});
-    animationTrack->addKey({4.0f, glm::quat(glm::vec3(10.0f, 0.0f, 0.0f))});
+    dzemikk::Transform* t = enemyGO->transform();
+    //animationTrack->bindRotation(*t);
+    //animationTrack->addKey({0.0f, glm::quat(glm::vec3(0.0f, 0.0f, 0.0f))});
+    //animationTrack->addKey({1.0f, glm::quat(glm::vec3(90.0f, 45.0f, 0.0f))});
+    //animationTrack->addKey({2.0f, glm::quat(glm::vec3(34.0f, 30.0f, 0.0f))});
+    //animationTrack->addKey({3.0f, glm::quat(glm::vec3(25.0f, 0.0f, 0.0f))});
+    //animationTrack->addKey({4.0f, glm::quat(glm::vec3(10.0f, 0.0f, 0.0f))});
+
+    animationTrack2->bindPosition(*t);
+    animationTrack2->addKey({0.0f, glm::vec3(3.0, 1.5, 0.0)});
+    animationTrack2->addKey({1.0f, glm::vec3(4.0, 1.5, 0.0)});
+    animationTrack2->addKey({2.0f, glm::vec3(5.0, 1.5, 0.0)});
+    animationTrack2->addKey({3.0f, glm::vec3(4.0, 1.5, 0.0)});
+    animationTrack2->addKey({4.0f, glm::vec3(3.0, 1.5, 0.0)});
+
+
+
 
     animator->setStateMachine(animationStateMachine);
-    animationStateMachine->addState(std::move(idleState));
-    animationClip->transform = enemyGO->transform();
     engine->start();
 
     return 0;

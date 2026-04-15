@@ -15,6 +15,7 @@ class Time;
 class Window;
 class Renderer;
 class AssetManager;
+class AnimationModule;
 
 /**
  * @brief The core application class managing the game loop and all subsystems.
