@@ -108,15 +108,19 @@ void Engine::start() {
         _time->update();
 
         float deltaTime = _time->getDeltaTime();
+        Profiler::Get().BeginFrame(deltaTime);
+
         _accumulator += deltaTime;
 
-        _sceneManager->update(deltaTime);
+        {
+            DZ_PROFILE_CPU("Game Logic & Update");
+            _sceneManager->update(deltaTime);
+            _animationModule->update(deltaTime);
 
-        _animationModule->update(deltaTime);
-
-        if (_accumulator >= fixedDeltaTime) {
-            _sceneManager->fixedUpdate(fixedDeltaTime);
-            _accumulator -= fixedDeltaTime;
+            if (_accumulator >= fixedDeltaTime) {
+                _sceneManager->fixedUpdate(fixedDeltaTime);
+                _accumulator -= fixedDeltaTime;
+            }
         }
 
 #if DZEMIKK_DEV_TOOLS
@@ -125,20 +129,7 @@ void Engine::start() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("Renderer");
-        float dt_ms = deltaTime * 1000.0f;
-        ImGui::Text("Application %.3f ms/frame (%.1f FPS)", dt_ms, 1.0f / deltaTime);
-        ImGui::Separator();
-
-        const auto& stats = Profiler::rendererStats;
-        ImGui::Text("Render Stats:");
-        ImGui::Text("Draw Calls:      %u", stats.drawCalls);
-        ImGui::Text("Objects:         %u", stats.renderedObjects);
-        ImGui::Text("Triangles:       %u", stats.triangleCount);
-        ImGui::Text("Vertices:        %u", stats.vertexCount);
-        ImGui::Text("State Changes:   %u", stats.stateChanges);
-
-        ImGui::Separator();
+        ImGui::Begin("Debug Panel");
         ImGui::Text("Background");
         ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
         ImGui::End();
@@ -151,8 +142,12 @@ void Engine::start() {
         updateCameraWASD(1.f);
         updateCameraArrows(1.1f);
         updateMouseUI(deltaTime);
-        _renderer->render();
+        {
+            DZ_PROFILE_CPU("Renderer (Total CPU)");
+            _renderer->render();
+        }
 #if DZEMIKK_DEV_TOOLS
+        Profiler::Get().DrawImGui();
         glDisable(GL_DEPTH_TEST);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

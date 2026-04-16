@@ -9,14 +9,12 @@
 #include "assetManager/assetmanager.h"
 #include "audio/sound.h"
 
-
 #include "core/engine.h"
 #include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
-#include "ecs/components/animator.h"
 #include "ecs/components/ui/canvas.h"
 #include "ecs/components/ui/colors.h"
 #include "ecs/components/ui/rectTransform.h"
@@ -39,26 +37,11 @@
 #include "renderer/model.h"
 #include "renderer/mesh.h"
 
-#include "assetManager/assetmanager.h"
-
-#include "audio/sound.h"
-
-#include <filesystem>
 #include <iostream>
 #include <queue>
 #include <random>
 #include <set>
-#include <GLFW/glfw3.h>
 #include <memory>
-#include "spdlog/spdlog.h"
-
-#include <GLFW/glfw3.h>
-#include <algorithm>
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-#include <glad/glad.h>
-#include <stb/stb_image.h>
 
 class TextUpdater : public dzemikk::MonoBehaviour {
   public:

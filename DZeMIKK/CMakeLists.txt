@@ -19,6 +19,7 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"
         "${SRC_DIR}/core/time.cpp"
+        "${SRC_DIR}/core/profiler.cpp"
         "${SRC_DIR}/renderer/renderer.cpp"
     	"${SRC_DIR}/renderer/mesh.cpp"
     	"${SRC_DIR}/renderer/shader.cpp"
@@ -74,6 +75,7 @@ set(ENGINE_SOURCES
 set(ENGINE_HEADERS
         "${INC_DIR}/core/engine.h"
         "${INC_DIR}/core/window.h"
+        "${INC_DIR}/core/profiler.h"
         "${INC_DIR}/core/iEngineModule.h"
         "${INC_DIR}/renderer/renderer.h"
         "${INC_DIR}/renderer/mesh.h"

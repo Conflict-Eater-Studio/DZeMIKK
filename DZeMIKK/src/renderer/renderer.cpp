@@ -9,7 +9,6 @@
 
 #include "core/profiler.h"
 #include "ecs/component.h"
-#include "ecs/componentRegistry.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
@@ -19,14 +18,9 @@
 #include "ecs/components/ui/uiSpriteRenderer.h"
 #include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
-#include "renderer/font.h"
-#include "renderer/material.h"
-#include "renderer/mesh.h"
-#include "renderer/shader.h"
 
 #include <GLFW/glfw3.h>
 #include <algorithm>
-#include <filesystem>
 #include <iostream>
 #include <limits>
 #include <map>
@@ -112,7 +106,6 @@ void dzemikk::Renderer::uninitialize() {
 }
 
 void dzemikk::Renderer::render() {
-    Profiler::resetFrame();
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
@@ -127,10 +120,10 @@ void dzemikk::Renderer::render() {
 
         _skybox->render(viewNoTrans, _sceneCamera->getProjection());
 
-        Profiler::rendererStats.drawCalls++;
-        Profiler::rendererStats.renderedObjects++;
-        Profiler::rendererStats.vertexCount += 36;
-        Profiler::rendererStats.triangleCount += 12;
+        Profiler::Get().stats.drawCalls++;
+        Profiler::Get().stats.renderedObjects++;
+        Profiler::Get().stats.vertexCount += 36;
+        Profiler::Get().stats.triangleCount += 12;
     }
 
     glEnable(GL_CULL_FACE);
@@ -160,84 +153,86 @@ void dzemikk::Renderer::render() {
 
     dzemikk::ComponentRegistry::get().getComponents<MeshRenderer>(_meshRenderers);
 
-    for (auto* r : _meshRenderers) {
-        if (!r->isValid())
-            continue;
-
-        Model* model = r->getModel();
-        glm::mat4 transform = r->getTransform()->getWorldMatrix();
-
-        float radius = r->getCullingRadius();
-
-        if (!_frustum.isSphereVisible(r->getTransform()->getPosition(), radius))
-            continue;
-
-        for (size_t i = 0; i < model->getSubMeshes().size(); i++) {
-            const auto* sub = model->getSubMesh(i);
-            if (!sub)
+    {
+        DZ_PROFILE_CPU("Frustum Culling & Batching");
+        for (auto* r : _meshRenderers) {
+            if (!r->isValid())
                 continue;
 
-            Mesh* mesh = sub->mesh.get();
+            Model* model = r->getModel();
+            glm::mat4 transform = r->getTransform()->getWorldMatrix();
 
-            Material* material = nullptr;
+            float radius = r->getCullingRadius();
 
-            if (i < r->getMaterials().size())
-                material = r->getMaterial(i);
-
-            if (!material && !r->getMaterials().empty())
-                material = r->getMaterial(0);
-
-            if (!material)
+            if (!_frustum.isSphereVisible(r->getTransform()->getPosition(), radius))
                 continue;
 
-            Batch* batch = nullptr;
+            for (size_t i = 0; i < model->getSubMeshes().size(); i++) {
+                const auto* sub = model->getSubMesh(i);
+                if (!sub)
+                    continue;
 
-            for (auto& b : _batches) {
-                if (b.mesh == mesh && b.material == material) {
-                    batch = &b;
-                    break;
+                Mesh* mesh = sub->mesh.get();
+
+                Material* material = nullptr;
+
+                if (i < r->getMaterials().size())
+                    material = r->getMaterial(i);
+
+                if (!material && !r->getMaterials().empty())
+                    material = r->getMaterial(0);
+
+                if (!material)
+                    continue;
+
+                Batch* batch = nullptr;
+
+                for (auto& b : _batches) {
+                    if (b.mesh == mesh && b.material == material) {
+                        batch = &b;
+                        break;
+                    }
                 }
+
+                if (!batch) {
+                    _batches.push_back({});
+                    batch = &_batches.back();
+
+                    batch->mesh = mesh;
+                    batch->material = material;
+
+                    glGenBuffers(1, &batch->instanceVBO);
+                }
+
+                batch->models.push_back(transform);
+                Profiler::Get().stats.renderedObjects++;
+                Profiler::Get().stats.vertexCount += batch->mesh->getVertexCount();
+                Profiler::Get().stats.triangleCount += batch->mesh->getVertexCount() / 3;
             }
-
-            if (!batch) {
-                _batches.push_back({});
-                batch = &_batches.back();
-
-                batch->mesh = mesh;
-                batch->material = material;
-
-                glGenBuffers(1, &batch->instanceVBO);
-            }
-
-            batch->models.push_back(transform);
         }
     }
 
-    for (auto& batch : _batches) {
-        if (batch.models.empty())
-            continue;
+    {
+        DZ_PROFILE_GPU("Opaque Rendering (Batches)");
+        for (auto& batch : _batches) {
+            if (batch.models.empty())
+                continue;
 
-        Mesh* mesh = batch.mesh;
-        Material* material = batch.material;
-        Shader* shader = material->getShader();
+            Mesh* mesh = batch.mesh;
+            Material* material = batch.material;
+            Shader* shader = material->getShader();
 
-        shader->bind();
+            shader->bind();
 
-        shader->setVec3("lightDir", glm::vec3(1.0f, -1.0f, -1.0f));
-        shader->setVec3("lightColor", glm::vec3(1.0f));
-        shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
+            shader->setVec3("lightDir", glm::vec3(1.0f, -1.0f, -1.0f));
+            shader->setVec3("lightColor", glm::vec3(1.0f));
+            shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
 
-        mesh->drawInstanced(batch.models, batch.instanceVBO);
-
-        Profiler::rendererStats.drawCalls++;
-
-        Profiler::rendererStats.renderedObjects += batch.models.size();
-
-        const size_t vertexCount = mesh->getVertexCount() * batch.models.size();
-        Profiler::rendererStats.vertexCount += vertexCount;
-
-        Profiler::rendererStats.triangleCount += (vertexCount / 3);
+            mesh->drawInstanced(batch.models, batch.instanceVBO);
+            Profiler::Get().stats.drawCalls++;
+        }
     }
+
 
     if (_uiCamera)
         _uiProjection = _uiCamera->getProjection();
@@ -245,64 +240,71 @@ void dzemikk::Renderer::render() {
     dzemikk::ComponentRegistry::get().getComponents<SpriteRenderer>(_spriteRenderers);
     glDisable(GL_DEPTH_TEST);
 
-for (auto* r : _spriteRenderers) {
-        if (!r->isValid())
-            continue;
+    {
+        DZ_PROFILE_GPU("Transparent Rendering (Sprites)");
+        for (auto* r : _spriteRenderers) {
+            if (!r->isValid())
+                continue;
 
-        Shader* shader = r->getMaterial()->getShader();
-        shader->bind();
+            Shader* shader = r->getMaterial()->getShader();
+            shader->bind();
 
-        shader->setMat4("model", r->getTransform()->getWorldMatrix());
-        shader->setMat4("projection", _uiProjection);
+            shader->setMat4("model", r->getTransform()->getWorldMatrix());
+            shader->setMat4("projection", _uiProjection);
 
-        if (r->hasTexture()) {
-            r->getTexture()->bind(0);
-            shader->setInt("spriteTexture", 0);
-            shader->setBool("useTexture", true);
-        } else {
-            shader->setBool("useTexture", false);
+            if (r->hasTexture()) {
+                r->getTexture()->bind(0);
+                shader->setInt("spriteTexture", 0);
+                shader->setBool("useTexture", true);
+            } else {
+                shader->setBool("useTexture", false);
+            }
+
+            shader->setVec4("spriteColor", r->getColor());
+
+            r->getMesh()->draw();
+
+            Profiler::Get().stats.drawCalls++;
+
+            Profiler::Get().stats.renderedObjects++;
+            Profiler::Get().stats.vertexCount += r->getMesh()->getVertexCount();
+            Profiler::Get().stats.triangleCount += r->getMesh()->getVertexCount() / 3;
         }
-
-        shader->setVec4("spriteColor", r->getColor());
-
-        r->getMesh()->draw();
-
-        Profiler::rendererStats.drawCalls++;
-        Profiler::rendererStats.renderedObjects++;
-        Profiler::rendererStats.vertexCount += r->getMesh()->getVertexCount();
-        Profiler::rendererStats.triangleCount += r->getMesh()->getVertexCount() / 3;
     }
 
     std::vector<UISpriteRenderer*> uiSprites;
     ComponentRegistry::get().getEnabledComponents<UISpriteRenderer>(uiSprites);
 
-    std::ranges::sort(uiSprites, [](UISpriteRenderer* a, UISpriteRenderer* b) {
-        unsigned int az = a->getOwner()->rectTransform()->getZIndex();
-        unsigned int bz = a->getOwner()->rectTransform()->getZIndex();
-        return az < bz;
-    });
-    for (auto* r : uiSprites) {
-        if (!r->isValid()) {
-            continue;
+    {
+        DZ_PROFILE_GPU("Image Rendering");
+        std::ranges::sort(uiSprites, [](UISpriteRenderer* a, UISpriteRenderer* b) {
+            unsigned int az = a->getOwner()->rectTransform()->getZIndex();
+            unsigned int bz = a->getOwner()->rectTransform()->getZIndex();
+            return az < bz;
+        });
+        for (auto* r : uiSprites) {
+            if (!r->isValid()) {
+                continue;
+            }
+
+            Shader* shader = r->getMaterial()->getShader();
+            shader->bind();
+
+            shader->setMat4("model", r->getRectTransform()->getWorldMatrix());
+            shader->setMat4("projection", _uiProjection);
+
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, r->getTexture());
+            shader->setInt("spriteTexture", 0);
+            shader->setVec4("spriteColor", r->getColor());
+
+            r->getMesh()->draw();
+            Profiler::Get().stats.drawCalls++;
+
+            Profiler::Get().stats.renderedObjects++;
+            Profiler::Get().stats.vertexCount += r->getMesh()->getVertexCount();
+            Profiler::Get().stats.triangleCount += r->getMesh()->getVertexCount() / 3;
         }
-
-        Shader* shader = r->getMaterial()->getShader();
-        shader->bind();
-
-        shader->setMat4("model", r->getRectTransform()->getWorldMatrix());
-        shader->setMat4("projection", _uiProjection);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, r->getTexture());
-        shader->setInt("spriteTexture", 0);
-        shader->setVec4("spriteColor", r->getColor());
-
-        r->getMesh()->draw();
-        Profiler::rendererStats.drawCalls++;
-
-        Profiler::rendererStats.renderedObjects++;
-        Profiler::rendererStats.vertexCount += r->getMesh()->getVertexCount();
-        Profiler::rendererStats.triangleCount += r->getMesh()->getVertexCount() / 3;
     }
 
     std::vector<TextRenderer*> texts;
@@ -311,177 +313,185 @@ for (auto* r : _spriteRenderers) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    for (auto* t : texts) {
-        if (!t->isValid())
-            continue;
+    {
+        DZ_PROFILE_GPU("Text Rendering");
+        for (auto* t : texts) {
+            if (!t->isValid())
+                continue;
 
-        Shader* shader = _textShader;
-        shader->bind();
+            Shader* shader = _textShader;
+            shader->bind();
 
-        shader->setMat4("projection", _uiProjection);
-        shader->setVec3("textColor", t->color);
+            shader->setMat4("projection", _uiProjection);
+            shader->setVec3("textColor", t->color);
 
-        float x = t->getOwner()->transform()->getPosition().x;
-        float y = t->getOwner()->transform()->getPosition().y;
+            float x = t->getOwner()->transform()->getPosition().x;
+            float y = t->getOwner()->transform()->getPosition().y;
 
-        glBindVertexArray(textVAO);
-        for (char c : t->text) {
-            Character ch = t->font->characters[c];
+            glBindVertexArray(textVAO);
+            for (char c : t->text) {
+                Character ch = t->font->characters[c];
 
-            float xpos = x + ch.bearing.x * t->scale;
-            float ypos = y - (ch.size.y - ch.bearing.y) * t->scale;
+                float xpos = x + ch.bearing.x * t->scale;
+                float ypos = y - (ch.size.y - ch.bearing.y) * t->scale;
 
-            float w = ch.size.x * t->scale;
-            float h = ch.size.y * t->scale;
+                float w = ch.size.x * t->scale;
+                float h = ch.size.y * t->scale;
 
-            float vertices[6][4] = {{xpos, ypos + h, 0.0f, 0.0f},    {xpos, ypos, 0.0f, 1.0f},
-                                    {xpos + w, ypos, 1.0f, 1.0f},
+                float vertices[6][4] = {
+                    {xpos, ypos + h, 0.0f, 0.0f},    {xpos, ypos, 0.0f, 1.0f},
+                    {xpos + w, ypos, 1.0f, 1.0f},
 
-                                    {xpos, ypos + h, 0.0f, 0.0f},    {xpos + w, ypos, 1.0f, 1.0f},
-                                    {xpos + w, ypos + h, 1.0f, 0.0f}};
+                    {xpos, ypos + h, 0.0f, 0.0f},    {xpos + w, ypos, 1.0f, 1.0f},
+                    {xpos + w, ypos + h, 1.0f, 0.0f}};
 
-            glBindTexture(GL_TEXTURE_2D, ch.textureID);
+                glBindTexture(GL_TEXTURE_2D, ch.textureID);
 
-            glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+                glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+                glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+                glDrawArrays(GL_TRIANGLES, 0, 6);
 
-            Profiler::rendererStats.drawCalls++;
+                Profiler::Get().stats.drawCalls++;
 
-            Profiler::rendererStats.renderedObjects++;
-            Profiler::rendererStats.vertexCount += 6;
-            Profiler::rendererStats.triangleCount += 2;
+                Profiler::Get().stats.renderedObjects++;
+                Profiler::Get().stats.vertexCount += 6;
+                Profiler::Get().stats.triangleCount += 2;
 
-            x += (ch.advance >> 6) * t->scale;
+                x += (ch.advance >> 6) * t->scale;
+            }
+            glBindVertexArray(0);
         }
-        glBindVertexArray(0);
     }
 
     std::vector<UITextRenderer*> uiTexts;
     ComponentRegistry::get().getComponents<UITextRenderer>(uiTexts);
 
-    for (auto* t : uiTexts) {
-        if (!t->isValid()) {
-            continue;
-        }
-
-        auto* owner = t->getOwner();
-        if (!owner) {
-            continue;
-        }
-
-        auto* rect = owner->getComponent<RectTransform>();
-        if (!rect) {
-            continue;
-        }
-
-        const glm::mat4 world = rect->getWorldMatrix();
-        const glm::vec4 p0 = world * glm::vec4(0.0F, 0.0F, 0.0F, 1.0F);
-        const float originX = p0[0];
-        const float originY = p0[1];
-        const glm::vec2 rectSize = rect->getSize();
-
-        float penX = 0.0F;
-        float minY = std::numeric_limits<float>::max();
-        float maxY = std::numeric_limits<float>::lowest();
-
-        for (char c : t->text) {
-            auto glyphIt = t->font->characters.find(c);
-            if (glyphIt == t->font->characters.end()) {
+    {
+        DZ_PROFILE_GPU("UI Text Rendering");
+        for (auto* t : uiTexts) {
+            if (!t->isValid()) {
                 continue;
             }
 
-            const Character& ch = glyphIt->second;
-            const float ypos = -(ch.size.y - ch.bearing.y) * t->scale;
-            const float h = ch.size.y * t->scale;
-
-            minY = std::min(minY, ypos);
-            maxY = std::max(maxY, ypos + h);
-
-            penX += (ch.advance >> 6) * t->scale;
-        }
-
-        if (minY > maxY) {
-            minY = 0.0F;
-            maxY = 0.0F;
-        }
-
-        const float textWidth = penX;
-        const float textHeight = maxY - minY;
-
-        float offsetX = 0.0F;
-        switch (t->horizontalAlign) {
-        case UITextRenderer::HorizontalAlign::Left:
-            offsetX = 0.0F;
-            break;
-        case UITextRenderer::HorizontalAlign::Center:
-            offsetX = (rectSize.x - textWidth) * 0.5F;
-            break;
-        case UITextRenderer::HorizontalAlign::Right:
-            offsetX = rectSize.x - textWidth;
-            break;
-        }
-
-        float offsetY = 0.0F;
-        switch (t->verticalAlign) {
-        case UITextRenderer::VerticalAlign::Bottom:
-            offsetY = -minY;
-            break;
-        case UITextRenderer::VerticalAlign::Middle:
-            offsetY = (rectSize.y - textHeight) * 0.5F - minY;
-            break;
-        case UITextRenderer::VerticalAlign::Top:
-            offsetY = rectSize.y - textHeight - minY;
-            break;
-        }
-
-        Shader* shader = _textShader;
-        shader->bind();
-
-        shader->setMat4("projection", _uiProjection);
-        shader->setVec3("textColor", t->color);
-
-        float x = originX + offsetX;
-        float y = originY + offsetY;
-
-        glBindVertexArray(textVAO);
-        for (char c : t->text) {
-            auto glyphIt = t->font->characters.find(c);
-            if (glyphIt == t->font->characters.end()) {
+            auto* owner = t->getOwner();
+            if (!owner) {
                 continue;
             }
 
-            const Character& ch = glyphIt->second;
+            auto* rect = owner->getComponent<RectTransform>();
+            if (!rect) {
+                continue;
+            }
 
-            float xpos = x + ch.bearing.x * t->scale;
-            float ypos = y - (ch.size.y - ch.bearing.y) * t->scale;
+            const glm::mat4 world = rect->getWorldMatrix();
+            const glm::vec4 p0 = world * glm::vec4(0.0F, 0.0F, 0.0F, 1.0F);
+            const float originX = p0[0];
+            const float originY = p0[1];
+            const glm::vec2 rectSize = rect->getSize();
 
-            float w = ch.size.x * t->scale;
-            float h = ch.size.y * t->scale;
+            float penX = 0.0F;
+            float minY = std::numeric_limits<float>::max();
+            float maxY = std::numeric_limits<float>::lowest();
 
-            float vertices[6][4] = {{xpos, ypos + h, 0.0f, 0.0f},    {xpos, ypos, 0.0f, 1.0f},
-                                    {xpos + w, ypos, 1.0f, 1.0f},
+            for (char c : t->text) {
+                auto glyphIt = t->font->characters.find(c);
+                if (glyphIt == t->font->characters.end()) {
+                    continue;
+                }
 
-                                    {xpos, ypos + h, 0.0f, 0.0f},    {xpos + w, ypos, 1.0f, 1.0f},
-                                    {xpos + w, ypos + h, 1.0f, 0.0f}};
+                const Character& ch = glyphIt->second;
+                const float ypos = -(ch.size.y - ch.bearing.y) * t->scale;
+                const float h = ch.size.y * t->scale;
 
-            glBindTexture(GL_TEXTURE_2D, ch.textureID);
+                minY = std::min(minY, ypos);
+                maxY = std::max(maxY, ypos + h);
 
-            glBindBuffer(GL_ARRAY_BUFFER, textVBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+                penX += (ch.advance >> 6) * t->scale;
+            }
 
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+            if (minY > maxY) {
+                minY = 0.0F;
+                maxY = 0.0F;
+            }
 
-            Profiler::rendererStats.drawCalls++;
+            const float textWidth = penX;
+            const float textHeight = maxY - minY;
 
-            Profiler::rendererStats.renderedObjects++;
-            Profiler::rendererStats.vertexCount += 6;
-            Profiler::rendererStats.triangleCount += 2;
+            float offsetX = 0.0F;
+            switch (t->horizontalAlign) {
+            case UITextRenderer::HorizontalAlign::Left:
+                offsetX = 0.0F;
+                break;
+            case UITextRenderer::HorizontalAlign::Center:
+                offsetX = (rectSize.x - textWidth) * 0.5F;
+                break;
+            case UITextRenderer::HorizontalAlign::Right:
+                offsetX = rectSize.x - textWidth;
+                break;
+            }
 
-            x += (ch.advance >> 6) * t->scale;
+            float offsetY = 0.0F;
+            switch (t->verticalAlign) {
+            case UITextRenderer::VerticalAlign::Bottom:
+                offsetY = -minY;
+                break;
+            case UITextRenderer::VerticalAlign::Middle:
+                offsetY = (rectSize.y - textHeight) * 0.5F - minY;
+                break;
+            case UITextRenderer::VerticalAlign::Top:
+                offsetY = rectSize.y - textHeight - minY;
+                break;
+            }
+
+            Shader* shader = _textShader;
+            shader->bind();
+
+            shader->setMat4("projection", _uiProjection);
+            shader->setVec3("textColor", t->color);
+
+            float x = originX + offsetX;
+            float y = originY + offsetY;
+
+            glBindVertexArray(textVAO);
+            for (char c : t->text) {
+                auto glyphIt = t->font->characters.find(c);
+                if (glyphIt == t->font->characters.end()) {
+                    continue;
+                }
+
+                const Character& ch = glyphIt->second;
+
+                float xpos = x + ch.bearing.x * t->scale;
+                float ypos = y - (ch.size.y - ch.bearing.y) * t->scale;
+
+                float w = ch.size.x * t->scale;
+                float h = ch.size.y * t->scale;
+
+                float vertices[6][4] = {
+                    {xpos, ypos + h, 0.0f, 0.0f},    {xpos, ypos, 0.0f, 1.0f},
+                    {xpos + w, ypos, 1.0f, 1.0f},
+
+                    {xpos, ypos + h, 0.0f, 0.0f},    {xpos + w, ypos, 1.0f, 1.0f},
+                    {xpos + w, ypos + h, 1.0f, 0.0f}};
+
+                glBindTexture(GL_TEXTURE_2D, ch.textureID);
+
+                glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+                glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+
+                glDrawArrays(GL_TRIANGLES, 0, 6);
+
+                Profiler::Get().stats.drawCalls++;
+
+                Profiler::Get().stats.renderedObjects++;
+                Profiler::Get().stats.vertexCount += 6;
+                Profiler::Get().stats.triangleCount += 2;
+
+                x += (ch.advance >> 6) * t->scale;
+            }
+            glBindVertexArray(0);
         }
-        glBindVertexArray(0);
     }
 }
 
