@@ -10,6 +10,10 @@
 #include <spdlog/spdlog.h>
 #endif
 
+#include "events/application_event.h"
+#include "events/key_event.h"
+#include "events/mouse_event.h"
+
 namespace dzemikk {
     Window::Window() : Window(1920, 1080, "DZeMIKK") {}
 
@@ -37,7 +41,12 @@ namespace dzemikk {
             throw std::runtime_error("Failed to create GLFW window");
         }
 
+        data_.Title = title;
+        data_.Width = width;
+        data_.Height = height;
+
         glfwMakeContextCurrent(window_);
+        glfwSetWindowUserPointer(window_, &data_);
 
         if (!gladLoadGLLoader(GLADloadproc(glfwGetProcAddress))) {
             glfwDestroyWindow(window_);
@@ -50,6 +59,75 @@ namespace dzemikk {
         }
 
         glViewport(0, 0, width, height);
+
+        // GLFW Callbacks
+        glfwSetWindowSizeCallback(window_, [](GLFWwindow* window, int width, int height) {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+            data.Width = width;
+            data.Height = height;
+
+            WindowResizeEvent event(width, height);
+            data.EventCallback(event);
+        });
+
+        glfwSetWindowCloseCallback(window_, [](GLFWwindow* window) {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+            WindowCloseEvent event;
+            data.EventCallback(event);
+        });
+
+        glfwSetKeyCallback(window_, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+            switch (action) {
+                case GLFW_PRESS: {
+                    KeyPressedEvent event(key, 0);
+                    data.EventCallback(event);
+                    break;
+                }
+                case GLFW_RELEASE: {
+                    KeyReleasedEvent event(key);
+                    data.EventCallback(event);
+                    break;
+                }
+                case GLFW_REPEAT: {
+                    KeyPressedEvent event(key, 1);
+                    data.EventCallback(event);
+                    break;
+                }
+            }
+        });
+
+        glfwSetMouseButtonCallback(window_, [](GLFWwindow* window, int button, int action, int mods) {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+            switch (action) {
+                case GLFW_PRESS: {
+                    MouseButtonPressedEvent event(button);
+                    data.EventCallback(event);
+                    break;
+                }
+                case GLFW_RELEASE: {
+                    MouseButtonReleasedEvent event(button);
+                    data.EventCallback(event);
+                    break;
+                }
+            }
+        });
+
+        glfwSetScrollCallback(window_, [](GLFWwindow* window, double xOffset, double yOffset) {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+            MouseScrolledEvent event((float)xOffset, (float)yOffset);
+            data.EventCallback(event);
+        });
+
+        glfwSetCursorPosCallback(window_, [](GLFWwindow* window, double xPos, double yPos) {
+            WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+            MouseMovedEvent event((float)xPos, (float)yPos);
+            data.EventCallback(event);
+        });
 #if DZEMIKK_DEV_TOOLS
         spdlog::info("OpenGL initialized successfully");
 #endif
