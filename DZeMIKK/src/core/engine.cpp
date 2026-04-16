@@ -25,6 +25,7 @@
 #include "renderer/Model.h"
 #include "audio/sound.h"
 #include "assetManager/assetmanager.h"
+#include "input/input.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -46,6 +47,7 @@ void Engine::init() {
     _sceneManager = std::make_unique<SceneManager>();
     _time = std::make_unique<Time>();
     _animationModule = std::make_unique<AnimationModule>();
+    _input = std::make_unique<Input>();
 
     _mainWindow->initialize();
     _assetManager->initialize();
@@ -53,6 +55,10 @@ void Engine::init() {
     _sceneManager->initialize();
     _time->initialize();
     _animationModule->initialize();
+
+    _input->setInputWindow(_mainWindow->nativeHandle());
+    _mainWindow->setEventCallback([this](Event& e) { this->OnEvent(e); });
+    _input->initialize();
 
     // _modules.push_back(std::move(_assetManager));
     // _modules.push_back(_mainWindow);
@@ -180,6 +186,10 @@ AssetManager* Engine::getAssetManager() const {
     return _assetManager.get();
 }
 
+Input* Engine::getInput() const {
+    return _input.get();
+}
+
 // template <std::derived_from<IEngineModule> T>
 // std::shared_ptr<T> Engine::getModule() const {
 //     for (const auto& module : _modules) {
@@ -298,6 +308,12 @@ void Engine::updateMouseUI(float deltaTime) {
     }
 
     _wasLeftMouseDown = isLeftDown;
+}
+
+void Engine::OnEvent(Event& e) {
+    if (_input) {
+        _input->OnEvent(e);
+    }
 }
 
 } // namespace dzemikk

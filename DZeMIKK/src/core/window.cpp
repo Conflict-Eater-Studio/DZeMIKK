@@ -1,10 +1,9 @@
-#include "core/window.h"
-
-#include <glad/glad.h>
-#include <stdexcept>
-
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
+
+#include "core/window.h"
+#include <stdexcept>
 
 #if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>

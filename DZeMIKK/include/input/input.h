@@ -46,8 +46,8 @@ namespace dzemikk {
         Input() = default;
         ~Input() override = default;
 
-        void Initialize() override;
-        void UnInitialize() override;
+        void initialize() override;
+        void uninitialize() override;
 
         void setInputWindow(GLFWwindow* window);
         

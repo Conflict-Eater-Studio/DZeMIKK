@@ -6,6 +6,9 @@
 #include <vector>
 #include <concepts>
 
+#include "events/event.h"
+#include "input/input.h"
+
 namespace dzemikk {
 
 class Scene;
@@ -16,6 +19,7 @@ class Window;
 class Renderer;
 class AssetManager;
 class AnimationModule;
+class Input;
 
 /**
  * @brief The core application class managing the game loop and all subsystems.
@@ -38,6 +42,7 @@ public:
     [[nodiscard]] Time* getTime() const;
     [[nodiscard]] AnimationModule* getAnimationSystem() const;
     [[nodiscard]] AssetManager* getAssetManager() const;
+    [[nodiscard]] Input* getInput() const;
 
     /**
      * @brief Zwraca dynamicznie zarejestrowany moduł na podstawie jego typu.
@@ -57,6 +62,11 @@ public:
         return nullptr;
     }
 
+    void SetUserUpdateCallback(const std::function<void()>& callback) {
+        m_UserUpdateCallback = callback;
+    }
+    void OnEvent(Event& e);
+
     // --- Only for test DELETE THIS ---
     void updateCameraWASD(float speed);
     void updateCameraArrows(float speed);
@@ -72,8 +82,11 @@ private:
     std::unique_ptr<Time> _time;
     std::unique_ptr<AssetManager> _assetManager;
     std::unique_ptr<AnimationModule> _animationModule;
+    std::unique_ptr<Input> _input;
 
     std::vector<std::unique_ptr<IEngineModule>> _modules;
+
+    std::function<void()> m_UserUpdateCallback;
 
     float _accumulator = 0.0f;
 	bool _wasLeftMouseDown = false;

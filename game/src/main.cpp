@@ -37,6 +37,12 @@
 #include "renderer/model.h"
 #include "renderer/mesh.h"
 
+#include "input/input.h"
+#include "events/mouse_event.h"
+#include "events/key_event.h"
+#include "core/time.h"
+#include <GLFW/glfw3.h>
+
 #include <iostream>
 #include <queue>
 #include <random>
@@ -425,10 +431,38 @@ int main() {
     animationTrack2->addKey({3.0f, glm::vec3(4.0, 1.5, 0.0)});
     animationTrack2->addKey({4.0f, glm::vec3(3.0, 1.5, 0.0)});
 
-
-
-
     animator->setStateMachine(animationStateMachine);
+
+
+        engine->getInput()->OnMouseMoved.addListener([&](dzemikk::MouseMovedEvent& event) {
+        static glm::vec2 lastMousePos = engine->getInput()->GetMousePosition();
+        glm::vec2 currentMousePos(event.GetX(), event.GetY());
+        glm::vec2 delta = currentMousePos - lastMousePos;
+        lastMousePos = currentMousePos;
+
+        if (engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+            glm::vec3 rot = playerGO->transform()->getEulerAngles();
+            rot.y += delta.x * 0.5f;
+            rot.x += delta.y * 0.5f;
+            playerGO->transform()->setEulerAngles(rot);
+        }
+    });
+
+    engine->getInput()->OnKeyPressed.addListener([&](dzemikk::KeyPressedEvent& event) {
+            glm::vec3 pos = playerGO->transform()->getPosition();
+        float speed = 0.5f;
+
+        if (event.GetKeyCode() == GLFW_KEY_W)
+            pos.z -= speed;
+        if (event.GetKeyCode() == GLFW_KEY_S)
+            pos.z += speed;
+        if (event.GetKeyCode() == GLFW_KEY_A)
+            pos.x -= speed;
+        if (event.GetKeyCode() == GLFW_KEY_D)
+            pos.x += speed;
+
+        playerGO->transform()->setPosition(pos);
+    });
     engine->start();
 
     return 0;

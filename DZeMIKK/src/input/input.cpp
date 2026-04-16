@@ -3,10 +3,10 @@
 
 namespace dzemikk {
 
-    void Input::Initialize() {
+    void Input::initialize() {
     }
 
-    void Input::UnInitialize() {
+    void Input::uninitialize() {
         _windowContext = nullptr;
     }
 
