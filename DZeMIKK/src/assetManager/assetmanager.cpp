@@ -10,6 +10,7 @@
 #include "assetManager/skyboxHandler.h"
 #include "assetManager/soundHandler.h"
 #include "assetManager/textureHandler.h"
+#include "assetManager/modelHandler.h"
 
 #include "audio/sound.h"
 
@@ -18,6 +19,7 @@
 #include "renderer/shader.h"
 #include "renderer/skybox.h"
 #include "renderer/texture.h"
+#include "renderer/model.h"
 
 #include <algorithm>
 #include <assimp/version.h>
@@ -106,4 +108,5 @@ void dzemikk::AssetManager::registerHandlers() {
     _loaders.registerHandler<Skybox>(std::make_unique<SkyboxHandler>());
     _loaders.registerHandler<Font>(std::make_unique<FontHandler>());
     _loaders.registerHandler<Sound>(std::make_unique<SoundHandler>());
+    _loaders.registerHandler<Model>(std::make_unique<ModelHandler>());
 }

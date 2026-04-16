@@ -11,7 +11,7 @@ set(DZeMIKK_VERSION_MINOR 0)
 set(DZeMIKK_VERSION_REVISION 0)
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-    set(DZEMIKK_DEV_TOOLS ON)
+  set(DZEMIKK_DEV_TOOLS ON)
 endif()
 
 add_library(DZeMIKK STATIC)
@@ -19,19 +19,22 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"
         "${SRC_DIR}/core/time.cpp"
+        "${SRC_DIR}/core/profiler.cpp"
+        "${SRC_DIR}/input/input.cpp"
         "${SRC_DIR}/renderer/renderer.cpp"
-        "${SRC_DIR}/renderer/mesh.cpp"
-        "${SRC_DIR}/renderer/shader.cpp"
-        "${SRC_DIR}/renderer/material.cpp"
-        "${SRC_DIR}/renderer/frustum.cpp"
-        "${SRC_DIR}/renderer/skybox.cpp"
-        "${SRC_DIR}/renderer/font.cpp"
-        "${SRC_DIR}/renderer/texture.cpp"
+    	"${SRC_DIR}/renderer/mesh.cpp"
+    	"${SRC_DIR}/renderer/shader.cpp"
+    	"${SRC_DIR}/renderer/material.cpp"
+    	"${SRC_DIR}/renderer/frustum.cpp"
+    	"${SRC_DIR}/renderer/skybox.cpp"
+    	"${SRC_DIR}/renderer/font.cpp"
+    	"${SRC_DIR}/renderer/texture.cpp"
+    	"${SRC_DIR}/renderer/model.cpp"
         "${SRC_DIR}/ecs/components/monobehaviour.cpp"
         "${SRC_DIR}/ecs/components/transform.cpp"
         "${SRC_DIR}/ecs/components/meshRenderer.cpp"
-		"${SRC_DIR}/ecs/components/meshRenderer.cpp"
-    	"${SRC_DIR}/ecs/components/spriteRenderer.cpp"
+        "${SRC_DIR}/ecs/components/meshRenderer.cpp"
+        "${SRC_DIR}/ecs/components/spriteRenderer.cpp"
         "${SRC_DIR}/ecs/components/camera.cpp"
         "${SRC_DIR}/ecs/components/textRenderer.cpp"
         "${SRC_DIR}/ecs/gameobject.cpp"
@@ -57,18 +60,29 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/assetManager/skyboxHandler.cpp"
         "${SRC_DIR}/assetManager/soundHandler.cpp"
         "${SRC_DIR}/assetManager/textureHandler.cpp"
+        "${SRC_DIR}/assetManager/modelHandler.cpp"
         "${SRC_DIR}/assetManager/primitiveFactory.cpp"
         "${SRC_DIR}/assetManager/assetDatabase.cpp"
         "${SRC_DIR}/assetManager/assetLoaderRegistry.cpp"
         "${SRC_DIR}/assetManager/primitiveMeshLibrary.cpp"
         "${SRC_DIR}/assetManager/resourceIndex.cpp"
         "${SRC_DIR}/audio/sound.cpp"
+        "${SRC_DIR}/ecs/components/ui/rectTransform.cpp"
+        "${SRC_DIR}/ecs/components/ui/uiButton.cpp"
+        "${SRC_DIR}/ecs/components/ui/uiSlider.cpp"
+        "${SRC_DIR}/ecs/components/ui/uiCheckbox.cpp"
 )
 
 set(ENGINE_HEADERS
         "${INC_DIR}/core/engine.h"
         "${INC_DIR}/core/window.h"
+        "${INC_DIR}/core/profiler.h"
         "${INC_DIR}/core/iEngineModule.h"
+        "${INC_DIR}/input/input.h"
+        "${INC_DIR}/events/event.h"
+        "${INC_DIR}/events/key_event.h"
+        "${INC_DIR}/events/mouse_event.h"
+        "${INC_DIR}/events/application_event.h"
         "${INC_DIR}/renderer/renderer.h"
         "${INC_DIR}/renderer/mesh.h"
         "${INC_DIR}/renderer/shader.h"
@@ -77,11 +91,12 @@ set(ENGINE_HEADERS
         "${INC_DIR}/renderer/skybox.h"
         "${INC_DIR}/renderer/font.h"
         "${INC_DIR}/renderer/texture.h"
+        "${INC_DIR}/renderer/model.h"
         "${INC_DIR}/ecs/components/monobehaviour.h"
         "${INC_DIR}/ecs/components/transform.h"
-        "${INC_DIR}/ecs/components/meshRenderer.h"
-        "${INC_DIR}/ecs/components/spriteRenderer.h"
-        "${INC_DIR}/ecs/components/textRenderer.h"
+	    "${INC_DIR}/ecs/components/meshRenderer.h"
+    	"${INC_DIR}/ecs/components/spriteRenderer.h"
+    	"${INC_DIR}/ecs/components/textRenderer.h"
         "${INC_DIR}/ecs/components/camera.h"
         "${INC_DIR}/ecs/component.h"
         "${INC_DIR}/ecs/gameobject.h"
@@ -109,6 +124,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/serializedRef.h"
         "${INC_DIR}/ecs/serialize/monoBehaviourSerializer.h"
         "${INC_DIR}/ecs/serialize/transformSerializer.h"
+        "${INC_DIR}/ecs/serialize/uiButtonSerializer.h"
         "${INC_DIR}/ecs/serialize/uuid.h"
         "${INC_DIR}/assetManager/assetManager.h"
         "${INC_DIR}/assetManager/assetError.h"
@@ -118,6 +134,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/assetManager/skyboxHandler.h"
         "${INC_DIR}/assetManager/soundHandler.h"
         "${INC_DIR}/assetManager/textureHandler.h"
+        "${INC_DIR}/assetManager/modelHandler.h"
         "${INC_DIR}/assetManager/iAssetHandler.h"
         "${INC_DIR}/assetManager/primitiveFactory.h"
         "${INC_DIR}/assetManager/assetHandle.h"
@@ -126,6 +143,18 @@ set(ENGINE_HEADERS
         "${INC_DIR}/assetManager/primitiveMeshLibrary.h"
         "${INC_DIR}/assetManager/resourceIndex.h"
         "${INC_DIR}/audio/sound.h"
+        "${INC_DIR}/ecs/components/ui/imageRenderer.h"
+        "${INC_DIR}/ecs/components/ui/uiTextRenderer.h"
+        "${INC_DIR}/ecs/components/ui/canvas.h"
+        "${INC_DIR}/ecs/components/ui/rectTransform.h"
+        "${INC_DIR}/ecs/components/ui/iUIInteractable.h"
+        "${INC_DIR}/ecs/components/ui/uiButton.h"
+        "${INC_DIR}/ecs/components/ui/uiButtonActionRegistry.h"
+        "${INC_DIR}/ecs/components/ui/uiSlider.h"
+        "${INC_DIR}/ecs/components/ui/uiSliderActionRegistry.h"
+        "${INC_DIR}/ecs/components/ui/colors.h"
+        "${INC_DIR}/ecs/components/ui/uiCheckbox.h"
+        "${INC_DIR}/ecs/components/ui/uiCheckboxActionRegistry.h"
 )
 
 target_sources(DZeMIKK
@@ -200,11 +229,11 @@ set_target_properties(fmod PROPERTIES
 )
 
 if (DZEMIKK_DEV_TOOLS)
-    add_library(fmod_debug STATIC IMPORTED)
-    set_target_properties(fmod_debug PROPERTIES
+  add_library(fmod_debug STATIC IMPORTED)
+  set_target_properties(fmod_debug PROPERTIES
             IMPORTED_LOCATION "${FMOD_LIBS_PATH}/fmodL_vc.lib"
     )
-    add_library(imgui STATIC
+  add_library(imgui STATIC
             "${EXTERN_DIR}/imgui/imgui.cpp"
             "${EXTERN_DIR}/imgui/imgui_draw.cpp"
             "${EXTERN_DIR}/imgui/imgui_tables.cpp"
@@ -213,28 +242,28 @@ if (DZEMIKK_DEV_TOOLS)
             "${EXTERN_DIR}/imgui/backends/imgui_impl_opengl3.cpp"
     )
 
-    target_include_directories(imgui
+  target_include_directories(imgui
             PUBLIC
             "${EXTERN_DIR}/imgui"
             "${EXTERN_DIR}/imgui/backends"
             "${EXTERN_DIR}"
     )
 
-    target_link_libraries(imgui PUBLIC glfw opengl32)
-    if (MSVC)
-        target_compile_options(imgui PRIVATE /utf-8)
-    else()
-        target_compile_options(imgui PRIVATE -finput-charset=UTF-8)
-    endif()
+  target_link_libraries(imgui PUBLIC glfw opengl32)
+  if (MSVC)
+    target_compile_options(imgui PRIVATE /utf-8)
+  else()
+    target_compile_options(imgui PRIVATE -finput-charset=UTF-8)
+  endif()
 
 endif ()
 
 if (MSVC)
-    target_compile_options(DZeMIKK PRIVATE /utf-8)
-    target_compile_options(glad PRIVATE /utf-8)
+  target_compile_options(DZeMIKK PRIVATE /utf-8)
+  target_compile_options(glad PRIVATE /utf-8)
 else()
-    target_compile_options(DZeMIKK PRIVATE -finput-charset=UTF-8)
-    target_compile_options(glad PRIVATE -finput-charset=UTF-8)
+  target_compile_options(DZeMIKK PRIVATE -finput-charset=UTF-8)
+  target_compile_options(glad PRIVATE -finput-charset=UTF-8)
 endif()
 
 

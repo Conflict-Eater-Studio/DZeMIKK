@@ -4,13 +4,14 @@
 #pragma once
 
 #include "ecs/components/transform.h"
-#include "ecs/serialize/componentSerializerRegistry.h"
 #include "ecs/gameobject.h"
+#include "ecs/serialize/componentSerializerRegistry.h"
 
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <nlohmann/json.hpp>
 #include <stdexcept>
+
 
 namespace dzemikk {
 // NOLINTBEGIN(readability-identifier-naming)

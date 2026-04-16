@@ -1,14 +1,18 @@
+#include "ecs/componentRegistry.h"
+#include "ecs/components/ui/iUIInteractable.h"
 #if DZEMIKK_DEV_TOOLS
-#include <spdlog/spdlog.h>
-#include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <ft2build.h>
+#include <imgui.h>
+#include <spdlog/spdlog.h>
+
 #include FT_FREETYPE_H
 #endif
 
 #include "animation/animationmodule.h"
 #include "core/engine.h"
+#include "core/profiler.h"
 #include "core/time.h"
 #include "core/window.h"
 #include "ecs/components/camera.h"
@@ -18,13 +22,14 @@
 #include "renderer/renderer.h"
 #include "renderer/font.h"
 #include "renderer/texture.h"
+#include "renderer/Model.h"
 #include "audio/sound.h"
 #include "assetManager/assetmanager.h"
-
-#include "core/profiler.h"
+#include "input/input.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
+
 namespace dzemikk {
 
 Engine::Engine() {
@@ -42,6 +47,7 @@ void Engine::init() {
     _sceneManager = std::make_unique<SceneManager>();
     _time = std::make_unique<Time>();
     _animationModule = std::make_unique<AnimationModule>();
+    _input = std::make_unique<Input>();
 
     _mainWindow->initialize();
     _assetManager->initialize();
@@ -49,6 +55,10 @@ void Engine::init() {
     _sceneManager->initialize();
     _time->initialize();
     _animationModule->initialize();
+
+    _input->setInputWindow(_mainWindow->nativeHandle());
+    _mainWindow->setEventCallback([this](Event& e) { this->OnEvent(e); });
+    _input->initialize();
 
     // _modules.push_back(std::move(_assetManager));
     // _modules.push_back(_mainWindow);
@@ -69,10 +79,8 @@ void Engine::init() {
     ImGui_ImplGlfw_InitForOpenGL(_mainWindow->nativeHandle(), true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
-    spdlog::info("DZeMIKK version: {}.{}.{}",
-        DZeMIKK_VERSION_MAJOR,
-        DZeMIKK_VERSION_MINOR,
-        DZeMIKK_VERSION_REVISION);
+    spdlog::info("DZeMIKK version: {}.{}.{}", DZeMIKK_VERSION_MAJOR, DZeMIKK_VERSION_MINOR,
+                 DZeMIKK_VERSION_REVISION);
 #endif
 }
 
@@ -100,15 +108,19 @@ void Engine::start() {
         _time->update();
 
         float deltaTime = _time->getDeltaTime();
+        Profiler::Get().BeginFrame(deltaTime);
+
         _accumulator += deltaTime;
 
-        _sceneManager->update(deltaTime);
+        {
+            DZ_PROFILE_CPU("Game Logic & Update");
+            _sceneManager->update(deltaTime);
+            _animationModule->update(deltaTime);
 
-        _animationModule->update(deltaTime);
-
-        if (_accumulator >= fixedDeltaTime) {
-            _sceneManager->fixedUpdate(fixedDeltaTime);
-            _accumulator -= fixedDeltaTime;
+            if (_accumulator >= fixedDeltaTime) {
+                _sceneManager->fixedUpdate(fixedDeltaTime);
+                _accumulator -= fixedDeltaTime;
+            }
         }
 
 #if DZEMIKK_DEV_TOOLS
@@ -116,20 +128,7 @@ void Engine::start() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("Renderer");
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", _time->deltaTime,
-                    1.0f / _time->deltaTime);
-        ImGui::Separator();
-        
-        const auto& stats = Profiler::rendererStats;
-        ImGui::Text("Render Stats:");
-        ImGui::Text("Draw Calls:      %u", stats.drawCalls);
-        ImGui::Text("Objects:         %u", stats.renderedObjects);
-        ImGui::Text("Triangles:       %u", stats.triangleCount);
-        ImGui::Text("Vertices:        %u", stats.vertexCount);
-        ImGui::Text("State Changes:   %u", stats.stateChanges);
-        
-        ImGui::Separator();
+        ImGui::Begin("Debug Panel");
         ImGui::Text("Background");
         ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
         ImGui::End();
@@ -141,8 +140,13 @@ void Engine::start() {
 #endif
         updateCameraWASD(1.f);
         updateCameraArrows(1.1f);
-        _renderer->render();
+        updateMouseUI(deltaTime);
+        {
+            DZ_PROFILE_CPU("Renderer (Total CPU)");
+            _renderer->render();
+        }
 #if DZEMIKK_DEV_TOOLS
+        Profiler::Get().DrawImGui();
         glDisable(GL_DEPTH_TEST);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -173,6 +177,10 @@ AnimationModule* Engine::getAnimationModule() const{
 
 AssetManager* Engine::getAssetManager() const {
     return _assetManager.get();
+}
+
+Input* Engine::getInput() const {
+    return _input.get();
 }
 
 // template <std::derived_from<IEngineModule> T>
@@ -238,7 +246,7 @@ void Engine::updateCameraArrows(float speed) {
         getAssetManager()->reload<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_T) == GLFW_PRESS) {
-        getAssetManager()->reload<dzemikk::Mesh>("models/pole.fbx");
+        getAssetManager()->reload<dzemikk::Model>("models/Body Block.fbx");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Y) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Shader>("shaders/quad");
@@ -256,10 +264,49 @@ void Engine::updateCameraArrows(float speed) {
     }
 
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_J) == GLFW_PRESS) {
-        getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
+        getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_K) == GLFW_PRESS) {
-        getAssetManager()->unload("models/pole.fbx");
+        getAssetManager()->unload("models/Body Block.fbx");
     }
 }
+
+void Engine::updateMouseUI(float deltaTime) {
+    (void)deltaTime;
+
+    auto* camera = _renderer->getActiveUICamera();
+    if (!camera) {
+        return;
+    }
+
+    double mouseX, mouseY;
+    glfwGetCursorPos(_mainWindow->nativeHandle(), &mouseX, &mouseY);
+
+    int width = 0;
+    int height = 0;
+    glfwGetWindowSize(_mainWindow->nativeHandle(), &width, &height);
+
+    const glm::vec2 pointerPos(static_cast<float>(mouseX),
+                               static_cast<float>(height) - static_cast<float>(mouseY));
+
+    const bool isLeftDown =
+        glfwGetMouseButton(_mainWindow->nativeHandle(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS;
+    const bool pressedThisFrame = isLeftDown && !_wasLeftMouseDown;
+    const bool releasedThisFrame = !isLeftDown && _wasLeftMouseDown;
+
+    std::vector<IUIInteractable*> uiElements;
+    ComponentRegistry::get().getComponents<IUIInteractable>(uiElements);
+    for (auto* element : uiElements) {
+        element->processPointer(pointerPos, isLeftDown, pressedThisFrame, releasedThisFrame);
+    }
+
+    _wasLeftMouseDown = isLeftDown;
 }
+
+void Engine::OnEvent(Event& e) {
+    if (_input) {
+        _input->OnEvent(e);
+    }
+}
+
+} // namespace dzemikk
