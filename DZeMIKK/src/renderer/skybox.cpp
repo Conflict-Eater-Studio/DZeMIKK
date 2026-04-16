@@ -8,41 +8,6 @@
 
 dzemikk::Skybox::Skybox() {
     initCube();
-    initShader();
-}
-
-void dzemikk::Skybox::initShader() {
-    const char* vertexSrc = R"(
-    #version 330 core
-    layout(location = 0) in vec3 aPos;
-    out vec3 TexCoords;
-
-    uniform mat4 view;
-    uniform mat4 projection;
-
-    void main() {
-        TexCoords = aPos;
-        vec4 pos = projection * view * vec4(aPos, 1.0);
-        gl_Position = pos.xyww;
-    })";
-
-    const char* fragmentSrc = R"(
-    #version 330 core
-    in vec3 TexCoords;
-    out vec4 FragColor;
-
-    uniform samplerCube skybox;
-    uniform vec3 color;
-    uniform int mode;
-
-    void main() {
-        if (mode == 1)
-            FragColor = texture(skybox, TexCoords);
-        else
-            FragColor = vec4(color, 1.0);
-    })";
-
-    _shader = std::make_unique<Shader>(vertexSrc, fragmentSrc);
 }
 
 void dzemikk::Skybox::initCube() {
@@ -77,18 +42,14 @@ dzemikk::Skybox::~Skybox() {
 }
 
 void dzemikk::Skybox::loadCubemap(const std::vector<std::string>& faces) {
-    if (faces.size() != 6) {
+    if (faces.size() != 6)
         throw std::runtime_error("Skybox requires exactly 6 textures");
-    }
-
-    if (_cubemapTex != 0) {
-        glDeleteTextures(1, &_cubemapTex);
-    }
-
-    glGenTextures(1, &_cubemapTex);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, _cubemapTex);
 
     stbi_set_flip_vertically_on_load(false);
+
+    unsigned int newTex;
+    glGenTextures(1, &newTex);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, newTex);
 
     int width, height, channels;
 
@@ -96,6 +57,7 @@ void dzemikk::Skybox::loadCubemap(const std::vector<std::string>& faces) {
         unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &channels, 0);
 
         if (!data) {
+            glDeleteTextures(1, &newTex); 
             throw std::runtime_error("Failed to load cubemap: " + faces[i]);
         }
 
@@ -113,6 +75,11 @@ void dzemikk::Skybox::loadCubemap(const std::vector<std::string>& faces) {
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
+    if (_cubemapTex != 0)
+        glDeleteTextures(1, &_cubemapTex);
+
+    _cubemapTex = newTex;
+
     _mode = Mode::Cubemap;
 }
 
@@ -128,6 +95,8 @@ void dzemikk::Skybox::setMode(Mode mode) {
 void dzemikk::Skybox::render(const glm::mat4& view, const glm::mat4& projection) const {
     glDepthFunc(GL_LEQUAL);
 
+    if (!_shader)
+        return;
     _shader->bind();
 
     glm::mat4 viewNoTranslation = glm::mat4(glm::mat3(view));
@@ -146,4 +115,8 @@ void dzemikk::Skybox::render(const glm::mat4& view, const glm::mat4& projection)
     _cubeMesh->draw();
 
     glDepthFunc(GL_LESS);
+}
+
+void dzemikk::Skybox::setShader(Shader* shader) {
+    _shader = shader;
 }

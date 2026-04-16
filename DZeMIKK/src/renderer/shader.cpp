@@ -148,3 +148,57 @@ dzemikk::Shader& dzemikk::Shader::operator=(Shader&& other) noexcept {
 const GLuint dzemikk::Shader::getProgramID() const {
     return _program;
 }
+
+void dzemikk::Shader::recompile(const char* vertSrc, const char* fragSrc) {
+    GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex, 1, &vertSrc, nullptr);
+    glCompileShader(vertex);
+    checkCompileErrors(vertex, "VERTEX");
+
+    GLint success;
+    glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glDeleteShader(vertex);
+        return;
+    }
+
+    GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment, 1, &fragSrc, nullptr);
+    glCompileShader(fragment);
+    checkCompileErrors(fragment, "FRAGMENT");
+
+    glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        glDeleteShader(vertex);
+        glDeleteShader(fragment);
+        return;
+    }
+
+    GLuint newProgram = glCreateProgram();
+    glAttachShader(newProgram, vertex);
+    glAttachShader(newProgram, fragment);
+    glLinkProgram(newProgram);
+    checkCompileErrors(newProgram, "PROGRAM");
+
+    glGetProgramiv(newProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        glDeleteShader(vertex);
+        glDeleteShader(fragment);
+        glDeleteProgram(newProgram);
+        return;
+    }
+
+    glDeleteShader(vertex);
+    glDeleteShader(fragment);
+
+    unsigned int uniformBlockIndex = glGetUniformBlockIndex(newProgram, "Matrices");
+    if (uniformBlockIndex != GL_INVALID_INDEX) {
+        glUniformBlockBinding(newProgram, uniformBlockIndex, 0);
+    }
+
+    if (_program) {
+        glDeleteProgram(_program);
+    }
+
+    _program = newProgram;
+}

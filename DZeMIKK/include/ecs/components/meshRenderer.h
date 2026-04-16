@@ -9,7 +9,7 @@
 
 namespace dzemikk {
 class Transform;
-class Mesh;
+class Model;
 class Material;
 
 /**
@@ -42,19 +42,34 @@ class MeshRenderer : public Component {
     /**
      * @brief Returns the mesh used for rendering.
      *
-     * @return Mesh* Pointer to the mesh.
+     * @return Model* Pointer to the mesh.
      */
-    [[nodiscard]] Mesh* getMesh() const {
-        return _mesh;
+    [[nodiscard]] Model* getModel() const {
+        return _model;
+    }
+
+    
+    /**
+     * @brief Returns all materials assigned to this renderer.
+     *
+     * @return const std::vector<Material*>& Reference to material list.
+     */
+    [[nodiscard]] const std::vector<Material*>& getMaterials() const {
+        return _materials;
     }
 
     /**
-     * @brief Returns the material used for rendering.
+     * @brief Returns a material at a given index.
      *
-     * @return Material* Pointer to the material.
+     * @param index Material index.
+     * @return Material* Pointer to material or nullptr if out of range.
      */
-    [[nodiscard]] Material* getMaterial() const {
-        return _material;
+    [[nodiscard]] Material* getMaterial(size_t index) const {
+        if (index >= _materials.size()) {
+            return nullptr;
+        }
+
+        return _materials[index];
     }
 
     /**
@@ -71,22 +86,38 @@ class MeshRenderer : public Component {
 #pragma region Setters
 
     /**
-     * @brief Sets the mesh used for rendering.
+     * @brief Sets the model used for rendering.
      *
      * @param mesh Pointer to the mesh.
      */
-    void setMesh(Mesh* mesh) {
-        _mesh = mesh;
-        calculateCullingRadius(mesh);
+    void setModel(Model* model) {
+        _model = model;
+        calculateCullingRadius(model);
     }
 
     /**
-     * @brief Sets the material used for rendering.
+     * @brief Sets the full material list.
      *
-     * @param material Pointer to the material.
+     * @param materials Vector of material pointers.
      */
-    void setMaterial(Material* material) {
-        _material = material;
+    void setMaterials(const std::vector<Material*>& materials) {
+        _materials = materials;
+    }
+
+    /**
+     * @brief Sets a material at a specific index.
+     *
+     * If the index exceeds current size, the internal array is expanded.
+     *
+     * @param index Material slot index.
+     * @param material Pointer to material.
+     */
+    void setMaterial(size_t index, Material* material) {
+        if (index >= _materials.size()) {
+            _materials.resize(index + 1, nullptr);
+        }
+
+        _materials[index] = material;
     }
 
     /**
@@ -109,15 +140,30 @@ class MeshRenderer : public Component {
      * @return false Otherwise.
      */
     [[nodiscard]] bool isValid() const {
-        return _mesh && _material && _transform;
+        return _model && !_materials.empty() && _transform;
     }
 
 #pragma endregion
 
-    void calculateCullingRadius(Mesh* mesh);
+    /**
+     * @brief Recalculates bounding radius used for frustum culling.
+     *
+     * @param model Model used for computation.
+     */
+    void calculateCullingRadius(Model* model);
 
-    float getCullingRadius();
+    /**
+     * @brief Returns precomputed culling radius.
+     *
+     * @return float Radius used for visibility checks.
+     */
+    float getCullingRadius() const;
 
+    /**
+     * @brief Returns runtime type name of this component.
+     *
+     * @return std::string Name of the component type.
+     */
     [[nodiscard]] std::string typeName() const override {
         return "MeshRenderer";
     };
@@ -125,11 +171,11 @@ class MeshRenderer : public Component {
   private:
 #pragma region References
 
-    Mesh* _mesh = nullptr;
-    Material* _material = nullptr;
+    Model* _model = nullptr;
+    std::vector<Material*> _materials;
     Transform* _transform = nullptr;
 
-    float _cullingRadius = 1.0f;
+    float _cullingRadius = 1.0F;
 
 #pragma endregion
 };

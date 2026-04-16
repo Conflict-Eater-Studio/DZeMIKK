@@ -47,6 +47,14 @@ namespace dzemikk {
             return _vao;
         }
 
+        [[nodiscard]] GLuint getVBO() const {
+            return _vbo;
+        }
+
+        [[nodiscard]] GLuint getEBO() const {
+            return _ebo;
+        }
+
         /**
          * @brief Returns the number of vertices in the mesh.
          */
@@ -138,6 +146,8 @@ namespace dzemikk {
          */
         void create(const float* vertices, uint32_t vertexCount, uint32_t stride);
 
+        void create2D(const float* vertices, uint32_t vertexCount);
+
         /**
          * @brief Creates a mesh with an index buffer from raw data.
          *
@@ -176,6 +186,9 @@ namespace dzemikk {
                 _boundsMax = glm::max(_boundsMax, glm::vec3(x, y, z));
             }
         }
+
+        void recreate(const float* vertices, const unsigned int* indices, uint32_t vertexCount,
+                      uint32_t indexCount, uint32_t stride);
 
     private:
         #pragma region GPU Handles

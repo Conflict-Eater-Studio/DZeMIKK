@@ -1,10 +1,13 @@
-#include <utility>
 #include "animation/animationstate.h"
 
-namespace dzemikk {
-    AnimationState::AnimationState(std::string name) : _name(std::move(name)) {}
+#include "animation/animationclip.h"
 
-    const std::string& AnimationState::getName() const noexcept {
+#include <utility>
+
+namespace dzemikk {
+AnimationState::AnimationState() : _name("NewState") {}
+AnimationState::AnimationState(const std::string& name) : _name(name) {}
+const std::string& AnimationState::getName() const noexcept {
         return _name;
     }
     void AnimationState::setName(const std::string& name) {
@@ -23,7 +26,5 @@ namespace dzemikk {
         _transitions.push_back(transition);
     }
     void AnimationState::update(float deltaTime) {
-
     }
-
-    } // namespace dzemikk
+}

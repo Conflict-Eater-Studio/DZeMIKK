@@ -19,6 +19,28 @@ GameObject* Scene::createGameObject() {
     return result;
 }
 
+GameObject* Scene::createGameObject(const std::string& name) {
+    GameObject* object = createGameObject();
+    object->setName(name);
+    return object;
+}
+
+GameObject* Scene::createGameObject(const std::string& name, GameObject* parent) {
+    GameObject* object = createGameObject(name);
+    if (parent) {
+        parent->addChild(object);
+    }
+    return object;
+}
+
+GameObject* Scene::createGameObject(GameObject* parent) {
+    GameObject* object = createGameObject();
+    if (parent) {
+        parent->addChild(object);
+    }
+    return object;
+}
+
 void Scene::destroyGameObject(GameObject* object) {
     // Check if object is valid, not already pending destruction and belongs to this scene
     if (!object || std::ranges::find(_pendingDestroy, object) != _pendingDestroy.end() ||
@@ -64,8 +86,8 @@ void Scene::update(double deltaTime) {
     // Update all behaviours
     processPendingStart();
 
-    const auto active_snapshot = _active;
-    for (auto* mono : active_snapshot) {
+    const auto activeSnapshot = _active;
+    for (auto* mono : activeSnapshot) {
         if (!mono || std::ranges::find(_active, mono) == _active.end()) {
             continue;
         }
@@ -73,7 +95,7 @@ void Scene::update(double deltaTime) {
     }
 
     // Late Update all behaviours
-    for (auto* mono : active_snapshot) {
+    for (auto* mono : activeSnapshot) {
         if (!mono || std::ranges::find(_active, mono) == _active.end()) {
             continue;
         }
@@ -87,8 +109,8 @@ void Scene::fixedUpdate(double deltaTime) {
     // Fixed update also starts components that haven't started since it runs at a fixed interval
     processPendingStart();
 
-    const auto active_snapshot = _active;
-    for (auto* mono : active_snapshot) {
+    const auto activeSnapshot = _active;
+    for (auto* mono : activeSnapshot) {
         if (!mono || std::ranges::find(_active, mono) == _active.end()) {
             continue;
         }

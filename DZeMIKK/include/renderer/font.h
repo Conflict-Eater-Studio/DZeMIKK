@@ -23,7 +23,16 @@ namespace dzemikk {
       public:
         std::map<char, Character> characters;
 
+        void clear() {
+            for (auto& [c, ch] : characters) {
+                glDeleteTextures(1, &ch.textureID);
+            }
+            characters.clear();
+        }
+
         bool load(const std::string& path) {
+            clear(); 
+
             FT_Library ft;
             if (FT_Init_FreeType(&ft))
                 return false;
