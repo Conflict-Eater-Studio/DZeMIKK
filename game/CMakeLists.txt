@@ -1,7 +1,10 @@
 project(Game LANGUAGES CXX)
 
 add_executable(game
-                src/main.cpp
+        src/main.cpp
+        include/textupdater.h
+        include/spriteupdater.h
+        include/game.h
 )
 target_include_directories(game
         PUBLIC

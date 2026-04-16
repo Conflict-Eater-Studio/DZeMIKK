@@ -82,21 +82,15 @@ void Engine::shutdown() {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 #endif
-
-    _mainWindow->uninitialize();
-    _assetManager->uninitialize();
-    _renderer->uninitialize();
-    _sceneManager->uninitialize();
-    _time->uninitialize();
     _animationModule->uninitialize();
-
-    for (const auto& module : _modules) {
-        module->uninitialize();
-    }
+    _time->uninitialize();
+    _sceneManager->uninitialize();
+    _renderer->uninitialize();
+    _assetManager->uninitialize();
+    _mainWindow->uninitialize();
 }
 
 void Engine::start() {
-
 #if DZEMIKK_DEV_TOOLS
     ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
 #endif
@@ -118,7 +112,6 @@ void Engine::start() {
         }
 
 #if DZEMIKK_DEV_TOOLS
-        // ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -174,7 +167,7 @@ Time* Engine::getTime() const {
     return _time.get();
 }
 
-AnimationModule* Engine::getAnimationSystem() const{
+AnimationModule* Engine::getAnimationModule() const{
     return _animationModule.get();
 }
 

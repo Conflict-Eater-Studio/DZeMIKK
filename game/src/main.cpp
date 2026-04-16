@@ -14,11 +14,14 @@
 #include "ecs/components/textRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
+#include "game.h"
 #include "renderer/font.h"
 #include "renderer/material.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
 #include "renderer/texture.h"
+#include "spriteupdater.h"
+#include "textupdater.h"
 
 #include <GLFW/glfw3.h>
 #include <ecs/scenemanager.h>
@@ -29,60 +32,14 @@
 #include <random>
 #include <set>
 
-class TextUpdater : public dzemikk::MonoBehaviour {
-  public:
-    using Base = MonoBehaviour;
-
-    dzemikk::TextRenderer* text = nullptr;
-    float time = 0.0f;
-
-    void update(double deltaTime) override {
-        time += deltaTime;
-        text->text = "Time: " + std::to_string((int)time);
-    }
-
-    [[nodiscard]] std::string typeName() const override {
-        return "TextUpdater";
-    };
-};
-
-class SpriteUpdater: public dzemikk::MonoBehaviour {
-public:
-    using Base = MonoBehaviour;
-
-    dzemikk::Transform* transform = nullptr;
-    float time = 0.0f;
-
-    void update(double deltaTime) override {
-        time += deltaTime;
-
-        float scaleX = 0.5f + 0.5f * sin(time);
-        float scaleY = 1.0f;
-
-        transform->setScale(glm::vec3(scaleX, scaleY, 1.0f));
-    }
-
-    [[nodiscard]] std::string typeName() const override {
-        return "SpriteUpdater";
-    };
-};
-
-dzemikk::Mesh* createCubeMesh();
-dzemikk::Mesh* createQuadMesh();
-void createCubeBoard(std::shared_ptr<dzemikk::Engine> engine, dzemikk::Scene& scene,
-                     dzemikk::Mesh* cubeMesh, dzemikk::Material* materialA,
-                     dzemikk::Material* materialB, int rows, int cols, float spacing);
-
-dzemikk::Mesh* loadMeshFromFile(const std::string& path);
-GLuint loadTextureFromFile(const std::string& path, bool flipVertical = true);
-
 void createHexIsland(dzemikk::Scene& scene, dzemikk::Mesh* mesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int tileCount, float size, float spacing = 0.1f,
                      float maxHeight = 0.3f); 
 
 int main() {
-    auto engine = std::make_shared<dzemikk::Engine>();
-
+    const auto engine = std::make_unique<dzemikk::Engine>();
+    auto game = Game(engine.get());
+    game.init();
     auto m1 = engine->getAssetManager()->get<dzemikk::Mesh>("models/pole.fbx");
 
     engine->getAssetManager()->unload("models/pole.fbx");
@@ -183,7 +140,7 @@ int main() {
     quadRenderer3->setTransform(quadGO3->transform());
     quadRenderer3->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
-    auto quadSpriteUpdater = quadGO3->addComponent<SpriteUpdater>();
+    auto quadSpriteUpdater = quadGO3->addComponent<dzemikk::SpriteUpdater>();
     quadSpriteUpdater->transform = quadGO3->transform();
 
     auto textGO = mainScenePtr->createGameObject();
@@ -197,7 +154,7 @@ int main() {
     text->scale = 1.0f;
     text->color = glm::vec3(1.0f, 1.0f, 1.0f);
 
-    auto updater = textGO->addComponent<TextUpdater>();
+    auto updater = textGO->addComponent<dzemikk::TextUpdater>();
     updater->text = text;
 
     // FOR TEST ONLY - DELETE THIS

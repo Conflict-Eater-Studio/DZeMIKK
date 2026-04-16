@@ -4,7 +4,6 @@
 
 #include <memory>
 #include <vector>
-#include <concepts>
 
 namespace dzemikk {
 
@@ -15,7 +14,7 @@ class Time;
 class Window;
 class Renderer;
 class AssetManager;
-
+class AnimationModule;
 /**
  * @brief The core application class managing the game loop and all subsystems.
  */
@@ -35,26 +34,27 @@ public:
     [[nodiscard]] Window* getWindow() const;
     [[nodiscard]] SceneManager* getSceneManager() const;
     [[nodiscard]] Time* getTime() const;
-    [[nodiscard]] AnimationModule* getAnimationSystem() const;
+    [[nodiscard]] AnimationModule* getAnimationModule() const;
     [[nodiscard]] AssetManager* getAssetManager() const;
 
-    /**
-     * @brief Zwraca dynamicznie zarejestrowany moduł na podstawie jego typu.
-     * @tparam T Typ modułu (musi dziedziczyć po IEngineModule)
-     * @return Surowy wskaźnik na moduł lub nullptr, jeśli nie znaleziono.
-     */
-    template <std::derived_from<IEngineModule> T>
-    [[nodiscard]] T* getModule() const {
-        for (const auto& module : _modules) {
-            // Używamy dynamic_cast dla wygody. W ultra-wydajnych silnikach
-            // stosuje się tu mapowanie po statycznym ID typu (np. TypeId),
-            // ale dynamic_cast na etapie inicjalizacji/pobierania jest w 100% OK.
-            if (T* castedModule = dynamic_cast<T*>(module.get())) {
-                return castedModule;
-            }
-        }
-        return nullptr;
-    }
+    //
+    // /**
+    //  * @brief Zwraca dynamicznie zarejestrowany moduł na podstawie jego typu.
+    //  * @tparam T Typ modułu (musi dziedziczyć po IEngineModule)
+    //  * @return Surowy wskaźnik na moduł lub nullptr, jeśli nie znaleziono.
+    //  */
+    // template <std::derived_from<IEngineModule> T>
+    // [[nodiscard]] T* getModule() const {
+    //     for (const auto& module : _modules) {
+    //         // Używamy dynamic_cast dla wygody. W ultra-wydajnych silnikach
+    //         // stosuje się tu mapowanie po statycznym ID typu (np. TypeId),
+    //         // ale dynamic_cast na etapie inicjalizacji/pobierania jest w 100% OK.
+    //         if (T* castedModule = dynamic_cast<T*>(module.get())) {
+    //             return castedModule;
+    //         }
+    //     }
+    //     return nullptr;
+    // }
 
     // --- Only for test DELETE THIS ---
     void updateCameraWASD(float speed);
