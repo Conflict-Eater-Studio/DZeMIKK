@@ -2,7 +2,7 @@
 
 #include "ecs/components/ui/rectTransform.h"
 #include "ecs/components/ui/uiButtonActionRegistry.h"
-#include "ecs/components/ui/uiSpriteRenderer.h"
+#include "ecs/components/ui/imageRenderer.h"
 #include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
@@ -33,7 +33,7 @@ void UIButton::build(GameObject& gameObject, const UIButtonParams& params) {
     rectTransform->setScale(params.rectTransformParams.scale);
     rectTransform->setRotation(params.rectTransformParams.rotation);
 
-    auto* spriteRenderer = gameObject.addComponent<UISpriteRenderer>();
+    auto* spriteRenderer = gameObject.addComponent<ImageRenderer>();
     spriteRenderer->setMesh(params.mesh);
     spriteRenderer->setMaterial(params.material);
     spriteRenderer->setRectTransform(rectTransform);
@@ -119,7 +119,7 @@ void UIButton::onExit() {
     }
 }
 
-void UIButton::setSpriteRenderer(UISpriteRenderer* spriteRenderer) {
+void UIButton::setSpriteRenderer(ImageRenderer* spriteRenderer) {
     _spriteRenderer = spriteRenderer;
     applyVisualState();
 }

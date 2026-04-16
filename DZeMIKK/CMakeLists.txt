@@ -143,7 +143,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/assetManager/primitiveMeshLibrary.h"
         "${INC_DIR}/assetManager/resourceIndex.h"
         "${INC_DIR}/audio/sound.h"
-        "${INC_DIR}/ecs/components/ui/uiSpriteRenderer.h"
+        "${INC_DIR}/ecs/components/ui/imageRenderer.h"
         "${INC_DIR}/ecs/components/ui/uiTextRenderer.h"
         "${INC_DIR}/ecs/components/ui/canvas.h"
         "${INC_DIR}/ecs/components/ui/rectTransform.h"

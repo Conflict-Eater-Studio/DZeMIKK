@@ -8,7 +8,7 @@
 #include <string>
 
 namespace dzemikk {
-class UISpriteRenderer;
+class ImageRenderer;
 class RectTransform;
 
 class UISlider : public IUIInteractable {
@@ -49,9 +49,9 @@ class UISlider : public IUIInteractable {
     void setOnExit(std::function<void()> onExit);
     void setOnValueChanged(std::function<void(float)> onValueChanged);
 
-    void setBackgroundSpriteRenderer(UISpriteRenderer* spriteRenderer);
-    void setFillSpriteRenderer(UISpriteRenderer* spriteRenderer);
-    void setHandleSpriteRenderer(UISpriteRenderer* spriteRenderer);
+    void setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer);
+    void setFillSpriteRenderer(ImageRenderer* spriteRenderer);
+    void setHandleSpriteRenderer(ImageRenderer* spriteRenderer);
 
     void setFillColor(const glm::vec4& color);
     void setBackgroundColor(const glm::vec4& color);
@@ -130,9 +130,9 @@ class UISlider : public IUIInteractable {
     std::function<void()> _onExit;
     std::function<void(float)> _onValueChanged;
 
-    mutable UISpriteRenderer* _backgroundSpriteRenderer = nullptr;
-    mutable UISpriteRenderer* _fillSpriteRenderer = nullptr;
-    mutable UISpriteRenderer* _handleSpriteRenderer = nullptr;
+    mutable ImageRenderer* _backgroundSpriteRenderer = nullptr;
+    mutable ImageRenderer* _fillSpriteRenderer = nullptr;
+    mutable ImageRenderer* _handleSpriteRenderer = nullptr;
 };
 } // namespace dzemikk
 

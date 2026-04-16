@@ -15,7 +15,7 @@
 #include "ecs/components/textRenderer.h"
 #include "ecs/components/transform.h"
 #include "ecs/components/ui/rectTransform.h"
-#include "ecs/components/ui/uiSpriteRenderer.h"
+#include "ecs/components/ui/imageRenderer.h"
 #include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
 
@@ -233,12 +233,11 @@ void dzemikk::Renderer::render() {
         }
     }
 
-
     if (_uiCamera)
         _uiProjection = _uiCamera->getProjection();
+    glDisable(GL_DEPTH_TEST);
 
     dzemikk::ComponentRegistry::get().getComponents<SpriteRenderer>(_spriteRenderers);
-    glDisable(GL_DEPTH_TEST);
 
     {
         DZ_PROFILE_GPU("Transparent Rendering (Sprites)");
@@ -272,12 +271,12 @@ void dzemikk::Renderer::render() {
         }
     }
 
-    std::vector<UISpriteRenderer*> uiSprites;
-    ComponentRegistry::get().getEnabledComponents<UISpriteRenderer>(uiSprites);
+    std::vector<ImageRenderer*> uiSprites;
+    ComponentRegistry::get().getEnabledComponents<ImageRenderer>(uiSprites);
 
     {
         DZ_PROFILE_GPU("Image Rendering");
-        std::ranges::sort(uiSprites, [](UISpriteRenderer* a, UISpriteRenderer* b) {
+        std::ranges::sort(uiSprites, [](ImageRenderer* a, ImageRenderer* b) {
             unsigned int az = a->getOwner()->rectTransform()->getZIndex();
             unsigned int bz = a->getOwner()->rectTransform()->getZIndex();
             return az < bz;

@@ -23,7 +23,7 @@
 #include "ecs/components/ui/uiCheckbox.h"
 #include "ecs/components/ui/uiCheckboxActionRegistry.h"
 #include "ecs/components/ui/uiSlider.h"
-#include "ecs/components/ui/uiSpriteRenderer.h"
+#include "ecs/components/ui/imageRenderer.h"
 #include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
@@ -138,6 +138,15 @@ int main() {
     playerMeshR->getModel()->addMesh(std::shared_ptr<dzemikk::Mesh>(playerMesh), 0);
     playerMeshR->setTransform(playerGO->transform());
     playerMeshR->setMaterial(0, materialA);
+
+    auto chestGO = mainScenePtr->createGameObject();
+    chestGO->transform()->setPosition(glm::vec3(-4.0f, 2.5f, 0.0f));
+    chestGO->transform()->setRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+    auto chestMeshR = chestGO->addComponent<dzemikk::MeshRenderer>();
+    auto chestMesh = engine->getAssetManager()->get<dzemikk::Model>("models/skrzynia.fbx");
+    chestMeshR->setModel(chestMesh.get());
+    chestMeshR->setTransform(chestGO->transform());
+    chestMeshR->setMaterial(0, materialA);
 
     auto enemyGO = mainScenePtr->createGameObject();
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 0.0f));
@@ -311,17 +320,17 @@ int main() {
     handleRect->setSize({kSliderHandleSize, kSliderHandleSize});
     handleRect->setZIndex(12);
 
-    auto* bgSprite = backgroundGo->addComponent<dzemikk::UISpriteRenderer>();
+    auto* bgSprite = backgroundGo->addComponent<dzemikk::ImageRenderer>();
     bgSprite->setMesh(quadMesh);
     bgSprite->setMaterial(quadMaterial);
     bgSprite->setRectTransform(bgRect);
 
-    auto* fillSprite = fillGo->addComponent<dzemikk::UISpriteRenderer>();
+    auto* fillSprite = fillGo->addComponent<dzemikk::ImageRenderer>();
     fillSprite->setMesh(quadMesh);
     fillSprite->setMaterial(quadMaterial);
     fillSprite->setRectTransform(fillRect);
 
-    auto* handleSprite = handleGo->addComponent<dzemikk::UISpriteRenderer>();
+    auto* handleSprite = handleGo->addComponent<dzemikk::ImageRenderer>();
     handleSprite->setMesh(quadMesh);
     handleSprite->setMaterial(quadMaterial);
     handleSprite->setRectTransform(handleRect);
@@ -360,7 +369,7 @@ int main() {
     checkboxRect->setPivot({0.5F, 0.5F});
     checkboxRect->setSize({30.0F, 30.0F});
     checkboxRect->setZIndex(0);
-    auto* checkboxSprite = checkboxGo->addComponent<dzemikk::UISpriteRenderer>();
+    auto* checkboxSprite = checkboxGo->addComponent<dzemikk::ImageRenderer>();
     checkboxSprite->setMesh(quadMesh);
     checkboxSprite->setMaterial(quadMaterial);
     checkboxSprite->setRectTransform(checkboxRect);
@@ -374,7 +383,7 @@ int main() {
     checkmarkRect->setPosition({0.0F, 0.0F});
     checkmarkRect->setSize({0.0F, 0.0F});
     checkmarkRect->setZIndex(1);
-    auto* checkmarkSprite = checkmarkGo->addComponent<dzemikk::UISpriteRenderer>();
+    auto* checkmarkSprite = checkmarkGo->addComponent<dzemikk::ImageRenderer>();
     checkmarkSprite->setMesh(quadMesh);
     checkmarkSprite->setMaterial(quadMaterial);
     checkmarkSprite->setRectTransform(checkmarkRect);
@@ -401,7 +410,7 @@ int main() {
 
     engine->getAssetManager()->setFMODSystem(system);
 
-    auto sound = engine->getAssetManager()->get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
+    auto sound = engine->getAssetManager()->get<dzemikk::Sound>("audio/prime_wznoszeniePol.wav");
     sound.get()->play(system);
 
     dzemikk::Animator* animator = enemyGO->addComponent<dzemikk::Animator>();
@@ -412,17 +421,10 @@ int main() {
 
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(4, 1);
 
-    //dzemikk::QuaternionTrack* animationTrack =  animationClip->addQuaternionTrack();
     dzemikk::VectorTrack* animationTrack2 = animationClip->addVectorTrack();
 
     idleState->setClip(animationClip);
     dzemikk::Transform* t = enemyGO->transform();
-    //animationTrack->bindRotation(*t);
-    //animationTrack->addKey({0.0f, glm::quat(glm::vec3(0.0f, 0.0f, 0.0f))});
-    //animationTrack->addKey({1.0f, glm::quat(glm::vec3(90.0f, 45.0f, 0.0f))});
-    //animationTrack->addKey({2.0f, glm::quat(glm::vec3(34.0f, 30.0f, 0.0f))});
-    //animationTrack->addKey({3.0f, glm::quat(glm::vec3(25.0f, 0.0f, 0.0f))});
-    //animationTrack->addKey({4.0f, glm::quat(glm::vec3(10.0f, 0.0f, 0.0f))});
 
     animationTrack2->bindPosition(*t);
     animationTrack2->addKey({0.0f, glm::vec3(3.0, 1.5, 0.0)});
@@ -446,22 +448,6 @@ int main() {
             rot.x += delta.y * 0.5f;
             playerGO->transform()->setEulerAngles(rot);
         }
-    });
-
-    engine->getInput()->OnKeyPressed.addListener([&](dzemikk::KeyPressedEvent& event) {
-            glm::vec3 pos = playerGO->transform()->getPosition();
-        float speed = 0.5f;
-
-        if (event.GetKeyCode() == GLFW_KEY_W)
-            pos.z -= speed;
-        if (event.GetKeyCode() == GLFW_KEY_S)
-            pos.z += speed;
-        if (event.GetKeyCode() == GLFW_KEY_A)
-            pos.x -= speed;
-        if (event.GetKeyCode() == GLFW_KEY_D)
-            pos.x += speed;
-
-        playerGO->transform()->setPosition(pos);
     });
     engine->start();
 

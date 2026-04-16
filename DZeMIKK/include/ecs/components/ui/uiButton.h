@@ -12,7 +12,7 @@
 #include <string>
 
 namespace dzemikk {
-class UISpriteRenderer;
+class ImageRenderer;
 class Font;
 
 struct UIButtonParams {
@@ -60,7 +60,7 @@ class UIButton : public IUIInteractable {
     void onEnter() override;
     void onExit() override;
 
-    void setSpriteRenderer(UISpriteRenderer* spriteRenderer);
+    void setSpriteRenderer(ImageRenderer* spriteRenderer);
 
     void setNormalColor(const glm::vec4& color);
     void setHoverColor(const glm::vec4& color);
@@ -97,7 +97,7 @@ class UIButton : public IUIInteractable {
 
     void applyVisualState();
 
-    mutable UISpriteRenderer* _spriteRenderer = nullptr;
+    mutable ImageRenderer* _spriteRenderer = nullptr;
 
     glm::vec4 _normalColor = glm::vec4(1.0F);
     glm::vec4 _hoverColor = glm::vec4(1.0F, 1.0F, 1.0F, 0.85F);

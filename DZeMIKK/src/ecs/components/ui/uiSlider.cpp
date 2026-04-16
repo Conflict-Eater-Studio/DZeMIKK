@@ -2,7 +2,7 @@
 
 #include "ecs/components/ui/rectTransform.h"
 #include "ecs/components/ui/uiSliderActionRegistry.h"
-#include "ecs/components/ui/uiSpriteRenderer.h"
+#include "ecs/components/ui/imageRenderer.h"
 #include "ecs/gameobject.h"
 
 #include <algorithm>
@@ -225,17 +225,17 @@ void UISlider::setOnValueChanged(std::function<void(float)> onValueChanged) {
     _onValueChanged = std::move(onValueChanged);
 }
 
-void UISlider::setBackgroundSpriteRenderer(UISpriteRenderer* spriteRenderer) {
+void UISlider::setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer) {
     _backgroundSpriteRenderer = spriteRenderer;
     applyVisualState();
 }
 
-void UISlider::setFillSpriteRenderer(UISpriteRenderer* spriteRenderer) {
+void UISlider::setFillSpriteRenderer(ImageRenderer* spriteRenderer) {
     _fillSpriteRenderer = spriteRenderer;
     applyVisualState();
 }
 
-void UISlider::setHandleSpriteRenderer(UISpriteRenderer* spriteRenderer) {
+void UISlider::setHandleSpriteRenderer(ImageRenderer* spriteRenderer) {
     _handleSpriteRenderer = spriteRenderer;
     applyVisualState();
 }

@@ -2,7 +2,7 @@
 
 #include "ecs/components/ui/rectTransform.h"
 #include "ecs/components/ui/uiCheckboxActionRegistry.h"
-#include "ecs/components/ui/uiSpriteRenderer.h"
+#include "ecs/components/ui/imageRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "spdlog/spdlog.h"
@@ -94,12 +94,12 @@ void UICheckbox::onExit() {
     }
 }
 
-void UICheckbox::setBackgroundSpriteRenderer(UISpriteRenderer* spriteRenderer) {
+void UICheckbox::setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer) {
     _backgroundSpriteRenderer = spriteRenderer;
     applyVisualState();
 }
 
-void UICheckbox::setCheckmarkSpriteRenderer(UISpriteRenderer* spriteRenderer) {
+void UICheckbox::setCheckmarkSpriteRenderer(ImageRenderer* spriteRenderer) {
     _checkmarkSpriteRenderer = spriteRenderer;
     _checkmarkSpriteRenderer->enabled(_value);
     applyVisualState();

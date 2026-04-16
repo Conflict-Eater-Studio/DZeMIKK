@@ -11,17 +11,17 @@ class RectTransform;
 class Mesh;
 class Material;
 
-class UISpriteRenderer : public Component {
+class ImageRenderer : public Component {
   public:
     using Base = Component;
 
-    UISpriteRenderer() = default;
-    ~UISpriteRenderer() override = default;
+    ImageRenderer() = default;
+    ~ImageRenderer() override = default;
 
-    UISpriteRenderer(const UISpriteRenderer& other) = delete;
-    UISpriteRenderer(UISpriteRenderer&& other) noexcept = delete;
-    UISpriteRenderer& operator=(const UISpriteRenderer& other) = delete;
-    UISpriteRenderer& operator=(UISpriteRenderer&& other) noexcept = delete;
+    ImageRenderer(const ImageRenderer& other) = delete;
+    ImageRenderer(ImageRenderer&& other) noexcept = delete;
+    ImageRenderer& operator=(const ImageRenderer& other) = delete;
+    ImageRenderer& operator=(ImageRenderer&& other) noexcept = delete;
 
     [[nodiscard]] Mesh* getMesh() const {
         return _mesh;

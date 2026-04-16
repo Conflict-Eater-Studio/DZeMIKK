@@ -12,7 +12,7 @@
 #include <string>
 
 namespace dzemikk {
-class UISpriteRenderer;
+class ImageRenderer;
 class Font;
 
 class UICheckbox : public IUIInteractable {
@@ -46,8 +46,8 @@ class UICheckbox : public IUIInteractable {
     void onEnter() override;
     void onExit() override;
 
-    void setBackgroundSpriteRenderer(UISpriteRenderer* spriteRenderer);
-    void setCheckmarkSpriteRenderer(UISpriteRenderer* spriteRenderer);
+    void setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer);
+    void setCheckmarkSpriteRenderer(ImageRenderer* spriteRenderer);
 
     void setNormalColor(const glm::vec4& color);
     void setHoverColor(const glm::vec4& color);
@@ -87,8 +87,8 @@ class UICheckbox : public IUIInteractable {
 
     void applyVisualState();
 
-    mutable UISpriteRenderer* _backgroundSpriteRenderer = nullptr;
-    mutable UISpriteRenderer* _checkmarkSpriteRenderer = nullptr;
+    mutable ImageRenderer* _backgroundSpriteRenderer = nullptr;
+    mutable ImageRenderer* _checkmarkSpriteRenderer = nullptr;
 
     glm::vec4 _normalColor = glm::vec4(1.0F);
     glm::vec4 _hoverColor = glm::vec4(1.0F, 1.0F, 1.0F, 0.85F);
