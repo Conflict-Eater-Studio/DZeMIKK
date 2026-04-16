@@ -7,6 +7,17 @@
 #include <assimp/postprocess.h>
 #include <iostream>
 
+void printNode(aiNode* node, int depth = 0) {
+    for (int i = 0; i < depth; i++)
+        std::cout << "  ";
+
+    std::cout << node->mName.C_Str() << " (Meshes: " << node->mNumMeshes << ")\n";
+
+    for (unsigned int i = 0; i < node->mNumChildren; i++) {
+        printNode(node->mChildren[i], depth + 1);
+    }
+}
+
 dzemikk::ModelHandler::Result dzemikk::ModelHandler::load(const std::string& path) {
     auto model = loadModelFromFile(path);
 
@@ -53,6 +64,8 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
     if (!scene || !scene->HasMeshes()) {
         return nullptr;
     }
+
+    printNode(scene->mRootNode);
 
     auto model = std::make_shared<Model>();
 

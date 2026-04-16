@@ -94,20 +94,22 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Mater
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
 
-    auto m1 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
-
-    engine->getAssetManager()->unload("models/pole.fbx");
-
-    auto m2 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
-    auto m3 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
-
-    auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
-    skybox.get()->setShader(engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox").get());
-    engine->getRenderer()->setSkybox(skybox.get());
-
     auto mainScenePtr = std::make_shared<dzemikk::Scene>();
     engine->getSceneManager()->loadScene(mainScenePtr);
     engine->getSceneManager()->setActiveScene(mainScenePtr);
+
+    auto shaderA = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
+    auto materialA = new dzemikk::Material();
+    materialA->setShader(shaderA.get());
+
+    auto shaderB = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile2");
+    auto materialB = new dzemikk::Material();
+    materialB->setShader(shaderB.get());
+
+    auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
+    skybox.get()->setShader(
+        engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox").get());
+    engine->getRenderer()->setSkybox(skybox.get());
 
     // --- Scene Camera
     auto cameraGO = mainScenePtr->createGameObject();
@@ -116,14 +118,23 @@ int main() {
     camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
     engine->getRenderer()->setActiveSceneCamera(camera);
 
-    // --- Tiles
-    auto shaderA = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
-    auto materialA = new dzemikk::Material();
-    materialA->setShader(shaderA.get());
+    // UI Camera
+    auto cameraUIGO = mainScenePtr->createGameObject();
+    cameraUIGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+    auto cameraUI = cameraUIGO->addComponent<dzemikk::Camera>();
 
-    auto shaderB = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile2");
-    auto materialB = new dzemikk::Material();
-    materialB->setShader(shaderB.get());
+    cameraUI->setOrthographic(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f);
+    engine->getRenderer()->setActiveUICamera(cameraUI);
+
+    /*
+    auto m1 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
+
+    engine->getAssetManager()->unload("models/pole.fbx");
+
+    auto m2 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
+    auto m3 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
+
+    // --- Tiles
 
     auto tileMesh = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
@@ -147,6 +158,7 @@ int main() {
     chestMeshR->setModel(chestMesh.get());
     chestMeshR->setTransform(chestGO->transform());
     chestMeshR->setMaterial(0, materialA);
+    */
 
     auto enemyGO = mainScenePtr->createGameObject();
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 0.0f));
@@ -158,13 +170,7 @@ int main() {
     enemyMeshR->setMaterial(0, materialA);
     enemyMeshR->setMaterial(1, materialB);
 
-    // UI Camera
-    auto cameraUIGO = mainScenePtr->createGameObject();
-    cameraUIGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 1.0f));
-    auto cameraUI = cameraUIGO->addComponent<dzemikk::Camera>();
-
-    cameraUI->setOrthographic(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f);
-    engine->getRenderer()->setActiveUICamera(cameraUI);
+    /*
 
     // --- Quad GameObject
     auto quadGO = new dzemikk::GameObject();
@@ -449,6 +455,8 @@ int main() {
             playerGO->transform()->setEulerAngles(rot);
         }
     });
+
+    */
     engine->start();
 
     return 0;
