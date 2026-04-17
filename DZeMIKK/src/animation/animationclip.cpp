@@ -5,7 +5,6 @@
 #include <assimp/anim.h>
 
 #include "animation/animationclip.h"
-#include "animation/animationtrack.h"
 #include "animation/floattrack.h"
 #include "animation/vectortrack.h"
 #include "animation/quaterniontrack.h"

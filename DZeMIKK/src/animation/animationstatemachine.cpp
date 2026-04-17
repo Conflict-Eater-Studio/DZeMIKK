@@ -3,19 +3,38 @@
 #include "animation/animationstate.h"
 #include "animation/transition.h"
 #include "spdlog/spdlog.h"
-#include "animation/animationclip.h"
 
 namespace dzemikk {
     void AnimationStateMachine::update(float deltaTime) {
-        if (_currentState == nullptr) return;
-        if (_currentState->getTransitions().empty()) return;
+        if (_currentState == nullptr) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::warn("[AnimationStateMachine] AnimationStateMachine has no states!");
+#endif
+            return;
+        }
 
-        for (auto element : _currentState->getTransitions()) {
-            if (element.condition) {
-                _currentState = _states.at(element.targetState).get();
+        _currentState->update(deltaTime);
+
+        if (_currentState->getTransitions().empty()) {
+            return;
+        }
+
+        for (const auto& element : _currentState->getTransitions()) {
+            if (!element.condition) {
+                continue;
+            }
+
+            if (element.condition()) {
+                auto it = _states.find(element.targetState);
+                if (it != _states.end() && it->second != nullptr) {
+                    _currentState = it->second.get();
+                    _currentState->resetTime();
+                }
+                break;
             }
         }
     }
+
     AnimationState* AnimationStateMachine::getCurrentState() const {
         return _currentState;
     }
@@ -56,5 +75,6 @@ AnimationState* AnimationStateMachine::addState(std::string name) {
         }
 
         _currentState = it;
+        _currentState->resetTime();
     }
 }
