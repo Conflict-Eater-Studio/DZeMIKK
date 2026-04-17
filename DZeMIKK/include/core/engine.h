@@ -40,7 +40,7 @@ public:
     [[nodiscard]] Window* getWindow() const;
     [[nodiscard]] SceneManager* getSceneManager() const;
     [[nodiscard]] Time* getTime() const;
-    [[nodiscard]] AnimationModule* getAnimationSystem() const;
+    [[nodiscard]] AnimationModule* getAnimationModule() const;
     [[nodiscard]] AssetManager* getAssetManager() const;
     [[nodiscard]] Input* getInput() const;
 

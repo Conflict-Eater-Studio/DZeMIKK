@@ -90,6 +90,7 @@ void Engine::shutdown() {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 #endif
+    _input->uninitialize();
     _animationModule->uninitialize();
     _time->uninitialize();
     _sceneManager->uninitialize();
