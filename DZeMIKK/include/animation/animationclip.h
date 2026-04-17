@@ -69,10 +69,13 @@ public:
     */
     void apply(float timeInSeconds) const;
     static std::shared_ptr<AnimationClip> fromAssimp(aiAnimation* animation);
+    void setLoop(bool loop);
+    [[nodiscard]] bool isLoop() const;
 private:
     std::vector<std::unique_ptr<IAnimationTrack>> _tracks;
     float _durationInTicks = 0;
     float _ticksPerSecond = 0;
+    bool _loop = false;
 };
 
 }

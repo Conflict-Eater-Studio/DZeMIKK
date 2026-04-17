@@ -26,7 +26,11 @@ namespace dzemikk {
 
             if (element.condition()) {
                 auto it = _states.find(element.targetState);
+                float elapsedTime = 0.0f;
                 if (it != _states.end() && it->second != nullptr) {
+                    while (elapsedTime < element.duration) {
+                        elapsedTime += deltaTime;
+                    }
                     _currentState = it->second.get();
                     _currentState->resetTime();
                 }
@@ -66,15 +70,16 @@ AnimationState* AnimationStateMachine::addState(std::string name) {
     void AnimationStateMachine::setState(const std::string& stateName) {
         auto it = _states.at(stateName).get();
 
-        if (it == _currentState) return;
         if (it == nullptr) {
 #if DZEMIKK_DEV_TOOLS
             spdlog::error("State {} is nullptr", stateName);
 #endif
             return;
         }
+        if (it != _currentState) {
+            _currentState = it;
+        };
 
-        _currentState = it;
         _currentState->resetTime();
     }
 }

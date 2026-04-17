@@ -17,8 +17,7 @@ namespace dzemikk {
         }
         _stateMachine->update(deltaTime);
     }
-    void Animator::play(const std::string& stateName) {
-        _currentTime = 0.0f;
+    void Animator::play(const std::string& stateName) const {
         _stateMachine->setState(stateName);
     }
     void Animator::setFloat(std::string_view name, float value) {
