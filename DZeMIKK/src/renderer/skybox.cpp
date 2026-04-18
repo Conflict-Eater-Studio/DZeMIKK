@@ -3,7 +3,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
 dzemikk::Skybox::Skybox() {
@@ -11,7 +10,7 @@ dzemikk::Skybox::Skybox() {
 }
 
 void dzemikk::Skybox::initCube() {
-    float vertices[] = {// cube positions
+    float rawVertices[] = {// cube positions
                         -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
                         1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f,
 
@@ -30,8 +29,21 @@ void dzemikk::Skybox::initCube() {
                         -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f,
                         1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f};
 
-    _cubeMesh = std::make_unique<Mesh>();
-    _cubeMesh->create(vertices, 36, 3);
+    std::vector<StaticVertex> vertices;
+    vertices.reserve(36);
+
+    for (int i = 0; i < 36; i++) {
+        StaticVertex v{};
+        v.position = {rawVertices[i * 3 + 0], rawVertices[i * 3 + 1], rawVertices[i * 3 + 2]};
+
+        v.normal = glm::vec3(0.0f); 
+        vertices.push_back(v);
+    }
+
+    std::vector<unsigned int> indices;
+
+    _cubeMesh = std::make_unique<StaticMesh>();
+    _cubeMesh->create(vertices, indices);
 }
 
 dzemikk::Skybox::~Skybox() {

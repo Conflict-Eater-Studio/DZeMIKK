@@ -126,7 +126,6 @@ int main() {
     cameraUI->setOrthographic(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f);
     engine->getRenderer()->setActiveUICamera(cameraUI);
 
-    /*
     auto m1 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
     engine->getAssetManager()->unload("models/pole.fbx");
@@ -158,7 +157,6 @@ int main() {
     chestMeshR->setModel(chestMesh.get());
     chestMeshR->setTransform(chestGO->transform());
     chestMeshR->setMaterial(0, materialA);
-    */
 
     auto enemyGO = mainScenePtr->createGameObject();
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 0.0f));
@@ -169,8 +167,6 @@ int main() {
     enemyMeshR->setTransform(enemyGO->transform());
     enemyMeshR->setMaterial(0, materialA);
     enemyMeshR->setMaterial(1, materialB);
-
-    /*
 
     // --- Quad GameObject
     auto quadGO = new dzemikk::GameObject();
@@ -456,7 +452,6 @@ int main() {
         }
     });
 
-    */
     engine->start();
 
     return 0;

@@ -1,7 +1,7 @@
 #ifndef DZEMIKK_SKYBOX_H
 #define DZEMIKK_SKYBOX_H
 
-#include "renderer/mesh.h"
+#include "renderer/StaticMesh.h"
 #include "renderer/shader.h"
 
 #include <glm/glm.hpp>
@@ -18,7 +18,7 @@ namespace dzemikk {
      */
     class Skybox {
     public:
-        using MeshPtr = std::unique_ptr<Mesh>;
+        using MeshPtr = std::unique_ptr<StaticMesh>;
 
         /**
          * @brief Defines skybox rendering mode.

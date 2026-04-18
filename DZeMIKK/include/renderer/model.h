@@ -2,6 +2,7 @@
 #define DZEMIKK_MODEL_H
 
 #include "renderer/mesh.h"
+#include "animation/skeleton.h"
 
 #include <cstdint>
 #include <memory>
@@ -107,6 +108,9 @@ class Model {
      */
     [[nodiscard]] const SubMesh* getSubMesh(std::size_t index) const;
 
+    void setSkeleton(std::shared_ptr<Skeleton> skeleton);
+    std::shared_ptr<Skeleton> getSkeleton() const;
+
 #pragma endregion
 
   private:
@@ -114,6 +118,7 @@ class Model {
      *Container of all sub-meshes in the model
      */
     std::vector<SubMesh> _subMeshes;
+    std::shared_ptr<Skeleton> _skeleton;
 };
 
 } // namespace dzemikk

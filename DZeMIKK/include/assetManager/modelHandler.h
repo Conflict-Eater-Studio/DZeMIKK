@@ -1,6 +1,10 @@
 #ifndef DZEMIKK_MODEL_HANDLER_H
 #define DZEMIKK_MODEL_HANDLER_H
 #include "iAssetHandler.h"
+#include "animation/skeleton.h"
+#include <assimp/matrix4x4.h>
+#include <assimp/mesh.h>
+#include "renderer/SkinnedMesh.h"
 
 namespace dzemikk {
 class Model;
@@ -53,6 +57,13 @@ class ModelHandler : public IAssetHandler<Model> {
      * @return Shared pointer to the loaded Model, or nullptr on failure.
      */
     static std::shared_ptr<Model> loadModelFromFile(const std::string& path);
+
+    static glm::mat4 aiToGlm(const aiMatrix4x4& m);
+    static void buildSkeleton(aiNode* node, dzemikk::Skeleton& skeleton, int parent);
+    static void extractBoneWeights(const aiMesh* mesh,
+                                   std::vector<SkinnedVertex>& vertices,
+                                   const dzemikk::Skeleton& skeleton);
+
 };
 }
 
