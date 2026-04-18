@@ -10,6 +10,7 @@
 namespace dzemikk {
 
     class MeshRenderer;
+    class SkinnedMeshRenderer;
     class SpriteRenderer;
     class Mesh;
     class Material;
@@ -133,6 +134,7 @@ namespace dzemikk {
 
         std::vector<MeshRenderer*> _meshRenderers;
         std::vector<SpriteRenderer*> _spriteRenderers;
+        std::vector<SkinnedMeshRenderer*> _skinnedRenderers;
 
         glm::mat4 _view = glm::mat4(1.0f);
         glm::mat4 _projection = glm::mat4(1.0f);

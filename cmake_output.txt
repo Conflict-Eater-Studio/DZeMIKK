@@ -54,21 +54,21 @@ FMOD_LIBS_PATH:C:/Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows/a
 -- Could NOT find BrotliDec (missing: BROTLIDEC_INCLUDE_DIRS BROTLIDEC_LIBRARIES) 
 Cloning into 'googletest-src'...
 HEAD is now at b514bdc8 Update version strings to 1.15.2 (#4583)
--- Configuring done (67.1s)
--- Generating done (0.5s)
+-- Configuring done (81.2s)
+-- Generating done (1.5s)
 -- Build files have been written to: C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug
 $ cmake --build cmake-build-debug --target game -j 10
 Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
 
   1>Checking Build System
   Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/DZeMIKK/CMakeLists.txt
-  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/glfw-src/src/CMakeLists.txt
-  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/freetype-src/CMakeLists.txt
   Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/glm-src/glm/CMakeLists.txt
+  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/freetype-src/CMakeLists.txt
   Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/assimp-src/contrib/zlib/CMakeLists.txt
+  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/glfw-src/src/CMakeLists.txt
+  glad.c
   glm.cpp
   context.c
-  glad.c
   autofit.c
   adler32.c
   compress.c
@@ -93,17 +93,16 @@ Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
   ftbbox.c
   ftbdf.c
   Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/assimp-src/code/CMakeLists.txt
-  monitor.c
   ftbitmap.c
+  monitor.c
   ftcid.c
   ftfstype.c
-  vulkan.c
   ftgasp.c
+  vulkan.c
   ftglyph.c
+  ftgxval.c
   Assimp.cpp
   CInterfaceIOWrapper.cpp
-  window.c
-  ftgxval.c
   Compression.cpp
   BaseImporter.cpp
   BaseProcess.cpp
@@ -118,125 +117,126 @@ Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
   VertexTriangleAdjacency.cpp
   SpatialSort.cpp
   SceneCombiner.cpp
+  window.c
   ftinit.c
   ftmm.c
-  win32_init.c
   ftotval.c
+  win32_init.c
   ftpatent.c
   ScenePreprocessor.cpp
   ftpfr.c
   SkeletonMeshBuilder.cpp
   ftstroke.c
   win32_joystick.c
-  StandardShapes.cpp
   ftsynth.c
-  TargetAnimation.cpp
+  StandardShapes.cpp
   fttype1.c
+  TargetAnimation.cpp
   RemoveComments.cpp
-  win32_monitor.c
   Subdivision.cpp
-  ftwinfnt.c
   scene.cpp
-  bdf.c
-  Generowanie kodu...
+  ftwinfnt.c
   Bitmap.cpp
-  win32_time.c
+  win32_monitor.c
+  bdf.c
   Version.cpp
+  Generowanie kodu...
   CreateAnimMesh.cpp
   simd.cpp
   material.cpp
+  win32_time.c
   AssertHandler.cpp
   Exceptional.cpp
-  Trwa kompilowanie...
-  ftbzip2.c
   Base64.cpp
-  ftcache.c
-  win32_thread.c
   GeometryUtils.cpp
-  glm.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\glm-build\glm\Debug\glmd.lib
+  Trwa kompilowanie...
   DefaultLogger.cpp
-  cff.c
+  ftbzip2.c
   Exporter.cpp
+  win32_thread.c
   AssimpCExport.cpp
+  glm.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\glm-build\glm\Debug\glmd.lib
   CalcTangentsProcess.cpp
+  ftcache.c
   ComputeUVMappingProcess.cpp
-  win32_window.c
   ConvertToLHProcess.cpp
-  type1cid.c
   EmbedTexturesProcess.cpp
+  cff.c
+  win32_window.c
   FindDegenerates.cpp
   FindInstancesProcess.cpp
-  ftgzip.c
   FindInvalidDataProcess.cpp
-  wgl_context.c
   FixNormalsStep.cpp
+  type1cid.c
   DropFaceNormalsProcess.cpp
   GenFaceNormalsProcess.cpp
-  hvf.c
+  ftgzip.c
   GenVertexNormalsProcess.cpp
-  ftlzw.c
   PretransformVertices.cpp
-  egl_context.c
-  pcf.c
+  wgl_context.c
+  hvf.c
   ImproveCacheLocality.cpp
+  ftlzw.c
+  pcf.c
+  egl_context.c
   pfr.c
-  osmesa_context.c
-  psaux.c
   JoinVerticesProcess.cpp
+  psaux.c
+  osmesa_context.c
   LimitBoneWeightsProcess.cpp
-  pshinter.c
   RemoveRedundantMaterials.cpp
+  pshinter.c
   RemoveVCProcess.cpp
-  Generowanie kodu...
-  SortByPTypeProcess.cpp
   psnames.c
+  SortByPTypeProcess.cpp
+  raster.c
   SplitLargeMeshes.cpp
+  Generowanie kodu...
   TextureTransform.cpp
   TriangulateProcess.cpp
   ValidateDataStructure.cpp
   OptimizeGraph.cpp
-  raster.c
   sdf.c
   OptimizeMeshes.cpp
-  DeboneProcess.cpp
   sfnt.c
+  DeboneProcess.cpp
   ProcessHelper.cpp
   MakeVerboseFormat.cpp
+  ScaleProcess.cpp
   smooth.c
   svg.c
-  ScaleProcess.cpp
-  truetype.c
   ArmaturePopulate.cpp
+  truetype.c
   GenBoundingBoxesProcess.cpp
-  type1.c
-  type42.c
-  Generowanie kodu...
   SplitByBoneCountProcess.cpp
+  type1.c
   MaterialSystem.cpp
   STEPFileReader.cpp
+  type42.c
+  Generowanie kodu...
   STEPFileEncoding.cpp
   glTFCommon.cpp
   AMFImporter.cpp
+  AMFImporter_Geometry.cpp
+  AMFImporter_Material.cpp
+  glfw.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\glfw-build\src\Debug\glfw3d.lib
+  AMFImporter_Postprocess.cpp
+  3DSConverter.cpp
   Trwa kompilowanie...
   winfnt.c
-  AMFImporter_Geometry.cpp
-  glfw.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\glfw-build\src\Debug\glfw3d.lib
-  AMFImporter_Material.cpp
-  AMFImporter_Postprocess.cpp
-  ftsystem.c
-  3DSConverter.cpp
   3DSLoader.cpp
   ACLoader.cpp
   ASELoader.cpp
+  ftsystem.c
   ASEParser.cpp
-  ftdebug.c
-  Generowanie kodu...
   AssbinLoader.cpp
   B3DImporter.cpp
   BVHLoader.cpp
-  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/DZeMIKK/CMakeLists.txt
+  ftdebug.c
   ColladaHelper.cpp
+  Generowanie kodu...
   ColladaLoader.cpp
+  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/DZeMIKK/CMakeLists.txt
   ColladaParser.cpp
   DXFLoader.cpp
   CSMLoader.cpp
@@ -247,13 +247,13 @@ Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
   IRRLoader.cpp
   LWOAnimation.cpp
   LWOBLoader.cpp
-  imgui.cpp
   LWOLoader.cpp
+  imgui.cpp
   LWOMaterial.cpp
   LWSLoader.cpp
   MD2Loader.cpp
-  freetype.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\freetype-build\Debug\freetyped.lib
   MD3Loader.cpp
+  freetype.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\freetype-build\Debug\freetyped.lib
   MD5Loader.cpp
   MD5Parser.cpp
   MDCLoader.cpp
@@ -262,18 +262,18 @@ Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
   HL1MDLLoader.cpp
   UniqueNameGenerator.cpp
   NFFLoader.cpp
-  imgui_draw.cpp
   NDOLoader.cpp
   OFFLoader.cpp
+  imgui_draw.cpp
   ObjFileImporter.cpp
   ObjFileMtlImporter.cpp
   ObjFileParser.cpp
   OgreImporter.cpp
-  imgui_tables.cpp
   OgreStructs.cpp
   OgreBinarySerializer.cpp
   OgreXmlSerializer.cpp
   OgreMaterial.cpp
+  imgui_tables.cpp
   OpenGEXImporter.cpp
   PlyLoader.cpp
   PlyParser.cpp
@@ -282,36 +282,36 @@ Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
   COBLoader.cpp
   BlenderLoader.cpp
   BlenderDNA.cpp
-  imgui_impl_glfw.cpp
   BlenderScene.cpp
   BlenderModifier.cpp
   BlenderBMesh.cpp
+  imgui_impl_glfw.cpp
   BlenderTessellator.cpp
   BlenderCustomData.cpp
   IFCLoader.cpp
   IFCReaderGen1_2x3.cpp
   IFCReaderGen2_2x3.cpp
   IFCUtil.cpp
-  imgui_impl_opengl3.cpp
   IFCGeometry.cpp
   IFCMaterial.cpp
   IFCProfile.cpp
   IFCCurve.cpp
+  imgui_impl_opengl3.cpp
   IFCBoolean.cpp
   IFCOpenings.cpp
-  Generowanie kodu...
   XGLLoader.cpp
   FBXImporter.cpp
+  Generowanie kodu...
   FBXParser.cpp
   FBXTokenizer.cpp
   FBXConverter.cpp
   FBXDocument.cpp
-  imgui.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\Debug\imguid.lib
   FBXProperties.cpp
   FBXMeshGeometry.cpp
   FBXMaterial.cpp
   FBXModel.cpp
   FBXAnimation.cpp
+  imgui.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\Debug\imguid.lib
   FBXNodeAttribute.cpp
   FBXDeformer.cpp
   FBXBinaryTokenizer.cpp
@@ -408,6 +408,7 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(1
   
   time.cpp
   profiler.cpp
+  stb.cpp
   input.cpp
   renderer.cpp
 C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\font.h(68,53): warning C4838: konwersja z „FT_Pos” do „unsigned int” wymaga konwersji zawężającej [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
@@ -418,40 +419,13 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(1
       C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(32,1):
       zobacz poprzednią definicję „APIENTRY”
   
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\renderer\renderer.cpp(209,67): error C2039: „getVertexCount”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\ecs\components\ui\imageRenderer.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\renderer\renderer.cpp(210,69): error C2039: „getVertexCount”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\ecs\components\ui\imageRenderer.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\renderer\renderer.cpp(269,64): error C2039: „getVertexCount”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\ecs\components\ui\imageRenderer.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\renderer\renderer.cpp(270,66): error C2039: „getVertexCount”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\ecs\components\ui\imageRenderer.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\renderer\renderer.cpp(304,64): error C2039: „getVertexCount”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\ecs\components\ui\imageRenderer.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\renderer\renderer.cpp(305,66): error C2039: „getVertexCount”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\ecs\components\ui\imageRenderer.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
   mesh.cpp
   staticMesh.cpp
+  skinnedMesh.cpp
   shader.cpp
   material.cpp
   frustum.cpp
   skybox.cpp
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\renderer\skybox.cpp(34,16): error C2039: „create”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\mesh.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
   font.cpp
 C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\font.h(68,53): warning C4838: konwersja z „FT_Pos” do „unsigned int” wymaga konwersji zawężającej [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/renderer/font.cpp”)
@@ -461,18 +435,10 @@ C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\font.h(68,53): 
   monobehaviour.cpp
   transform.cpp
   meshRenderer.cpp
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\ecs\components\meshRenderer.cpp(13,36): error C2039: „getBoundsMin”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\mesh.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\ecs\components\meshRenderer.cpp(14,36): error C2039: „getBoundsMax”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\mesh.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
-  spriteRenderer.cpp
-  camera.cpp
   Generowanie kodu...
   Trwa kompilowanie...
+  spriteRenderer.cpp
+  camera.cpp
   textRenderer.cpp
   gameobject.cpp
   scene.cpp
@@ -495,6 +461,8 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.3313
 C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\font.h(68,53): warning C4838: konwersja z „FT_Pos” do „unsigned int” wymaga konwersji zawężającej [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/assetManager/assetManager.cpp”)
   
+  Generowanie kodu...
+  Trwa kompilowanie...
   iAssetHandler.cpp
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   fontHandler.cpp
@@ -502,18 +470,8 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.3313
 C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\font.h(68,53): warning C4838: konwersja z „FT_Pos” do „unsigned int” wymaga konwersji zawężającej [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/assetManager/fontHandler.cpp”)
   
-  Generowanie kodu...
-  Trwa kompilowanie...
   meshHandler.cpp
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\assetManager\meshHandler.cpp(60,11): error C2039: „createIndexed”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\mesh.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\assetManager\meshHandler.cpp(111,10): error C2039: „recreate”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\mesh.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
   shaderHandler.cpp
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   skyboxHandler.cpp
@@ -525,27 +483,7 @@ C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\assetManager\soundHandler.cp
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   modelHandler.cpp
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\assetManager\modelHandler.cpp(102,15): error C2039: „createIndexed”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\mesh.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
   primitiveFactory.cpp
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\assetManager\primitiveFactory.cpp(51,11): error C2039: „create”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\mesh.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\assetManager\primitiveFactory.cpp(62,11): error C2039: „create2D”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\mesh.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\assetManager\primitiveFactory.cpp(110,11): error C2039: „createIndexed”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\mesh.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\src\assetManager\primitiveFactory.cpp(218,11): error C2039: „createIndexed”: nie jest składową elementu „dzemikk::Mesh” [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\mesh.h(11,7):
-      zobacz deklarację „dzemikk::Mesh”
-  
   assetDatabase.cpp
   assetLoaderRegistry.cpp
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
@@ -567,3 +505,17 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(1
       zobacz poprzednią definicję „APIENTRY”
   
   Generowanie kodu...
+  DZeMIKK.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\Debug\DZeMIKK.lib
+  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/game/CMakeLists.txt
+  Trwa skanowanie źródeł pod kątem zależności modułów...
+  main.cpp
+  Trwa kompilowanie…
+  main.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\font.h(68,53): warning C4838: konwersja z „FT_Pos” do „unsigned int” wymaga konwersji zawężającej [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+  (kompilowanie pliku źródłowego „../../game/src/main.cpp”)
+  
+     Trwa tworzenie biblioteki C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/game/Debug/game.lib i obiektu C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/game/Debug/game.exp
+  game.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\Debug\game.exe
+
+Debug build finished successfully.

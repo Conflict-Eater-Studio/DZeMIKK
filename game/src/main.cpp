@@ -13,6 +13,7 @@
 #include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
+#include "ecs/components/skinnedMeshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
 #include "ecs/components/ui/canvas.h"
@@ -106,6 +107,10 @@ int main() {
     auto materialB = new dzemikk::Material();
     materialB->setShader(shaderB.get());
 
+    auto shaderC = engine->getAssetManager()->get<dzemikk::Shader>("shaders/skinned");
+    auto materialC = new dzemikk::Material();
+    materialC->setShader(shaderC.get());
+
     auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
     skybox.get()->setShader(
         engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox").get());
@@ -161,12 +166,12 @@ int main() {
     auto enemyGO = mainScenePtr->createGameObject();
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 0.0f));
     enemyGO->transform()->setScale(glm::vec3(.01f, .01f, 0.01f));
-    auto enemyMeshR = enemyGO->addComponent<dzemikk::MeshRenderer>();
+    auto enemyMeshR = enemyGO->addComponent<dzemikk::SkinnedMeshRenderer>();
     auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
     enemyMeshR->setModel(enemyMesh.get());
     enemyMeshR->setTransform(enemyGO->transform());
-    enemyMeshR->setMaterial(0, materialA);
-    enemyMeshR->setMaterial(1, materialB);
+    enemyMeshR->setMaterial(0, materialC);
+    enemyMeshR->setMaterial(1, materialC);
 
     // --- Quad GameObject
     auto quadGO = new dzemikk::GameObject();
@@ -415,6 +420,7 @@ int main() {
     auto sound = engine->getAssetManager()->get<dzemikk::Sound>("audio/prime_wznoszeniePol.wav");
     sound.get()->play(system);
 
+    /*
     dzemikk::Animator* animator = enemyGO->addComponent<dzemikk::Animator>();
     engine->getAnimationSystem()->registerAnimator(animator);
 
@@ -451,6 +457,7 @@ int main() {
             playerGO->transform()->setEulerAngles(rot);
         }
     });
+    */
 
     engine->start();
 

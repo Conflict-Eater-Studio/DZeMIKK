@@ -72,6 +72,7 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
 
     auto skeleton = std::make_shared<dzemikk::Skeleton>();
     buildSkeleton(scene->mRootNode, *skeleton, -1);
+    skeleton->setGlobalInverseTransform(glm::inverse(aiToGlm(scene->mRootNode->mTransformation)));
 
     model->setSkeleton(skeleton);
 
@@ -175,19 +176,29 @@ glm::mat4 dzemikk::ModelHandler::aiToGlm(const aiMatrix4x4& m) {
 void dzemikk::ModelHandler::buildSkeleton(aiNode* node, dzemikk::Skeleton& skeleton, int parent) {
     int index = skeleton.addBone(node->mName.C_Str(), parent);
 
+    auto* bone = const_cast<Bone*>(skeleton.getBone(index));
+    if (bone) {
+        bone->setLocalTransform(aiToGlm(node->mTransformation));
+    }
+
     for (unsigned int i = 0; i < node->mNumChildren; i++) {
         buildSkeleton(node->mChildren[i], skeleton, index);
     }
 }
 
 void dzemikk::ModelHandler::extractBoneWeights(const aiMesh* mesh, std::vector<dzemikk::SkinnedVertex>& vertices,
-                               const dzemikk::Skeleton& skeleton) {
+                               dzemikk::Skeleton& skeleton) {
     for (unsigned int i = 0; i < mesh->mNumBones; i++) {
         aiBone* bone = mesh->mBones[i];
 
         int boneID = skeleton.getBoneIndex(bone->mName.C_Str());
         if (boneID == -1)
             continue;
+        
+        auto* skelBone = const_cast<Bone*>(skeleton.getBone(boneID));
+        if (skelBone) {
+            skelBone->setOffsetMatrix(aiToGlm(bone->mOffsetMatrix));
+        }
 
         for (unsigned int w = 0; w < bone->mNumWeights; w++) {
             const aiVertexWeight& vw = bone->mWeights[w];

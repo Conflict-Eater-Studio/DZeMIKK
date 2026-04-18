@@ -62,7 +62,7 @@ class ModelHandler : public IAssetHandler<Model> {
     static void buildSkeleton(aiNode* node, dzemikk::Skeleton& skeleton, int parent);
     static void extractBoneWeights(const aiMesh* mesh,
                                    std::vector<SkinnedVertex>& vertices,
-                                   const dzemikk::Skeleton& skeleton);
+                                   dzemikk::Skeleton& skeleton);
 
 };
 }

@@ -105,6 +105,19 @@ void dzemikk::Shader::setMat4(const char* name, const glm::mat4& mat) {
                        glm::value_ptr(mat));
 }
 
+void dzemikk::Shader::setMat4Array(const char* name,
+                                   const std::vector<glm::mat4>& matrices) const {
+    if (matrices.empty())
+        return;
+
+    GLint location = glGetUniformLocation(_program, name);
+    if (location == -1)
+        return;
+
+    glUniformMatrix4fv(location, static_cast<GLsizei>(matrices.size()), GL_FALSE,
+                       reinterpret_cast<const float*>(matrices.data()));
+}
+
 void dzemikk::Shader::setSampler(const char* name, int textureUnit) {
     glUniform1i(glGetUniformLocation(_program, name), textureUnit);
 }
