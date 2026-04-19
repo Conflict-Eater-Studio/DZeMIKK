@@ -48,3 +48,7 @@ const glm::mat4& dzemikk::Skeleton::getGlobalInverseTransform() const {
 void dzemikk::Skeleton::setGlobalInverseTransform(const glm::mat4& transform) {
     _globalInverseTransform = transform;
 }
+
+dzemikk::Bone* dzemikk::Skeleton::getBone(int index) {
+    return &_bones[index];
+}

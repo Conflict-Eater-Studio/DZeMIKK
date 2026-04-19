@@ -118,9 +118,9 @@ int main() {
 
     // --- Scene Camera
     auto cameraGO = mainScenePtr->createGameObject();
-    cameraGO->transform()->setPosition(glm::vec3(1.5f, 1.5f, 3.0f));
+    cameraGO->transform()->setPosition(glm::vec3(4.5f, 3.0f, 3.0f));
     auto camera = cameraGO->addComponent<dzemikk::Camera>();
-    camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
+    camera->lookAt(glm::vec3(0.0f, 2.f, 0.0f));
     engine->getRenderer()->setActiveSceneCamera(camera);
 
     // UI Camera
@@ -167,11 +167,17 @@ int main() {
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 0.0f));
     enemyGO->transform()->setScale(glm::vec3(.01f, .01f, 0.01f));
     auto enemyMeshR = enemyGO->addComponent<dzemikk::SkinnedMeshRenderer>();
-    auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
+    auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/szamankaanim.fbx");
     enemyMeshR->setModel(enemyMesh.get());
     enemyMeshR->setTransform(enemyGO->transform());
     enemyMeshR->setMaterial(0, materialC);
     enemyMeshR->setMaterial(1, materialC);
+    enemyMeshR->setMaterial(2, materialC);
+    enemyMeshR->setMaterial(3, materialC);
+    enemyMeshR->setMaterial(4, materialC);
+    enemyMeshR->setMaterial(5, materialC);
+
+
 
     // --- Quad GameObject
     auto quadGO = new dzemikk::GameObject();

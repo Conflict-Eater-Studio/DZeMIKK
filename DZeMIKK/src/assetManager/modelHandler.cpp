@@ -192,6 +192,9 @@ void dzemikk::ModelHandler::extractBoneWeights(const aiMesh* mesh, std::vector<d
         aiBone* bone = mesh->mBones[i];
 
         int boneID = skeleton.getBoneIndex(bone->mName.C_Str());
+
+        std::cout << "Bone: " << i << " name: " << bone->mName.C_Str() << "\n";
+
         if (boneID == -1)
             continue;
         
@@ -213,4 +216,6 @@ void dzemikk::ModelHandler::extractBoneWeights(const aiMesh* mesh, std::vector<d
             }
         }
     }
+
+    std::cout << "\n\n";
 }

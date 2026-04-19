@@ -46,6 +46,7 @@ class Skeleton {
      * @return Pointer to bone or nullptr if invalid index.
      */
     [[nodiscard]] const Bone* getBone(std::size_t index) const;
+    Bone* getBone(int index);
 
     /**
      * @brief Returns total number of bones.
