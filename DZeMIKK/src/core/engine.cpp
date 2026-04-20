@@ -11,6 +11,8 @@
 #endif
 
 #include "animation/animationmodule.h"
+#include "assetManager/assetmanager.h"
+#include "audio/sound.h"
 #include "core/engine.h"
 #include "core/profiler.h"
 #include "core/time.h"
@@ -19,13 +21,11 @@
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
 #include "ecs/scenemanager.h"
-#include "renderer/renderer.h"
-#include "renderer/font.h"
-#include "renderer/texture.h"
-#include "renderer/Model.h"
-#include "audio/sound.h"
-#include "assetManager/assetmanager.h"
 #include "input/input.h"
+#include "renderer/Model.h"
+#include "renderer/font.h"
+#include "renderer/renderer.h"
+#include "renderer/texture.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -171,14 +171,13 @@ Window* Engine::getWindow() const {
 }
 SceneManager* Engine::getSceneManager() const {
     return _sceneManager.get();
-
 }
 
 Time* Engine::getTime() const {
     return _time.get();
 }
 
-AnimationModule* Engine::getAnimationSystem() const{
+AnimationModule* Engine::getAnimationSystem() const {
     return _animationModule.get();
 }
 
@@ -225,7 +224,7 @@ void Engine::updateCameraWASD(float speed) {
 
     if (glm::length(move) > 0.0f) {
         move = glm::normalize(move);
-        transform->translate(move * speed * 0.016f);
+        transform->translate(move * speed * 0.16f);
     }
 }
 

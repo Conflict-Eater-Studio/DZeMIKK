@@ -2,6 +2,8 @@ project(Game LANGUAGES CXX)
 
 add_executable(game
                 src/main.cpp
+                src/map/HexChunk.cpp
+                src/map/ChunkSpawner.cpp
 )
 target_include_directories(game
         PUBLIC
@@ -12,6 +14,7 @@ target_link_libraries(game
         PUBLIC
         DZeMIKK
 )
+
 if (MSVC)
     target_compile_options(game PRIVATE /utf-8)
 else()
