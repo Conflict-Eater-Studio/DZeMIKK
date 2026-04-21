@@ -34,6 +34,7 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/components/monobehaviour.cpp"
         "${SRC_DIR}/ecs/components/transform.cpp"
         "${SRC_DIR}/ecs/components/meshRenderer.cpp"
+        "${SRC_DIR}/ecs/components/collider.cpp"
         "${SRC_DIR}/ecs/components/spriteRenderer.cpp"
         "${SRC_DIR}/ecs/components/camera.cpp"
         "${SRC_DIR}/ecs/components/textRenderer.cpp"
