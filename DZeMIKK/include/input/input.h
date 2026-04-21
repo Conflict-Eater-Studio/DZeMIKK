@@ -55,6 +55,7 @@ namespace dzemikk {
 
         Action<dzemikk::MouseMovedEvent> OnMouseMoved;
         Action<dzemikk::KeyPressedEvent> OnKeyPressed;
+        Action<dzemikk::KeyReleasedEvent> OnKeyReleased;
 
         bool IsKeyPressed(int keycode) const;
         bool IsMouseButtonPressed(int button) const;

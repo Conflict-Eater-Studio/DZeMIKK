@@ -26,6 +26,7 @@
 #include "audio/sound.h"
 #include "assetManager/assetmanager.h"
 #include "input/input.h"
+#include "collisions/collisions.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -48,6 +49,7 @@ void Engine::init() {
     _time = std::make_unique<Time>();
     _animationModule = std::make_unique<AnimationModule>();
     _input = std::make_unique<Input>();
+    _collisions = std::make_unique<Collisions>();
 
     _mainWindow->initialize();
     _assetManager->initialize();
@@ -59,6 +61,7 @@ void Engine::init() {
     _input->setInputWindow(_mainWindow->nativeHandle());
     _mainWindow->setEventCallback([this](Event& e) { this->OnEvent(e); });
     _input->initialize();
+    _collisions->initialize();
 
     // _modules.push_back(std::move(_assetManager));
     // _modules.push_back(_mainWindow);
@@ -97,6 +100,7 @@ void Engine::shutdown() {
     _sceneManager->uninitialize();
     _time->uninitialize();
     _animationModule->uninitialize();
+    _collisions->uninitialize();
 
     for (const auto& module : _modules) {
         module->uninitialize();
@@ -148,6 +152,11 @@ void Engine::start() {
         updateCameraWASD(1.f);
         updateCameraArrows(1.1f);
         updateMouseUI(deltaTime);
+
+        if (m_UserUpdateCallback) {
+            m_UserUpdateCallback();
+        }
+
         {
             DZ_PROFILE_CPU("Renderer (Total CPU)");
             _renderer->render();
@@ -188,6 +197,10 @@ AssetManager* Engine::getAssetManager() const {
 
 Input* Engine::getInput() const {
     return _input.get();
+}
+
+Collisions* Engine::getCollisions() const {
+    return _collisions.get();
 }
 
 // template <std::derived_from<IEngineModule> T>

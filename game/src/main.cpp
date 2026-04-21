@@ -38,9 +38,13 @@
 #include "renderer/mesh.h"
 
 #include "input/input.h"
+#include "collisions/collisions.h"
+#include "ecs/components/collider.h"
 #include "events/mouse_event.h"
 #include "events/key_event.h"
 #include "core/time.h"
+#include "core/window.h"
+#include "ecs/components/ui/iUIInteractable.h"
 #include <GLFW/glfw3.h>
 
 #include <iostream>
@@ -127,7 +131,7 @@ int main() {
 
     auto tileMesh = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
-    createHexIsland(*mainScenePtr, tileMesh.get(), materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
+    createHexIsland(*mainScenePtr, tileMesh.get(), materialA, materialB, 1000, 1.0f, 0.15f, 0.5f);
 
     // --- Player
     auto playerGO = mainScenePtr->createGameObject();
@@ -449,6 +453,76 @@ int main() {
             playerGO->transform()->setEulerAngles(rot);
         }
     });
+
+    static glm::vec3 moveDirection(0.0f);
+    engine->getInput()->OnKeyPressed.addListener([&](dzemikk::KeyPressedEvent& event) {
+        if (event.GetRepeatCount() == 0) {
+            if (event.GetKeyCode() == GLFW_KEY_H) moveDirection.z -= 1.0f;
+            if (event.GetKeyCode() == GLFW_KEY_N) moveDirection.z += 1.0f;
+            if (event.GetKeyCode() == GLFW_KEY_B) moveDirection.x -= 1.0f;
+            if (event.GetKeyCode() == GLFW_KEY_M) moveDirection.x += 1.0f;
+        }
+    });
+
+    engine->getInput()->OnKeyReleased.addListener([&](dzemikk::KeyReleasedEvent& event) {
+        if (event.GetKeyCode() == GLFW_KEY_H) moveDirection.z += 1.0f;
+        if (event.GetKeyCode() == GLFW_KEY_N) moveDirection.z -= 1.0f;
+        if (event.GetKeyCode() == GLFW_KEY_B) moveDirection.x += 1.0f;
+        if (event.GetKeyCode() == GLFW_KEY_M) moveDirection.x -= 1.0f;
+    });
+
+    engine->SetUserUpdateCallback([&engine, playerGO]() {
+        if (glm::length(moveDirection) > 0.01f) {
+            glm::vec3 pos = playerGO->transform()->getPosition();
+            float speed = 5.0f * engine->getTime()->getDeltaTime();
+            pos += glm::normalize(moveDirection) * speed;
+            playerGO->transform()->setPosition(pos);
+        }
+
+        static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
+
+        bool isMouseOverUI = false;
+        std::vector<dzemikk::IUIInteractable*> uiElements;
+        dzemikk::ComponentRegistry::get().getComponents<dzemikk::IUIInteractable>(uiElements);
+        for (auto* element : uiElements) {
+            if (element->isHovered()) {
+                isMouseOverUI = true;
+                break;
+            }
+        }
+
+        dzemikk::Collider* targetCollider = nullptr;
+
+        if (!isMouseOverUI) {
+            glm::vec2 mousePos = engine->getInput()->GetMousePosition();
+            
+            int width, height;
+            glfwGetWindowSize(engine->getWindow()->nativeHandle(), &width, &height);
+            
+            targetCollider = engine->getCollisions()->raycast(
+                engine->getRenderer()->getActiveSceneCamera(), 
+                mousePos, 
+                static_cast<float>(width), 
+                static_cast<float>(height)
+            );
+        }
+
+        dzemikk::MeshRenderer* targetRenderer = nullptr;
+        if (targetCollider) {
+            targetRenderer = targetCollider->getOwner()->getComponent<dzemikk::MeshRenderer>();
+        }
+        
+        if (targetRenderer != lastHitRenderer) {
+            if (lastHitRenderer && lastHitRenderer->isValid()) {
+                lastHitRenderer->setColor(glm::vec4(1.0f));
+            }
+            if (targetRenderer) {
+                targetRenderer->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+            }
+            lastHitRenderer = targetRenderer;
+        }
+    });
+
     engine->start();
 
     return 0;
@@ -536,6 +610,10 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Mater
             renderer->setMaterial(0, materialA);
         else
             renderer->setMaterial(0, materialB);
+
+        auto collider = tile->addComponent<dzemikk::Collider>();
+        collider->setModel(mesh);
+        collider->setTransform(tile->transform());
     }
 
 }

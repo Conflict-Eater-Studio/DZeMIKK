@@ -188,7 +188,7 @@ void dzemikk::Renderer::render() {
                 Batch* batch = nullptr;
 
                 for (auto& b : _batches) {
-                    if (b.mesh == mesh && b.material == material) {
+                    if (b.mesh == mesh && b.material == material && b.color == r->getColor()) {
                         batch = &b;
                         break;
                     }
@@ -200,6 +200,7 @@ void dzemikk::Renderer::render() {
 
                     batch->mesh = mesh;
                     batch->material = material;
+                    batch->color = r->getColor();
 
                     glGenBuffers(1, &batch->instanceVBO);
                 }
@@ -224,6 +225,7 @@ void dzemikk::Renderer::render() {
 
             shader->bind();
 
+            shader->setVec4("meshColor", batch.color);
             shader->setVec3("lightDir", glm::vec3(1.0f, -1.0f, -1.0f));
             shader->setVec3("lightColor", glm::vec3(1.0f));
             shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
