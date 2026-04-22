@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <glm/glm.hpp>
 #include <numbers>
+#include <vector>
 
 #ifdef DZEMIKK_DEV_TOOLS
 #include <iosfwd>
@@ -120,6 +121,15 @@ class HexCoord {
     }
     [[nodiscard]] float getHeight() const {
         return _height;
+    }
+
+    [[nodiscard]] static std::vector<HexCoord> getNeighbors(HexCoord coord) {
+        std::vector<HexCoord> neighbors;
+        neighbors.reserve(6);
+        for (int i = 0; i < 6; ++i) {
+            neighbors.push_back(coord + dir(static_cast<Direction>(i * 2)));
+        }
+        return neighbors;
     }
 
   private:

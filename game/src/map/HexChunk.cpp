@@ -1,17 +1,101 @@
 #include "map/HexChunk.h"
 
-#include "map/hexCoord.h"
+#include "map/HexCoord.h"
 #include "utils/Perlin.h"
 
 #include <algorithm>
 #include <cmath>
+#include <random>
 #include <ranges>
 #include <unordered_set>
 
 namespace game {
+HexChunk::HexChunk(HexCoord center, const Config& config)
+    : _hexes(generateHexes(center, config)), _radius(config.steps), _center(center),
+      _config(config) {
+    if (!_config.generator) {
+        _config.generator = [steps = _config.steps](int x) {
+            if (steps <= 0) {
+                return 0.0F;
+            }
+            return 1.0F - (static_cast<float>(x) / static_cast<float>(steps));
+        };
+    }
+}
+
 HexChunk::HexChunk(int radius, HexCoord center, Perlin* perlin, float holeProbability)
     : _hexes(generateHexes(radius, center, perlin, holeProbability)), _radius(radius),
-      _center(center) {}
+      _center(center),
+      _config({.steps = radius, .holeChance = holeProbability, .generator = [radius](int x) {
+                   if (radius <= 0) {
+                       return 0.0F;
+                   }
+                   return 1.0F - (static_cast<float>(x) / static_cast<float>(radius));
+               }}) {}
+
+std::vector<HexCoord> HexChunk::generateHexes(HexCoord center, const Config& config) {
+    static std::mt19937 rng(std::random_device{}());
+    std::uniform_real_distribution<float> chanceDist(0.0F, 1.0F);
+
+    std::unordered_set<HexCoord> visited;
+    std::vector<HexCoord> hexes;
+
+    auto canPlace = config.canPlace;
+    if (!canPlace) {
+        canPlace = [](const HexCoord&) { return true; };
+    }
+
+    if (!canPlace(center)) {
+        return hexes;
+    }
+
+    visited.insert(center);
+    hexes.push_back(center);
+
+    std::vector<HexCoord> currentGen = {center};
+
+    auto generator = config.generator;
+    if (!generator) {
+        generator = [steps = config.steps](int x) {
+            if (steps <= 0) {
+                return 0.0F;
+            }
+            return 1.0F - (static_cast<float>(x) / static_cast<float>(steps));
+        };
+    }
+
+    for (int x = 0; x < config.steps; x++) {
+        std::vector<HexCoord> nextGen;
+        const float chance = generator(x);
+
+        for (const auto& coord : currentGen) {
+            auto neighbors = HexCoord::getNeighbors(coord);
+
+            for (const auto& neighborCoord : neighbors) {
+                if (visited.contains(neighborCoord)) {
+                    continue;
+                }
+
+                if (!canPlace(neighborCoord)) {
+                    continue;
+                }
+
+                if (chanceDist(rng) < chance) {
+                    visited.insert(neighborCoord);
+                    nextGen.push_back(neighborCoord);
+                    hexes.push_back(neighborCoord);
+                }
+            }
+        }
+
+        currentGen = std::move(nextGen);
+        if (currentGen.empty()) {
+            break;
+        }
+    }
+
+    return hexes;
+}
 
 std::vector<HexCoord> HexChunk::generateHexes(int radius, HexCoord center, Perlin* perlin,
                                               float holeProbability) {
@@ -60,6 +144,10 @@ int HexChunk::getRadius() const {
 
 HexCoord HexChunk::getCenter() const {
     return _center;
+}
+
+const HexChunk::Config& HexChunk::getConfig() const {
+    return _config;
 }
 
 void HexChunk::remove(const std::vector<HexCoord>& hexes) {

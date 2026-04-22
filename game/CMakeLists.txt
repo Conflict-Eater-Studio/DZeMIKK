@@ -4,6 +4,7 @@ add_executable(game
                 src/main.cpp
                 src/map/HexChunk.cpp
                 src/map/ChunkSpawner.cpp
+                src/map/grid.cpp
 )
 target_include_directories(game
         PUBLIC

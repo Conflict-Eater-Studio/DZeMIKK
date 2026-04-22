@@ -33,6 +33,7 @@
 #include "input/input.h"
 #include "map/ChunkSpawner.h"
 #include "map/HexCoord.h"
+#include "map/grid.h"
 #include "map/hexChunk.h"
 #include "renderer/font.h"
 #include "renderer/material.h"
@@ -81,15 +82,6 @@ int main() {
     uiCamera->setOrthographic(0.0F, 1920.0F, 0.0F, 1080.0F, -1.0F, 1.0F);
     engine->getRenderer()->setActiveUICamera(uiCamera);
 
-    ChunkSpawner spawner(HexCoord(0, 0), 10, 1);
-    spawner.trySpawnChunk(0, HexCoord::Direction::R0, 4);
-    spawner.trySpawnChunk(0, HexCoord::Direction::R60, 8);
-    spawner.trySpawnChunk(0, HexCoord::Direction::R120, 12);
-    spawner.trySpawnChunk(0, HexCoord::Direction::R180, 16);
-    spawner.trySpawnChunk(0, HexCoord::Direction::R240, 20);
-    spawner.trySpawnChunk(0, HexCoord::Direction::R300, 24);
-    const auto& chunks = spawner.getChunks();
-
     auto shader = assetManager->get<dzemikk::Shader>("shaders/tile1");
     auto material = std::make_shared<dzemikk::Material>();
     material->setShader(shader.get());
@@ -97,30 +89,56 @@ int main() {
 
     auto* rootGO = scene->createGameObject("Root");
     auto* mapGO = scene->createGameObject("Map", rootGO);
-    try {
-        for (std::size_t chunkIndex = 0; chunkIndex < chunks.size(); ++chunkIndex) {
-            const auto& chunk = chunks[chunkIndex];
-            HexCoord center = chunk.getCenter();
-            auto* chunkGO = scene->createGameObject(
-                std::format("Chunk {} ({}, {})", chunkIndex, center.q(), center.r()), mapGO);
 
-            std::ranges::for_each(chunk.getHexes(), [&scene, &chunkGO, &material,
-                                                     &model](const HexCoord& hex) {
-                auto* hexGO =
-                    scene->createGameObject(std::format("Hex ({}, {})", hex.q(), hex.r()), chunkGO);
-                hexGO->transform()->setPosition(hex.toWorldPosition(1.0F, 0.1F));
-                hexGO->transform()->rotate(
-                    glm::angleAxis(glm::radians(-90.0F), glm::vec3(1.0F, 0.0F, 0.0F)));
-                hexGO->transform()->rotate(
-                    glm::angleAxis(glm::radians(30.0F), glm::vec3(0.0F, 1.0F, 0.0F)));
-                auto* mr = hexGO->addComponent<dzemikk::MeshRenderer>();
-                mr->setMaterial(0, material.get());
-                mr->setModel(model.get());
-                mr->setTransform(hexGO->transform());
-            });
+    Grid grid;
+    grid.makeChunk({0, 0}, {.steps = 6});
+    std::size_t idx = grid.makeChunk(0, HexCoord::Direction::R0, {.steps = 6}).value_or(-1);
+    engine->getInput()->OnKeyPressed.addListener([&](const dzemikk::KeyPressedEvent& event) {
+        if (event.GetKeyCode() == GLFW_KEY_SPACE) {
+            auto rng = std::mt19937(std::random_device{}());
+            auto dist = std::uniform_int_distribution<int>(4, 20);
+            auto dirDist = std::uniform_int_distribution<int>(0, 2);
+            std::vector<HexCoord::Direction> dirs = {
+                HexCoord::Direction::R0, HexCoord::Direction::R60, HexCoord::Direction::R300};
+            std::size_t newIdx =
+                grid.makeChunk(idx, dirs.at(dirDist(rng)), {.steps = dist(rng)}).value_or(-1);
+            spdlog::info("New chunk index: {}", newIdx);
+            if (newIdx != -1) {
+                idx = newIdx;
+                auto newHexes = grid.getChunks().at(idx).getHexes();
+                for (auto cell : newHexes) {
+                    auto* obj = scene->createGameObject("Hex", mapGO);
+                    cell.setHeight(perlin.noise(static_cast<float>(cell.q()) * 0.1F,
+                                                static_cast<float>(cell.r()) * 0.1F) *
+                                   2.0F);
+                    obj->transform()->setPosition(
+                        cell.toWorldPosition(std::numbers::sqrt3_v<float> / 2.0F, 0.0F));
+                    obj->transform()->setScale({1.0F, 1.0F, 1.0F});
+                    obj->transform()->setRotation(
+                        glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
+                    auto* mesh = obj->addComponent<dzemikk::MeshRenderer>();
+                    mesh->setModel(model.get());
+                    mesh->setMaterial(0, material.get());
+                    mesh->setTransform(obj->transform());
+                }
+            }
         }
-    } catch (std::runtime_error& e) {
-        std::cerr << "Error creating hexes: " << e.what() << "\n";
+    });
+
+    for (auto cell : grid.getHexes()) {
+        auto* obj = scene->createGameObject("Hex", mapGO);
+        cell.coord.setHeight(perlin.noise(static_cast<float>(cell.coord.q()) * 0.1F,
+                                          static_cast<float>(cell.coord.r()) * 0.1F) *
+                             2.0F);
+        obj->transform()->setPosition(
+            cell.coord.toWorldPosition(std::numbers::sqrt3_v<float> / 2.0F, 0.0F));
+        obj->transform()->setScale({1.0F, 1.0F, 1.0F});
+        obj->transform()->setRotation(
+            glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
+        auto* mesh = obj->addComponent<dzemikk::MeshRenderer>();
+        mesh->setModel(model.get());
+        mesh->setMaterial(0, material.get());
+        mesh->setTransform(obj->transform());
     }
 
     engine->start();
