@@ -36,8 +36,11 @@ class Perlin {
         int bb = _p[_p[xx + 1] + yy + 1];
         // NOLINTEND(cppcoreguidelines-pro-bounds-constant-array-index)
 
-        return lerp(v, lerp(u, grad(aa, x, y), grad(ba, x - 1, y)),
-                    lerp(u, grad(ab, x, y - 1), grad(bb, x - 1, y - 1)));
+        float rawNoise = lerp(v, lerp(u, grad(aa, x, y), grad(ba, x - 1, y)),
+                              lerp(u, grad(ab, x, y - 1), grad(bb, x - 1, y - 1)));
+
+        // NOTE: May not be perfectly normalized
+        return (rawNoise + 0.707F) / 1.141F; // Normalize to roughly [0, 1]
     }
 
   private:

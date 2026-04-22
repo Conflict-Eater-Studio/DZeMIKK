@@ -3,7 +3,6 @@ project(Game LANGUAGES CXX)
 add_executable(game
                 src/main.cpp
                 src/map/HexChunk.cpp
-                src/map/ChunkSpawner.cpp
                 src/map/grid.cpp
 )
 target_include_directories(game
@@ -17,9 +16,9 @@ target_link_libraries(game
 )
 
 if (MSVC)
-    target_compile_options(game PRIVATE /utf-8)
+  target_compile_options(game PRIVATE /utf-8)
 else()
-    target_compile_options(game PRIVATE -finput-charset=UTF-8)
+  target_compile_options(game PRIVATE -finput-charset=UTF-8)
 endif()
 
 add_custom_command(TARGET game POST_BUILD

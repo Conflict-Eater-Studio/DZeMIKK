@@ -1,12 +1,8 @@
 #include "map/HexChunk.h"
 
 #include "map/HexCoord.h"
-#include "utils/Perlin.h"
 
-#include <algorithm>
-#include <cmath>
 #include <random>
-#include <ranges>
 #include <unordered_set>
 
 namespace game {
@@ -22,16 +18,6 @@ HexChunk::HexChunk(HexCoord center, const Config& config)
         };
     }
 }
-
-HexChunk::HexChunk(int radius, HexCoord center, Perlin* perlin, float holeProbability)
-    : _hexes(generateHexes(radius, center, perlin, holeProbability)), _radius(radius),
-      _center(center),
-      _config({.steps = radius, .holeChance = holeProbability, .generator = [radius](int x) {
-                   if (radius <= 0) {
-                       return 0.0F;
-                   }
-                   return 1.0F - (static_cast<float>(x) / static_cast<float>(radius));
-               }}) {}
 
 std::vector<HexCoord> HexChunk::generateHexes(HexCoord center, const Config& config) {
     static std::mt19937 rng(std::random_device{}());
@@ -97,43 +83,6 @@ std::vector<HexCoord> HexChunk::generateHexes(HexCoord center, const Config& con
     return hexes;
 }
 
-std::vector<HexCoord> HexChunk::generateHexes(int radius, HexCoord center, Perlin* perlin,
-                                              float holeProbability) {
-    std::vector<HexCoord> hexes;
-    hexes.reserve(static_cast<std::size_t>((3LL * radius * radius) + (3LL * radius) + 1LL));
-
-    float holeFrequency = 0.15F;
-    float heightFrequency = 0.08F;
-    float maxHeight = 2.0F;
-
-    for (int q = -radius; q <= radius; q++) {
-        int rStart = std::max(-radius, -q - radius);
-        int rEnd = std::min(radius, -q + radius);
-
-        for (int r = rStart; r <= rEnd; r++) {
-            HexCoord local(q, r);
-            HexCoord world = center + local;
-
-            float holeVal = perlin->noise(static_cast<float>(world.q()) * holeFrequency,
-                                          static_cast<float>(world.r()) * holeFrequency);
-
-            float normalizedHole = (holeVal + 1.0F) / 2.0F;
-
-            if (normalizedHole < holeProbability && HexCoord::distance(local, HexCoord(0, 0)) > 3) {
-                continue;
-            }
-
-            float heightVal =
-                perlin->noise((static_cast<float>(world.q()) + 100.0F) * heightFrequency,
-                              (static_cast<float>(world.r()) + 100.0F) * heightFrequency);
-
-            world.setHeight(heightVal * maxHeight);
-
-            hexes.push_back(world);
-        }
-    }
-    return hexes;
-}
 const std::vector<HexCoord>& HexChunk::getHexes() const {
     return _hexes;
 }

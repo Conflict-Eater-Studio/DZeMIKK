@@ -7,20 +7,17 @@
 #include <vector>
 
 namespace game {
-class Perlin;
-
 class HexChunk {
   public:
     struct Config {
         int steps{0};
-        float holeChance{10.0F};
+        float holeChance{0.1F};
         std::function<float(int)> generator;
         std::function<bool(const HexCoord&)> canPlace;
     };
 
     HexChunk() = default;
     HexChunk(HexCoord center, const Config& config);
-    HexChunk(int radius, HexCoord center, Perlin* perlin, float holeProbability);
 
     [[nodiscard]] const std::vector<HexCoord>& getHexes() const;
     [[nodiscard]] int getRadius() const;
@@ -32,8 +29,6 @@ class HexChunk {
 
   private:
     static std::vector<HexCoord> generateHexes(HexCoord center, const Config& config);
-    static std::vector<HexCoord> generateHexes(int radius, HexCoord center, Perlin* perlin,
-                                               float holeProbability);
 
     std::vector<HexCoord> _hexes;
     int _radius{0};

@@ -31,7 +31,6 @@
 #include "events/mouse_event.h"
 #include "glm/ext/quaternion_trigonometric.hpp"
 #include "input/input.h"
-#include "map/ChunkSpawner.h"
 #include "map/HexCoord.h"
 #include "map/grid.h"
 #include "map/hexChunk.h"
@@ -47,6 +46,7 @@
 #include <GLFW/glfw3.h>
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <format>
 #include <iostream>
 #include <memory>
@@ -91,7 +91,7 @@ int main() {
     auto* mapGO = scene->createGameObject("Map", rootGO);
 
     Grid grid;
-    grid.makeChunk({0, 0}, {.steps = 6});
+    grid.makeChunk({0, 0}, {.steps = 10, .holeChance = 0.25F});
     std::size_t idx = grid.makeChunk(0, HexCoord::Direction::R0, {.steps = 6}).value_or(-1);
     engine->getInput()->OnKeyPressed.addListener([&](const dzemikk::KeyPressedEvent& event) {
         if (event.GetKeyCode() == GLFW_KEY_SPACE) {
@@ -100,8 +100,9 @@ int main() {
             auto dirDist = std::uniform_int_distribution<int>(0, 2);
             std::vector<HexCoord::Direction> dirs = {
                 HexCoord::Direction::R0, HexCoord::Direction::R60, HexCoord::Direction::R300};
-            std::size_t newIdx =
-                grid.makeChunk(idx, dirs.at(dirDist(rng)), {.steps = dist(rng)}).value_or(-1);
+            std::size_t newIdx = grid.makeChunk(idx, dirs.at(dirDist(rng)),
+                                                {.steps = dist(rng), .holeChance = 0.25F})
+                                     .value_or(-1);
             spdlog::info("New chunk index: {}", newIdx);
             if (newIdx != -1) {
                 idx = newIdx;

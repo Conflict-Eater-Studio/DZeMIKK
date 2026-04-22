@@ -1,5 +1,10 @@
 #include "map/grid.h"
 
+#include "utils/perlin.h"
+
+#include <algorithm>
+#include <ranges>
+#include <spdlog/spdlog.h>
 #include <unordered_set>
 #include <utility>
 
@@ -14,6 +19,22 @@ std::optional<std::size_t> Grid::makeChunk(HexCoord center, const HexChunk::Conf
 
     if (chunk.getHexes().empty()) {
         return false;
+    }
+
+    Perlin perlinHoles(2);
+    auto results =
+        chunk.getHexes() |
+        std::views::filter([&perlinHoles, holeChance = config.holeChance](const HexCoord& hex) {
+            float noiseVal = perlinHoles.noise(static_cast<float>(hex.q()) * 0.1F,
+                                               static_cast<float>(hex.r()) * 0.1F);
+            spdlog::info("Noise value for hex ({}, {}): {}", hex.q(), hex.r(), noiseVal);
+            return noiseVal < holeChance;
+        });
+
+    chunk.remove({results.begin(), results.end()});
+
+    if (chunk.getHexes().empty()) {
+        return std::nullopt;
     }
 
     _chunks.push_back(std::move(chunk));
@@ -41,6 +62,25 @@ std::optional<std::size_t> Grid::makeChunk(std::size_t parentChunkIndex, HexCoor
     if (chunk.getHexes().empty()) {
         return std::nullopt;
     }
+
+    Perlin perlinHoles(2);
+    auto results =
+        chunk.getHexes() |
+        std::views::filter([&perlinHoles, holeChance = config.holeChance](const HexCoord& hex) {
+            float noiseVal = perlinHoles.noise(static_cast<float>(hex.q()) * 0.1F,
+                                               static_cast<float>(hex.r()) * 0.1F);
+            spdlog::info("Noise value for hex ({}, {}): {}", hex.q(), hex.r(), noiseVal);
+            return noiseVal < holeChance;
+        });
+
+    chunk.remove({results.begin(), results.end()});
+
+    if (chunk.getHexes().empty()) {
+        return std::nullopt;
+    }
+
+    // Post-porcessing -> Move new chunk towards parent chunk until they are 1 hex apart
+    // Connect the chunks with a single-hex brigde
 
     _chunks.push_back(std::move(chunk));
     markChunk(_chunks.back());
