@@ -1,9 +1,12 @@
+#define BUFFER_OFFSET(i) reinterpret_cast<void*>(static_cast<uintptr_t>(i))
+
 #include "renderer/mesh.h"
 #include <GLFW/glfw3.h>
 
 dzemikk::Mesh::~Mesh() {
-    if (!glfwGetCurrentContext())
+    if (!glfwGetCurrentContext()) {
         return;
+    }
 
     destroy();
 }
@@ -24,18 +27,21 @@ void dzemikk::Mesh::setupIndexBuffer(const unsigned int* indices, uint32_t index
     _indexCount = indexCount;
     _useIndices = (indexCount > 0);
 
-    if (!_useIndices)
+    if (!_useIndices) {
         return;
+    }
 
     glGenBuffers(1, &_ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(unsigned int), indices,
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                 static_cast<GLsizeiptr>(indexCount * sizeof(unsigned int)), indices,
                  GL_STATIC_DRAW);
 }
 
 void dzemikk::Mesh::draw() const {
-    if (!isValid())
+    if (!isValid()) {
         return; 
+    }
 
     glBindVertexArray(_vao);
 
@@ -49,20 +55,22 @@ void dzemikk::Mesh::draw() const {
 void dzemikk::Mesh::drawInstanced(const std::vector<glm::mat4>& models, GLuint instanceVBO) const {
     glBindVertexArray(_vao);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, models.size() * sizeof(glm::mat4), models.data(),
-                 GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(models.size() * sizeof(glm::mat4)),
+                 models.data(), GL_DYNAMIC_DRAW);
 
     for (int i = 0; i < 4; i++) {
         glVertexAttribPointer(2 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
-                              (void*)(sizeof(glm::vec4) * i));
+                              BUFFER_OFFSET(sizeof(glm::vec4) * i));
         glEnableVertexAttribArray(2 + i);
         glVertexAttribDivisor(2 + i, 1);
     }
 
     if (_useIndices) {
-        glDrawElementsInstanced(GL_TRIANGLES, _indexCount, GL_UNSIGNED_INT, 0, models.size());
+        glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_indexCount), GL_UNSIGNED_INT,
+                                nullptr, static_cast<GLsizei>(models.size()));
     } else {
-        glDrawArraysInstanced(GL_TRIANGLES, 0, _vertexCount, models.size());
+        glDrawArraysInstanced(GL_TRIANGLES, 0, static_cast<GLsizei>(_vertexCount),
+                              static_cast<GLsizei>(models.size()));
     }
     glBindVertexArray(0);
 }
@@ -89,3 +97,17 @@ void dzemikk::Mesh::destroy() {
     _indexCount = 0;
     _useIndices = false;
 }
+
+void dzemikk::Mesh::computeBounds(const std::vector<glm::vec3>& positions) {
+    if (positions.empty()) {
+        return;
+    }
+
+    _boundsMin = positions[0];
+    _boundsMax = positions[0];
+
+    for (const auto& p : positions) {
+        _boundsMin = glm::min(_boundsMin, p);
+        _boundsMax = glm::max(_boundsMax, p);
+    }
+};

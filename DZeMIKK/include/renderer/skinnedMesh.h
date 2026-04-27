@@ -1,122 +1,62 @@
+#ifndef DZEMIKK_SKINNED_MESH_H
+#define DZEMIKK_SKINNED_MESH_H
 #include "mesh.h"
+#include <array>
 
 namespace dzemikk {
+
+/**
+ * @brief Vertex format for skinned (skeletal animated) meshes.
+ *
+ * Extends a standard static vertex with bone influence data used for
+ * skeletal animation (skinning). Each vertex can be influenced by up to
+ * 4 bones with corresponding weights.
+ */
 struct SkinnedVertex {
     glm::vec3 position;
-    glm::vec3 normal;
-    glm::vec2 uv;
+    glm::vec3 normal;   
+    glm::vec2 uv;   
 
-    int boneIDs[4];
-    float weights[4];
+    std::array<int, 4> boneIDs;
+    std::array<float, 4> weights;
 };
 
+/**
+ * @brief Mesh type supporting skeletal animation (skinning).
+ *
+ * SkinnedMesh extends the base Mesh class with support for bone indices
+ * and weights per vertex, enabling GPU skinning in the vertex shader.
+ */
 class SkinnedMesh : public Mesh {
   public:
+#pragma region Mesh lifecycle
+
+    /**
+     * @brief Creates and uploads skinned mesh data to the GPU.
+     *
+     * Initializes buffers (VAO/VBO/EBO), configures vertex attributes
+     * including bone IDs and weights, and uploads vertex data.
+     *
+     * @param vertices Array of skinned vertices.
+     * @param indices Index buffer defining mesh topology.
+     */
     void create(const std::vector<SkinnedVertex>& vertices,
-                const std::vector<unsigned int>& indices) {
+                const std::vector<unsigned int>& indices);
 
-        _vertexCount = vertices.size();
-        _indexCount = indices.size();
-        _useIndices = (_indexCount > 0);
-
-        glGenVertexArrays(1, &_vao);
-        glBindVertexArray(_vao);
-
-        glGenBuffers(1, &_vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(SkinnedVertex), vertices.data(),
-                     GL_STATIC_DRAW);
-
-        if (_useIndices) {
-            setupIndexBuffer(indices.data(), _indexCount);
-        }
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
-                              (void*)offsetof(SkinnedVertex, position));
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
-                              (void*)offsetof(SkinnedVertex, normal));
-        glEnableVertexAttribArray(1);
-
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
-                              (void*)offsetof(SkinnedVertex, uv));
-        glEnableVertexAttribArray(2);
-
-        // bone IDs
-        glVertexAttribIPointer(3, 4, GL_INT, sizeof(SkinnedVertex),
-                               (void*)offsetof(SkinnedVertex, boneIDs));
-        glEnableVertexAttribArray(3);
-
-        // weights
-        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
-                              (void*)offsetof(SkinnedVertex, weights));
-        glEnableVertexAttribArray(4);
-
-        glBindVertexArray(0);
-
-        std::vector<glm::vec3> positions;
-        positions.reserve(vertices.size());
-
-        for (const auto& v : vertices) {
-            positions.push_back(v.position);
-        }
-
-        computeBounds(positions);
-    }
-
+    /**
+     * @brief Recreates GPU resources for the skinned mesh.
+     *
+     * Destroys previous GPU state and reinitializes buffers and attributes
+     * with new vertex and index data.
+     *
+     * @param vertices Array of skinned vertices.
+     * @param indices Index buffer defining mesh topology.
+     */
     void recreate(const std::vector<SkinnedVertex>& vertices,
-                               const std::vector<unsigned int>& indices) {
-        destroy();
+                  const std::vector<unsigned int>& indices);
 
-        _vertexCount = vertices.size();
-        _indexCount = indices.size();
-        _useIndices = (_indexCount > 0);
-
-        glGenVertexArrays(1, &_vao);
-        glBindVertexArray(_vao);
-
-        glGenBuffers(1, &_vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(SkinnedVertex), vertices.data(),
-                     GL_STATIC_DRAW);
-
-        if (_useIndices) {
-            setupIndexBuffer(indices.data(), _indexCount);
-        }
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
-                              (void*)offsetof(SkinnedVertex, position));
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
-                              (void*)offsetof(SkinnedVertex, normal));
-        glEnableVertexAttribArray(1);
-
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
-                              (void*)offsetof(SkinnedVertex, uv));
-        glEnableVertexAttribArray(2);
-
-        // bone IDs
-        glVertexAttribIPointer(3, 4, GL_INT, sizeof(SkinnedVertex),
-                               (void*)offsetof(SkinnedVertex, boneIDs));
-        glEnableVertexAttribArray(3);
-
-        // weights
-        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
-                              (void*)offsetof(SkinnedVertex, weights));
-        glEnableVertexAttribArray(4);
-
-        glBindVertexArray(0);
-
-        std::vector<glm::vec3> positions;
-        positions.reserve(vertices.size());
-
-        for (const auto& v : vertices) {
-            positions.push_back(v.position);
-        }
-
-        computeBounds(positions);
-    }
+#pragma endregion
 };
-}
+
+} // namespace dzemikk
+#endif // DZEMIKK_SKINNED_MESH_H

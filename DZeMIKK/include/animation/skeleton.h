@@ -1,4 +1,5 @@
-#pragma once
+#ifndef DZEMIKK_SKELETON_H
+#define DZEMIKK_SKELETON_H
 
 #include "bone.h"
 
@@ -62,8 +63,25 @@ class Skeleton {
 
 #pragma region Global Transform
 
+    /**
+     * @brief Returns the global inverse transform matrix of the skeleton.
+     *
+     * This matrix is used to convert from model space into root bone space,
+     * ensuring correct alignment of animated meshes.
+     *
+     * @return const glm::mat4& Global inverse transform matrix.
+     */
     [[nodiscard]] const glm::mat4& getGlobalInverseTransform() const;
 
+    
+    /**
+     * @brief Sets the global inverse transform matrix of the skeleton.
+     *
+     * Typically computed as the inverse of the root node transform from the
+     * imported scene (e.g. Assimp root node).
+     *
+     * @param transform Global inverse transform matrix.
+     */
     void setGlobalInverseTransform(const glm::mat4& transform);
 
 #pragma endregion
@@ -72,7 +90,8 @@ class Skeleton {
     std::vector<Bone> _bones;
     std::unordered_map<std::string, int> _boneMap;
 
-    glm::mat4 _globalInverseTransform{1.0f};
+    glm::mat4 _globalInverseTransform{1.0F};
 };
 
 } // namespace dzemikk
+#endif // DZEMIKK_SKELETON_H

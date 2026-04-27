@@ -6,7 +6,7 @@ layout(location = 3) in ivec4 aBoneIDs;
 layout(location = 4) in vec4 aWeights;
 
 uniform mat4 model;
-uniform mat4 u_Bones[100];
+uniform mat4 u_Bones[250];
 
 out vec3 FragPos;
 out vec3 Normal;

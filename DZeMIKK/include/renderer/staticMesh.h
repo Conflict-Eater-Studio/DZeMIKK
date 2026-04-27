@@ -1,102 +1,57 @@
+#ifndef DZEMIKK_STATIC_MESH_H
+#define DZEMIKK_STATIC_MESH_H
 #include "mesh.h"
 
 namespace dzemikk {
+
+/**
+ * @brief Vertex format used by StaticMesh.
+ *
+ * Defines a standard static geometry vertex layout consisting of:
+ * position, normal, and texture coordinate (UV).
+ */
 struct StaticVertex {
-    glm::vec3 position;
-    glm::vec3 normal;
-    glm::vec2 uv;
+    glm::vec3 position; ///< Vertex position in model space.
+    glm::vec3 normal;   ///< Vertex normal vector for lighting.
+    glm::vec2 uv;       ///< Texture coordinates.
 };
 
+/**
+ * @brief Concrete mesh type for static (non-deforming) geometry.
+ *
+ * StaticMesh uploads vertex and index data to the GPU once and is intended
+ * for objects that do not change their topology at runtime.
+ */
 class StaticMesh : public Mesh {
   public:
+#pragma region Mesh lifecycle
+
+    /**
+     * @brief Creates and uploads mesh data to the GPU.
+     *
+     * Initializes VAO/VBO/EBO, configures vertex attributes,
+     * and computes bounding volumes.
+     *
+     * @param vertices Array of vertex data.
+     * @param indices Index buffer defining triangle topology.
+     */
     void create(const std::vector<StaticVertex>& vertices,
-                const std::vector<unsigned int>& indices) {
+                const std::vector<unsigned int>& indices);
 
-        _vertexCount = vertices.size();
-        _indexCount = indices.size();
-        _useIndices = (_indexCount > 0);
-
-        glGenVertexArrays(1, &_vao);
-        glBindVertexArray(_vao);
-
-        glGenBuffers(1, &_vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(StaticVertex), vertices.data(),
-                     GL_STATIC_DRAW);
-
-        if (_useIndices) {
-            setupIndexBuffer(indices.data(), _indexCount);
-        }
-
-        // layout
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(StaticVertex),
-                              (void*)offsetof(StaticVertex, position));
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(StaticVertex),
-                              (void*)offsetof(StaticVertex, normal));
-        glEnableVertexAttribArray(1);
-
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(StaticVertex),
-                              (void*)offsetof(StaticVertex, uv));
-        glEnableVertexAttribArray(2);
-
-        glBindVertexArray(0);
-
-        std::vector<glm::vec3> positions;
-        positions.reserve(vertices.size());
-
-        for (const auto& v : vertices) {
-            positions.push_back(v.position);
-        }
-
-        computeBounds(positions);
-    }
-
+    /**
+     * @brief Recreates mesh data by destroying previous GPU state and uploading new data.
+     *
+     * Fully reinitializes the mesh buffers and recomputes bounds.
+     *
+     * @param vertices Array of vertex data.
+     * @param indices Index buffer defining triangle topology.
+     */
     void recreate(const std::vector<StaticVertex>& vertices,
-                              const std::vector<unsigned int>& indices) {
-        destroy();
+                  const std::vector<unsigned int>& indices);
 
-        _vertexCount = vertices.size();
-        _indexCount = indices.size();
-        _useIndices = (_indexCount > 0);
-
-        glGenVertexArrays(1, &_vao);
-        glBindVertexArray(_vao);
-
-        glGenBuffers(1, &_vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(StaticVertex), vertices.data(),
-                     GL_STATIC_DRAW);
-
-        if (_useIndices) {
-            setupIndexBuffer(indices.data(), _indexCount);
-        }
-
-        // layout
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(StaticVertex),
-                              (void*)offsetof(StaticVertex, position));
-        glEnableVertexAttribArray(0);
-
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(StaticVertex),
-                              (void*)offsetof(StaticVertex, normal));
-        glEnableVertexAttribArray(1);
-
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(StaticVertex),
-                              (void*)offsetof(StaticVertex, uv));
-        glEnableVertexAttribArray(2);
-
-        glBindVertexArray(0);
-
-        std::vector<glm::vec3> positions;
-        positions.reserve(vertices.size());
-
-        for (const auto& v : vertices) {
-            positions.push_back(v.position);
-        }
-
-        computeBounds(positions);
-    }
+#pragma endregion
 };
 
-}
+} // namespace dzemikk
+
+#endif // DZEMIKK_STATIC_MESH_H

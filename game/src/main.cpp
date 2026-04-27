@@ -167,7 +167,10 @@ int main() {
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 0.0f));
     enemyGO->transform()->setScale(glm::vec3(.01f, .01f, 0.01f));
     auto enemyMeshR = enemyGO->addComponent<dzemikk::SkinnedMeshRenderer>();
-    auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/szamankaanim.fbx");
+    auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
+    //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/szamanka.fbx");
+    //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/MainC.fbx");
+    //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/cooper.fbx");
     enemyMeshR->setModel(enemyMesh.get());
     enemyMeshR->setTransform(enemyGO->transform());
     enemyMeshR->setMaterial(0, materialC);
