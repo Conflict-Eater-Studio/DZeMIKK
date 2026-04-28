@@ -169,7 +169,7 @@ int main() {
     auto enemyMeshR = enemyGO->addComponent<dzemikk::SkinnedMeshRenderer>();
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
     auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Rumba Dancing.fbx");
-    //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/szamanka.fbx");
+    //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/szamankaanim.fbx");
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/MainC.fbx");
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/cooper.fbx");
     enemyMeshR->setModel(enemyMesh.get());
@@ -192,6 +192,7 @@ int main() {
 
     dzemikk::AnimationClip* clip = nullptr;
     clip = skeleton->getClip("mixamo.com");
+    //clip = skeleton->getClip("Armature|ArmatureAction");
 
     if (!clip) {
         std::cout << "Brak animacji!\n";

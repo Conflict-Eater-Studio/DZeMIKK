@@ -157,154 +157,90 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
     return model;
 }
 
+auto normalizeBoneName = [](const std::string& name) -> std::string {
+    size_t pos = name.find("_$AssimpFbx$");
+    if (pos != std::string::npos) {
+        return name.substr(0, pos);
+    }
+
+    pos = name.find("$AssimpFbx$");
+    if (pos != std::string::npos) {
+        return name.substr(0, pos);
+    }
+
+    return name;
+};
+
 void dzemikk::ModelHandler::loadAnimations(const aiScene* scene, Skeleton& skeleton) {
+    std::unordered_map<std::string, const aiNodeAnim*> channelMap;
 
     for (unsigned int i = 0; i < scene->mNumAnimations; ++i) {
         const aiAnimation* anim = scene->mAnimations[i];
 
-        float duration = static_cast<float>(anim->mDuration);
-        float ticksPerSecond =
-            anim->mTicksPerSecond != 0 ? static_cast<float>(anim->mTicksPerSecond) : 25.0f;
-
-        auto* clip = new AnimationClip(duration, ticksPerSecond);
-
-        std::unordered_map<int, BoneTrack> boneTracks;
-
         for (unsigned int j = 0; j < anim->mNumChannels; ++j) {
-            const aiNodeAnim* channel = anim->mChannels[j];
+            const aiNodeAnim* ch = anim->mChannels[j];
 
-            std::string boneName = channel->mNodeName.C_Str();
-            int boneIndex = skeleton.getBoneIndex(boneName);
-
-            if (boneIndex == -1) {
-                continue;
-            }
-
-            BoneTrack& bt = boneTracks[boneIndex];
-            Bone* bone = skeleton.getBone(boneIndex);
-
-            if (!bone)
-                continue;
-
-            if (channel->mNumPositionKeys > 0) {
-                auto* track = clip->addVectorTrack();
-                bt.setPosition(track);
-
-                for (unsigned int k = 0; k < channel->mNumPositionKeys; ++k) {
-                    const auto& key = channel->mPositionKeys[k];
-
-                    track->addKey({static_cast<float>(key.mTime),
-                                   glm::vec3(key.mValue.x, key.mValue.y, key.mValue.z)});
-                }
-
-                track->setProperty(VectorProperty(
-                    [bone]() {
-                        glm::vec3 scale, translation, skew;
-                        glm::quat rotation;
-                        glm::vec4 perspective;
-
-                        glm::decompose(bone->getLocalTransform(), scale, rotation, translation,
-                                       skew, perspective);
-                        return translation;
-                    },
-                    [bone](const glm::vec3& newPos) {
-                        glm::vec3 scale, translation, skew;
-                        glm::quat rotation;
-                        glm::vec4 perspective;
-
-                        glm::decompose(bone->getLocalTransform(), scale, rotation, translation,
-                                       skew, perspective);
-
-                        glm::mat4 result = glm::translate(glm::mat4(1.0f), newPos) *
-                                           glm::toMat4(rotation) *
-                                           glm::scale(glm::mat4(1.0f), scale);
-
-                        bone->setLocalTransform(result);
-                    }));
-            }
-
-            if (channel->mNumRotationKeys > 0) {
-                auto* track = clip->addQuaternionTrack();
-                bt.setRotation(track);
-
-                for (unsigned int k = 0; k < channel->mNumRotationKeys; ++k) {
-                    const auto& key = channel->mRotationKeys[k];
-
-                    track->addKey(
-                        {static_cast<float>(key.mTime),
-                         glm::quat(key.mValue.w, key.mValue.x, key.mValue.y, key.mValue.z)});
-                }
-
-                track->setProperty(QuaternionProperty(
-                    [bone]() {
-                        glm::vec3 scale, translation, skew;
-                        glm::quat rotation;
-                        glm::vec4 perspective;
-
-                        glm::decompose(bone->getLocalTransform(), scale, rotation, translation,
-                                       skew, perspective);
-                        return rotation;
-                    },
-                    [bone](const glm::quat& newRot) {
-                        glm::vec3 scale, translation, skew;
-                        glm::quat rotation;
-                        glm::vec4 perspective;
-
-                        glm::decompose(bone->getLocalTransform(), scale, rotation, translation,
-                                       skew, perspective);
-
-                        glm::mat4 result = glm::translate(glm::mat4(1.0f), translation) *
-                                           glm::toMat4(newRot) * glm::scale(glm::mat4(1.0f), scale);
-
-                        bone->setLocalTransform(result);
-                    }));
-            }
-
-            if (channel->mNumScalingKeys > 0) {
-                auto* track = clip->addVectorTrack();
-                bt.setScale(track);
-
-                for (unsigned int k = 0; k < channel->mNumScalingKeys; ++k) {
-                    const auto& key = channel->mScalingKeys[k];
-
-                    track->addKey({static_cast<float>(key.mTime),
-                                   glm::vec3(key.mValue.x, key.mValue.y, key.mValue.z)});
-                }
-
-                track->setProperty(VectorProperty(
-                    [bone]() {
-                        glm::vec3 scale, translation, skew;
-                        glm::quat rotation;
-                        glm::vec4 perspective;
-
-                        glm::decompose(bone->getLocalTransform(), scale, rotation, translation,
-                                       skew, perspective);
-                        return scale;
-                    },
-                    [bone](const glm::vec3& newScale) {
-                        glm::vec3 scale, translation, skew;
-                        glm::quat rotation;
-                        glm::vec4 perspective;
-
-                        glm::decompose(bone->getLocalTransform(), scale, rotation, translation,
-                                       skew, perspective);
-
-                        glm::mat4 result = glm::translate(glm::mat4(1.0f), translation) *
-                                           glm::toMat4(rotation) *
-                                           glm::scale(glm::mat4(1.0f), newScale);
-
-                        bone->setLocalTransform(result);
-                    }));
-            }
+            std::string boneName = normalizeBoneName(ch->mNodeName.C_Str());
+            channelMap[boneName] = ch;
         }
+    }
+
+    for (unsigned int a = 0; a < scene->mNumAnimations; ++a) {
+        const aiAnimation* anim = scene->mAnimations[a];
+
+        float duration = static_cast<float>(anim->mDuration);
+        float tps = anim->mTicksPerSecond != 0 ? anim->mTicksPerSecond : 25.0f;
+
+        auto* clip = new AnimationClip(duration, tps);
+
+        std::function<void(aiNode*)> traverse = [&](aiNode* node) {
+            std::string nodeName = node->mName.C_Str();
+
+            const aiNodeAnim* ch = nullptr;
+            auto it = channelMap.find(nodeName);
+            if (it != channelMap.end())
+                ch = it->second;
+
+            int boneIndex = skeleton.getBoneIndex(nodeName);
+
+            if (boneIndex != -1 && ch) {
+                Bone* bone = skeleton.getBone(boneIndex);
+                if (bone) {
+                    BoneTrack* track = clip->addBoneTrack();
+
+                    for (unsigned int i = 0; i < ch->mNumPositionKeys; ++i) {
+                        const auto& k = ch->mPositionKeys[i];
+                        track->addPositionKey(
+                            {(float)k.mTime, {k.mValue.x, k.mValue.y, k.mValue.z}});
+                    }
+
+                    for (unsigned int i = 0; i < ch->mNumRotationKeys; ++i) {
+                        const auto& k = ch->mRotationKeys[i];
+                        track->addRotationKey({(float)k.mTime, glm::quat(k.mValue.w, k.mValue.x,
+                                                                        k.mValue.y, k.mValue.z)});
+                    }
+
+                    for (unsigned int i = 0; i < ch->mNumScalingKeys; ++i) {
+                        const auto& k = ch->mScalingKeys[i];
+                        track->addScaleKey({(float)k.mTime, {k.mValue.x, k.mValue.y, k.mValue.z}});
+                    }
+
+                    track->bindBone(bone);
+                }
+            }
+
+            for (unsigned int i = 0; i < node->mNumChildren; ++i)
+                traverse(node->mChildren[i]);
+        };
+
+        traverse(scene->mRootNode);
 
         std::string name =
-            anim->mName.length > 0 ? anim->mName.C_Str() : "Anim_" + std::to_string(i);
+            anim->mName.length > 0 ? anim->mName.C_Str() : "Anim_" + std::to_string(a);
 
         skeleton.addClip(name, clip);
     }
 }
-
 glm::mat4 dzemikk::ModelHandler::aiToGlm(const aiMatrix4x4& m) {
     glm::mat4 result;
     result[0][0] = m.a1;
@@ -343,7 +279,7 @@ void dzemikk::ModelHandler::buildSkeleton(aiNode* node, Skeleton& skeleton, int 
 
         auto* bone = skeleton.getBone(index);
         if (bone) {
-            bone->setLocalTransform(newAccum);
+            //bone->setLocalTransform(newAccum);
             bone->setBindLocalTransform(newAccum);
         }
 

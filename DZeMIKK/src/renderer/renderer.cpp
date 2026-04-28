@@ -259,14 +259,7 @@ void dzemikk::Renderer::render() {
                 bones.resize(skeleton->getBoneCount(), glm::mat4(1.0f));
             }
 
-            float t = glfwGetTime();
-
-            auto* rootBone = skeleton->getBone(1);
-            const glm::mat4 mat = glm::rotate(glm::mat4(1.0f), sin(t) * 0.5f, glm::vec3(0, 0, 1));
-            auto bind = rootBone->getBindLocalTransform();
-            //rootBone->setLocalTransform(bind * mat);
-
-            r->calculateBoneMatrices(0, glm::mat4(1.0f));
+            r->calculateBoneMatrices(1, glm::mat4(1.0f));
 
             for (size_t i = 0; i < model->getSubMeshes().size(); i++) {
 
