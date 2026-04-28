@@ -139,12 +139,6 @@ void Game::init() {
 }
 void Game::start() {
     auto m1 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
-
-    engine->getAssetManager()->unload("models/pole.fbx");
-
-    auto m2 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
-    auto m3 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
-
     auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
     skybox.get()->setShader(engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox").get());
     engine->getRenderer()->setSkybox(skybox.get());
@@ -153,14 +147,12 @@ void Game::start() {
     engine->getSceneManager()->loadScene(mainScenePtr);
     engine->getSceneManager()->setActiveScene(mainScenePtr);
 
-    // --- Scene Camera
     auto cameraGO = mainScenePtr->createGameObject();
     cameraGO->transform()->setPosition(glm::vec3(1.5f, 1.5f, 3.0f));
     auto camera = cameraGO->addComponent<dzemikk::Camera>();
     camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
     engine->getRenderer()->setActiveSceneCamera(camera);
 
-    // --- Tiles
     auto shaderA = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
     auto materialA = new dzemikk::Material();
     materialA->setShader(shaderA.get());
@@ -171,13 +163,14 @@ void Game::start() {
 
     auto tileMesh = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
-    createHexIsland(*mainScenePtr, tileMesh.get(), materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
+    createHexIsland(*mainScenePtr, tileMesh.get(), materialA, materialB, 50, 1.0f, 0.15f, 0.5f);
 
-    // --- Player
     auto playerGO = mainScenePtr->createGameObject();
     playerGO->transform()->setPosition(glm::vec3(0.0f, 2.5f, 0.0f));
+
     auto playerMeshR = playerGO->addComponent<dzemikk::MeshRenderer>();
     auto playerMesh = engine->getAssetManager()->getPrimitive(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Capsule);
+
     playerMeshR->setModel(new dzemikk::Model());
     playerMeshR->getModel()->addMesh(std::shared_ptr<dzemikk::Mesh>(playerMesh), 0);
     playerMeshR->setTransform(playerGO->transform());
@@ -499,31 +492,23 @@ void Game::start() {
 
     animator->setStateMachine(animationStateMachine);
 
+    if (engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
 
-        engine->getInput()->OnMouseMoved.addListener([&](dzemikk::MouseMovedEvent& event) {
-        static glm::vec2 lastMousePos = engine->getInput()->GetMousePosition();
-        glm::vec2 currentMousePos(event.GetX(), event.GetY());
-        glm::vec2 delta = currentMousePos - lastMousePos;
-        lastMousePos = currentMousePos;
-
-        if (engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-            glm::vec3 rot = playerGO->transform()->getEulerAngles();
-            rot.y += delta.x * 0.5f;
-            rot.x += delta.y * 0.5f;
-            playerGO->transform()->setEulerAngles(rot);
-        }
-    });
-
-    engine->getInput()->OnKeyPressed.addListener([&](dzemikk::KeyPressedEvent& event) {
-        if (engine->getInput()->IsKeyPressed(GLFW_KEY_0)) {
-            animator->play("Move");
-        }
-        if (engine->getInput()->IsKeyPressed(GLFW_KEY_1)) {
-            moveClip->setLoop(true);
-        }
-        if (engine->getInput()->IsKeyPressed(GLFW_KEY_2)) {
-            moveClip->setLoop(false);
-        }
-    });
+        glm::vec3 rot = playerGO->transform()->getEulerAngles();
+        playerGO->transform()->setEulerAngles(rot);
+    }
+    // engine->getInput()->OnMouseMoved.addListener([&](dzemikk::MouseMovedEvent& event) {
+    //     static glm::vec2 lastMousePos = engine->getInput()->GetMousePosition();
+    //     glm::vec2 currentMousePos(event.GetX(), event.GetY());
+    //     glm::vec2 delta = currentMousePos - lastMousePos;
+    //     lastMousePos = currentMousePos;
+    //
+    //     if (engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+    //         glm::vec3 rot = playerGO->transform()->getEulerAngles();
+    //         rot.y += delta.x * 0.5f;
+    //         rot.x += delta.y * 0.5f;
+    //         playerGO->transform()->setEulerAngles(rot);
+    //     }
+    // });
 
 }

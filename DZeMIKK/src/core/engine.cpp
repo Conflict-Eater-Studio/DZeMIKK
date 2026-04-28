@@ -60,17 +60,6 @@ void Engine::init() {
     _mainWindow->setEventCallback([this](Event& e) { this->OnEvent(e); });
     _input->initialize();
 
-    // _modules.push_back(std::move(_assetManager));
-    // _modules.push_back(_mainWindow);
-    // _modules.push_back(_renderer);
-    // _modules.push_back(_sceneManager);
-    // _modules.push_back(_time);
-    // _modules.push_back(_animationModule);
-    //
-    // for (const auto& module : _modules) {
-    //     module->Initialize();
-    // }
-
 #if DZEMIKK_DEV_TOOLS
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -85,15 +74,17 @@ void Engine::init() {
 }
 
 void Engine::shutdown() {
+    if (!_mainWindow) return;
+
+    _input->uninitialize();
+    _animationModule->uninitialize();
+    _time->uninitialize();
+    _sceneManager->uninitialize();
 #if DZEMIKK_DEV_TOOLS
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 #endif
-    _input->uninitialize();
-    _animationModule->uninitialize();
-    _time->uninitialize();
-    _sceneManager->uninitialize();
     _renderer->uninitialize();
     _assetManager->uninitialize();
     _mainWindow->uninitialize();
