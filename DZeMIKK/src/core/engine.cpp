@@ -59,6 +59,7 @@ void Engine::init() {
     _input->setInputWindow(_mainWindow->nativeHandle());
     _mainWindow->setEventCallback([this](Event& e) { this->OnEvent(e); });
     _input->initialize();
+    _collisions->initialize();
 
 #if DZEMIKK_DEV_TOOLS
     IMGUI_CHECKVERSION();
@@ -91,6 +92,7 @@ void Engine::shutdown() {
 }
 
 void Engine::start() {
+
 #if DZEMIKK_DEV_TOOLS
     ImVec4 clear_color = ImVec4(0.10F, 0.15F, 0.20F, 1.00F);
 #endif
@@ -116,6 +118,7 @@ void Engine::start() {
         }
 
 #if DZEMIKK_DEV_TOOLS
+        // ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
@@ -133,6 +136,11 @@ void Engine::start() {
         updateCameraWASD(1.f);
         updateCameraArrows(1.1f);
         updateMouseUI(deltaTime);
+
+        if (m_UserUpdateCallback) {
+            m_UserUpdateCallback();
+        }
+
         {
             DZ_PROFILE_CPU("Renderer (Total CPU)");
             _renderer->render();
@@ -173,6 +181,10 @@ AssetManager* Engine::getAssetManager() const {
 
 Input* Engine::getInput() const {
     return _input.get();
+}
+
+Collisions* Engine::getCollisions() const {
+    return _collisions.get();
 }
 
 // template <std::derived_from<IEngineModule> T>

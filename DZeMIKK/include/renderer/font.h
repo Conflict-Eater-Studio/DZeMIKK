@@ -65,7 +65,7 @@ namespace dzemikk {
                 Character ch = {texture,
                                 {face->glyph->bitmap.width, face->glyph->bitmap.rows},
                                 {face->glyph->bitmap_left, face->glyph->bitmap_top},
-                                face->glyph->advance.x};
+                                static_cast<unsigned int>(face->glyph->advance.x)};
 
                 characters.insert({c, ch});
             }
