@@ -8,6 +8,7 @@ public:
         this->engine = engine;
     }
     ~Game() = default;
+
     void init();
     void start();
 

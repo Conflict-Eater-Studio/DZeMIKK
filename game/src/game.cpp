@@ -8,10 +8,13 @@
 #include "animation/vectortrack.h"
 #include "assetManager/assetmanager.h"
 #include "audio/sound.h"
+#include "collisions/collisions.h"
 #include "core/engine.h"
 #include "core/time.h"
+#include "core/window.h"
 #include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
+#include "ecs/components/collider.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
@@ -492,23 +495,23 @@ void Game::start() {
 
     animator->setStateMachine(animationStateMachine);
 
-    if (engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+    engine->SetUserUpdateCallback([this, playerGO]() {
+        if (!engine || !engine->getInput()) {
+            return;
+        }
 
-        glm::vec3 rot = playerGO->transform()->getEulerAngles();
-        playerGO->transform()->setEulerAngles(rot);
-    }
-    // engine->getInput()->OnMouseMoved.addListener([&](dzemikk::MouseMovedEvent& event) {
-    //     static glm::vec2 lastMousePos = engine->getInput()->GetMousePosition();
-    //     glm::vec2 currentMousePos(event.GetX(), event.GetY());
-    //     glm::vec2 delta = currentMousePos - lastMousePos;
-    //     lastMousePos = currentMousePos;
-    //
-    //     if (engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-    //         glm::vec3 rot = playerGO->transform()->getEulerAngles();
-    //         rot.y += delta.x * 0.5f;
-    //         rot.x += delta.y * 0.5f;
-    //         playerGO->transform()->setEulerAngles(rot);
-    //     }
-    // });
+        if (engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+            spdlog::info("Test");
+            int windowWidth, windowHeight;
+            glfwGetWindowSize(engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
+            dzemikk::Collider* collider = engine->getCollisions()->raycast(engine->getRenderer()->getActiveSceneCamera(), engine->getInput()->GetMousePosition(), windowWidth, windowHeight);
+
+           if (collider && collider != nullptr) {
+               auto hit = collider->getOwner()->getComponent<dzemikk::Transform>();
+                playerGO->transform()->setPosition(hit->getPosition());
+           }
+        }
+    });
+
 
 }
