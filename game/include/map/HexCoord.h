@@ -5,6 +5,10 @@
 #include <cstdint>
 #include <glm/glm.hpp>
 #include <numbers>
+#include <optional>
+#include <queue>
+#include <ranges>
+#include <unordered_map>
 #include <vector>
 
 #ifdef DZEMIKK_DEV_TOOLS
@@ -82,6 +86,28 @@ class HexCoord {
         return Offsets.at(static_cast<std::size_t>(d));
     }
 
+    static std::optional<Direction> dir(HexCoord c) {
+        // R0 -> R330, @30deg step, start -> Pointing RIGHT
+        static constexpr std::array<HexCoord, 12> Offsets = {{{2, -1},
+                                                              {1, -1},
+                                                              {1, -2},
+                                                              {0, -1},
+                                                              {-1, -1},
+                                                              {-1, 0},
+                                                              {-2, 1},
+                                                              {-1, 1},
+                                                              {-1, 2},
+                                                              {0, 1},
+                                                              {1, 1},
+                                                              {1, 0}}};
+        for (std::size_t i = 0; i < Offsets.size(); i++) {
+            if (Offsets.at(i).q() == c.q() && Offsets.at(i).r() == c.r()) {
+                return static_cast<Direction>(i);
+            }
+        }
+        return std::nullopt;
+    }
+
     [[nodiscard]] constexpr int q() const {
         return _q;
     }
@@ -132,6 +158,91 @@ class HexCoord {
         return neighbors;
     }
 
+    [[nodiscard]] static HexCoord getLinePoint(const HexCoord& a, const HexCoord& b, float t) {
+        float fQ = static_cast<float>(a.q()) + (static_cast<float>(b.q() - a.q()) * t);
+        float fR = static_cast<float>(a.r()) + (static_cast<float>(b.r() - a.r()) * t);
+        float fS = -fQ - fR;
+
+        float q = std::round(fQ);
+        float r = std::round(fR);
+        float s = std::round(fS);
+
+        float qDiff = std::abs(q - fQ);
+        float rDiff = std::abs(r - fR);
+        float sDiff = std::abs(s - fS);
+
+        if (qDiff > rDiff && qDiff > sDiff) {
+            q = -r - s;
+        } else if (rDiff > sDiff) {
+            r = -q - s;
+        }
+
+        return {static_cast<int>(q), static_cast<int>(r)};
+    }
+
+    [[nodiscard]] static std::vector<HexCoord> hexesOnLine(const HexCoord& a, const HexCoord& b) {
+        if (a == b) {
+            return {a};
+        }
+
+        auto keyFor = [](const HexCoord& coord) {
+            return (static_cast<std::int64_t>(coord.q()) << 32) |
+                   static_cast<std::uint32_t>(coord.r());
+        };
+
+        auto coordFromKey = [](std::int64_t key) {
+            int q = static_cast<int>(key >> 32);
+            int r = static_cast<int>(static_cast<std::uint32_t>(key));
+            return HexCoord{q, r};
+        };
+
+        const auto startKey = keyFor(a);
+        const auto targetKey = keyFor(b);
+
+        std::queue<HexCoord> frontier;
+        std::unordered_map<std::int64_t, std::int64_t> parent;
+
+        frontier.push(a);
+        parent.emplace(startKey, startKey);
+
+        bool found = false;
+        while (!frontier.empty() && !found) {
+            const HexCoord current = frontier.front();
+            frontier.pop();
+            const auto currentKey = keyFor(current);
+
+            for (const auto& neighbor : getNeighbors(current)) {
+                const auto neighborKey = keyFor(neighbor);
+                if (parent.contains(neighborKey)) {
+                    continue;
+                }
+
+                parent.emplace(neighborKey, currentKey);
+
+                if (neighborKey == targetKey) {
+                    found = true;
+                    break;
+                }
+
+                frontier.push(neighbor);
+            }
+        }
+
+        if (!found) {
+            return {a, b};
+        }
+
+        std::vector<HexCoord> path;
+        for (auto currentKey = targetKey; currentKey != startKey;
+             currentKey = parent.at(currentKey)) {
+            path.push_back(coordFromKey(currentKey));
+        }
+        path.push_back(a);
+        std::ranges::reverse(path);
+
+        return path;
+    }
+
   private:
     int _q;
     int _r;
@@ -163,7 +274,7 @@ template <> struct hash<game::HexCoord> {
     size_t operator()(const game::HexCoord& h) const noexcept {
         size_t seed = 0;
         auto combine = [&](int val) {
-            seed ^= std::hash<int>{}(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            seed ^= static_cast<size_t>(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         };
         combine(h.q());
         combine(h.r());

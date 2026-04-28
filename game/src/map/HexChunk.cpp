@@ -1,14 +1,10 @@
 #include "map/HexChunk.h"
 
-#include "map/HexCoord.h"
-
 #include <random>
 #include <unordered_set>
 
 namespace game {
-HexChunk::HexChunk(HexCoord center, const Config& config)
-    : _hexes(generateHexes(center, config)), _radius(config.steps), _center(center),
-      _config(config) {
+HexChunk::HexChunk(HexCoord center, Config config) : _center(center), _config(std::move(config)) {
     if (!_config.generator) {
         _config.generator = [steps = _config.steps](int x) {
             if (steps <= 0) {
@@ -17,78 +13,111 @@ HexChunk::HexChunk(HexCoord center, const Config& config)
             return 1.0F - (static_cast<float>(x) / static_cast<float>(steps));
         };
     }
+    _hexes = generateHexes();
+    markChunk();
 }
 
-std::vector<HexCoord> HexChunk::generateHexes(HexCoord center, const Config& config) {
-    static std::mt19937 rng(std::random_device{}());
-    std::uniform_real_distribution<float> chanceDist(0.0F, 1.0F);
+void HexChunk::setDirToParent(HexCoord::Direction dir) {
+    _dirToParent = dir;
+}
+
+std::unordered_set<GridCell> HexChunk::generateHexes() {
+    const int cap = 1 + (3 * _config.steps * (_config.steps + 1));
 
     std::unordered_set<HexCoord> visited;
-    std::vector<HexCoord> hexes;
+    visited.reserve(cap);
 
-    auto canPlace = config.canPlace;
-    if (!canPlace) {
-        canPlace = [](const HexCoord&) { return true; };
-    }
+    std::unordered_set<GridCell> hexes;
+    hexes.reserve(cap);
 
-    if (!canPlace(center)) {
+    auto canPlace = _config.canPlace ? _config.canPlace : [](const HexCoord&) { return true; };
+    auto generator = _config.generator;
+
+    if (!canPlace(_center)) {
         return hexes;
     }
 
-    visited.insert(center);
-    hexes.push_back(center);
+    visited.insert(_center);
+    hexes.insert({.coord = _center, .state = GridCell::State::Occupied});
 
-    std::vector<HexCoord> currentGen = {center};
+    std::vector<HexCoord> currentGen{_center};
+    currentGen.reserve(32);
 
-    auto generator = config.generator;
-    if (!generator) {
-        generator = [steps = config.steps](int x) {
-            if (steps <= 0) {
-                return 0.0F;
-            }
-            return 1.0F - (static_cast<float>(x) / static_cast<float>(steps));
-        };
-    }
+    for (int step = 0; step < _config.steps && !currentGen.empty(); ++step) {
+        const float chance = generator(step);
 
-    for (int x = 0; x < config.steps; x++) {
-        std::vector<HexCoord> nextGen;
-        const float chance = generator(x);
+        std::unordered_set<HexCoord> candidates;
+        candidates.reserve(currentGen.size() * 3); // rough estimate
 
+        // collect unique unvisited neighbors once
         for (const auto& coord : currentGen) {
-            auto neighbors = HexCoord::getNeighbors(coord);
-
-            for (const auto& neighborCoord : neighbors) {
-                if (visited.contains(neighborCoord)) {
+            for (int i = 0; i < 6; ++i) {
+                const HexCoord n = coord + HexCoord::dir(static_cast<HexCoord::Direction>(i * 2));
+                if (visited.contains(n)) {
                     continue;
                 }
-
-                if (!canPlace(neighborCoord)) {
-                    continue;
-                }
-
-                if (chanceDist(rng) < chance) {
-                    visited.insert(neighborCoord);
-                    nextGen.push_back(neighborCoord);
-                    hexes.push_back(neighborCoord);
+                if (!candidates.insert(n).second) {
+                    continue; // already queued this generation
                 }
             }
+        }
+
+        std::vector<HexCoord> nextGen;
+        nextGen.reserve(candidates.size());
+
+        // evaluate each candidate once
+        for (const auto& n : candidates) {
+            if (!canPlace(n)) {
+                continue;
+            }
+            if (_chanceDist(_rng) >= chance) {
+                continue;
+            }
+
+            visited.insert(n);
+            nextGen.push_back(n);
+            hexes.insert({.coord = n, .state = GridCell::State::Occupied});
         }
 
         currentGen = std::move(nextGen);
-        if (currentGen.empty()) {
-            break;
-        }
     }
 
     return hexes;
 }
 
-const std::vector<HexCoord>& HexChunk::getHexes() const {
-    return _hexes;
+void HexChunk::markChunk() {
+    std::unordered_set<HexCoord> occupiedCoords;
+    occupiedCoords.reserve(_hexes.size());
+
+    for (const auto& cell : _hexes) {
+        occupiedCoords.insert(cell.coord);
+    }
+
+    std::unordered_set<HexCoord> borderCoords;
+    borderCoords.reserve(_hexes.size());
+
+    for (const auto& cell : _hexes) {
+        if (cell.state == GridCell::State::Blocked) {
+            continue;
+        }
+
+        for (const auto& neighbor : HexCoord::getNeighbors(cell.coord)) {
+            if (occupiedCoords.contains(neighbor)) {
+                continue;
+            }
+
+            borderCoords.insert(neighbor);
+            occupiedCoords.insert(neighbor);
+        }
+    }
+
+    for (const auto& coord : borderCoords) {
+        _hexes.insert({.coord = coord, .state = GridCell::State::Blocked});
+    }
 }
 
-int HexChunk::getRadius() const {
-    return _radius;
+const std::unordered_set<GridCell>& HexChunk::getHexes() const {
+    return _hexes;
 }
 
 HexCoord HexChunk::getCenter() const {
@@ -101,32 +130,48 @@ const HexChunk::Config& HexChunk::getConfig() const {
 
 void HexChunk::remove(const std::vector<HexCoord>& hexes) {
     std::unordered_set<HexCoord> removeSet(hexes.begin(), hexes.end());
-    std::erase_if(_hexes, [&removeSet](const HexCoord& h) { return removeSet.contains(h); });
+    std::erase_if(_hexes, [&removeSet](const GridCell& h) { return removeSet.contains(h.coord); });
 }
 
-std::vector<HexCoord> HexChunk::intersection(const HexChunk& other) const {
-    if (HexCoord::distance(_center, other._center) > (_radius + other._radius)) {
-        return {};
+std::vector<GridCell> HexChunk::intersection(const HexChunk& other, bool withBlocked) const {
+    std::unordered_set<HexCoord> otherCoords;
+    otherCoords.reserve(other._hexes.size());
+
+    for (const auto& cell : other._hexes) {
+        if (!withBlocked && cell.state == GridCell::State::Blocked) {
+            continue;
+        }
+        otherCoords.insert(cell.coord);
     }
 
-    const std::vector<HexCoord>& smaller =
-        (_hexes.size() < other._hexes.size()) ? _hexes : other._hexes;
-    const std::vector<HexCoord>& larger =
-        (_hexes.size() < other._hexes.size()) ? other._hexes : _hexes;
+    std::vector<GridCell> result;
+    for (const auto& cell : _hexes) {
+        if (!withBlocked && cell.state == GridCell::State::Blocked) {
+            continue;
+        }
 
-    std::vector<HexCoord> result;
-    result.reserve(smaller.size());
-
-    std::unordered_set<HexCoord> lookupSet;
-    lookupSet.reserve(larger.size());
-    lookupSet.insert(larger.begin(), larger.end());
-
-    for (const auto& hex : smaller) {
-        if (lookupSet.contains(hex)) {
-            result.push_back(hex);
+        if (otherCoords.contains(cell.coord)) {
+            result.push_back(cell);
         }
     }
 
     return result;
+}
+
+void HexChunk::shift(HexCoord::Direction dir) {
+    auto offset = HexCoord::dir(dir);
+    std::vector<GridCell> shifted;
+    shifted.reserve(_hexes.size());
+    for (auto cell : _hexes) {
+        cell.coord += offset;
+        shifted.push_back(cell);
+    }
+    _center += offset;
+    _hexes.clear();
+    _hexes.insert(shifted.begin(), shifted.end());
+}
+
+void HexChunk::assignCell(GridCell cell) {
+    _hexes.insert(cell);
 }
 } // namespace game
