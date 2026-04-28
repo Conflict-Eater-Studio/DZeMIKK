@@ -144,6 +144,49 @@ int main() {
 
     createHexIsland(*mainScenePtr, tileMesh.get(), materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
+    auto sphereMesh = engine->getAssetManager()->getPrimitive(
+        dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Sphere);
+
+    float spacing = 1.5f;
+
+    std::vector<dzemikk::Material*> sphereMaterials;
+
+    auto shaderLambert = engine->getAssetManager()->get<dzemikk::Shader>("shaders/lambert");
+    auto materialLambert = new dzemikk::Material();
+    materialLambert->setShader(shaderLambert.get());
+
+    auto shaderPhong = engine->getAssetManager()->get<dzemikk::Shader>("shaders/phong");
+    auto materialPhong = new dzemikk::Material();
+    materialPhong->setShader(shaderPhong.get());
+
+    auto shaderPhongBlinn = engine->getAssetManager()->get<dzemikk::Shader>("shaders/phong-blinn");
+    auto materialPhongBlinn = new dzemikk::Material();
+    materialPhongBlinn->setShader(shaderPhongBlinn.get());
+
+    auto shaderRim = engine->getAssetManager()->get<dzemikk::Shader>("shaders/rim");
+    auto materialRim = new dzemikk::Material();
+    materialRim->setShader(shaderRim.get());
+
+    sphereMaterials.push_back(materialLambert);
+    sphereMaterials.push_back(materialPhong);
+    sphereMaterials.push_back(materialPhongBlinn);
+    sphereMaterials.push_back(materialRim);
+
+    for (int i = 0; i < 4; i++) {
+        auto sphereGO = mainScenePtr->createGameObject("Sphere_" + std::to_string(i));
+
+        sphereGO->transform()->setPosition(glm::vec3(i * spacing, 6.0f, 0.0f));
+        sphereGO->transform()->setScale(glm::vec3(1.0f));
+
+        auto renderer = sphereGO->addComponent<dzemikk::MeshRenderer>();
+
+        renderer->setModel(new dzemikk::Model());
+        renderer->getModel()->addMesh(std::shared_ptr<dzemikk::Mesh>(sphereMesh), 0);
+
+        renderer->setTransform(sphereGO->transform());
+        renderer->setMaterial(0, sphereMaterials[i]);
+    }
+
     // --- Player
     auto playerGO = mainScenePtr->createGameObject();
     playerGO->transform()->setPosition(glm::vec3(0.0f, 2.5f, 0.0f));
@@ -168,7 +211,8 @@ int main() {
     enemyGO->transform()->setScale(glm::vec3(.01f, .01f, 0.01f));
     auto enemyMeshR = enemyGO->addComponent<dzemikk::SkinnedMeshRenderer>();
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
-    auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Rumba Dancing.fbx");
+    auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/test.fbx");
+    //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Dancing Twerk.fbx");
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/szamankaanim.fbx");
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/MainC.fbx");
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/cooper.fbx");
@@ -181,6 +225,7 @@ int main() {
     enemyMeshR->setMaterial(4, materialC);
     enemyMeshR->setMaterial(5, materialC);
 
+    /*
     auto animator = enemyGO->addComponent<dzemikk::Animator>();
     engine->getAnimationSystem()->registerAnimator(animator);
 
@@ -204,6 +249,7 @@ int main() {
     state->setClip(clip);
 
     animator->setStateMachine(sm);
+    */
 
     // --- Quad GameObject
     auto quadGO = new dzemikk::GameObject();

@@ -153,6 +153,13 @@ namespace dzemikk {
         GLuint textVAO = 0;
         GLuint textVBO = 0;
 
+        //FOR TEST ONLY - DELETE THIS
+        glm::vec3 _debugLightDir = glm::vec3(1.0f, 10.0f, -15.0f);
+        glm::vec3 _debugLightColor = glm::vec3(1.0f);
+        float _debugLightIntensity = 1.0f;
+
+        void renderDebugUI();
+
         #pragma endregion
     };
 

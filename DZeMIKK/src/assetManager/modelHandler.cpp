@@ -48,6 +48,37 @@ bool isAssimpHelperNode(const std::string& name) {
     return name.find("_$AssimpFbx$") != std::string::npos;
 }
 
+bool isBoneNode(const std::string& name, const dzemikk::Skeleton& skeleton) {
+    return skeleton.getBoneIndex(name) != -1;
+}
+
+void printNodeHierarchyForMesh(aiNode* node, const aiScene* scene,
+                               const dzemikk::Skeleton& skeleton, int depth = 0) {
+    for (int i = 0; i < depth; i++)
+        std::cout << "  ";
+
+    std::string name = node->mName.C_Str();
+
+    bool isHelper = isAssimpHelperNode(name);
+    bool isBone = isBoneNode(name, skeleton);
+    bool hasMeshes = node->mNumMeshes > 0;
+
+    std::cout << name;
+
+    if (isHelper)
+        std::cout << " [ASSIMP_HELPER]";
+    if (isBone)
+        std::cout << " [BONE]";
+    if (hasMeshes)
+        std::cout << " [MESHES: " << node->mNumMeshes << "]";
+
+    std::cout << "\n";
+
+    for (unsigned int i = 0; i < node->mNumChildren; ++i) {
+        printNodeHierarchyForMesh(node->mChildren[i], scene, skeleton, depth + 1);
+    }
+}
+
 dzemikk::ModelHandler::Result dzemikk::ModelHandler::load(const std::string& path) {
     auto model = loadModelFromFile(path);
 
@@ -137,6 +168,14 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
     //printSkeleton(*skeleton);
 
     for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
+        std::cout << "\n========================\n";
+        std::cout << "MESH " << i << ": " << scene->mMeshes[i]->mName.C_Str() << "\n";
+        std::cout << "========================\n";
+
+        printNodeHierarchyForMesh(scene->mRootNode, scene, *skeleton);
+    }
+
+    for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
 
         const aiMesh* mesh = scene->mMeshes[i];
         const bool isSkinned = mesh->HasBones();
@@ -194,7 +233,7 @@ void dzemikk::ModelHandler::loadAnimations(const aiScene* scene, Skeleton& skele
         auto* clip = new AnimationClip(duration, tps);
 
         std::function<void(aiNode*)> traverse = [&](aiNode* node) {
-            std::string nodeName = node->mName.C_Str();
+            std::string nodeName = normalizeBoneName(node->mName.C_Str());
 
             const aiNodeAnim* ch = nullptr;
             auto it = channelMap.find(nodeName);
@@ -203,7 +242,16 @@ void dzemikk::ModelHandler::loadAnimations(const aiScene* scene, Skeleton& skele
 
             int boneIndex = skeleton.getBoneIndex(nodeName);
 
+            if (boneIndex != -1) {
+                if (!ch) {
+                    std::cout << "NO CHANNEL: " << nodeName << "\n";
+                } else {
+                    std::cout << "HAS CHANNEL: " << nodeName << "\n";
+                }
+            }
+
             if (boneIndex != -1 && ch) {
+
                 Bone* bone = skeleton.getBone(boneIndex);
                 if (bone) {
                     BoneTrack* track = clip->addBoneTrack();
@@ -241,6 +289,7 @@ void dzemikk::ModelHandler::loadAnimations(const aiScene* scene, Skeleton& skele
         skeleton.addClip(name, clip);
     }
 }
+
 glm::mat4 dzemikk::ModelHandler::aiToGlm(const aiMatrix4x4& m) {
     glm::mat4 result;
     result[0][0] = m.a1;

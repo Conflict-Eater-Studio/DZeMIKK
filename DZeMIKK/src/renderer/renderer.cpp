@@ -26,6 +26,12 @@
 #include <limits>
 #include <map>
 
+#if DZEMIKK_DEV_TOOLS
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <imgui.h>
+#endif
+
 void dzemikk::Renderer::initialize() {
     _view = glm::mat4(1.0f);
     _projection = glm::mat4(1.0f);
@@ -225,9 +231,11 @@ void dzemikk::Renderer::render() {
 
             shader->bind();
 
-            shader->setVec3("lightDir", glm::vec3(1.0f, -1.0f, -1.0f));
-            shader->setVec3("lightColor", glm::vec3(1.0f));
+            shader->setVec3("lightDir", _debugLightDir);
+            shader->setVec3("lightColor", _debugLightColor);
+            shader->setFloat("lightIntensity", _debugLightIntensity);
             shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
+            shader->setVec3("viewPos", _sceneCamera->getOwner()->transform()->getPosition());
 
             mesh->drawInstanced(batch.models, batch.instanceVBO);
             Profiler::Get().stats.drawCalls++;
@@ -259,7 +267,7 @@ void dzemikk::Renderer::render() {
                 bones.resize(skeleton->getBoneCount(), glm::mat4(1.0f));
             }
 
-            r->calculateBoneMatrices(1, glm::mat4(1.0f));
+            r->calculateBoneMatrices(0, glm::mat4(1.0f));
 
             for (size_t i = 0; i < model->getSubMeshes().size(); i++) {
 
@@ -548,6 +556,8 @@ void dzemikk::Renderer::render() {
             glBindVertexArray(0);
         }
     }
+
+    renderDebugUI();
 }
 
 const dzemikk::Camera* dzemikk::Renderer::getActiveSceneCamera() const {
@@ -601,4 +611,20 @@ void dzemikk::Renderer::setSkybox(Skybox* skybox) {
 
 const dzemikk::Skybox* dzemikk::Renderer::getSkybox() const {
     return _skybox;
+}
+
+void dzemikk::Renderer::renderDebugUI() {
+    ImGui::Begin("Renderer Debug");
+
+    ImGui::Text("Directional Light");
+
+    ImGui::DragFloat3("Light Dir", &_debugLightDir.x, 0.01f);
+    ImGui::ColorEdit3("Light Color", &_debugLightColor.x);
+    ImGui::SliderFloat("Intensity", &_debugLightIntensity, 0.0f, 10.0f);
+
+    if (ImGui::Button("Normalize Dir")) {
+        _debugLightDir = glm::normalize(_debugLightDir);
+    }
+
+    ImGui::End();
 }
