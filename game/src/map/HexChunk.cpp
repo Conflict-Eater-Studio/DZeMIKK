@@ -1,5 +1,6 @@
 #include "map/HexChunk.h"
 
+#include <algorithm>
 #include <random>
 #include <unordered_set>
 
@@ -173,5 +174,21 @@ void HexChunk::shift(HexCoord::Direction dir) {
 
 void HexChunk::assignCell(GridCell cell) {
     _hexes.insert(cell);
+}
+
+bool HexChunk::setOnHex(const HexCoord& coord, GridCell::OnHex onHex,
+                        const boost::uuids::uuid& entityId) {
+    auto it = std::ranges::find_if(_hexes,
+                                   [&coord](const GridCell& cell) { return cell.coord == coord; });
+    if (it == _hexes.end()) {
+        return false;
+    }
+
+    GridCell updated = *it;
+    updated.onHex = {entityId, onHex};
+
+    _hexes.erase(it);
+    _hexes.insert(updated);
+    return true;
 }
 } // namespace game

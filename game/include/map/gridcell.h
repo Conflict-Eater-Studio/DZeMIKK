@@ -3,6 +3,7 @@
 
 #include "map/HexCoord.h"
 
+#include <boost/uuid.hpp>
 #include <cstdint>
 #include <tuple>
 
@@ -10,9 +11,11 @@ namespace game {
 
 struct GridCell {
     enum class State : uint8_t { Empty, Occupied, Blocked };
+    enum class OnHex : uint8_t { None, Enemy, Player, Resource };
 
     HexCoord coord;
     State state{State::Empty};
+    std::pair<boost::uuids::uuid, OnHex> onHex{boost::uuids::nil_uuid(), OnHex::None};
 
     bool operator<(const GridCell& other) const {
         return std::make_tuple(coord.q(), coord.r()) <

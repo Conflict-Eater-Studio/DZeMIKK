@@ -1,6 +1,7 @@
 #ifndef GAME_HEXCHUNK_H
 #define GAME_HEXCHUNK_H
 
+#include "boost/uuid/detail/nil_uuid.hpp"
 #include "map/gridcell.h"
 
 #include <functional>
@@ -35,6 +36,8 @@ class HexChunk {
     void shift(HexCoord::Direction dir);
     void markChunk();
     void assignCell(GridCell cell);
+    bool setOnHex(const HexCoord& coord, GridCell::OnHex onHex,
+                  const boost::uuids::uuid& entityId = boost::uuids::nil_uuid());
 
   private:
     std::unordered_set<GridCell> generateHexes();

@@ -5,10 +5,13 @@
 #include "ecs/scene.h"
 
 #include <format>
+#include <memory>
 #include <random>
 #include <vector>
 
 namespace game {
+using dzemikk::Model;
+
 World::World(int seed, int chunkMinSteps, int chunkMaxSteps, int chunkCound) : _rng(seed) {
     for (int i = 0; i < chunkCound; ++i) {
         _chunkConfigs.emplace_back(chunkMinSteps, chunkMaxSteps,
@@ -21,9 +24,6 @@ World::World(int seed,
     : _rng(seed), _chunkConfigs(std::move(chunkConfigs)) {}
 
 void World::start() {
-#if DZEMIKK_DEV_TOOLS
-    spdlog::info("World::start()");
-#endif
     _grid = Grid();
     auto idx = _grid.makeChunk(
         HexCoord{0, 0}, {.steps = _randSteps(_rng, std::uniform_int_distribution<int>::param_type(
@@ -49,18 +49,34 @@ void World::start() {
     for (auto cell : _grid.getHexes()) {
         auto* obj = scene->createGameObject(
             std::format("Hex {} {}", cell.coord.q(), cell.coord.r()), _owner);
-        cell.coord.setHeight(_perlin.noise(static_cast<float>(cell.coord.q()) * 0.1F,
-                                           static_cast<float>(cell.coord.r()) * 0.1F) *
-                             2.0F);
-        obj->transform()->setPosition(
-            cell.coord.toWorldPosition(std::numbers::sqrt3_v<float> / 2.0F, 0.0F));
+        auto height = _perlin.noise(static_cast<float>(cell.coord.q()) * 0.1F,
+                                    static_cast<float>(cell.coord.r()) * 0.1F) *
+                      2.0F;
+        cell.coord.setHeight(height);
+        auto worldPos = cell.coord.toWorldPosition(std::numbers::sqrt3_v<float> / 2.0F, 0.0F);
+        obj->transform()->setPosition(worldPos);
         obj->transform()->setScale({1.0F, 1.0F, 1.0F});
         obj->transform()->setRotation(
             glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
-        auto* mesh = obj->addComponent<dzemikk::MeshRenderer>();
-        mesh->setModel(_model);
-        mesh->setMaterial(0, _material);
-        mesh->setTransform(obj->transform());
+        auto* meshRenderer = obj->addComponent<dzemikk::MeshRenderer>();
+        meshRenderer->setModel(_model);
+        meshRenderer->setMaterial(0, _material);
+        meshRenderer->setTransform(obj->transform());
+
+        auto* entityGO = scene->createGameObject(_owner);
+        auto* entityRenderer = entityGO->addComponent<dzemikk::MeshRenderer>();
+
+        if (cell.onHex.second == GridCell::OnHex::Enemy) {
+            entityRenderer->setModel(_enemyModel);
+        } else if (cell.onHex.second == GridCell::OnHex::Resource) {
+            entityRenderer->setModel(_resourceModel);
+        } else {
+            continue;
+        }
+
+        entityRenderer->setMaterial(0, _material2);
+        entityRenderer->setTransform(entityGO->transform());
+        entityGO->transform()->setPosition(worldPos + glm::vec3{0.0F, 2.0F, 0.0F});
     }
 }
 } // namespace game

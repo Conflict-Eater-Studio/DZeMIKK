@@ -1,6 +1,7 @@
 #include "animation/animationclip.h"
 #include "animation/animationtrack.h"
 #include "assetManager/assetmanager.h"
+#include "assetManager/primitiveMeshLibrary.h"
 #include "core/engine.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
@@ -47,11 +48,23 @@ int main() {
 
     auto shader = assetManager->get<dzemikk::Shader>("shaders/tile1");
     auto shader2 = assetManager->get<dzemikk::Shader>("shaders/tile2");
+
     auto material = std::make_shared<dzemikk::Material>();
     material->setShader(shader.get());
     auto material2 = std::make_shared<dzemikk::Material>();
     material2->setShader(shader2.get());
+
     auto model = assetManager->get<dzemikk::Model>("models/pole.fbx");
+
+    auto* enemyMesh =
+        assetManager->getPrimitive(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Capsule);
+    auto* enemyModel = new dzemikk::Model();
+    enemyModel->addMesh(std::shared_ptr<dzemikk::Mesh>(enemyMesh), 0);
+
+    auto* resourceMesh =
+        assetManager->getPrimitive(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Sphere);
+    auto* resourceModel = new dzemikk::Model();
+    resourceModel->addMesh(std::shared_ptr<dzemikk::Mesh>(resourceMesh), 0);
 
     auto* rootGO = scene->createGameObject("Root");
     auto* worldGO = scene->createGameObject("World", rootGO);
@@ -67,6 +80,9 @@ int main() {
            });
     world->setModel(model.get());
     world->setMaterial(material.get());
+    world->setMaterial2(material2.get());
+    world->setEnemyModel(enemyModel);
+    world->setResourceModel(resourceModel);
 
     engine->start();
 

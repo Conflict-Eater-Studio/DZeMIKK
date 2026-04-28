@@ -59,7 +59,35 @@ std::optional<std::size_t> Grid::makeChunk(HexCoord center, const HexChunk::Conf
         return std::nullopt;
     }
 
-    _cells.insert(chunk.getHexes().begin(), chunk.getHexes().end());
+    std::vector<GridCell> temp;
+    temp.reserve(chunk.getHexes().size());
+    for (const auto& cell : chunk.getHexes()) {
+        if (cell.state != GridCell::State::Occupied) {
+            continue;
+        }
+        temp.push_back(cell);
+    }
+
+    std::vector<std::pair<HexCoord, GridCell::OnHex>> assignedOnHex;
+    if (temp.size() >= 3) {
+        std::shuffle(temp.begin(), temp.end(), _rng);
+        assignedOnHex.emplace_back(temp.at(0).coord, GridCell::OnHex::Enemy);
+        assignedOnHex.emplace_back(temp.at(1).coord, GridCell::OnHex::Enemy);
+        assignedOnHex.emplace_back(temp.at(2).coord, GridCell::OnHex::Resource);
+
+        for (const auto& [coord, onHex] : assignedOnHex) {
+            chunk.setOnHex(coord, onHex, boost::uuids::uuid{});
+        }
+    }
+
+    for (const auto& cell : chunk.getHexes()) {
+        auto it = _cells.find({.coord = cell.coord});
+        if (it != _cells.end()) {
+            _cells.erase(it);
+        }
+        _cells.insert(cell);
+    }
+
     _chunks.push_back(std::move(chunk));
     return _chunks.size() - 1;
 }
@@ -82,14 +110,15 @@ std::optional<std::size_t> Grid::makeChunk(std::size_t parentChunkIndex, HexCoor
     };
 
     HexChunk chunk(nextCenter, constrainedConfig);
+    const auto* chunkHexes = &chunk.getHexes();
 
-    if (chunk.getHexes().empty()) {
+    if (chunkHexes->empty()) {
         return std::nullopt;
     }
 
     Perlin perlinHoles(2);
     auto results =
-        chunk.getHexes() |
+        *chunkHexes |
         std::views::filter([&perlinHoles, holeChance = config.holeChance](const GridCell& cell) {
             float noiseVal = perlinHoles.noise(static_cast<float>(cell.coord.q()) * 0.1F,
                                                static_cast<float>(cell.coord.r()) * 0.1F);
@@ -100,12 +129,33 @@ std::optional<std::size_t> Grid::makeChunk(std::size_t parentChunkIndex, HexCoor
         results | std::views::transform([](const GridCell& cell) { return cell.coord; });
     chunk.remove(std::vector<HexCoord>{coordsView.begin(), coordsView.end()});
 
-    if (chunk.getHexes().empty()) {
+    if (chunkHexes->empty()) {
         return std::nullopt;
     }
 
     // Post-porcessing -> Move new chunk towards parent chunk until they are 1 hex apart
     // Connect the chunks with a single-hex brigde
+
+    std::vector<GridCell> temp;
+    temp.reserve(chunkHexes->size());
+    for (const auto& cell : *chunkHexes) {
+        if (cell.state != GridCell::State::Occupied) {
+            continue;
+        }
+        temp.push_back(cell);
+    }
+
+    std::vector<std::pair<HexCoord, GridCell::OnHex>> assignedOnHex;
+    if (temp.size() >= 3) {
+        std::shuffle(temp.begin(), temp.end(), _rng);
+        assignedOnHex.emplace_back(temp.at(0).coord, GridCell::OnHex::Enemy);
+        assignedOnHex.emplace_back(temp.at(1).coord, GridCell::OnHex::Enemy);
+        assignedOnHex.emplace_back(temp.at(2).coord, GridCell::OnHex::Resource);
+
+        for (const auto& [coord, onHex] : assignedOnHex) {
+            chunk.setOnHex(coord, onHex, boost::uuids::uuid{});
+        }
+    }
 
     auto dirToParent = HexCoord::dir(HexCoord::dir(dir).opposite());
     if (dirToParent.has_value()) {
@@ -118,7 +168,14 @@ std::optional<std::size_t> Grid::makeChunk(std::size_t parentChunkIndex, HexCoor
     chunk.shift(dir);
     chunk.shift(dir);
 
-    _cells.insert(chunk.getHexes().begin(), chunk.getHexes().end());
+    for (const auto& cell : chunk.getHexes()) {
+        auto it = _cells.find({.coord = cell.coord});
+        if (it != _cells.end()) {
+            _cells.erase(it);
+        }
+        _cells.insert(cell);
+    }
+
     _chunks.push_back(std::move(chunk));
 
     auto closest = closestPair(parentChunkIndex, _chunks.size() - 1);

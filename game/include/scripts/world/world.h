@@ -30,8 +30,17 @@ class World : public dzemikk::MonoBehaviour {
     void setModel(dzemikk::Model* model) {
         _model = model;
     }
+    void setEnemyModel(dzemikk::Model* model) {
+        _enemyModel = model;
+    }
+    void setResourceModel(dzemikk::Model* model) {
+        _resourceModel = model;
+    }
     void setMaterial(dzemikk::Material* material) {
         _material = material;
+    }
+    void setMaterial2(dzemikk::Material* material) {
+        _material2 = material;
     }
 
   private:
@@ -41,7 +50,10 @@ class World : public dzemikk::MonoBehaviour {
     std::uniform_int_distribution<int> _randSteps;
     std::vector<std::tuple<int, int, std::vector<HexCoord::Direction>>> _chunkConfigs;
     dzemikk::Model* _model{nullptr};
+    dzemikk::Model* _enemyModel{nullptr};
+    dzemikk::Model* _resourceModel{nullptr};
     dzemikk::Material* _material{nullptr};
+    dzemikk::Material* _material2{nullptr};
 };
 } // namespace game
 
