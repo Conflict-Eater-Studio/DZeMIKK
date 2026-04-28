@@ -4,6 +4,7 @@
 #include "animation/skeleton.h"
 #include <assimp/matrix4x4.h>
 #include <assimp/mesh.h>
+#include <assimp/scene.h>
 #include "renderer/SkinnedMesh.h"
 #include "renderer/StaticMesh.h"
 
@@ -58,6 +59,8 @@ class ModelHandler : public IAssetHandler<Model> {
      * @return Shared pointer to the loaded Model, or nullptr on failure.
      */
     static std::shared_ptr<Model> loadModelFromFile(const std::string& path);
+
+    static void loadAnimations(const aiScene* scene, Skeleton& skeleton);
 
 #pragma region Assimp conversion utilities
 

@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace dzemikk {
-
+class AnimationClip;
 /**
  * @brief Represents a skeleton consisting of a hierarchy of bones.
  *
@@ -84,11 +84,17 @@ class Skeleton {
      */
     void setGlobalInverseTransform(const glm::mat4& transform);
 
+    
+    void addClip(const std::string& name, AnimationClip* clip);
+
+    AnimationClip* getClip(const std::string& name);
+
 #pragma endregion
 
   private:
     std::vector<Bone> _bones;
     std::unordered_map<std::string, int> _boneMap;
+    std::unordered_map<std::string, AnimationClip*> _clips;
 
     glm::mat4 _globalInverseTransform{1.0F};
 };

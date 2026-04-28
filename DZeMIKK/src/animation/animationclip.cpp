@@ -54,6 +54,7 @@ void AnimationClip::apply(float timeInSeconds) const {
         track->apply(keyframe);
     }
 }
+
 std::shared_ptr<AnimationClip> AnimationClip::fromAssimp(aiAnimation* animation) {
     if (!animation) return nullptr;
 

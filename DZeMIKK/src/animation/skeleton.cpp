@@ -1,4 +1,5 @@
 #include "animation/skeleton.h"
+#include "animation/animationclip.h"
 
 int dzemikk::Skeleton::addBone(const std::string& name, int parentIndex) {
     auto it = _boneMap.find(name);
@@ -51,4 +52,14 @@ void dzemikk::Skeleton::setGlobalInverseTransform(const glm::mat4& transform) {
 
 dzemikk::Bone* dzemikk::Skeleton::getBone(int index) {
     return &_bones[index];
+}
+
+
+void dzemikk::Skeleton::addClip(const std::string& name, AnimationClip* clip) {
+    _clips[name] = clip;
+}
+
+dzemikk::AnimationClip* dzemikk::Skeleton::getClip(const std::string& name) {
+    auto it = _clips.find(name);
+    return it != _clips.end() ? it->second : nullptr;
 }

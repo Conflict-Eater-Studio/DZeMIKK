@@ -264,13 +264,7 @@ void dzemikk::Renderer::render() {
             auto* rootBone = skeleton->getBone(1);
             const glm::mat4 mat = glm::rotate(glm::mat4(1.0f), sin(t) * 0.5f, glm::vec3(0, 0, 1));
             auto bind = rootBone->getBindLocalTransform();
-            rootBone->setLocalTransform(bind * mat);
-
-            if (rootBone) {
-                std::cout << "ROOT BONE: " << rootBone->getName() << "\n";
-            } else {
-                std::cout << "ROOT BONE: nullptr\n";
-            }
+            //rootBone->setLocalTransform(bind * mat);
 
             r->calculateBoneMatrices(0, glm::mat4(1.0f));
 

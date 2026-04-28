@@ -2,12 +2,16 @@
 #include "renderer/StaticMesh.h"
 #include "renderer/model.h"
 
+#include "animation/boneTrack.h"
+#include "animation/animationclip.h"
+
 #include <assimp/Importer.hpp>
-#include <assimp/scene.h>
+
 #include <assimp/postprocess.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <glm/gtx/matrix_decompose.hpp>
 
 void printNode(aiNode* node, int depth = 0) {
     for (int i = 0; i < depth; i++) {
@@ -38,6 +42,10 @@ void printSkeleton(const dzemikk::Skeleton& skeleton, int boneIndex = 0, int dep
     for (int childIndex : bone->getChildren()) {
         printSkeleton(skeleton, childIndex, depth + 1);
     }
+}
+
+bool isAssimpHelperNode(const std::string& name) {
+    return name.find("_$AssimpFbx$") != std::string::npos;
 }
 
 dzemikk::ModelHandler::Result dzemikk::ModelHandler::load(const std::string& path) {
@@ -88,6 +96,35 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
         return nullptr;
     }
 
+    const bool hasAnimations = scene->mNumAnimations > 0;
+
+    std::cout << "Model: " << path << "\n";
+    std::cout << "Meshes: " << scene->mNumMeshes << "\n";
+    std::cout << "Has bones: " << (scene->HasMeshes() ? "YES" : "NO") << "\n";
+    std::cout << "Has animations: " << (hasAnimations ? "YES" : "NO") << "\n";
+    std::cout << "Animations count: " << scene->mNumAnimations << "\n";
+
+    for (unsigned int i = 0; i < scene->mNumAnimations; ++i) {
+        const aiAnimation* anim = scene->mAnimations[i];
+
+        std::cout << "\n=== Animation " << i << " ===\n";
+        std::cout << "Name: " << (anim->mName.length > 0 ? anim->mName.C_Str() : "Unnamed") << "\n";
+        std::cout << "Duration: " << anim->mDuration << "\n";
+        std::cout << "Ticks per second: "
+                  << (anim->mTicksPerSecond != 0 ? anim->mTicksPerSecond : 25.0) << "\n";
+
+        std::cout << "Channels (animated nodes): " << anim->mNumChannels << "\n";
+
+        for (unsigned int j = 0; j < anim->mNumChannels; ++j) {
+            const aiNodeAnim* channel = anim->mChannels[j];
+
+            std::cout << "  Node: " << channel->mNodeName.C_Str() << "\n";
+            std::cout << "    Position keys: " << channel->mNumPositionKeys << "\n";
+            std::cout << "    Rotation keys: " << channel->mNumRotationKeys << "\n";
+            std::cout << "    Scaling keys: " << channel->mNumScalingKeys << "\n";
+        }
+    }
+
     auto model = std::make_shared<Model>();
 
     auto skeleton = std::make_shared<dzemikk::Skeleton>();
@@ -113,7 +150,159 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
         }
     }
 
+    if (scene->mNumAnimations > 0) {
+        loadAnimations(scene, *skeleton);
+    }
+
     return model;
+}
+
+void dzemikk::ModelHandler::loadAnimations(const aiScene* scene, Skeleton& skeleton) {
+
+    for (unsigned int i = 0; i < scene->mNumAnimations; ++i) {
+        const aiAnimation* anim = scene->mAnimations[i];
+
+        float duration = static_cast<float>(anim->mDuration);
+        float ticksPerSecond =
+            anim->mTicksPerSecond != 0 ? static_cast<float>(anim->mTicksPerSecond) : 25.0f;
+
+        auto* clip = new AnimationClip(duration, ticksPerSecond);
+
+        std::unordered_map<int, BoneTrack> boneTracks;
+
+        for (unsigned int j = 0; j < anim->mNumChannels; ++j) {
+            const aiNodeAnim* channel = anim->mChannels[j];
+
+            std::string boneName = channel->mNodeName.C_Str();
+            int boneIndex = skeleton.getBoneIndex(boneName);
+
+            if (boneIndex == -1) {
+                continue;
+            }
+
+            BoneTrack& bt = boneTracks[boneIndex];
+            Bone* bone = skeleton.getBone(boneIndex);
+
+            if (!bone)
+                continue;
+
+            if (channel->mNumPositionKeys > 0) {
+                auto* track = clip->addVectorTrack();
+                bt.setPosition(track);
+
+                for (unsigned int k = 0; k < channel->mNumPositionKeys; ++k) {
+                    const auto& key = channel->mPositionKeys[k];
+
+                    track->addKey({static_cast<float>(key.mTime),
+                                   glm::vec3(key.mValue.x, key.mValue.y, key.mValue.z)});
+                }
+
+                track->setProperty(VectorProperty(
+                    [bone]() {
+                        glm::vec3 scale, translation, skew;
+                        glm::quat rotation;
+                        glm::vec4 perspective;
+
+                        glm::decompose(bone->getLocalTransform(), scale, rotation, translation,
+                                       skew, perspective);
+                        return translation;
+                    },
+                    [bone](const glm::vec3& newPos) {
+                        glm::vec3 scale, translation, skew;
+                        glm::quat rotation;
+                        glm::vec4 perspective;
+
+                        glm::decompose(bone->getLocalTransform(), scale, rotation, translation,
+                                       skew, perspective);
+
+                        glm::mat4 result = glm::translate(glm::mat4(1.0f), newPos) *
+                                           glm::toMat4(rotation) *
+                                           glm::scale(glm::mat4(1.0f), scale);
+
+                        bone->setLocalTransform(result);
+                    }));
+            }
+
+            if (channel->mNumRotationKeys > 0) {
+                auto* track = clip->addQuaternionTrack();
+                bt.setRotation(track);
+
+                for (unsigned int k = 0; k < channel->mNumRotationKeys; ++k) {
+                    const auto& key = channel->mRotationKeys[k];
+
+                    track->addKey(
+                        {static_cast<float>(key.mTime),
+                         glm::quat(key.mValue.w, key.mValue.x, key.mValue.y, key.mValue.z)});
+                }
+
+                track->setProperty(QuaternionProperty(
+                    [bone]() {
+                        glm::vec3 scale, translation, skew;
+                        glm::quat rotation;
+                        glm::vec4 perspective;
+
+                        glm::decompose(bone->getLocalTransform(), scale, rotation, translation,
+                                       skew, perspective);
+                        return rotation;
+                    },
+                    [bone](const glm::quat& newRot) {
+                        glm::vec3 scale, translation, skew;
+                        glm::quat rotation;
+                        glm::vec4 perspective;
+
+                        glm::decompose(bone->getLocalTransform(), scale, rotation, translation,
+                                       skew, perspective);
+
+                        glm::mat4 result = glm::translate(glm::mat4(1.0f), translation) *
+                                           glm::toMat4(newRot) * glm::scale(glm::mat4(1.0f), scale);
+
+                        bone->setLocalTransform(result);
+                    }));
+            }
+
+            if (channel->mNumScalingKeys > 0) {
+                auto* track = clip->addVectorTrack();
+                bt.setScale(track);
+
+                for (unsigned int k = 0; k < channel->mNumScalingKeys; ++k) {
+                    const auto& key = channel->mScalingKeys[k];
+
+                    track->addKey({static_cast<float>(key.mTime),
+                                   glm::vec3(key.mValue.x, key.mValue.y, key.mValue.z)});
+                }
+
+                track->setProperty(VectorProperty(
+                    [bone]() {
+                        glm::vec3 scale, translation, skew;
+                        glm::quat rotation;
+                        glm::vec4 perspective;
+
+                        glm::decompose(bone->getLocalTransform(), scale, rotation, translation,
+                                       skew, perspective);
+                        return scale;
+                    },
+                    [bone](const glm::vec3& newScale) {
+                        glm::vec3 scale, translation, skew;
+                        glm::quat rotation;
+                        glm::vec4 perspective;
+
+                        glm::decompose(bone->getLocalTransform(), scale, rotation, translation,
+                                       skew, perspective);
+
+                        glm::mat4 result = glm::translate(glm::mat4(1.0f), translation) *
+                                           glm::toMat4(rotation) *
+                                           glm::scale(glm::mat4(1.0f), newScale);
+
+                        bone->setLocalTransform(result);
+                    }));
+            }
+        }
+
+        std::string name =
+            anim->mName.length > 0 ? anim->mName.C_Str() : "Anim_" + std::to_string(i);
+
+        skeleton.addClip(name, clip);
+    }
 }
 
 glm::mat4 dzemikk::ModelHandler::aiToGlm(const aiMatrix4x4& m) {
@@ -135,10 +324,6 @@ glm::mat4 dzemikk::ModelHandler::aiToGlm(const aiMatrix4x4& m) {
     result[2][3] = m.d3;
     result[3][3] = m.d4;
     return result;
-}
-
-bool isAssimpHelperNode(const std::string& name) {
-    return name.find("_$AssimpFbx$") != std::string::npos;
 }
 
 void dzemikk::ModelHandler::buildSkeleton(aiNode* node, Skeleton& skeleton, int parent,

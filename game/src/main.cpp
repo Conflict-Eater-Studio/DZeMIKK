@@ -167,7 +167,8 @@ int main() {
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 0.0f));
     enemyGO->transform()->setScale(glm::vec3(.01f, .01f, 0.01f));
     auto enemyMeshR = enemyGO->addComponent<dzemikk::SkinnedMeshRenderer>();
-    auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
+    //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
+    auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Rumba Dancing.fbx");
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/szamanka.fbx");
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/MainC.fbx");
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/cooper.fbx");
@@ -180,7 +181,28 @@ int main() {
     enemyMeshR->setMaterial(4, materialC);
     enemyMeshR->setMaterial(5, materialC);
 
+    auto animator = enemyGO->addComponent<dzemikk::Animator>();
+    engine->getAnimationSystem()->registerAnimator(animator);
 
+    auto skeleton = enemyMesh.get()->getSkeleton();
+    if (!skeleton) {
+        std::cout << "Brak skeletonu!\n";
+        return -1;
+    }
+
+    dzemikk::AnimationClip* clip = nullptr;
+    clip = skeleton->getClip("mixamo.com");
+
+    if (!clip) {
+        std::cout << "Brak animacji!\n";
+        return -2;
+    }
+
+    auto sm = std::make_shared<dzemikk::AnimationStateMachine>();
+    auto state = sm->addState();
+    state->setClip(clip);
+
+    animator->setStateMachine(sm);
 
     // --- Quad GameObject
     auto quadGO = new dzemikk::GameObject();
@@ -453,7 +475,7 @@ int main() {
     animator->setStateMachine(animationStateMachine);
 
 
-        engine->getInput()->OnMouseMoved.addListener([&](dzemikk::MouseMovedEvent& event) {
+    engine->getInput()->OnMouseMoved.addListener([&](dzemikk::MouseMovedEvent& event) {
         static glm::vec2 lastMousePos = engine->getInput()->GetMousePosition();
         glm::vec2 currentMousePos(event.GetX(), event.GetY());
         glm::vec2 delta = currentMousePos - lastMousePos;
