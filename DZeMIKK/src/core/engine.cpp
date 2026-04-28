@@ -11,6 +11,9 @@
 #endif
 
 #include "animation/animationmodule.h"
+#include "assetManager/assetmanager.h"
+#include "audio/sound.h"
+#include "collisions/collisions.h"
 #include "core/engine.h"
 #include "core/profiler.h"
 #include "core/time.h"
@@ -19,13 +22,11 @@
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
 #include "ecs/scenemanager.h"
-#include "renderer/renderer.h"
-#include "renderer/font.h"
-#include "renderer/texture.h"
-#include "renderer/Model.h"
-#include "audio/sound.h"
-#include "assetManager/assetmanager.h"
 #include "input/input.h"
+#include "renderer/Model.h"
+#include "renderer/font.h"
+#include "renderer/renderer.h"
+#include "renderer/texture.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -48,6 +49,7 @@ void Engine::init() {
     _time = std::make_unique<Time>();
     _animationModule = std::make_unique<AnimationModule>();
     _input = std::make_unique<Input>();
+    _collisions = std::make_unique<Collisions>();
 
     _mainWindow->initialize();
     _assetManager->initialize();
