@@ -1,23 +1,17 @@
 #include "game.h"
 
 #include "animation/animationclip.h"
-#include "animation/animationmodule.h"
-#include "animation/animationstate.h"
-#include "animation/animationstatemachine.h"
 #include "animation/quaterniontrack.h"
 #include "animation/vectortrack.h"
 #include "assetManager/assetmanager.h"
 #include "audio/sound.h"
 #include "collisions/collisions.h"
 #include "core/engine.h"
-#include "core/time.h"
 #include "core/window.h"
 #include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/collider.h"
 #include "ecs/components/meshRenderer.h"
-#include "ecs/components/spriteRenderer.h"
-#include "ecs/components/textRenderer.h"
 #include "ecs/components/ui/canvas.h"
 #include "ecs/components/ui/colors.h"
 #include "ecs/components/ui/imageRenderer.h"
@@ -31,9 +25,6 @@
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
-#include "events/key_event.h"
-#include "events/mouse_event.h"
-#include "game.h"
 #include "input/input.h"
 #include "renderer/font.h"
 #include "renderer/material.h"
@@ -41,9 +32,6 @@
 #include "renderer/model.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
-#include "renderer/texture.h"
-#include "spriteupdater.h"
-#include "textupdater.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -133,13 +121,14 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Mater
             renderer->setMaterial(0, materialA);
         else
             renderer->setMaterial(0, materialB);
+
+        auto collider = tile->addComponent<dzemikk::Collider>();
+        collider->setModel(mesh);
+        collider->setTransform(tile->transform());
     }
-
 }
 
-void Game::init() {
-
-}
+void Game::init() {}
 void Game::start() {
     auto m1 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
     auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
@@ -198,7 +187,6 @@ void Game::start() {
     enemyMeshR->setMaterial(0, materialA);
     enemyMeshR->setMaterial(1, materialB);
 
-    // UI Camera
     auto cameraUIGO = mainScenePtr->createGameObject();
     cameraUIGO->transform()->setPosition(glm::vec3(0.0f, 0.0f, 1.0f));
     auto cameraUI = cameraUIGO->addComponent<dzemikk::Camera>();
@@ -206,59 +194,13 @@ void Game::start() {
     cameraUI->setOrthographic(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f);
     engine->getRenderer()->setActiveUICamera(cameraUI);
 
-    // --- Quad GameObject
-    auto quadGO = new dzemikk::GameObject();
-    quadGO->transform()->setPosition(glm::vec3(100.0f, 300.0f, 0.0f));
-    quadGO->transform()->setScale(glm::vec3(100.0f, 100.0f, 1.0f));
-    quadGO->transform()->setRotation(glm::quat());
-
-    auto quadMesh =
-        engine->getAssetManager()->getPrimitive(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
+    auto quadMesh = engine->getAssetManager()->getPrimitive(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
 
     auto quadShader = engine->getAssetManager()->get<dzemikk::Shader>("shaders/quad");
     auto quadMaterial = new dzemikk::Material();
     quadMaterial->setShader(quadShader.get());
 
-    auto quadRenderer = quadGO->addComponent<dzemikk::SpriteRenderer>();
-    quadRenderer->setMesh(quadMesh);
-    quadRenderer->setMaterial(quadMaterial);
-    quadRenderer->setTransform(quadGO->transform());
-    quadRenderer->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
-
-    auto tex = engine->getAssetManager()->get<dzemikk::Texture>("textures/tex3.png");
-
-    quadRenderer->setTexture(tex.get());
-
-    auto quadGO2 = mainScenePtr->createGameObject();
-    quadGO2->transform()->setPosition(glm::vec3(1500.0f, 950.0f, 0.0f));
-    quadGO2->transform()->setScale(glm::vec3(400.0f, 50.0f, 1.0f));
-    quadGO2->transform()->setRotation(glm::quat());
-
-    auto quadRenderer2 = quadGO2->addComponent<dzemikk::SpriteRenderer>();
-    quadRenderer2->setMesh(quadMesh);
-    quadRenderer2->setMaterial(quadMaterial);
-    quadRenderer2->setTransform(quadGO2->transform());
-    quadRenderer2->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
-
-    auto quadGO3 = mainScenePtr->createGameObject();
-    quadGO3->transform()->setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-    quadGO3->transform()->setScale(glm::vec3(0.9f, 1.0f, 1.0f));
-    quadGO3->transform()->setRotation(glm::quat());
-    quadGO2->addChild(quadGO3);
-
-    quadGO3->setName("QuadGO3");
-
-    auto quadRenderer3 = quadGO3->addComponent<dzemikk::SpriteRenderer>();
-    quadRenderer3->setMesh(quadMesh);
-    quadRenderer3->setMaterial(quadMaterial);
-    quadRenderer3->setTransform(quadGO3->transform());
-    quadRenderer3->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-
-    auto quadSpriteUpdater = quadGO3->addComponent<dzemikk::SpriteUpdater>();
-    quadSpriteUpdater->transform = quadGO3->transform();
-
     auto font = engine->getAssetManager()->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
-
     auto* canvasGo = mainScenePtr->createGameObject("Canvas");
     auto* canvas = canvasGo->addComponent<dzemikk::Canvas>();
     (void)canvas;
@@ -431,19 +373,6 @@ void Game::start() {
     uiCheckbox->setCheckmarkSpriteRenderer(checkmarkSprite);
     uiCheckbox->setOnClickActionId("demo.checkbox.click");
 
-    auto textGO = mainScenePtr->createGameObject();
-    textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
-
-    auto text = textGO->addComponent<dzemikk::TextRenderer>();
-    text->text = "Hello World!";
-    text->font = font.get();
-    text->scale = 1.0f;
-    text->color = glm::vec3(1.0f, 1.0f, 1.0f);
-
-    auto updater = textGO->addComponent<dzemikk::TextUpdater>();
-    updater->text = text;
-
-    // FOR TEST ONLY - DELETE THIS
     FMOD::System* system;
     FMOD::System_Create(&system);
     system->init(512, FMOD_INIT_NORMAL, nullptr);
@@ -453,65 +382,23 @@ void Game::start() {
     auto sound = engine->getAssetManager()->get<dzemikk::Sound>("audio/prime_wznoszeniePol.wav");
     sound.get()->play(system);
 
-    dzemikk::Animator* animator = enemyGO->addComponent<dzemikk::Animator>();
-    engine->getAnimationModule()->registerAnimator(animator);
-    dzemikk::Transform* t = enemyGO->transform();
-
-    std::shared_ptr<dzemikk::AnimationStateMachine> animationStateMachine = std::make_shared<dzemikk::AnimationStateMachine>();
-    dzemikk::AnimationState* moveState = animationStateMachine->addState("Move");
-    Transition toIdle;
-    bool shouldIdle = false;
-    toIdle.targetState = "Idle";
-    toIdle.condition =  [&shouldIdle]() -> bool {
-        return shouldIdle;
-    };
-    toIdle.duration = 1.0f;
-    moveState->addTransition(toIdle);
-    dzemikk::AnimationState* idleState = animationStateMachine->addState("Idle");
-    dzemikk::AnimationClip* moveClip = new dzemikk::AnimationClip(4, 1);
-    dzemikk::AnimationClip* idleClip = new dzemikk::AnimationClip(2.0f, 1.0f);
-
-    idleState->setClip(idleClip);
-    moveState->setClip(moveClip);
-
-    dzemikk::VectorTrack* positionTrack = moveClip->addVectorTrack();
-    dzemikk::VectorTrack* positionTrack2 = idleClip->addVectorTrack();
-
-
-    positionTrack2->bindPosition(*t);
-    positionTrack2->addKey({0.0f, glm::vec3(0.0, 1.5, 3.0)});
-    positionTrack2->addKey({1.0f, glm::vec3(0.0, 1.5, 4.0)});
-    positionTrack2->addKey({2.0f, glm::vec3(0.0, 1.5, 5.0)});
-    positionTrack2->addKey({3.0f, glm::vec3(0.0, 1.5, 4.0)});
-    positionTrack2->addKey({4.0f, glm::vec3(0.0, 1.5, 3.0)});
-
-
-    positionTrack->bindPosition(*t);
-    positionTrack->addKey({0.0f, glm::vec3(3.0, 1.5, 0.0)});
-    positionTrack->addKey({1.0f, glm::vec3(4.0, 1.5, 0.0)});
-    positionTrack->addKey({2.0f, glm::vec3(5.0, 1.5, 0.0)});
-    positionTrack->addKey({3.0f, glm::vec3(4.0, 1.5, 0.0)});
-    positionTrack->addKey({4.0f, glm::vec3(3.0, 1.5, 0.0)});
-
-    animator->setStateMachine(animationStateMachine);
-
     engine->SetUserUpdateCallback([this, playerGO]() {
         if (!engine || !engine->getInput()) {
             return;
         }
 
         if (engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-            spdlog::info("Test");
             int windowWidth, windowHeight;
             glfwGetWindowSize(engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
             dzemikk::Collider* collider = engine->getCollisions()->raycast(engine->getRenderer()->getActiveSceneCamera(), engine->getInput()->GetMousePosition(), windowWidth, windowHeight);
 
            if (collider && collider != nullptr) {
-               auto hit = collider->getOwner()->getComponent<dzemikk::Transform>();
-                playerGO->transform()->setPosition(hit->getPosition());
+                auto hit = collider->getOwner()->getComponent<dzemikk::Transform>();
+                collider->getOwner()->getComponent<dzemikk::MeshRenderer>()->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+               glm::vec3 position = hit->getPosition();
+                position.y += 1.5f;
+                playerGO->transform()->setPosition(position);
            }
         }
     });
-
-
 }

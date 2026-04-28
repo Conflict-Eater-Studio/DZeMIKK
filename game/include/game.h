@@ -6,6 +6,7 @@ class Game {
 public:
     Game(dzemikk::Engine* engine) {
         this->engine = engine;
+        init();
     }
     ~Game() = default;
 

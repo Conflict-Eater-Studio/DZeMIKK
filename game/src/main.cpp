@@ -5,7 +5,6 @@
 int main() {
     auto engine = std::make_unique<dzemikk::Engine>();
     auto game = Game(engine.get());
-    game.init();
     game.start();
     engine->start();
     return 0;
