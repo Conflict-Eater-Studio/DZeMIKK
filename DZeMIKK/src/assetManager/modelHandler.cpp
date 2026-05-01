@@ -211,20 +211,19 @@ auto normalizeBoneName = [](const std::string& name) -> std::string {
 };
 
 void dzemikk::ModelHandler::loadAnimations(const aiScene* scene, Skeleton& skeleton) {
-    std::unordered_map<std::string, const aiNodeAnim*> channelMap;
+    std::unordered_map<std::string, int> normalizedToBone;
 
-    for (unsigned int i = 0; i < scene->mNumAnimations; ++i) {
-        const aiAnimation* anim = scene->mAnimations[i];
+    for (int i = 0; i < skeleton.getBoneCount(); ++i) {
+        Bone* b = skeleton.getBone(i);
+        if (!b)
+            continue;
 
-        for (unsigned int j = 0; j < anim->mNumChannels; ++j) {
-            const aiNodeAnim* ch = anim->mChannels[j];
-
-            std::string boneName = normalizeBoneName(ch->mNodeName.C_Str());
-            channelMap[boneName] = ch;
-        }
+        std::string norm = normalizeBoneName(b->getName());
+        normalizedToBone[norm] = i;
     }
 
     for (unsigned int a = 0; a < scene->mNumAnimations; ++a) {
+
         const aiAnimation* anim = scene->mAnimations[a];
 
         float duration = static_cast<float>(anim->mDuration);
@@ -232,56 +231,75 @@ void dzemikk::ModelHandler::loadAnimations(const aiScene* scene, Skeleton& skele
 
         auto* clip = new AnimationClip(duration, tps);
 
-        std::function<void(aiNode*)> traverse = [&](aiNode* node) {
-            std::string nodeName = normalizeBoneName(node->mName.C_Str());
+        std::unordered_map<std::string, const aiNodeAnim*> channelMap;
 
-            const aiNodeAnim* ch = nullptr;
-            auto it = channelMap.find(nodeName);
-            if (it != channelMap.end())
-                ch = it->second;
+        for (unsigned int j = 0; j < anim->mNumChannels; ++j) {
+            const aiNodeAnim* ch = anim->mChannels[j];
+            std::string norm = normalizeBoneName(ch->mNodeName.C_Str());
+            channelMap[norm] = ch;
+        }
 
-            int boneIndex = skeleton.getBoneIndex(nodeName);
+        std::unordered_set<int> usedBones;
 
-            if (boneIndex != -1) {
-                if (!ch) {
-                    std::cout << "NO CHANNEL: " << nodeName << "\n";
-                } else {
-                    std::cout << "HAS CHANNEL: " << nodeName << "\n";
-                }
+        for (const auto& [normName, ch] : channelMap) {
+
+            auto it = normalizedToBone.find(normName);
+            if (it == normalizedToBone.end())
+                continue;
+
+            int boneIndex = it->second;
+            Bone* bone = skeleton.getBone(boneIndex);
+            if (!bone)
+                continue;
+
+            usedBones.insert(boneIndex);
+
+            BoneTrack* track = clip->addBoneTrack();
+
+            for (unsigned int i = 0; i < ch->mNumPositionKeys; ++i) {
+                const auto& k = ch->mPositionKeys[i];
+                track->addPositionKey({(float)k.mTime, {k.mValue.x, k.mValue.y, k.mValue.z}});
             }
 
-            if (boneIndex != -1 && ch) {
-
-                Bone* bone = skeleton.getBone(boneIndex);
-                if (bone) {
-                    BoneTrack* track = clip->addBoneTrack();
-
-                    for (unsigned int i = 0; i < ch->mNumPositionKeys; ++i) {
-                        const auto& k = ch->mPositionKeys[i];
-                        track->addPositionKey(
-                            {(float)k.mTime, {k.mValue.x, k.mValue.y, k.mValue.z}});
-                    }
-
-                    for (unsigned int i = 0; i < ch->mNumRotationKeys; ++i) {
-                        const auto& k = ch->mRotationKeys[i];
-                        track->addRotationKey({(float)k.mTime, glm::quat(k.mValue.w, k.mValue.x,
-                                                                        k.mValue.y, k.mValue.z)});
-                    }
-
-                    for (unsigned int i = 0; i < ch->mNumScalingKeys; ++i) {
-                        const auto& k = ch->mScalingKeys[i];
-                        track->addScaleKey({(float)k.mTime, {k.mValue.x, k.mValue.y, k.mValue.z}});
-                    }
-
-                    track->bindBone(bone);
-                }
+            for (unsigned int i = 0; i < ch->mNumRotationKeys; ++i) {
+                const auto& k = ch->mRotationKeys[i];
+                track->addRotationKey(
+                    {(float)k.mTime, glm::quat(k.mValue.w, k.mValue.x, k.mValue.y, k.mValue.z)});
             }
 
-            for (unsigned int i = 0; i < node->mNumChildren; ++i)
-                traverse(node->mChildren[i]);
-        };
+            for (unsigned int i = 0; i < ch->mNumScalingKeys; ++i) {
+                const auto& k = ch->mScalingKeys[i];
+                track->addScaleKey({(float)k.mTime, {k.mValue.x, k.mValue.y, k.mValue.z}});
+            }
 
-        traverse(scene->mRootNode);
+            track->bindBone(bone);
+        }
+
+        for (int i = 0; i < skeleton.getBoneCount(); ++i) {
+
+            if (usedBones.count(i))
+                continue;
+
+            Bone* bone = skeleton.getBone(i);
+            if (!bone)
+                continue;
+
+            BoneTrack* track = clip->addBoneTrack();
+
+            glm::mat4 bind = bone->getBindLocalTransform();
+
+            glm::vec3 pos, scale, skew;
+            glm::quat rot;
+            glm::vec4 persp;
+
+            glm::decompose(bind, scale, rot, pos, skew, persp);
+
+            track->addPositionKey({0.0f, pos});
+            track->addRotationKey({0.0f, rot});
+            track->addScaleKey({0.0f, scale});
+
+            track->bindBone(bone);
+        }
 
         std::string name =
             anim->mName.length > 0 ? anim->mName.C_Str() : "Anim_" + std::to_string(a);
@@ -312,30 +330,23 @@ glm::mat4 dzemikk::ModelHandler::aiToGlm(const aiMatrix4x4& m) {
 }
 
 void dzemikk::ModelHandler::buildSkeleton(aiNode* node, Skeleton& skeleton, int parent,
-                                 glm::mat4 accumulatedTransform) {
+                                          glm::mat4 accumulatedTransform) {
     std::string name = node->mName.C_Str();
 
     glm::mat4 local = aiToGlm(node->mTransformation);
     glm::mat4 newAccum = accumulatedTransform * local;
 
-    if (isAssimpHelperNode(name)) {
-        for (unsigned int i = 0; i < node->mNumChildren; ++i) {
-            aiNode* child = node->mChildren[i];
-            buildSkeleton(child, skeleton, parent, newAccum);
-        }
-    } else {
-        int index = skeleton.addBone(name, parent);
+    int index = skeleton.addBone(name, parent);
 
-        auto* bone = skeleton.getBone(index);
-        if (bone) {
-            bone->setLocalTransform(newAccum);
-            bone->setBindLocalTransform(newAccum);
-        }
+    auto* bone = skeleton.getBone(index);
+    if (bone) {
+        bone->setLocalTransform(local);       
+        bone->setBindLocalTransform(local); 
+    }
 
-        for (unsigned int i = 0; i < node->mNumChildren; ++i) {
-            aiNode* child = node->mChildren[i];
-            buildSkeleton(child, skeleton, index, glm::mat4(1.0F));
-        }
+    for (unsigned int i = 0; i < node->mNumChildren; ++i) {
+        aiNode* child = node->mChildren[i];
+        buildSkeleton(child, skeleton, index, newAccum);
     }
 }
 

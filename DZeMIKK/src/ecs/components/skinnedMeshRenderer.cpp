@@ -7,7 +7,7 @@ void dzemikk::SkinnedMeshRenderer::calculateBoneMatrices(int index,
     glm::mat4 local = bone->getLocalTransform();
     glm::mat4 bindPose = bone->getBindLocalTransform();
 
-    glm::mat4 global = parentTransform * bindPose * local;
+    glm::mat4 global = parentTransform * local;
 
     _finalBoneMatrices[index] = global * bone->getOffsetMatrix();
 
