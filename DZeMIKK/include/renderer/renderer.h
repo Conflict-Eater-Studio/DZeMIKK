@@ -5,6 +5,7 @@
 #include "frustum.h"
 #include "skybox.h"
 
+#include <glm/glm.hpp>
 #include <memory>   
 
 namespace dzemikk {
@@ -122,6 +123,7 @@ namespace dzemikk {
         struct Batch {
             Mesh* mesh = nullptr;
             Material* material = nullptr;
+            glm::vec4 color = glm::vec4(1.0f);
             std::vector<glm::mat4> models; 
             GLuint instanceVBO = 0;          
         };
