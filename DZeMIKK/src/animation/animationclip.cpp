@@ -19,6 +19,9 @@ float AnimationClip::getTickDuration() const {
 float AnimationClip::getTickrate() const {
     return _ticksPerSecond;
 }
+const std::vector<std::unique_ptr<IAnimationTrack>>& AnimationClip::getTracks() const {
+    return _tracks;
+}
 
 FloatTrack* AnimationClip::addFloatTrack() {
     std::unique_ptr<FloatTrack> track = std::make_unique<FloatTrack>();
@@ -125,6 +128,15 @@ std::shared_ptr<AnimationClip> AnimationClip::fromAssimp(aiAnimation* animation)
 }
 void AnimationClip::setLoop(bool loop) {
     _loop = loop;
+}
+void AnimationClip::setDuration(float duration) {
+    _durationInTicks = duration;
+}
+void AnimationClip::setTickrate(float tickrate) {
+    _ticksPerSecond = tickrate;
+}
+void AnimationClip::setTracks(std::vector<std::unique_ptr<IAnimationTrack>> tracks) {
+    _tracks = std::move(tracks);
 }
 bool AnimationClip::isLoop() const {
     return _loop;

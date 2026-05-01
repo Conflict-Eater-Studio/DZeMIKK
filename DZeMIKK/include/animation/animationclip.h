@@ -2,9 +2,12 @@
 #ifndef DZEMIKK_ANIMATIONCLIP_H
 #define DZEMIKK_ANIMATIONCLIP_H
 
+#include "IAnimationTrack.h"
+#include "floattrack.h"
+#include "nlohmann/json.hpp"
+
 #include <memory>
 #include <vector>
-#include "IAnimationTrack.h"
 
 struct aiAnimation;
 namespace dzemikk {
@@ -48,7 +51,7 @@ public:
      * @return Framerate (ticks per second).
      */
     [[nodiscard]] float getTickrate() const;
-
+    [[nodiscard]] const std::vector<std::unique_ptr<IAnimationTrack>>& getTracks() const;
     /**
      * @brief Creates and adds a new animation track.
      * @return Pointer to the newly created track (owned by this clip)
@@ -68,8 +71,12 @@ public:
     * @param timeInSeconds Current time within the animation (in seconds).
     */
     void apply(float timeInSeconds) const;
-    static std::shared_ptr<AnimationClip> fromAssimp(aiAnimation* animation);
+    std::shared_ptr<AnimationClip> fromAssimp(aiAnimation* animation);
     void setLoop(bool loop);
+    void setDuration(float duration);
+    void setTickrate(float tickrate);
+    void setTracks(std::vector<std::unique_ptr<IAnimationTrack>> tracks);
+
     [[nodiscard]] bool isLoop() const;
 private:
     std::vector<std::unique_ptr<IAnimationTrack>> _tracks;
@@ -77,6 +84,38 @@ private:
     float _ticksPerSecond = 0;
     bool _loop = false;
 };
+
+inline void to_json(nlohmann::json& json, const AnimationClip& clip) {
+    json["duration"] = clip.getTickDuration();
+    json["tickRate"] = clip.getTickrate();
+    json["loop"] = clip.isLoop();
+
+    nlohmann::json tracksJson = nlohmann::json::array();
+
+    for (const auto& track : clip.getTracks()) {
+        nlohmann::json trackJson;
+        trackJson["type"] = track->getType();
+        trackJson["keys"] = track->serialize();
+
+        tracksJson.push_back(trackJson);
+    }
+
+    json["tracks"] = tracksJson;
+}
+inline void from_json(const nlohmann::json& json, AnimationClip& clip) {
+    clip.setTickrate(json["tickRate"]);
+    clip.setDuration(json["duration"]);
+    clip.setLoop(json["loop"]);
+
+    for (const auto& trackJson : json["tracks"]) {
+        std::string type = trackJson["type"];
+        nlohmann::json keys = trackJson["keys"];
+        if (type == "FloatTrack") {
+            FloatTrack* track = clip.addFloatTrack();
+            track->setKeys(keys);
+        }
+    }
+}
 
 }
 

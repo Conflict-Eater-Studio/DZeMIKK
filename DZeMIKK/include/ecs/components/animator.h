@@ -2,14 +2,19 @@
 #ifndef DZEMIKK_ANIMATOR_H
 #define DZEMIKK_ANIMATOR_H
 
+#include "animation/animationstate.h"
 #include "ecs/component.h"
+#include "nlohmann/json.hpp"
 
 #include <memory>
 #include <string>
-#include <string_view>
-
+#include <unordered_map>
+#include <variant>
 namespace dzemikk {
-    class AnimationStateMachine;
+class AnimationState;
+class ComponentSerializerRegistry;
+struct Condition;
+class AnimationStateMachine;
     /**
      * @brief Handles animation playback and state transitions for an entity.
      *
@@ -24,6 +29,8 @@ namespace dzemikk {
      */
     class Animator : public Component {
     public:
+        using ParamValue = std::variant<float, bool, int>;
+    public:
         /**
          * @brief Updates the animator and its state machine.
          *
@@ -34,14 +41,14 @@ namespace dzemikk {
          */
         void update(float deltaTime);
 
-        /**
-         * @brief Immediately switches to a specific animation state.
-         *
-         * This bypasses transition conditions and forces the state change.
-         *
-         * @param stateName Name of the target state.
-         */
-        void play(const std::string& stateName) const;
+      /**
+       * @brief Immediately switches to a specific animation state.
+       *
+       * This bypasses transition conditions and forces the state change.
+       *
+       * @param stateName Name of the target state.
+       */
+        void play(std::string& stateName);
 
         /**
          * @brief Sets a float parameter.
@@ -51,24 +58,21 @@ namespace dzemikk {
          * @param name Parameter name.
          * @param value Float value to assign.
          */
-        void setFloat(std::string_view name, float value);
-
+        void setFloat(const std::string& name, float value);
         /**
          * @brief Sets a boolean parameter.
          *
          * @param name Parameter name.
          * @param value Boolean value to assign.
          */
-        void setBool(std::string_view name, bool value);
-
+        void setBool(const std::string& name, bool value);
         /**
          * @brief Sets an integer parameter.
          *
          * @param name Parameter name.
          * @param value Integer value to assign.
          */
-        void setInt(std::string_view name, int value);
-
+        void setInt(const std::string& name, int value);
         /**
          * @brief Assigns an animation state machine to the animator.
          *
@@ -85,15 +89,53 @@ namespace dzemikk {
          * @return Shared pointer to the state machine.
          */
         [[nodiscard]] std::shared_ptr<AnimationStateMachine> getStateMachine() const noexcept;
-        std::string typeName() const override;
-    private:
-        /// Shared animation state machine defining states and transitions.
-        std::shared_ptr<AnimationStateMachine> _stateMachine = nullptr;
+        [[nodiscard]] AnimationState* getCurrentState() const noexcept;
+        [[nodiscard]] float getFloat(const std::string& name) const;
+        [[nodiscard]] bool getBool(const std::string& name) const;
+        [[nodiscard]] int getInt(const std::string& name) const;
+        [[nodiscard]] float getCurrentTime() const;
 
-        /// Current playback time within the active animation (in seconds).
+        bool evaluate(const Condition& c) const;
+
+        std::string typeName() const override;
+
+      private:
+        std::shared_ptr<AnimationStateMachine> _stateMachine = nullptr;
+        std::unordered_map<std::string, ParamValue> _parameters;
+        AnimationState* _currentState = nullptr;
         float _currentTime = 0.0f;
     };
 
+    inline void to_json(nlohmann::json& json, const Animator& animator) {
+        json["type"] = animator.typeName();
+        json["id"] = boost::uuids::to_string(animator.getId());
+        //todo save path of statemachine getStateMachine().getPath();
+        json["stateMachine"] = animator.getStateMachine();
+        json["currentState"] = animator.getCurrentState()->getName();
+    }
+    inline void from_json(const nlohmann::json& json, Animator& animator) {
+        animator.setId(boost::uuids::(json["id"]));
+        // todo load from assetManager
+        animator.setStateMachine(json["stateMachine"]);
+        animator.play(json["currentState"]);
+    }
+
+    inline void registerAnimatorSerializer(ComponentSerializerRegistry& registry) {
+        registry.registerType(
+            "Animator",
+            [](const Component& component) {
+                const auto* slider = dynamic_cast<const Animator*>(&component);
+                if (slider == nullptr) {
+                    throw std::runtime_error("Component type mismatch for Animator serialization");
+                }
+
+                return nlohmann::json(*slider);
+            },
+            [](GameObject& gameObject, const nlohmann::json& componentJson) {
+                auto* slider = gameObject.addComponent<Animator>();
+                from_json(componentJson, *slider);
+            });
+    }
 } // namespace dzemikk
 
 #endif

@@ -25,15 +25,22 @@ public:
     void setClip(AnimationClip* clip);
 
     [[nodiscard]] const std::vector<Transition>& getTransitions() const noexcept;
+    void setTransitions(const std::vector<Transition>& transitions);
     void addTransition(const Transition& transition);
-
-    void resetTime() noexcept;
-    void update(float deltaTime);
 private:
     std::string _name;
     AnimationClip* _clip = nullptr;
     std::vector<Transition> _transitions;
-    float _currentTime = 0.0f;
 };
+
+inline void to_json(nlohmann::json& json, const AnimationState& state) {
+    json["name"] = state.getName();
+    json["transitions"] = state.getTransitions();
+}
+
+inline void from_json(const nlohmann::json& j, AnimationState& s) {
+    s.setName(j["name"]);
+    s.setTransitions(j["transitions"]);
+}
 }
 #endif
