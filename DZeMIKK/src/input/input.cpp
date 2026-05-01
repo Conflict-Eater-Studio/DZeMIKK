@@ -32,6 +32,21 @@ namespace dzemikk {
                 OnKeyReleased.Invoke(event);
                 return false;
             });
+
+            dispatcher.Dispatch<dzemikk::MouseScrolledEvent>([this](dzemikk::MouseScrolledEvent& event) {
+                OnMouseScrolled.Invoke(event);
+                return false;
+            });
+
+            dispatcher.Dispatch<dzemikk::MouseButtonPressedEvent>([this](dzemikk::MouseButtonPressedEvent& event) {
+                OnMouseButtonPressed.Invoke(event);
+                return false;
+            });
+
+            dispatcher.Dispatch<dzemikk::MouseButtonReleasedEvent>([this](dzemikk::MouseButtonReleasedEvent& event) {
+                OnMouseButtonReleased.Invoke(event);
+                return false;
+            });
         }
     }
 

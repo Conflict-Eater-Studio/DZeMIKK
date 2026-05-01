@@ -455,13 +455,9 @@ int main() {
     });
 
     static glm::vec3 moveDirection(0.0f);
-    engine->getInput()->OnKeyPressed.addListener([&](dzemikk::KeyPressedEvent& event) {
-        if (event.GetRepeatCount() == 0) {
-            if (event.GetKeyCode() == GLFW_KEY_H) moveDirection.z -= 1.0f;
-            if (event.GetKeyCode() == GLFW_KEY_N) moveDirection.z += 1.0f;
-            if (event.GetKeyCode() == GLFW_KEY_B) moveDirection.x -= 1.0f;
-            if (event.GetKeyCode() == GLFW_KEY_M) moveDirection.x += 1.0f;
-        }
+    engine->getInput()->OnMouseScrolled.addListener([&](dzemikk::MouseScrolledEvent& event) {
+        float scrollOffset = event.GetYOffset();
+        moveDirection.x += scrollOffset;
     });
 
     engine->getInput()->OnKeyReleased.addListener([&](dzemikk::KeyReleasedEvent& event) {

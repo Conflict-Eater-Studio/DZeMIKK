@@ -54,6 +54,9 @@ namespace dzemikk {
         void OnEvent(Event& e);
 
         Action<dzemikk::MouseMovedEvent> OnMouseMoved;
+        Action<dzemikk::MouseScrolledEvent> OnMouseScrolled;
+        Action<dzemikk::MouseButtonPressedEvent> OnMouseButtonPressed;
+        Action<dzemikk::MouseButtonReleasedEvent> OnMouseButtonReleased;
         Action<dzemikk::KeyPressedEvent> OnKeyPressed;
         Action<dzemikk::KeyReleasedEvent> OnKeyReleased;
 
