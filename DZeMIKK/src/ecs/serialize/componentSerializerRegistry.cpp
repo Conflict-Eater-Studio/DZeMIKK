@@ -1,9 +1,9 @@
 #include "ecs/serialize/componentSerializerRegistry.h"
 
-#include "ecs/serialize/rectTransformSerializer.h"
+#include "../../../include/ecs/serialize/rectTransformSerializer.h"
+#include "../../../include/ecs/serialize/uiButtonSerializer.h"
+#include "../../../include/ecs/serialize/uiSliderSerializer.h"
 #include "ecs/serialize/transformSerializer.h"
-#include "ecs/serialize/uiButtonSerializer.h"
-#include "ecs/serialize/uiSliderSerializer.h"
 
 #include <stdexcept>
 #include <utility>

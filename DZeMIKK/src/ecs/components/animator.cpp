@@ -2,7 +2,7 @@
 #include <spdlog/spdlog.h>
 #endif
 
-#include "ecs/components/animator.h"
+#include "../../../include/ecs/components/animator.h"
 #include "animation/animationclip.h"
 #include "animation/animationstate.h"
 #include "animation/animationstatemachine.h"

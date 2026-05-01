@@ -1,7 +1,7 @@
 #include "animation/animationmodule.h"
 
+#include "../../include/ecs/components/animator.h"
 #include "ecs/componentRegistry.h"
-#include "ecs/components/animator.h"
 #include "spdlog/spdlog.h"
 
 namespace dzemikk {

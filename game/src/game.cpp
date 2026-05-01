@@ -1,5 +1,6 @@
 #include "game.h"
 
+#include "../../DZeMIKK/include/ecs/components/animator.h"
 #include "animation/animationclip.h"
 #include "animation/quaterniontrack.h"
 #include "animation/vectortrack.h"
@@ -8,7 +9,6 @@
 #include "collisions/collisions.h"
 #include "core/engine.h"
 #include "core/window.h"
-#include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/collider.h"
 #include "ecs/components/meshRenderer.h"
