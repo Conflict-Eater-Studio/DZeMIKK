@@ -4,7 +4,7 @@
 #include "core/iEngineModule.h"
 #include "frustum.h"
 #include "skybox.h"
-
+#include "assetManager/assetHandle.h"
 #include <memory>   
 
 namespace dzemikk {
@@ -103,12 +103,12 @@ namespace dzemikk {
         /**
          * @brief Sets a custom skybox using a cubemap texture.
          */
-        void setSkybox(Skybox* skybox);
+        void setSkybox(AssetHandle<Skybox> skybox);
 
         /**
          * @brief Returns the currently active skybox.
          */
-        [[nodiscard]] const Skybox* getSkybox() const;
+        [[nodiscard]] const AssetHandle<Skybox> getSkybox() const;
 
         #pragma endregion
 
@@ -147,7 +147,7 @@ namespace dzemikk {
         unsigned int _uboMatrices;
         Frustum _frustum;
 
-        Skybox* _skybox;
+        AssetHandle<Skybox> _skybox;
 
         Shader* _textShader = nullptr;
         GLuint textVAO = 0;

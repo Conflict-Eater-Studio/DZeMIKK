@@ -88,7 +88,7 @@ public:
     };
 };
 
-void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Material* materialA,
+void createHexIsland(dzemikk::Scene& scene, dzemikk::AssetHandle<dzemikk::Model> mesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int tileCount, float size, float spacing = 0.1f,
                      float maxHeight = 0.3f);
 
@@ -101,20 +101,19 @@ int main() {
 
     auto shaderA = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
     auto materialA = new dzemikk::Material();
-    materialA->setShader(shaderA.get());
+    materialA->setShader(shaderA);
 
     auto shaderB = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile2");
     auto materialB = new dzemikk::Material();
-    materialB->setShader(shaderB.get());
+    materialB->setShader(shaderB);
 
     auto shaderC = engine->getAssetManager()->get<dzemikk::Shader>("shaders/skinned");
     auto materialC = new dzemikk::Material();
-    materialC->setShader(shaderC.get());
+    materialC->setShader(shaderC);
 
     auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
-    skybox.get()->setShader(
-        engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox").get());
-    engine->getRenderer()->setSkybox(skybox.get());
+    skybox.get()->setShader(engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox"));
+    engine->getRenderer()->setSkybox(skybox);
 
     // --- Scene Camera
     auto cameraGO = mainScenePtr->createGameObject();
@@ -142,7 +141,7 @@ int main() {
 
     auto tileMesh = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
-    createHexIsland(*mainScenePtr, tileMesh.get(), materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
+    createHexIsland(*mainScenePtr, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
     auto sphereMesh = engine->getAssetManager()->getPrimitive(
         dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Sphere);
@@ -153,25 +152,27 @@ int main() {
 
     auto shaderLambert = engine->getAssetManager()->get<dzemikk::Shader>("shaders/lambert");
     auto materialLambert = new dzemikk::Material();
-    materialLambert->setShader(shaderLambert.get());
+    materialLambert->setShader(shaderLambert);
 
     auto shaderPhong = engine->getAssetManager()->get<dzemikk::Shader>("shaders/phong");
     auto materialPhong = new dzemikk::Material();
-    materialPhong->setShader(shaderPhong.get());
+    materialPhong->setShader(shaderPhong);
 
     auto shaderPhongBlinn = engine->getAssetManager()->get<dzemikk::Shader>("shaders/phong-blinn");
     auto materialPhongBlinn = new dzemikk::Material();
-    materialPhongBlinn->setShader(shaderPhongBlinn.get());
+    materialPhongBlinn->setShader(shaderPhongBlinn);
 
     auto shaderRim = engine->getAssetManager()->get<dzemikk::Shader>("shaders/rim");
     auto materialRim = new dzemikk::Material();
-    materialRim->setShader(shaderRim.get());
+    materialRim->setShader(shaderRim);
 
     sphereMaterials.push_back(materialLambert);
     sphereMaterials.push_back(materialPhong);
     sphereMaterials.push_back(materialPhongBlinn);
     sphereMaterials.push_back(materialRim);
 
+    auto modelPtr = std::make_shared<dzemikk::Model>();
+    dzemikk::AssetHandle<dzemikk::Model> modelHandle(modelPtr, "primitive/sphere");
     for (int i = 0; i < 4; i++) {
         auto sphereGO = mainScenePtr->createGameObject("Sphere_" + std::to_string(i));
 
@@ -180,7 +181,7 @@ int main() {
 
         auto renderer = sphereGO->addComponent<dzemikk::MeshRenderer>();
 
-        renderer->setModel(new dzemikk::Model());
+        renderer->setModel(modelHandle);
         renderer->getModel()->addMesh(std::shared_ptr<dzemikk::Mesh>(sphereMesh), 0);
 
         renderer->setTransform(sphereGO->transform());
@@ -193,7 +194,10 @@ int main() {
     auto playerMeshR = playerGO->addComponent<dzemikk::MeshRenderer>();
     auto playerMesh = engine->getAssetManager()->getPrimitive(
         dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Capsule);
-    playerMeshR->setModel(new dzemikk::Model());
+
+    auto playerModelPtr = std::make_shared<dzemikk::Model>();
+    dzemikk::AssetHandle<dzemikk::Model> playerModelHandle(playerModelPtr, "primitive/capsule");
+    playerMeshR->setModel(playerModelHandle);
     playerMeshR->getModel()->addMesh(std::shared_ptr<dzemikk::Mesh>(playerMesh), 0);
     playerMeshR->setTransform(playerGO->transform());
     playerMeshR->setMaterial(0, materialA);
@@ -203,7 +207,7 @@ int main() {
     chestGO->transform()->setRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
     auto chestMeshR = chestGO->addComponent<dzemikk::MeshRenderer>();
     auto chestMesh = engine->getAssetManager()->get<dzemikk::Model>("models/skrzynia.fbx");
-    chestMeshR->setModel(chestMesh.get());
+    chestMeshR->setModel(chestMesh);
     chestMeshR->setTransform(chestGO->transform());
     chestMeshR->setMaterial(0, materialA);
 
@@ -217,7 +221,7 @@ int main() {
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/szamankaanim.fbx");
     // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/MainC.fbx");
     // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/cooper.fbx");
-    enemyMeshR->setModel(enemyMesh.get());
+    enemyMeshR->setModel(enemyMesh);
     enemyMeshR->setTransform(enemyGO->transform());
     enemyMeshR->setMaterial(0, materialC);
     enemyMeshR->setMaterial(1, materialC);
@@ -261,7 +265,7 @@ int main() {
 
     auto quadShader = engine->getAssetManager()->get<dzemikk::Shader>("shaders/quad");
     auto quadMaterial = new dzemikk::Material();
-    quadMaterial->setShader(quadShader.get());
+    quadMaterial->setShader(quadShader);
 
     auto quadRenderer = quadGO->addComponent<dzemikk::SpriteRenderer>();
     quadRenderer->setMesh(quadMesh);
@@ -271,7 +275,7 @@ int main() {
 
     auto tex = engine->getAssetManager()->get<dzemikk::Texture>("textures/tex3.png");
 
-    quadRenderer->setTexture(tex.get());
+    quadRenderer->setTexture(tex);
 
     auto quadGO2 = mainScenePtr->createGameObject();
     quadGO2->transform()->setPosition(glm::vec3(1500.0f, 950.0f, 0.0f));
@@ -482,7 +486,7 @@ int main() {
 
     auto text = textGO->addComponent<dzemikk::TextRenderer>();
     text->text = "Hello World!";
-    text->font = font.get();
+    text->font = font;
     text->scale = 1.0f;
     text->color = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -572,7 +576,7 @@ glm::vec3 hexToWorld(int q, int r, float size, float spacing = 0.1f, float maxHe
     return glm::vec3(x, y, z);
 }
 
-void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Material* materialA,
+void createHexIsland(dzemikk::Scene& scene, dzemikk::AssetHandle<dzemikk::Model> mesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int tileCount, float size, float spacing,
                      float maxHeight) {
     std::set<Hex> island;

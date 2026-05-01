@@ -2,6 +2,7 @@
 #define DZEMIKK_TEXT_RENDERER_H
 
 #include "../component.h"
+#include "assetManager/assetHandle.h"
 
 #include <glm/ext/vector_float3.hpp>
 #include <string>
@@ -16,10 +17,10 @@ class TextRenderer : public Component {
     float scale = 1.0f;
     glm::vec3 color = glm::vec3(1.0f);
 
-    Font* font = nullptr;
+    AssetHandle<Font> font;
 
     bool isValid() const {
-        return font != nullptr && !text.empty();
+        return font.get() != nullptr && !text.empty();
     }
 
     [[nodiscard]] std::string typeName() const override {

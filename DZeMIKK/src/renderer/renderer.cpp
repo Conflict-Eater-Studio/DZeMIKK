@@ -47,8 +47,6 @@ void dzemikk::Renderer::initialize() {
 
     glEnable(GL_MULTISAMPLE);
 
-    _skybox = new Skybox();
-
     const char* vertexSrc = R"(
     #version 330 core
     layout (location = 0) in vec4 vertex; // pos.xy, uv.xy
@@ -125,7 +123,7 @@ void dzemikk::Renderer::render() {
         glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), time * 0.1f, glm::vec3(0, 1, 0));
         glm::mat4 viewNoTrans = _sceneCamera->getView() * rotation;
 
-        _skybox->render(viewNoTrans, _sceneCamera->getProjection());
+        _skybox.get()->render(viewNoTrans, _sceneCamera->getProjection());
 
         Profiler::Get().stats.drawCalls++;
         Profiler::Get().stats.renderedObjects++;
@@ -251,7 +249,7 @@ void dzemikk::Renderer::render() {
             if (!r)
                 continue;
 
-            Model* model = r->getModel();
+            Model* model = r->getModel().get();
             Transform* transform = r->getTransform();
 
             if (!model || !transform)
@@ -393,7 +391,7 @@ void dzemikk::Renderer::render() {
 
             glBindVertexArray(textVAO);
             for (char c : t->text) {
-                Character ch = t->font->characters[c];
+                Character ch = t->font.get()->characters[c];
 
                 float xpos = x + ch.bearing.x * t->scale;
                 float ypos = y - (ch.size.y - ch.bearing.y) * t->scale;
@@ -601,15 +599,14 @@ void dzemikk::Renderer::setActiveUICameraById(int cameraId) {
     std::cerr << "[Renderer] Warning: UI camera with ID " << cameraId << " not found.\n";
 }
 
-void dzemikk::Renderer::setSkybox(Skybox* skybox) {
-    if (!skybox) {
-        _skybox = nullptr;
+void dzemikk::Renderer::setSkybox(AssetHandle<Skybox> skybox) {
+    if (!skybox.get()) {
         return;
     }
     _skybox = skybox;
 }
 
-const dzemikk::Skybox* dzemikk::Renderer::getSkybox() const {
+const dzemikk::AssetHandle<dzemikk::Skybox> dzemikk::Renderer::getSkybox() const {
     return _skybox;
 }
 

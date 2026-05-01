@@ -2,6 +2,7 @@
 #define DZEMIKK_ASSET_HANDLE_H 
 
 #include <memory>
+#include <string>
 
 namespace dzemikk {
 /**
@@ -14,6 +15,8 @@ namespace dzemikk {
  */
 template <typename T> class AssetHandle {
   public:
+    using AssetPath = std::string;
+
     AssetHandle() = default;
     ~AssetHandle() = default;
 
@@ -25,7 +28,8 @@ template <typename T> class AssetHandle {
    /**
     * @brief Constructs handle from shared pointer.
     */
-    explicit AssetHandle(const std::shared_ptr<T>& ptr) : _ptr(ptr) {}
+    explicit AssetHandle(const std::shared_ptr<T>& ptr, const std::string& path)
+        : _ptr(ptr), _path(std::make_shared<AssetPath>(path)) {}
 
     /**
      * @brief Attempts to get raw pointer to the asset.
@@ -53,6 +57,10 @@ template <typename T> class AssetHandle {
         return isValid();
     }
 
+    [[nodiscard]] std::string getAssetPath() const {
+        return _path;
+    }
+
   private:
     /**
      * @brief Weak reference to the asset.
@@ -60,6 +68,7 @@ template <typename T> class AssetHandle {
      * Does not affect asset lifetime.
      */
     std::weak_ptr<T> _ptr;
+    std::shared_ptr<AssetPath> _path;
 };
 } // namespace dzemikk
 #endif // DZEMIKK_ASSET_HANDLE__H

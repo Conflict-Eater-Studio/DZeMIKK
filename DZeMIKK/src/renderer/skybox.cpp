@@ -107,21 +107,21 @@ void dzemikk::Skybox::setMode(Mode mode) {
 void dzemikk::Skybox::render(const glm::mat4& view, const glm::mat4& projection) const {
     glDepthFunc(GL_LEQUAL);
 
-    if (!_shader)
+    if (!_shader.get())
         return;
-    _shader->bind();
+    _shader.get()->bind();
 
     glm::mat4 viewNoTranslation = glm::mat4(glm::mat3(view));
 
-    _shader->setMat4("view", viewNoTranslation);
-    _shader->setMat4("projection", projection);
-    _shader->setInt("mode", static_cast<int>(_mode));
-    _shader->setVec3("color", _color);
+    _shader.get()->setMat4("view", viewNoTranslation);
+    _shader.get()->setMat4("projection", projection);
+    _shader.get()->setInt("mode", static_cast<int>(_mode));
+    _shader.get()->setVec3("color", _color);
 
     if (_mode == Mode::Cubemap) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, _cubemapTex);
-        _shader->setInt("skybox", 0);
+        _shader.get()->setInt("skybox", 0);
     }
 
     _cubeMesh->draw();
@@ -129,6 +129,6 @@ void dzemikk::Skybox::render(const glm::mat4& view, const glm::mat4& projection)
     glDepthFunc(GL_LESS);
 }
 
-void dzemikk::Skybox::setShader(Shader* shader) {
+void dzemikk::Skybox::setShader(dzemikk::AssetHandle<Shader> shader) {
     _shader = shader;
 }

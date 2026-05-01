@@ -25,7 +25,7 @@ class SkinnedMeshRenderer : public Component {
      *
      * @return Model* Pointer to the assigned model (may be nullptr).
      */
-    [[nodiscard]] Model* getModel() const {
+    [[nodiscard]] AssetHandle<Model> getModel() const {
         return _model;
     }
 
@@ -77,7 +77,7 @@ class SkinnedMeshRenderer : public Component {
      *
      * @param model Pointer to model instance.
      */
-    void setModel(Model* model) {
+    void setModel(AssetHandle<Model> model) {
         _model = model;
     }
 
@@ -158,7 +158,7 @@ class SkinnedMeshRenderer : public Component {
 #pragma endregion
 
   private:
-    Model* _model = nullptr;                   
+    AssetHandle<Model> _model;                   
     std::vector<Material*> _materials;         
     Transform* _transform = nullptr;           
     std::vector<glm::mat4> _finalBoneMatrices;
