@@ -328,7 +328,7 @@ void dzemikk::ModelHandler::buildSkeleton(aiNode* node, Skeleton& skeleton, int 
 
         auto* bone = skeleton.getBone(index);
         if (bone) {
-            //bone->setLocalTransform(newAccum);
+            bone->setLocalTransform(newAccum);
             bone->setBindLocalTransform(newAccum);
         }
 

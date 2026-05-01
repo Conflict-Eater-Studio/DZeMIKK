@@ -191,7 +191,8 @@ int main() {
     auto playerGO = mainScenePtr->createGameObject();
     playerGO->transform()->setPosition(glm::vec3(0.0f, 2.5f, 0.0f));
     auto playerMeshR = playerGO->addComponent<dzemikk::MeshRenderer>();
-    auto playerMesh = engine->getAssetManager()->getPrimitive(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Capsule);
+    auto playerMesh = engine->getAssetManager()->getPrimitive(
+        dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Capsule);
     playerMeshR->setModel(new dzemikk::Model());
     playerMeshR->getModel()->addMesh(std::shared_ptr<dzemikk::Mesh>(playerMesh), 0);
     playerMeshR->setTransform(playerGO->transform());
@@ -210,12 +211,12 @@ int main() {
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 0.0f));
     enemyGO->transform()->setScale(glm::vec3(.01f, .01f, 0.01f));
     auto enemyMeshR = enemyGO->addComponent<dzemikk::SkinnedMeshRenderer>();
-    //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
-    auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/test.fbx");
-    //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Dancing Twerk.fbx");
-    //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/szamankaanim.fbx");
-    //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/MainC.fbx");
-    //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/cooper.fbx");
+    // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
+    auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Rumba Dancing.fbx");
+    // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Dancing Twerk.fbx");
+    // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/szamankaanim.fbx");
+    // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/MainC.fbx");
+    // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/cooper.fbx");
     enemyMeshR->setModel(enemyMesh.get());
     enemyMeshR->setTransform(enemyGO->transform());
     enemyMeshR->setMaterial(0, materialC);
@@ -225,7 +226,6 @@ int main() {
     enemyMeshR->setMaterial(4, materialC);
     enemyMeshR->setMaterial(5, materialC);
 
-    /*
     auto animator = enemyGO->addComponent<dzemikk::Animator>();
     engine->getAnimationSystem()->registerAnimator(animator);
 
@@ -249,12 +249,11 @@ int main() {
     state->setClip(clip);
 
     animator->setStateMachine(sm);
-    */
-
+    
     // --- Quad GameObject
     auto quadGO = new dzemikk::GameObject();
     quadGO->transform()->setPosition(glm::vec3(100.0f, 300.0f, 0.0f));
-    quadGO->transform()->setScale(glm::vec3(100.0f, 100.0f, 1.0f)); 
+    quadGO->transform()->setScale(glm::vec3(100.0f, 100.0f, 1.0f));
     quadGO->transform()->setRotation(glm::quat());
 
     auto quadMesh =
@@ -304,6 +303,7 @@ int main() {
 
     auto font = engine->getAssetManager()->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
 
+    /*
     auto* canvasGo = mainScenePtr->createGameObject("Canvas");
     auto* canvas = canvasGo->addComponent<dzemikk::Canvas>();
     (void)canvas;
@@ -475,6 +475,7 @@ int main() {
     checkmarkSprite->setColor(dzemikk::Colors::Red);
     uiCheckbox->setCheckmarkSpriteRenderer(checkmarkSprite);
     uiCheckbox->setOnClickActionId("demo.checkbox.click");
+    */
 
     auto textGO = mainScenePtr->createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
@@ -502,8 +503,9 @@ int main() {
     dzemikk::Animator* animator = enemyGO->addComponent<dzemikk::Animator>();
     engine->getAnimationSystem()->registerAnimator(animator);
 
-    std::shared_ptr<dzemikk::AnimationStateMachine> animationStateMachine = std::make_shared<dzemikk::AnimationStateMachine>();
-    dzemikk::AnimationState* idleState = animationStateMachine->addState();
+    std::shared_ptr<dzemikk::AnimationStateMachine> animationStateMachine =
+    std::make_shared<dzemikk::AnimationStateMachine>(); dzemikk::AnimationState* idleState =
+    animationStateMachine->addState();
 
     dzemikk::AnimationClip* animationClip = new dzemikk::AnimationClip(4, 1);
 
@@ -534,7 +536,7 @@ int main() {
             rot.x += delta.y * 0.5f;
             playerGO->transform()->setEulerAngles(rot);
         }
-    });
+    });(
     */
 
     engine->start();
