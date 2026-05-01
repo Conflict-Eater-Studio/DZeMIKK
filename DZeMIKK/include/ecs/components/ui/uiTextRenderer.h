@@ -12,11 +12,11 @@ class Font;
 
 class UITextRenderer : public Component {
   public:
-    enum class HorizontalAlign { Left, Center, Right };
+    enum class HorizontalAlign : uint8_t { Left, Center, Right };
 
-    enum class VerticalAlign { Bottom, Middle, Top };
+    enum class VerticalAlign : uint8_t { Bottom, Middle, Top };
 
-    std::string text = "Hello";
+    std::string text;
     float scale = 1.0F;
     glm::vec3 color = glm::vec3(1.0F);
     HorizontalAlign horizontalAlign = HorizontalAlign::Left;

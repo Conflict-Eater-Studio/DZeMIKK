@@ -15,34 +15,46 @@
 namespace dzemikk {
 // NOLINTBEGIN(readability-identifier-naming)
 inline void to_json(nlohmann::json& json, const UISlider& slider) {
-    const auto fillColor = slider.getFillColor();
-    const auto backgroundColor = slider.getBackgroundColor();
-    const auto handleColor = slider.getHandleColor();
-    const auto handleHoverColor = slider.getHandleHoverColor();
-    const auto handlePressedColor = slider.getHandlePressedColor();
+    const auto style = slider.getStyle();
 
     json["type"] = "UISlider";
     json["id"] = boost::uuids::to_string(slider.getId());
     json["value"] = slider.getValue();
-    json["fillColor"] = {fillColor[0], fillColor[1], fillColor[2], fillColor[3]};
-    json["backgroundColor"] =
-        {backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]};
-    json["handleColor"] = {handleColor[0], handleColor[1], handleColor[2], handleColor[3]};
-    json["handleHoverColor"] =
-        {handleHoverColor[0], handleHoverColor[1], handleHoverColor[2], handleHoverColor[3]};
-    json["handlePressedColor"] = {handlePressedColor[0], handlePressedColor[1],
-                                   handlePressedColor[2], handlePressedColor[3]};
-    json["onClickActionId"] =
-        slider.getOnClickActionId().empty() ? "" : slider.getOnClickActionId();
-    json["onEnterActionId"] =
-        slider.getOnEnterActionId().empty() ? "" : slider.getOnEnterActionId();
-    json["onExitActionId"] = slider.getOnExitActionId().empty() ? "" : slider.getOnExitActionId();
-    json["onValueChangedActionId"] =
-        slider.getOnValueChangedActionId().empty() ? "" : slider.getOnValueChangedActionId();
+    json["fillColor"] = {style.fillColor[0], style.fillColor[1], style.fillColor[2],
+                         style.fillColor[3]};
+    json["backgroundColor"] = {style.backgroundColor[0], style.backgroundColor[1],
+                               style.backgroundColor[2], style.backgroundColor[3]};
+    json["handleColor"] = {style.handleColor[0], style.handleColor[1], style.handleColor[2],
+                           style.handleColor[3]};
+    json["handleHoverColor"] = {style.handleHoverColor[0], style.handleHoverColor[1],
+                                style.handleHoverColor[2], style.handleHoverColor[3]};
+    json["handlePressedColor"] = {style.handlePressedColor[0], style.handlePressedColor[1],
+                                  style.handlePressedColor[2], style.handlePressedColor[3]};
+
+    for (const auto& [eventType, actionIds] : slider.getEventActions()) {
+        const char* eventTypeStr = nullptr;
+        switch (eventType) {
+        case UIEventType::Click:
+            eventTypeStr = "clickActions";
+            break;
+        case UIEventType::Enter:
+            eventTypeStr = "enterActions";
+            break;
+        case UIEventType::Exit:
+            eventTypeStr = "exitActions";
+            break;
+        case UIEventType::ValueChanged:
+            eventTypeStr = "valueChangedActions";
+            break;
+        default:
+            continue;
+        }
+        json[eventTypeStr] = actionIds;
+    }
 }
 
 inline void from_json(const nlohmann::json& json, UISlider& slider) {
-    static boost::uuids::string_generator uuidGenerator;
+    boost::uuids::string_generator uuidGenerator;
 
     if (!json.contains("type") || !json["type"].is_string() || json["type"] != "UISlider") {
         throw std::runtime_error("Invalid component type for UISlider deserialization");
@@ -50,43 +62,43 @@ inline void from_json(const nlohmann::json& json, UISlider& slider) {
 
     if (!json.contains("id") || !json.contains("value") || !json.contains("fillColor") ||
         !json.contains("backgroundColor") || !json.contains("handleColor") ||
-        !json.contains("handleHoverColor") || !json.contains("handlePressedColor")) {
+        !json.contains("handleHoverColor") || !json.contains("handlePressedColor") ||
+        !json.contains("events")) {
         throw std::runtime_error("Missing required fields for UISlider deserialization");
     }
 
-    const auto readVec4 = [&json](const char* fieldName) {
-        const auto& value = json[fieldName];
-        if (!value.is_array() || value.size() != 4) {
-            throw std::runtime_error(std::string("Field '") + fieldName + "' must be vec4 array");
-        }
-
-        return glm::vec4(value[0].get<float>(), value[1].get<float>(), value[2].get<float>(),
-                         value[3].get<float>());
-    };
-
     slider.setId(uuidGenerator(json["id"].get<std::string>()));
     slider.onValueChanged(json["value"].get<float>());
-    slider.setFillColor(readVec4("fillColor"));
-    slider.setBackgroundColor(readVec4("backgroundColor"));
-    slider.setHandleColor(readVec4("handleColor"));
-    slider.setHandleHoverColor(readVec4("handleHoverColor"));
-    slider.setHandlePressedColor(readVec4("handlePressedColor"));
 
-    if (json.contains("onClickActionId") && json["onClickActionId"].is_string() &&
-        json["onClickActionId"].get<std::string>() != "") {
-        slider.setOnClickActionId(json["onClickActionId"].get<std::string>());
-    }
-    if (json.contains("onEnterActionId") && json["onEnterActionId"].is_string() &&
-        json["onEnterActionId"].get<std::string>() != "") {
-        slider.setOnEnterActionId(json["onEnterActionId"].get<std::string>());
-    }
-    if (json.contains("onExitActionId") && json["onExitActionId"].is_string() &&
-        json["onExitActionId"].get<std::string>() != "") {
-        slider.setOnExitActionId(json["onExitActionId"].get<std::string>());
-    }
-    if (json.contains("onValueChangedActionId") && json["onValueChangedActionId"].is_string() &&
-        json["onValueChangedActionId"].get<std::string>() != "") {
-        slider.setOnValueChangedActionId(json["onValueChangedActionId"].get<std::string>());
+    UISlider::Style style;
+    style.fillColor = {json["fillColor"][0].get<float>(), json["fillColor"][1].get<float>(),
+                       json["fillColor"][2].get<float>(), json["fillColor"][3].get<float>()};
+    style.backgroundColor = {
+        json["backgroundColor"][0].get<float>(), json["backgroundColor"][1].get<float>(),
+        json["backgroundColor"][2].get<float>(), json["backgroundColor"][3].get<float>()};
+    style.handleColor = {json["handleColor"][0].get<float>(), json["handleColor"][1].get<float>(),
+                         json["handleColor"][2].get<float>(), json["handleColor"][3].get<float>()};
+    style.handleHoverColor = {
+        json["handleHoverColor"][0].get<float>(), json["handleHoverColor"][1].get<float>(),
+        json["handleHoverColor"][2].get<float>(), json["handleHoverColor"][3].get<float>()};
+
+    for (const auto& [eventKey, actionIdsJson] : json["events"].items()) {
+        UIEventType eventType = UIEventType::Click;
+        if (eventKey == "clickActions") {
+            eventType = UIEventType::Click;
+        } else if (eventKey == "enterActions") {
+            eventType = UIEventType::Enter;
+        } else if (eventKey == "exitActions") {
+            eventType = UIEventType::Exit;
+        } else if (eventKey == "valueChangedActions") {
+            eventType = UIEventType::ValueChanged;
+        } else {
+            continue;
+        }
+        std::vector<std::string> actionIds = actionIdsJson.get<std::vector<std::string>>();
+        for (const auto& actionId : actionIds) {
+            slider.addEventListener(eventType, actionId);
+        }
     }
 }
 

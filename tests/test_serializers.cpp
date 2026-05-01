@@ -1,6 +1,6 @@
 #include "ecs/components/monoBehaviour.h"
+#include "ecs/components/ui/uiActionRegistry.h"
 #include "ecs/components/ui/uiButton.h"
-#include "ecs/components/ui/uiButtonActionRegistry.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/serialize/componentSerializerRegistry.h"
@@ -280,9 +280,8 @@ TEST(UIButtonSerialization, DeserializeBindsOnClickActionFromRegistry) {
     EXPECT_EQ(button->getOnClickActionId(), "test.ui.click.deserialize");
 
     int clickCount = 0;
-    dzemikk::UIButtonActionRegistry::get().registerAction(
-        "test.ui.click.deserialize",
-        [&clickCount](dzemikk::UIButton&) { return [&clickCount]() { ++clickCount; }; });
+    dzemikk::UIActionRegistry::get().registerAction(
+        [&clickCount](const dzemikk::UIEvent&) { ++clickCount; }, "test.ui.click.deserialize");
 
     button->onClick();
     EXPECT_EQ(clickCount, 1);

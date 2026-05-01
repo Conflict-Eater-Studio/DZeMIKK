@@ -179,6 +179,13 @@ class RectTransform : public Component {
      */
     [[nodiscard]] glm::vec2 getStretchSize() const;
 
+    /**
+     * @brief Checks if the given point is within the bounds of the RectTransform
+     * @param point Point to check (in world coordinates)
+     * @return True if the point is within the bounds, false otherwise
+     */
+    [[nodiscard]] bool containsPoint(const glm::vec2& point) const;
+
     void markDirty();
     void markSizeDirty();
 

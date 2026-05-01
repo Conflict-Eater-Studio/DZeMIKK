@@ -1,6 +1,7 @@
 #ifndef GAME_HEXCOORD_H
 #define GAME_HEXCOORD_H
 
+#include <algorithm>
 #include <array>
 #include <cstdint>
 #include <glm/glm.hpp>

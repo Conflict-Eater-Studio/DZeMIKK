@@ -8,6 +8,9 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <stdexcept>
 
+#if DZEMIKK_DEV_TOOLS
+#include <spdlog/spdlog.h>
+#endif
 
 namespace dzemikk {
 nlohmann::json GameObjectSerializer::serialize(const GameObject& gameObject) {
@@ -40,6 +43,9 @@ void GameObjectSerializer::deserializeInto(GameObject& gameObject, const nlohman
     static boost::uuids::string_generator uuidGenerator;
 
     if (!json.contains("id") || !json["id"].is_string()) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error("GameObject JSON must contain string field 'id'");
+#endif
         throw std::runtime_error("GameObject JSON must contain string field 'id'");
     }
 
@@ -79,6 +85,9 @@ std::unique_ptr<GameObject> GameObjectSerializer::deserialize(const nlohmann::js
     static boost::uuids::string_generator uuidGenerator;
 
     if (!json.contains("id") || !json["id"].is_string()) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error("GameObject JSON must contain string field 'id'");
+#endif
         throw std::runtime_error("GameObject JSON must contain string field 'id'");
     }
 
@@ -86,6 +95,10 @@ std::unique_ptr<GameObject> GameObjectSerializer::deserialize(const nlohmann::js
     deserializeInto(*gameObject, json);
 
     if (json.contains("children") && json["children"].is_array() && !json["children"].empty()) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error(
+            "Detached GameObject deserialize cannot rebuild children without Scene ownership");
+#endif
         throw std::runtime_error(
             "Detached GameObject deserialize cannot rebuild children without Scene ownership");
     }

@@ -234,4 +234,12 @@ void RectTransform::markSizeDirty() {
         }
     }
 }
+
+bool RectTransform::containsPoint(const glm::vec2& point) const {
+    glm::vec4 localPos = glm::inverse(getWorldMatrix()) * glm::vec4(point, 0.0F, 1.0F);
+
+    glm::vec2 p = glm::vec2(localPos) / localPos[3];
+
+    return p[0] >= 0.0F && p[0] <= 1.0F && p[1] >= 0.0F && p[1] <= 1.0F;
+}
 } // namespace dzemikk

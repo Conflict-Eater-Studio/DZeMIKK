@@ -6,10 +6,17 @@
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
+#include "ecs/components/ui/canvas.h"
 #include "ecs/components/ui/imageRenderer.h"
+#include "ecs/components/ui/uiActionRegistry.h"
+#include "ecs/components/ui/uiBuilder.h"
+#include "ecs/components/ui/uiButton.h"
+#include "ecs/components/ui/uiEvent.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
+#include "ecs/serialize/gameobjectSerializer.h"
+#include "renderer/font.h"
 #include "renderer/material.h"
 #include "renderer/model.h"
 #include "renderer/renderer.h"
@@ -17,10 +24,15 @@
 #include "scripts/world/world.h"
 
 #include <GLFW/glfw3.h>
+#include <iostream>
 #include <memory>
 #include <tuple>
 
 using namespace game;
+
+void handleButtonClick(const dzemikk::UIEvent& event) {
+    spdlog::info("Clicked, sender: {}", event.sender->typeName());
+}
 
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
@@ -83,6 +95,28 @@ int main() {
     world->setMaterial2(material2.get());
     world->setEnemyModel(enemyModel);
     world->setResourceModel(resourceModel);
+
+    auto* uiRootGO = scene->createGameObject("UI Root");
+    auto* canvas = uiRootGO->addComponent<dzemikk::Canvas>();
+    uiRootGO->rectTransform()->setSize({1920.0F, 1080.0F});
+    auto* quadMesh = assetManager->getPrimitive(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
+    auto* quadShader = assetManager->get<dzemikk::Shader>("shaders/quad").get();
+    auto quadMat = std::make_shared<dzemikk::Material>();
+    quadMat->setShader(quadShader);
+
+    auto* font = assetManager->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf").get();
+    auto* btnGO = dzemikk::UIBuilder::createButton(uiRootGO, {.name = "Test Button",
+                                                              .position = {0.0F, 0.0F},
+                                                              .size = {0.0F, 0.0F},
+                                                              .anchorMin = {0.3F, 0.3F},
+                                                              .anchorMax = {0.7F, 0.7F},
+                                                              .text = "Click Me",
+                                                              .textFont = font,
+                                                              .mesh = quadMesh,
+                                                              .material = quadMat.get()});
+    dzemikk::UIActionRegistry::get().registerAction(handleButtonClick, "btn.test");
+    auto* btn = btnGO->getComponent<dzemikk::UIButton>();
+    btn->addEventListener(dzemikk::UIEventType::Click, "btn.test");
 
     engine->start();
 

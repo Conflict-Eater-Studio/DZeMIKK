@@ -14,6 +14,10 @@
 #include <string>
 #include <unordered_map>
 
+#if DZEMIKK_DEV_TOOLS
+#include <spdlog/spdlog.h>
+#endif
+
 namespace dzemikk {
 class GameObject;
 
