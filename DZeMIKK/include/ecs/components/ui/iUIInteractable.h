@@ -23,7 +23,7 @@ class IUIInteractable : public Component {
     }
 
     virtual void processPointer(const glm::vec2& point, bool isDown, bool pressedThisFrame,
-                                bool releasedThisFrame) = 0;
+                                bool releasedThisFrame, double scrollDelta) = 0;
 
     virtual void onClick() {
         emit(UIEventType::Click);

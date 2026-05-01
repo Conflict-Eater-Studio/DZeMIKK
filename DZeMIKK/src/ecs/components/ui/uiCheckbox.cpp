@@ -4,7 +4,6 @@
 #include "ecs/components/ui/rectTransform.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
-#include "spdlog/spdlog.h"
 
 #include <glm/geometric.hpp>
 #include <glm/matrix.hpp>
@@ -15,7 +14,9 @@ constexpr float kMinDeterminant = 1e-6F;
 }
 
 void UICheckbox::processPointer(const glm::vec2& point, bool isDown, bool pressedThisFrame,
-                                bool releasedThisFrame) {
+                                bool releasedThisFrame, double scrollDelta) {
+    (void)scrollDelta;
+
     setPointerDown(isDown);
     setPointerInside(_owner != nullptr && _owner->rectTransform() != nullptr &&
                      _owner->rectTransform()->containsPoint(point));

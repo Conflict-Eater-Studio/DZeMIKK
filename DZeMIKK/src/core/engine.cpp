@@ -13,6 +13,7 @@
 #include "animation/animationmodule.h"
 #include "assetManager/assetmanager.h"
 #include "audio/sound.h"
+#include "collisions/collisions.h"
 #include "core/engine.h"
 #include "core/profiler.h"
 #include "core/time.h"
@@ -26,7 +27,6 @@
 #include "renderer/font.h"
 #include "renderer/renderer.h"
 #include "renderer/texture.h"
-#include "collisions/collisions.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -62,6 +62,9 @@ void Engine::init() {
     _mainWindow->setEventCallback([this](Event& e) { this->OnEvent(e); });
     _input->initialize();
     _collisions->initialize();
+
+    _input->OnMouseScrolled.addListener(
+        [&](dzemikk::MouseScrolledEvent& e) { _scrollDelta = e.GetYOffset(); });
 
     // _modules.push_back(std::move(_assetManager));
     // _modules.push_back(_mainWindow);
@@ -316,10 +319,12 @@ void Engine::updateMouseUI(float deltaTime) {
     std::vector<IUIInteractable*> uiElements;
     ComponentRegistry::get().getComponents<IUIInteractable>(uiElements);
     for (auto* element : uiElements) {
-        element->processPointer(pointerPos, isLeftDown, pressedThisFrame, releasedThisFrame);
+        element->processPointer(pointerPos, isLeftDown, pressedThisFrame, releasedThisFrame,
+                                _scrollDelta);
     }
 
     _wasLeftMouseDown = isLeftDown;
+    _scrollDelta = 0.0;
 }
 
 void Engine::OnEvent(Event& e) {

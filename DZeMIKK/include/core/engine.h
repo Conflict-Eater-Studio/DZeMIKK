@@ -2,12 +2,12 @@
 #ifndef DZEMIKK_ENGINE_H
 #define DZEMIKK_ENGINE_H
 
-#include <memory>
-#include <vector>
-#include <concepts>
-
 #include "events/event.h"
 #include "input/input.h"
+
+#include <concepts>
+#include <memory>
+#include <vector>
 
 namespace dzemikk {
 
@@ -26,7 +26,7 @@ class Collisions;
  * @brief The core application class managing the game loop and all subsystems.
  */
 class Engine {
-public:
+  public:
     Engine();
     ~Engine();
 
@@ -51,8 +51,7 @@ public:
      * @tparam T Typ modułu (musi dziedziczyć po IEngineModule)
      * @return Surowy wskaźnik na moduł lub nullptr, jeśli nie znaleziono.
      */
-    template <std::derived_from<IEngineModule> T>
-    [[nodiscard]] T* getModule() const {
+    template <std::derived_from<IEngineModule> T> [[nodiscard]] T* getModule() const {
         for (const auto& module : _modules) {
             // Używamy dynamic_cast dla wygody. W ultra-wydajnych silnikach
             // stosuje się tu mapowanie po statycznym ID typu (np. TypeId),
@@ -72,9 +71,9 @@ public:
     // --- Only for test DELETE THIS ---
     void updateCameraWASD(float speed);
     void updateCameraArrows(float speed);
-	void updateMouseUI(float deltaTime);
+    void updateMouseUI(float deltaTime);
 
-private:
+  private:
     void init();
     void shutdown();
 
@@ -91,8 +90,9 @@ private:
 
     std::function<void()> m_UserUpdateCallback;
 
-    float _accumulator = 0.0f;
-	bool _wasLeftMouseDown = false;
+    float _accumulator = 0.0F;
+    bool _wasLeftMouseDown = false;
+    double _scrollDelta = 0.0F;
 };
 } // namespace dzemikk
 

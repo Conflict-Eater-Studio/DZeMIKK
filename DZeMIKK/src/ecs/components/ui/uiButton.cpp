@@ -12,7 +12,9 @@ constexpr float kMinDeterminant = 1e-6F;
 }
 
 void UIButton::processPointer(const glm::vec2& point, bool isDown, bool pressedThisFrame,
-                              bool releasedThisFrame) {
+                              bool releasedThisFrame, double scrollDelta) {
+    (void)scrollDelta;
+
     setPointerDown(isDown);
     setPointerInside(_owner != nullptr && _owner->rectTransform() != nullptr &&
                      _owner->rectTransform()->containsPoint(point));

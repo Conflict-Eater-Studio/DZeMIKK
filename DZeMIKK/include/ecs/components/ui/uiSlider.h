@@ -34,7 +34,7 @@ class UISlider : public IUIInteractable {
     }
 
     void processPointer(const glm::vec2& point, bool isDown, bool pressedThisFrame,
-                        bool releasedThisFrame) override;
+                        bool releasedThisFrame, double scrollDelta) override;
 
     void onValueChanged(float newValue);
     [[nodiscard]] float getValue() const;
@@ -48,15 +48,36 @@ class UISlider : public IUIInteractable {
         return _style;
     }
 
+    void setStep(float step) {
+        _step = step;
+    }
+    [[nodiscard]] float getStep() const {
+        return _step;
+    }
+    void setMinValue(float minValue) {
+        _minValue = minValue;
+    }
+    [[nodiscard]] float getMinValue() const {
+        return _minValue;
+    }
+    void setMaxValue(float maxValue) {
+        _maxValue = maxValue;
+    }
+    [[nodiscard]] float getMaxValue() const {
+        return _maxValue;
+    }
+
   private:
     void processPress(const glm::vec2& point, bool pressedThisFrame);
     void processRelease(bool releasedThisFrame);
     void processDrag(const glm::vec2& point);
+    void processScroll(double scrollDelta);
     void applyVisualState();
 
     float _value = 0.0F;
     float _minValue = 0.0F;
     float _maxValue = 1.0F;
+    float _step = 0.01F;
 
     Style _style;
 

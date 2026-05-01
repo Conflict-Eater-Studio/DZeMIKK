@@ -33,7 +33,7 @@ class UIButton : public IUIInteractable {
     }
 
     void processPointer(const glm::vec2& point, bool isDown, bool pressedThisFrame,
-                        bool releasedThisFrame) override;
+                        bool releasedThisFrame, double scrollDelta) override;
 
     void setSpriteRenderer(ImageRenderer* spriteRenderer);
 

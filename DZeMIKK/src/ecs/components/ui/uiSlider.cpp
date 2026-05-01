@@ -41,7 +41,7 @@ constexpr float kValueEpsilon = 1e-6F;
 } // namespace
 
 void UISlider::processPointer(const glm::vec2& point, bool isDown, bool pressedThisFrame,
-                              bool releasedThisFrame) {
+                              bool releasedThisFrame, double scrollDelta) {
     setPointerDown(isDown);
 
     setPointerInside(_handleSpriteRenderer->getRectTransform() != nullptr
@@ -52,6 +52,7 @@ void UISlider::processPointer(const glm::vec2& point, bool isDown, bool pressedT
     processPress(point, pressedThisFrame);
     processRelease(releasedThisFrame);
     processDrag(point);
+    processScroll(scrollDelta);
     applyVisualState();
 }
 
@@ -106,15 +107,36 @@ void UISlider::processDrag(const glm::vec2& point) {
 
     const float normalized = pointToNormalizedX(dragRect, point);
     const float nextValue = _minValue + ((_maxValue - _minValue) * normalized);
-    if (glm::abs(nextValue - _value) > kValueEpsilon) {
-        onValueChanged(nextValue);
+    // Snap to step increments
+    const float steppedValue = (std::round((nextValue - _minValue) / _step) * _step) + _minValue;
+    if (glm::abs(steppedValue - _value) > kValueEpsilon) {
+        onValueChanged(steppedValue);
     }
 }
 
+void UISlider::processScroll(double scrollDelta) {
+    if (!pointerInside() && glm::abs(scrollDelta) < kValueEpsilon) {
+        return;
+    }
+
+    const auto deltaValue = static_cast<float>(scrollDelta);
+    onValueChanged(_value + (_step * glm::sign(deltaValue)));
+}
+
 void UISlider::onValueChanged(float newValue) {
+    if (newValue == _value) {
+        return;
+    }
+
     const float minBound = std::min(_minValue, _maxValue);
     const float maxBound = std::max(_minValue, _maxValue);
     _value = std::clamp(newValue, minBound, maxBound);
+
+    auto slideArea = _fillSpriteRenderer->getRectTransform()->getSize();
+    auto handleProgress = (_value - _minValue) / (_maxValue - _minValue);
+    auto handlePosX = (handleProgress * slideArea[0]) - (slideArea[0] * 0.5F);
+    _handleSpriteRenderer->getRectTransform()->setPosition({handlePosX, 0.0F});
+
     emit(UIEventType::ValueChanged, _value);
 }
 

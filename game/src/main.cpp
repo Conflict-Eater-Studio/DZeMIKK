@@ -34,6 +34,13 @@ void handleButtonClick(const dzemikk::UIEvent& event) {
     spdlog::info("Clicked, sender: {}", event.sender->typeName());
 }
 
+void handleSliderValueChanged(const dzemikk::UIEvent& event) {
+    auto* slider = dynamic_cast<dzemikk::UISlider*>(event.sender);
+    if (slider) {
+        spdlog::info("Slider value changed: {}", slider->getValue());
+    }
+}
+
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
 
@@ -117,6 +124,23 @@ int main() {
     dzemikk::UIActionRegistry::get().registerAction(handleButtonClick, "btn.test");
     auto* btn = btnGO->getComponent<dzemikk::UIButton>();
     btn->addEventListener(dzemikk::UIEventType::Click, "btn.test");
+
+    auto* sliderGO = dzemikk::UIBuilder::createSlider(uiRootGO, {.name = "Test Slider",
+                                                                 .position = {0.0F, 0.0F},
+                                                                 .size = {400.0F, 20.0F},
+                                                                 .anchorMin = {0.3F, 0.2F},
+                                                                 .anchorMax = {0.7F, 0.2F},
+                                                                 .bgMesh = quadMesh,
+                                                                 .fillMesh = quadMesh,
+                                                                 .handleMesh = quadMesh,
+                                                                 .bgMat = quadMat.get(),
+                                                                 .fillMat = quadMat.get(),
+                                                                 .handleMat = quadMat.get()});
+    dzemikk::UIActionRegistry::get().registerAction(handleSliderValueChanged, "slider.test");
+    auto* slider = sliderGO->getComponent<dzemikk::UISlider>();
+    slider->addEventListener(dzemikk::UIEventType::ValueChanged, "slider.test");
+    slider->setMaxValue(100.0F);
+    slider->setStep(0.1F);
 
     engine->start();
 

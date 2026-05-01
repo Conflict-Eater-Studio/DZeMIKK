@@ -1,9 +1,11 @@
+#include "assetManager/assetmanager.h"
 #include "ecs/components/ui/imageRenderer.h"
 #include "ecs/components/ui/uiButton.h"
 #include "ecs/components/ui/uiSlider.h"
 #include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
+
 namespace dzemikk {
 class UIBuilder {
   public:
@@ -26,6 +28,29 @@ class UIBuilder {
         glm::vec4 textColor = {0.0F, 0.0F, 0.0F, 1.0F};
         Mesh* mesh = nullptr;
         Material* material = nullptr;
+    };
+
+    struct UISliderParams {
+        std::string name;
+        glm::vec2 position = {0.0F, 0.0F};
+        glm::vec2 size = {200.0F, 20.0F};
+        glm::vec2 anchorMin = {0.0F, 0.0F};
+        glm::vec2 anchorMax = {0.0F, 0.0F};
+        glm::vec2 pivot = {0.5F, 0.5F};
+        glm::vec2 scale = {1.0F, 1.0F};
+        float rotation = 0.0F;
+        glm::vec4 bgColor = {1.0F, 1.0F, 1.0F, 1.0F};
+        glm::vec4 fillColor = {0.2F, 0.6F, 1.0F, 1.0F};
+        glm::vec2 handleSize = {20.0F, 20.0F};
+        glm::vec4 handleColor = {1.0F, 1.0F, 1.0F, 1.0F};
+        glm::vec4 handleHoverColor = {0.8F, 0.8F, 0.8F, 1.0F};
+        glm::vec4 hadnlePressedColor = {0.6F, 0.6F, 0.6F, 1.0F};
+        Mesh* bgMesh = nullptr;
+        Mesh* fillMesh = nullptr;
+        Mesh* handleMesh = nullptr;
+        Material* bgMat = nullptr;
+        Material* fillMat = nullptr;
+        Material* handleMat = nullptr;
     };
 
     static GameObject* createButton(GameObject* parent, const UIButtonParams& params) {
@@ -75,5 +100,64 @@ class UIBuilder {
 
         return btnGO;
     }
+
+    static GameObject* createSlider(GameObject* parent, const UISliderParams& params) {
+        auto* scene = parent->getScene();
+        if (scene == nullptr) {
+            return nullptr;
+        }
+
+        auto* sliderGO = scene->createGameObject(params.name, parent);
+        sliderGO->rectTransform()->setSize(params.size);
+        sliderGO->rectTransform()->setPosition(params.position);
+        sliderGO->rectTransform()->setAnchorMin(params.anchorMin);
+        sliderGO->rectTransform()->setAnchorMax(params.anchorMax);
+        sliderGO->rectTransform()->setPivot(params.pivot);
+        sliderGO->rectTransform()->setZIndex(1);
+
+        auto* slider = sliderGO->addComponent<UISlider>();
+
+        auto* background = sliderGO->addComponent<ImageRenderer>();
+        background->setRectTransform(sliderGO->rectTransform());
+        background->setColor(params.bgColor);
+        background->setMesh(params.bgMesh);
+        background->setMaterial(params.bgMat);
+
+        auto* fillGO = scene->createGameObject(params.name + "_Fill", sliderGO);
+        auto* fillRect = fillGO->rectTransform();
+        fillRect->setSize({0.0F, 0.0F});
+        fillRect->setAnchorMin({0.0F, 0.0F});
+        fillRect->setAnchorMax({1.0F, 1.0F});
+        fillRect->setPivot({0.5F, 0.5F});
+        fillRect->setPosition({0.0F, 0.0F});
+        fillRect->setZIndex(2);
+
+        auto* fill = fillGO->addComponent<ImageRenderer>();
+        fill->setRectTransform(fillRect);
+        fill->setMesh(params.fillMesh);
+        fill->setMaterial(params.fillMat);
+
+        auto* handleGO = scene->createGameObject(params.name + "_Handle", sliderGO);
+        auto* handleRect = handleGO->rectTransform();
+        handleRect->setSize(params.handleSize);
+        handleRect->setAnchorMin({0.5F, 0.5F});
+        handleRect->setAnchorMax({0.5F, 0.5F});
+        handleRect->setPivot({0.5F, 0.5F});
+        handleRect->setPosition({0.0F, 0.0F});
+        handleRect->setZIndex(3);
+
+        auto* handle = handleGO->addComponent<ImageRenderer>();
+        handle->setRectTransform(handleRect);
+        handle->setMesh(params.handleMesh);
+        handle->setMaterial(params.handleMat);
+
+        slider->setHandleSpriteRenderer(handle);
+        slider->setBackgroundSpriteRenderer(background);
+        slider->setFillSpriteRenderer(fill);
+
+        slider->onValueChanged(0.0F);
+
+        return sliderGO;
+    };
 };
 } // namespace dzemikk
