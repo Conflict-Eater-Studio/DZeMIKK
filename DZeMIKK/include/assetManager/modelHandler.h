@@ -86,6 +86,7 @@ class ModelHandler : public IAssetHandler<Model> {
      */
     static void buildSkeleton(aiNode* node, Skeleton& skeleton, int parent,
                               glm::mat4 accumulatedTransform);
+    static void applyBoneOffsets(const aiScene* scene, Skeleton& skeleton);
 
     /**
      * @brief Extracts bone weights from an Assimp mesh and applies them to vertices.
