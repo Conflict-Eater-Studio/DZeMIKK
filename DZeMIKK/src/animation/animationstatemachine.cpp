@@ -9,8 +9,9 @@ namespace dzemikk {
     AnimationState* AnimationStateMachine::addState() {
         std::unique_ptr<AnimationState> state = std::make_unique<AnimationState>();
         state->setName("NewState" + _states.size());
+        AnimationState* ptr = state.get();
         _states.emplace(state->getName(), std::move(state));
-        return state.get();
+        return ptr;
     }
 
     AnimationState* AnimationStateMachine::addState(const std::string& name) {

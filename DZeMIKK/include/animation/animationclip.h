@@ -83,7 +83,7 @@ private:
     std::vector<std::unique_ptr<IAnimationTrack>> _tracks;
     float _durationInTicks = 0;
     float _ticksPerSecond = 0;
-    bool _loop = false;
+    bool _loop = true;
 };
 
 inline void to_json(nlohmann::json& json, const AnimationClip& clip) {

@@ -31,16 +31,16 @@ namespace dzemikk {
 
         clip->apply(_currentTime);
         _currentTime += deltaTime;
-
-        std::vector<Transition> transitions = _currentState->getTransitions();
-        if (transitions.empty()) return;
-
-        for (auto transition: transitions) {
-            if (evaluate(transition.condition)) {
-                play(transition.targetState);
-                break;
-            };
-        }
+        //
+        // std::vector<Transition> transitions = _currentState->getTransitions();
+        // if (transitions.empty()) return;
+        //
+        // for (auto transition: transitions) {
+        //     if (evaluate(transition.condition)) {
+        //         play(transition.targetState);
+        //         break;
+        //     };
+        // }
     }
 
     void Animator::play(const std::string& stateName) {
