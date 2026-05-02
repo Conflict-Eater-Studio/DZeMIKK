@@ -40,7 +40,9 @@ class SerializerRefOwnerScript final : public dzemikk::MonoBehaviour {
 
     dzemikk::SerializedRef<SerializerRefTargetScript> targetRef{*this};
 };
+class MockAssetManager : public dzemikk::AssetManager {
 
+};
 TEST(ComponentSerializerRegistrySerialization, SerializeTransformUsesRegisteredSerializer) {
     dzemikk::Scene scene;
     dzemikk::GameObject* object = scene.createGameObject();
@@ -72,7 +74,8 @@ TEST(ComponentSerializerRegistrySerialization, DeserializeIntoGameObjectAppliesT
     transformJson["rotation"] = {1.0F, 0.0F, 0.0F, 0.0F};
     transformJson["scale"] = {2.0F, 3.0F, 4.0F};
 
-    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*object, transformJson);
+    MockAssetManager mock;
+    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*object, mock, transformJson);
     dzemikk::ComponentSerializerRegistry::get().deserializeIntoGameObject(context);
 
     const glm::vec3 position = object->transform()->getPosition();
@@ -93,7 +96,8 @@ TEST(ComponentSerializerRegistrySerialization, DeserializeUnknownTypeThrows) {
     nlohmann::json unknown;
     unknown["type"] = "NoSuchComponent";
 
-    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*object, unknown);
+    MockAssetManager mock;
+    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*object, mock, unknown);
     EXPECT_THROW(
         dzemikk::ComponentSerializerRegistry::get().deserializeIntoGameObject(context),
         std::runtime_error);
@@ -277,7 +281,8 @@ TEST(UIButtonSerialization, DeserializeBindsOnClickActionFromRegistry) {
     dzemikk::GameObject* target = scene.createGameObject("Target");
     ASSERT_NE(target, nullptr);
 
-    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*target, serializedButton);
+    MockAssetManager mock;
+    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*target, mock, serializedButton);
     dzemikk::ComponentSerializerRegistry::get().deserializeIntoGameObject(context);
 
     auto* button = target->getComponent<dzemikk::UIButton>();

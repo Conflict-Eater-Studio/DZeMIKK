@@ -3,6 +3,8 @@
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/serialize/componentSerializerRegistry.h"
+#include "renderer/mesh.h"
+#include "assetManager/assetmanager.h"
 
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -51,8 +53,9 @@ void GameObjectSerializer::deserializeInto(GameObject& gameObject, const nlohman
 
     if (json.contains("components") && json["components"].is_array()) {
         const auto& componentRegistry = ComponentSerializerRegistry::get();
+        AssetManager assetManager;
         for (const auto& componentJson : json["components"]) {
-            ComponentSerializerRegistry::DeserializationContext context(gameObject, componentJson);
+            ComponentSerializerRegistry::DeserializationContext context(gameObject, assetManager, componentJson);
             componentRegistry.deserializeIntoGameObject(context);
         }
     }

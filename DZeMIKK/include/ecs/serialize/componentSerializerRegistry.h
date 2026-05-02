@@ -22,6 +22,7 @@ class ComponentSerializerRegistry {
   public:
     struct DeserializationContext {
         GameObject& gameObject;
+        AssetManager& assetManager;
         const nlohmann::json& json;
     };
 

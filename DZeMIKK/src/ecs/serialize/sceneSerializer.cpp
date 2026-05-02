@@ -4,6 +4,7 @@
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/serialize/gameobjectSerializer.h"
+#include "assetManager/assetmanager.h"
 
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid_hash.hpp>
@@ -85,4 +86,5 @@ void SceneSerializer::deserializeInto(Scene& scene, const nlohmann::json& json) 
             });
     }
 }
+void SceneSerializer::deserializeInto(Scene& scene, const nlohmann::json& json, AssetManager& assetManager) {}
 } // namespace dzemikk
