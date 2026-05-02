@@ -7,41 +7,89 @@
 #include "ecs/gameobject.h"
 #include "ecs/serialize/componentSerializerRegistry.h"
 #include "ecs/serialize/uuid.h"
+#include "renderer/model.h"
 #include "renderer/shader.h"
+#include "renderer/material.h"
 
 #include <nlohmann/json.hpp>
 
 namespace dzemikk {
 inline void to_json(nlohmann::json& json, const MeshRenderer& meshRenderer) {
     json["type"] = meshRenderer.typeName();
-    json["id"] = meshRenderer.getId();
 
-    if (meshRenderer.getModelHandle().get() != nullptr) {
-        json["model"] = meshRenderer.getModelHandle().getAssetPath();
-    }else {
-        json["model"] = "";
-    }
+    // Explicitly convert UUID to string to avoid serialization errors
+    json["id"] = boost::uuids::to_string(meshRenderer.getId());
 
+    // Safe model handle extraction
+    const auto& modelHandle = meshRenderer.getModelHandle();
+    json["model"] = (modelHandle.get() != nullptr) ? modelHandle.getAssetPath() : "";
+
+    // Safely iterate materials
     json["materials"] = nlohmann::json::array();
-    for (const auto& material : meshRenderer.getMaterials()) {
-        json["materials"].push_back("");
+    const auto& materials = meshRenderer.getMaterials();
+
+    // Range-based for loop is cleaner and avoids manual indexing
+    for (const Material* material : materials) {
+        // CRITICAL: Check if the material pointer itself is null first!
+        if (material != nullptr) {
+            const auto& shader = material->getShaderHandle();
+            if (shader.get() != nullptr) {
+                json["materials"].push_back(shader.getAssetPath());
+            } else {
+                json["materials"].push_back("");
+            }
+        } else {
+            json["materials"].push_back("");
+        }
     }
 
     const auto& color = meshRenderer.getColor();
     json["color"] = { color.r, color.g, color.b, color.a };
 }
 
+inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, AssetManager& assetManager) {
+    static boost::uuids::string_generator uuidGenerator;
 
-inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer) {
-    // static boost::uuids::string_generator uuidGenerator;
-    // meshRenderer.setId(uuidGenerator(json["id"]));
-    //
-    // std::string modelPath = json.value("model", "");
-    //
-    // if (json.contains("color")) {
-    //     auto c = json["color"];
-    //     meshRenderer.setColor(glm::vec4(c[0], c[1], c[2], c[3]));
-    // }
+    if (json.contains("id") && json["id"].is_string()) {
+        try {
+            meshRenderer.setId(uuidGenerator(json["id"].get<std::string>()));
+        } catch (const std::exception& e) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::error("Failed to parse UUID: {}", e.what());
+#endif
+        }
+    }
+
+    std::string modelPath = json.value("model", "");
+    if (!modelPath.empty()) {
+        meshRenderer.setModel(assetManager.get<Model>(modelPath));
+    }
+
+    if (json.contains("color") && json["color"].is_array() && json["color"].size() >= 4) {
+        const auto& c = json["color"];
+        meshRenderer.setColor(glm::vec4(
+            c[0].get<float>(),
+            c[1].get<float>(),
+            c[2].get<float>(),
+            c[3].get<float>()
+        ));
+    }
+
+    if (json.contains("materials") && json["materials"].is_array()) {
+        const auto& materialsJson = json["materials"];
+        for (size_t i = 0; i < materialsJson.size(); i++) {
+            if (materialsJson[i].is_string()) {
+                std::string shaderPath = materialsJson[i].get<std::string>();
+                if (!shaderPath.empty()) {
+                    Material* material = new Material();
+                    material->setShader(assetManager.get<Shader>(shaderPath));
+                    meshRenderer.setMaterial(i, material);
+                } else {
+                    // Do nothing, or assign a default/null material if your engine requires it
+                }
+            }
+        }
+    }
 }
 
 inline void registerMeshRendererSerializer(ComponentSerializerRegistry& registry) {
@@ -56,7 +104,7 @@ inline void registerMeshRendererSerializer(ComponentSerializerRegistry& registry
         },
         [](const ComponentSerializerRegistry::DeserializationContext& context) {
             auto* meshRenderer = context.gameObject.addComponent<MeshRenderer>();
-            from_json(context.json, *meshRenderer);
+            from_json(context.json, *meshRenderer, context.assetManager);
         });
 }
 }
