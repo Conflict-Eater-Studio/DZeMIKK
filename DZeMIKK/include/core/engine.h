@@ -46,23 +46,6 @@ public:
     [[nodiscard]] Input* getInput() const;
     [[nodiscard]] Collisions* getCollisions() const;
 
-    /**
-     * @brief Zwraca dynamicznie zarejestrowany moduł na podstawie jego typu.
-     * @tparam T Typ modułu (musi dziedziczyć po IEngineModule)
-     * @return Surowy wskaźnik na moduł lub nullptr, jeśli nie znaleziono.
-     */
-    template <std::derived_from<IEngineModule> T>
-    [[nodiscard]] T* getModule() const {
-        for (const auto& module : _modules) {
-            // Używamy dynamic_cast dla wygody. W ultra-wydajnych silnikach
-            // stosuje się tu mapowanie po statycznym ID typu (np. TypeId),
-            // ale dynamic_cast na etapie inicjalizacji/pobierania jest w 100% OK.
-            if (T* castedModule = dynamic_cast<T*>(module.get())) {
-                return castedModule;
-            }
-        }
-        return nullptr;
-    }
 
     void SetUserUpdateCallback(const std::function<void()>& callback) {
         m_UserUpdateCallback = callback;
