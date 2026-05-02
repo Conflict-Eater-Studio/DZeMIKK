@@ -232,17 +232,34 @@ void dzemikk::ModelHandler::loadAnimations(const aiScene* scene, Skeleton& skele
 
         auto* clip = new AnimationClip(duration, tps);
 
-        std::unordered_map<std::string, const aiNodeAnim*> channelMap;
+        struct ChannelBundle {
+            const aiNodeAnim* translation = nullptr;
+            const aiNodeAnim* rotation = nullptr;
+            const aiNodeAnim* scaling = nullptr;
+        };
+
+        std::unordered_map<std::string, ChannelBundle> channelMap;
 
         for (unsigned int j = 0; j < anim->mNumChannels; ++j) {
             const aiNodeAnim* ch = anim->mChannels[j];
-            std::string norm = normalizeBoneName(ch->mNodeName.C_Str());
-            channelMap[norm] = ch;
+
+            std::string rawName = ch->mNodeName.C_Str();
+            std::string norm = normalizeBoneName(rawName);
+
+            if (rawName.find("Translation") != std::string::npos) {
+                channelMap[norm].translation = ch;
+            } else if (rawName.find("Rotation") != std::string::npos) {
+                channelMap[norm].rotation = ch;
+            } else if (rawName.find("Scaling") != std::string::npos) {
+                channelMap[norm].scaling = ch;
+            } else {
+                channelMap[norm].translation = ch;
+                channelMap[norm].rotation = ch;
+                channelMap[norm].scaling = ch;
+            }
         }
 
-        std::unordered_set<int> usedBones;
-
-        for (const auto& [normName, ch] : channelMap) {
+        for (const auto& [normName, bundle] : channelMap) {
 
             auto it = normalizedToBone.find(normName);
             if (it == normalizedToBone.end())
@@ -253,53 +270,30 @@ void dzemikk::ModelHandler::loadAnimations(const aiScene* scene, Skeleton& skele
             if (!bone)
                 continue;
 
-            usedBones.insert(boneIndex);
-
             BoneTrack* track = clip->addBoneTrack();
-
-            for (unsigned int i = 0; i < ch->mNumPositionKeys; ++i) {
-                const auto& k = ch->mPositionKeys[i];
-                track->addPositionKey({(float)k.mTime, {k.mValue.x, k.mValue.y, k.mValue.z}});
-            }
-
-            for (unsigned int i = 0; i < ch->mNumRotationKeys; ++i) {
-                const auto& k = ch->mRotationKeys[i];
-                track->addRotationKey(
-                    {(float)k.mTime, glm::quat(k.mValue.w, k.mValue.x, k.mValue.y, k.mValue.z)});
-            }
-
-            for (unsigned int i = 0; i < ch->mNumScalingKeys; ++i) {
-                const auto& k = ch->mScalingKeys[i];
-                track->addScaleKey({(float)k.mTime, {k.mValue.x, k.mValue.y, k.mValue.z}});
-            }
-
             track->bindBone(bone);
-        }
 
-        for (int i = 0; i < skeleton.getBoneCount(); ++i) {
+            if (bundle.translation) {
+                for (unsigned int i = 0; i < bundle.translation->mNumPositionKeys; ++i) {
+                    const auto& k = bundle.translation->mPositionKeys[i];
+                    track->addPositionKey({(float)k.mTime, {k.mValue.x, k.mValue.y, k.mValue.z}});
+                }
+            }
 
-            if (usedBones.count(i))
-                continue;
+            if (bundle.rotation) {
+                for (unsigned int i = 0; i < bundle.rotation->mNumRotationKeys; ++i) {
+                    const auto& k = bundle.rotation->mRotationKeys[i];
+                    track->addRotationKey({(float)k.mTime, glm::quat(k.mValue.w, k.mValue.x,
+                                                                     k.mValue.y, k.mValue.z)});
+                }
+            }
 
-            Bone* bone = skeleton.getBone(i);
-            if (!bone)
-                continue;
-
-            BoneTrack* track = clip->addBoneTrack();
-
-            glm::mat4 bind = bone->getBindLocalTransform();
-
-            glm::vec3 pos, scale, skew;
-            glm::quat rot;
-            glm::vec4 persp;
-
-            glm::decompose(bind, scale, rot, pos, skew, persp);
-
-            track->addPositionKey({0.0f, pos});
-            track->addRotationKey({0.0f, rot});
-            track->addScaleKey({0.0f, scale});
-
-            track->bindBone(bone);
+            if (bundle.scaling) {
+                for (unsigned int i = 0; i < bundle.scaling->mNumScalingKeys; ++i) {
+                    const auto& k = bundle.scaling->mScalingKeys[i];
+                    track->addScaleKey({(float)k.mTime, {k.mValue.x, k.mValue.y, k.mValue.z}});
+                }
+            }
         }
 
         std::string name =
