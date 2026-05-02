@@ -80,8 +80,8 @@ inline void registerRectTransformSerializer(ComponentSerializerRegistry& registr
             }
             return nlohmann::json(*transform);
         },
-        [](GameObject& gameObject, const nlohmann::json& componentJson) {
-            from_json(componentJson, *gameObject.rectTransform());
+        [](ComponentSerializerRegistry::DeserializationContext context) {
+            from_json(context.json, *context.gameObject.rectTransform());
         });
 }
 // NOLINTEND(readability-identifier-naming)

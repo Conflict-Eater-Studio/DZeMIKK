@@ -14,7 +14,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebIn
   set(DZEMIKK_DEV_TOOLS ON)
 endif()
 
-add_library(DZeMIKK STATIC)
+add_library(DZeMIKK STATIC
+        include/ecs/serialize/meshRendererSerializer.h)
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"

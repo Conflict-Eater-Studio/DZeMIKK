@@ -52,7 +52,8 @@ void GameObjectSerializer::deserializeInto(GameObject& gameObject, const nlohman
     if (json.contains("components") && json["components"].is_array()) {
         const auto& componentRegistry = ComponentSerializerRegistry::get();
         for (const auto& componentJson : json["components"]) {
-            componentRegistry.deserializeIntoGameObject(gameObject, componentJson);
+            ComponentSerializerRegistry::DeserializationContext context(gameObject, componentJson);
+            componentRegistry.deserializeIntoGameObject(context);
         }
     }
 }

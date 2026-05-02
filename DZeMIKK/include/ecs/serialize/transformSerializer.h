@@ -62,8 +62,9 @@ inline void registerTransformSerializer(ComponentSerializerRegistry& registry) {
             }
             return nlohmann::json(*transform);
         },
-        [](GameObject& gameObject, const nlohmann::json& componentJson) {
-            from_json(componentJson, *gameObject.transform());
+        [](const ComponentSerializerRegistry::DeserializationContext& context) {
+            auto& gameObject = context.gameObject;
+            from_json(context.json, *gameObject.transform());
         });
 }
 // NOLINTEND(readability-identifier-naming)

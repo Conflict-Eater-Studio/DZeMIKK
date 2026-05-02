@@ -84,9 +84,9 @@ inline void registerUIButtonSerializer(ComponentSerializerRegistry& registry) {
 
             return nlohmann::json(*button);
         },
-        [](GameObject& gameObject, const nlohmann::json& componentJson) {
-            auto* button = gameObject.addComponent<UIButton>();
-            from_json(componentJson, *button);
+        [](ComponentSerializerRegistry::DeserializationContext context) {
+            auto* button = context.gameObject.addComponent<UIButton>();
+            from_json(context.json, *button);
         });
 }
 // NOLINTEND(readability-identifier-naming)

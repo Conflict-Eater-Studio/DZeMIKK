@@ -101,9 +101,9 @@ inline void registerUISliderSerializer(ComponentSerializerRegistry& registry) {
 
             return nlohmann::json(*slider);
         },
-        [](GameObject& gameObject, const nlohmann::json& componentJson) {
-            auto* slider = gameObject.addComponent<UISlider>();
-            from_json(componentJson, *slider);
+        [](ComponentSerializerRegistry::DeserializationContext context) {
+            auto* slider = context.gameObject.addComponent<UISlider>();
+            from_json(context.json, *slider);
         });
 }
 // NOLINTEND(readability-identifier-naming)

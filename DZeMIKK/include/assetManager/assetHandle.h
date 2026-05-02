@@ -58,7 +58,7 @@ template <typename T> class AssetHandle {
     }
 
     [[nodiscard]] std::string getAssetPath() const {
-        return _path;
+        return *_path;
     }
 
   private:

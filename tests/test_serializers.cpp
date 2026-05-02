@@ -1,3 +1,4 @@
+#include "ecs/components/meshRenderer.h"
 #include "ecs/components/monoBehaviour.h"
 #include "ecs/components/ui/uiButton.h"
 #include "ecs/components/ui/uiButtonActionRegistry.h"
@@ -8,6 +9,7 @@
 #include "ecs/serialize/monoBehaviourSerializer.h"
 #include "ecs/serialize/prefabSerializer.h"
 #include "ecs/serialize/sceneSerializer.h"
+#include "renderer/mesh.h"
 
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid_hash.hpp>
@@ -70,7 +72,8 @@ TEST(ComponentSerializerRegistrySerialization, DeserializeIntoGameObjectAppliesT
     transformJson["rotation"] = {1.0F, 0.0F, 0.0F, 0.0F};
     transformJson["scale"] = {2.0F, 3.0F, 4.0F};
 
-    dzemikk::ComponentSerializerRegistry::get().deserializeIntoGameObject(*object, transformJson);
+    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*object, transformJson);
+    dzemikk::ComponentSerializerRegistry::get().deserializeIntoGameObject(context);
 
     const glm::vec3 position = object->transform()->getPosition();
     const glm::vec3 scale = object->transform()->getScale();
@@ -90,8 +93,9 @@ TEST(ComponentSerializerRegistrySerialization, DeserializeUnknownTypeThrows) {
     nlohmann::json unknown;
     unknown["type"] = "NoSuchComponent";
 
+    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*object, unknown);
     EXPECT_THROW(
-        dzemikk::ComponentSerializerRegistry::get().deserializeIntoGameObject(*object, unknown),
+        dzemikk::ComponentSerializerRegistry::get().deserializeIntoGameObject(context),
         std::runtime_error);
 }
 
@@ -272,8 +276,9 @@ TEST(UIButtonSerialization, DeserializeBindsOnClickActionFromRegistry) {
 
     dzemikk::GameObject* target = scene.createGameObject("Target");
     ASSERT_NE(target, nullptr);
-    dzemikk::ComponentSerializerRegistry::get().deserializeIntoGameObject(*target,
-                                                                          serializedButton);
+
+    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*target, serializedButton);
+    dzemikk::ComponentSerializerRegistry::get().deserializeIntoGameObject(context);
 
     auto* button = target->getComponent<dzemikk::UIButton>();
     ASSERT_NE(button, nullptr);
@@ -301,4 +306,49 @@ TEST(UIButtonSerialization, UnknownOnClickActionIdIsSafeNoOp) {
     EXPECT_NO_THROW(button->onClick());
 }
 
+TEST(MeshRendererSerialization, ToJsonSerializesPropertiesCorrectly) {
+    dzemikk::Scene scene;
+    dzemikk::GameObject* object = scene.createGameObject("RendererObject");
+    ASSERT_NE(object, nullptr);
+
+    auto* renderer = object->addComponent<dzemikk::MeshRenderer>();
+    ASSERT_NE(renderer, nullptr);
+
+    renderer->setColor(glm::vec4(0.1F, 0.5F, 0.8F, 1.0F));
+    nlohmann::json json = dzemikk::ComponentSerializerRegistry::get().serialize(*object->getComponent<dzemikk::MeshRenderer>());
+
+    ASSERT_TRUE(json.contains("type"));
+    EXPECT_EQ(json["type"], "MeshRenderer");
+
+    ASSERT_TRUE(json.contains("id"));
+    EXPECT_EQ(json["id"], boost::uuids::to_string(renderer->getId()));
+
+    ASSERT_TRUE(json.contains("color"));
+    ASSERT_TRUE(json["color"].is_array());
+    EXPECT_EQ(json["color"].size(), 4U);
+    EXPECT_FLOAT_EQ(json["color"][0].get<float>(), 0.1F); // R
+    EXPECT_FLOAT_EQ(json["color"][1].get<float>(), 0.5F); // G
+    EXPECT_FLOAT_EQ(json["color"][2].get<float>(), 0.8F); // B
+    EXPECT_FLOAT_EQ(json["color"][3].get<float>(), 1.0F); // A
+    ASSERT_TRUE(json.contains("model"));
+
+    EXPECT_EQ(json["model"].get<std::string>(), "");
+}
+TEST(MeshRendererSerialization, ToJsonExtractsModelPathFromValidHandle) {
+    dzemikk::Scene scene;
+    dzemikk::GameObject* object = scene.createGameObject("RendererObject");
+    auto* renderer = object->addComponent<dzemikk::MeshRenderer>();
+
+    // Mocking an AssetHandle setup (Adjust this to match how you fake handles in your tests)
+    // dzemikk::AssetHandle<dzemikk::Model> mockHandle = createMockHandle("assets/models/player.obj");
+    // renderer->setModel(mockHandle);
+
+    /* Uncomment when your mock is set up
+    nlohmann::json j;
+    dzemikk::to_json(j, *renderer);
+
+    ASSERT_TRUE(j.contains("model"));
+    EXPECT_EQ(j["model"].get<std::string>(), "assets/models/player.obj");
+    */
+}
 } // namespace

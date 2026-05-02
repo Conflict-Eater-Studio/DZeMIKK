@@ -1,8 +1,9 @@
 #include "ecs/serialize/componentSerializerRegistry.h"
 
-#include "../../../include/ecs/serialize/rectTransformSerializer.h"
-#include "../../../include/ecs/serialize/uiButtonSerializer.h"
-#include "../../../include/ecs/serialize/uiSliderSerializer.h"
+#include "ecs/serialize/rectTransformSerializer.h"
+#include "ecs/serialize/uiButtonSerializer.h"
+#include "ecs/serialize/uiSliderSerializer.h"
+#include "ecs/serialize/meshRendererSerializer.h"
 #include "ecs/serialize/transformSerializer.h"
 
 #include <stdexcept>
@@ -17,6 +18,7 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerRectTransformSerializer(registry);
     registerUIButtonSerializer(registry);
     registerUISliderSerializer(registry);
+    registerMeshRendererSerializer(registry);
 
     return registry;
 }
@@ -42,9 +44,8 @@ nlohmann::json ComponentSerializerRegistry::serialize(const Component& component
 
     return iter->second.serialize(component);
 }
-
-void ComponentSerializerRegistry::deserializeIntoGameObject(GameObject& gameObject,
-                                                            const nlohmann::json& json) const {
+void ComponentSerializerRegistry::deserializeIntoGameObject(const DeserializationContext& context) const {
+    nlohmann::json json = context.json;
     if (!json.contains("type") || !json["type"].is_string()) {
         throw std::runtime_error("Serialized component is missing string field 'type'");
     }
@@ -55,6 +56,6 @@ void ComponentSerializerRegistry::deserializeIntoGameObject(GameObject& gameObje
         throw std::runtime_error("No deserializer registered for component type: " + typeName);
     }
 
-    iter->second.deserializeIntoGameObject(gameObject, json);
+    iter->second.deserializeIntoGameObject(context);
 }
 } // namespace dzemikk
