@@ -3,15 +3,10 @@
 #include "renderer/model.h"
 
 #include "animation/boneTrack.h"
-#include "animation/animationclip.h"
 
 #include <assimp/Importer.hpp>
-
 #include <assimp/postprocess.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <iostream>s
-#include <glm/gtx/matrix_decompose.hpp>
+#include <iostream>
 
 #include "assetManager/skeletonBuilder.h"
 #include "assetManager/meshBuilder.h"
