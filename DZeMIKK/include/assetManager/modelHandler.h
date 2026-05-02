@@ -50,6 +50,13 @@ class ModelHandler : public IAssetHandler<Model> {
     void unload(Handle& asset) override;
 
   private:
+#pragma region Debug
+    static bool isAssimpHelperNode(const std::string& name);
+    static bool isBoneNode(const std::string& name, const dzemikk::Skeleton& skeleton);
+    static void printNodeHierarchyForMesh(aiNode* node, const aiScene* scene,
+                                   const dzemikk::Skeleton& skeleton, int depth = 0);
+#pragma endregion
+
     /**
      * @brief Internal helper function for loading a model from file.
      *
@@ -60,6 +67,7 @@ class ModelHandler : public IAssetHandler<Model> {
      */
     static std::shared_ptr<Model> loadModelFromFile(const std::string& path);
 
+    static std::string normalizeBoneName(const std::string& name);
     static void loadAnimations(const aiScene* scene, Skeleton& skeleton);
 
 #pragma region Assimp conversion utilities

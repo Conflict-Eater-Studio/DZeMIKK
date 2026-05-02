@@ -13,70 +13,46 @@
 #include <iostream>
 #include <glm/gtx/matrix_decompose.hpp>
 
-void printNode(aiNode* node, int depth = 0) {
-    for (int i = 0; i < depth; i++) {
-        std::cout << "  ";
-    }
+#if DZEMIKK_DEV_TOOLS
+#include <spdlog/spdlog.h>
+#endif
 
-    std::cout << node->mName.C_Str() << " (Meshes: " << node->mNumMeshes << ")\n";
-
-    aiNode** child = node->mChildren;
-
-    for (unsigned int i = 0; i < node->mNumChildren; ++i) {
-        printNode(*(child + i), depth + 1);
-    }
-}
-
-void printSkeleton(const dzemikk::Skeleton& skeleton, int boneIndex = 0, int depth = 0) {
-    const dzemikk::Bone* bone = skeleton.getBone(boneIndex);
-    if (!bone) {
-        return;
-    }
-
-    for (int i = 0; i < depth; i++) {
-        std::cout << "  ";
-    }
-
-    std::cout << bone->getName() << " (ID: " << boneIndex << ")\n";
-
-    for (int childIndex : bone->getChildren()) {
-        printSkeleton(skeleton, childIndex, depth + 1);
-    }
-}
-
-bool isAssimpHelperNode(const std::string& name) {
+bool dzemikk::ModelHandler::isAssimpHelperNode(const std::string& name) {
     return name.find("_$AssimpFbx$") != std::string::npos;
 }
 
-bool isBoneNode(const std::string& name, const dzemikk::Skeleton& skeleton) {
+bool dzemikk::ModelHandler::isBoneNode(const std::string& name, const dzemikk::Skeleton& skeleton) {
     return skeleton.getBoneIndex(name) != -1;
 }
 
-void printNodeHierarchyForMesh(aiNode* node, const aiScene* scene,
-                               const dzemikk::Skeleton& skeleton, int depth = 0) {
-    for (int i = 0; i < depth; i++)
-        std::cout << "  ";
+void dzemikk::ModelHandler::printNodeHierarchyForMesh(aiNode* node, const aiScene* scene,
+                               const dzemikk::Skeleton& skeleton, int depth) {
+#if DZEMIKK_DEV_TOOLS
+    if (!node)
+        return;
 
+    std::string indent(depth * 2, ' ');
     std::string name = node->mName.C_Str();
 
     bool isHelper = isAssimpHelperNode(name);
     bool isBone = isBoneNode(name, skeleton);
     bool hasMeshes = node->mNumMeshes > 0;
 
-    std::cout << name;
+    std::string line = indent + name;
 
     if (isHelper)
-        std::cout << " [ASSIMP_HELPER]";
+        line += " [ASSIMP_HELPER]";
     if (isBone)
-        std::cout << " [BONE]";
+        line += " [BONE]";
     if (hasMeshes)
-        std::cout << " [MESHES: " << node->mNumMeshes << "]";
+        line += " [MESHES: " + std::to_string(node->mNumMeshes) + "]";
 
-    std::cout << "\n";
+    spdlog::info("[ModelHandler] {}", line);
 
     for (unsigned int i = 0; i < node->mNumChildren; ++i) {
         printNodeHierarchyForMesh(node->mChildren[i], scene, skeleton, depth + 1);
     }
+#endif
 }
 
 dzemikk::ModelHandler::Result dzemikk::ModelHandler::load(const std::string& path) {
@@ -129,33 +105,6 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
 
     const bool hasAnimations = scene->mNumAnimations > 0;
 
-    std::cout << "Model: " << path << "\n";
-    std::cout << "Meshes: " << scene->mNumMeshes << "\n";
-    std::cout << "Has bones: " << (scene->HasMeshes() ? "YES" : "NO") << "\n";
-    std::cout << "Has animations: " << (hasAnimations ? "YES" : "NO") << "\n";
-    std::cout << "Animations count: " << scene->mNumAnimations << "\n";
-
-    for (unsigned int i = 0; i < scene->mNumAnimations; ++i) {
-        const aiAnimation* anim = scene->mAnimations[i];
-
-        std::cout << "\n=== Animation " << i << " ===\n";
-        std::cout << "Name: " << (anim->mName.length > 0 ? anim->mName.C_Str() : "Unnamed") << "\n";
-        std::cout << "Duration: " << anim->mDuration << "\n";
-        std::cout << "Ticks per second: "
-                  << (anim->mTicksPerSecond != 0 ? anim->mTicksPerSecond : 25.0) << "\n";
-
-        std::cout << "Channels (animated nodes): " << anim->mNumChannels << "\n";
-
-        for (unsigned int j = 0; j < anim->mNumChannels; ++j) {
-            const aiNodeAnim* channel = anim->mChannels[j];
-
-            std::cout << "  Node: " << channel->mNodeName.C_Str() << "\n";
-            std::cout << "    Position keys: " << channel->mNumPositionKeys << "\n";
-            std::cout << "    Rotation keys: " << channel->mNumRotationKeys << "\n";
-            std::cout << "    Scaling keys: " << channel->mNumScalingKeys << "\n";
-        }
-    }
-
     auto model = std::make_shared<Model>();
 
     auto skeleton = std::make_shared<dzemikk::Skeleton>();
@@ -166,14 +115,12 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
 
     model->setSkeleton(skeleton);
 
-    //printSkeleton(*skeleton);
 
     for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
-        std::cout << "\n========================\n";
-        std::cout << "MESH " << i << ": " << scene->mMeshes[i]->mName.C_Str() << "\n";
-        std::cout << "========================\n";
-
+    #if DZEMIKK_DEV_TOOLS
+        spdlog::info("[ModelHandler] MESH {}: {}", i, scene->mMeshes[i]->mName.C_Str());
         printNodeHierarchyForMesh(scene->mRootNode, scene, *skeleton);
+    #endif
     }
 
     for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
@@ -197,19 +144,22 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
     return model;
 }
 
-auto normalizeBoneName = [](const std::string& name) -> std::string {
-    size_t pos = name.find("_$AssimpFbx$");
+std::string dzemikk::ModelHandler::normalizeBoneName(const std::string& name) {
+    const std::string tag1 = "_$AssimpFbx$";
+    const std::string tag2 = "$AssimpFbx$";
+
+    size_t pos = name.find(tag1);
     if (pos != std::string::npos) {
         return name.substr(0, pos);
     }
 
-    pos = name.find("$AssimpFbx$");
+    pos = name.find(tag2);
     if (pos != std::string::npos) {
         return name.substr(0, pos);
     }
 
     return name;
-};
+}
 
 void dzemikk::ModelHandler::loadAnimations(const aiScene* scene, Skeleton& skeleton) {
     std::unordered_map<std::string, int> normalizedToBone;
@@ -372,8 +322,6 @@ void dzemikk::ModelHandler::extractBoneWeights(const aiMesh* mesh, std::vector<d
 
         int boneID = skeleton.getBoneIndex(bone->mName.C_Str());
 
-        //std::cout << "Bone: " << i << " name: " << bone->mName.C_Str() << "\n";
-
         if (boneID == -1) {
             continue;
         }
@@ -391,8 +339,6 @@ void dzemikk::ModelHandler::extractBoneWeights(const aiMesh* mesh, std::vector<d
             }
         }
     }
-
-    //std::cout << "\n\n";
 }
 
 std::shared_ptr<dzemikk::StaticMesh> dzemikk::ModelHandler::buildStaticMesh(const aiMesh* aiMesh) {
