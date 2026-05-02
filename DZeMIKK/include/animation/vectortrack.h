@@ -41,9 +41,6 @@ class VectorTrack : public IAnimationTrack {
         [[nodiscard]] VectorProperty getProperty() const {
             return _property;
         }
-    private:
-        VectorProperty _property;
-        std::vector<VectorPropertyKey> _keys;
 
         [[nodiscard]] glm::vec3 sample(float time) const {
             if (_keys.size() == 1) {
@@ -58,18 +55,16 @@ class VectorTrack : public IAnimationTrack {
 
             float factor = (time - t1) / (t2 - t1);
 
-            float x = glm::mix(_keys[index].value.x,
-                _keys[next].value.x,
-                factor);
-            float y = glm::mix(_keys[index].value.y,
-                _keys[next].value.y,
-                factor);
-            float z = glm::mix(_keys[index].value.z,
-                _keys[next].value.z,
-                factor);
+            float x = glm::mix(_keys[index].value.x, _keys[next].value.x, factor);
+            float y = glm::mix(_keys[index].value.y, _keys[next].value.y, factor);
+            float z = glm::mix(_keys[index].value.z, _keys[next].value.z, factor);
 
             return {x, y, z};
         }
+    private:
+        VectorProperty _property;
+        std::vector<VectorPropertyKey> _keys;
+
         [[nodiscard]] size_t findPropertyIndex(float time) const {
             for (size_t i = 0; i < _keys.size() - 1; i++) {
                 if (time < _keys[i + 1].time)

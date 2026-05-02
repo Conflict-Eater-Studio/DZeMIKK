@@ -10,7 +10,7 @@
 
     void main() {
         vec3 norm = normalize(Normal);
-        vec3 lightDirNorm = normalize(-lightDir);
+        vec3 lightDirNorm = normalize(lightDir - FragPos);
         float diff = max(dot(norm, lightDirNorm), 0.0);
         vec3 diffuse = diff * lightColor;
         FragColor = vec4(diffuse * vec3(0.2,0.5,1.0) * meshColor.rgb, meshColor.a); // niebieska kostka

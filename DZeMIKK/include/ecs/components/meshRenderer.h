@@ -2,6 +2,7 @@
 #define DZEMIKK_MESH_RENDERER_H
 
 #include "../component.h"
+#include "assetManager/assetHandle.h"
 
 #include <glm/ext/quaternion_geometric.hpp>
 #include <glm/ext/vector_float3.hpp>
@@ -46,7 +47,7 @@ class MeshRenderer : public Component {
      * @return Model* Pointer to the mesh.
      */
     [[nodiscard]] Model* getModel() const {
-        return _model;
+        return _model.get();
     }
 
     
@@ -91,9 +92,9 @@ class MeshRenderer : public Component {
      *
      * @param mesh Pointer to the mesh.
      */
-    void setModel(Model* model) {
+    void setModel(AssetHandle<Model> model) {
         _model = model;
-        calculateCullingRadius(model);
+        calculateCullingRadius(model.get());
     }
 
     /**
@@ -190,7 +191,7 @@ class MeshRenderer : public Component {
   private:
 #pragma region References
 
-    Model* _model = nullptr;
+    AssetHandle<Model> _model;
     std::vector<Material*> _materials;
     Transform* _transform = nullptr;
     glm::vec4 _color = glm::vec4(1.0f);

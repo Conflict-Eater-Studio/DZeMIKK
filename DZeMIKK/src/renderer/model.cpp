@@ -35,3 +35,11 @@ const dzemikk::Model::SubMesh* dzemikk::Model::getSubMesh(std::size_t index) con
         
     return &_subMeshes[index];
 }
+
+void dzemikk::Model::setSkeleton(std::shared_ptr<Skeleton> skeleton) {
+    _skeleton = skeleton;
+}
+
+std::shared_ptr<dzemikk::Skeleton> dzemikk::Model::getSkeleton() const {
+    return _skeleton;
+}

@@ -8,6 +8,7 @@
 #include "animation/floattrack.h"
 #include "animation/vectortrack.h"
 #include "animation/quaterniontrack.h"
+#include "animation/boneTrack.h"
 
 namespace dzemikk {
 AnimationClip::AnimationClip(float durationInTicks, float tickPerSecond) : _durationInTicks(durationInTicks), _ticksPerSecond(tickPerSecond) {}
@@ -42,6 +43,13 @@ QuaternionTrack* AnimationClip::addQuaternionTrack() {
     return ptr;
 }
 
+BoneTrack* AnimationClip::addBoneTrack() {
+    auto track = std::make_unique<BoneTrack>();
+    auto ptr = track.get();
+    _tracks.push_back(std::move(track));
+    return ptr;
+}
+
 void AnimationClip::apply(float timeInSeconds) const {
     float time = timeInSeconds * _ticksPerSecond;
 
@@ -60,6 +68,7 @@ void AnimationClip::apply(float timeInSeconds) const {
         track->apply(keyframe);
     }
 }
+
 std::shared_ptr<AnimationClip> AnimationClip::fromAssimp(aiAnimation* animation) {
     if (!animation) return nullptr;
 

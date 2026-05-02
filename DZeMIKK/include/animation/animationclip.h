@@ -14,6 +14,7 @@ namespace dzemikk {
 class FloatTrack;
 class VectorTrack;
 class QuaternionTrack;
+class BoneTrack;
 class Transform;
 
 /**
@@ -62,6 +63,7 @@ public:
     FloatTrack* addFloatTrack();
     VectorTrack* addVectorTrack();
     QuaternionTrack* addQuaternionTrack();
+    BoneTrack* addBoneTrack();
 
     /**
     * @brief Samples the animation clip at a given time.

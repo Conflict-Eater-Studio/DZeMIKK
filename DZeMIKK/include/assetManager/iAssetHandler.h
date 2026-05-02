@@ -56,7 +56,7 @@ struct IAssetHandlerBase {
      *
      * @param asset Type-erased shared pointer to the asset.
      */
-    virtual void unloadUntyped(std::shared_ptr<void> asset) = 0;
+    virtual void unloadUntyped(std::shared_ptr<void> asset, const std::string& path) = 0;
 };
 
 /**
@@ -122,9 +122,9 @@ class IAssetHandler : public IAssetHandlerBase {
          */
         virtual void unload(Handle& asset) = 0;
 
-        void unloadUntyped(std::shared_ptr<void> asset) override {
+        void unloadUntyped(std::shared_ptr<void> asset, const std::string& path) override {
             auto typed = std::static_pointer_cast<T>(asset);
-            Handle handle(typed);
+            Handle handle(typed, path);
             unload(handle);
         }
 };

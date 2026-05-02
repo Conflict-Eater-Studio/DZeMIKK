@@ -3,214 +3,212 @@
 
 #include <cstdint>
 #include <glad/glad.h>
-#include <vector>
 #include <glm/glm.hpp>
+#include <vector>
 
 namespace dzemikk {
 
+/**
+ * @brief Represents a GPU-backed mesh with vertex and optional index data.
+ *
+ * Encapsulates OpenGL buffers (VAO, VBO, EBO), provides rendering methods,
+ * and maintains basic geometric bounds for the mesh.
+ */
+class Mesh {
+  public:
+
     /**
-     * @brief Represents a GPU mesh with vertex and index buffers.
-     *
-     * Mesh encapsulates OpenGL buffers (VAO, VBO, EBO) and provides
-     * a draw interface used by the rendering system.
+     * @brief Default constructor.
      */
-    class Mesh {
-    public:
-        /**
-         * @brief Constructs an empty mesh.
-         */
-        Mesh() = default;
+    Mesh() = default;
 
-        /**
-         * @brief Destroys the mesh and releases GPU resources.
-         */
-        ~Mesh();
+    /**
+     * @brief Virtual destructor responsible for resource cleanup.
+     */
+    virtual ~Mesh();
 
-        #pragma region Disable copy and move
+#pragma region Disable copy and move
 
-        Mesh(const Mesh& other) = delete;
-        Mesh(Mesh&& other) noexcept = delete;
-        Mesh& operator=(const Mesh& other) = delete;
-        Mesh& operator=(Mesh&& other) noexcept = delete;
+    Mesh(const Mesh& other) = delete;
+    Mesh(Mesh&& other) noexcept = delete;
+    Mesh& operator=(const Mesh& other) = delete;
+    Mesh& operator=(Mesh&& other) noexcept = delete;
 
-        #pragma endregion
+#pragma endregion
 
-        #pragma region Getters
+#pragma region Rendering
 
+    /**
+     * @brief Renders the mesh using currently bound OpenGL state.
+     *
+     * Uses either glDrawArrays or glDrawElements depending on whether
+     * index data is present.
+     */
+    void draw() const;
 
-        /**
-         * @brief Returns the VAO handle for the mesh.
-         *
-         * @return GLuint OpenGL VAO handle.
-         */
-        [[nodiscard]] GLuint getVAO() const {
-            return _vao;
-        }
+    /**
+     * @brief Renders multiple instances of the mesh.
+     *
+     * @param models Array of model matrices for each instance.
+     * @param instanceVBO OpenGL buffer containing instance data.
+     */
+    void drawInstanced(const std::vector<glm::mat4>& models, GLuint instanceVBO) const;
 
-        [[nodiscard]] GLuint getVBO() const {
-            return _vbo;
-        }
+#pragma endregion
 
-        [[nodiscard]] GLuint getEBO() const {
-            return _ebo;
-        }
+#pragma region State queries
 
-        /**
-         * @brief Returns the number of vertices in the mesh.
-         */
-        [[nodiscard]] uint32_t getVertexCount() const {
-            return _vertexCount;
-        }
+    /**
+     * @brief Checks whether the mesh has valid GPU buffers.
+     *
+     * @return true if VAO/VBO are initialized, false otherwise.
+     */
+    [[nodiscard]] bool isValid() const;
 
-        /**
-         * @brief Returns the number of indices in the mesh (if using EBO).
-         */
-        [[nodiscard]] uint32_t getIndexCount() const {
-            return _indexCount;
-        }
+    /**
+     * @brief Returns the VAO handle for the mesh.
+     *
+     * @return GLuint OpenGL VAO handle.
+     */
+    [[nodiscard]] GLuint getVAO() const {
+        return _vao;
+    }
 
-        /**
-         * @brief Checks whether the mesh uses an index buffer.
-         */
-        [[nodiscard]] bool usesIndices() const {
-            return _useIndices;
-        }
+    /**
+     * @brief Returns the VBO handle for the mesh.
+     *
+     * @return GLuint OpenGL VBO handle.
+     */
+    [[nodiscard]] GLuint getVBO() const {
+        return _vbo;
+    }
 
-        #pragma endregion
+    /**
+     * @brief Returns the EBO handle for the mesh.
+     *
+     * @return GLuint OpenGL EBO handle.
+     */
+    [[nodiscard]] GLuint getEBO() const {
+        return _ebo;
+    }
 
-        #pragma region Setup
+    /**
+     * @brief Returns the number of vertices in the mesh.
+     *
+     * @return uint32_t Vertex count.
+     */
+    [[nodiscard]] uint32_t getVertexCount() const {
+        return _vertexCount;
+    }
 
-        /**
-         * @brief Sets vertex buffer data.
-         *
-         * @param vao Vertex array object.
-         * @param vbo Vertex buffer object.
-         * @param vertexCount Number of vertices.
-         */
-        void setVertexData(GLuint vao, GLuint vbo, uint32_t vertexCount);
+    /**
+     * @brief Returns the number of indices in the mesh.
+     *
+     * @return uint32_t Index count.
+     */
+    [[nodiscard]] uint32_t getIndexCount() const {
+        return _indexCount;
+    }
 
-        /**
-         * @brief Sets index buffer data and EBO handle.
-         *
-         * @param ebo Element Buffer Object handle.
-         * @param indexCount Number of indices.
-         */
-        void setIndexData(GLuint ebo, uint32_t indexCount);
+#pragma endregion
 
-        #pragma endregion
+#pragma region Data setup
 
-        #pragma region Rendering
+    /**
+     * @brief Assigns vertex buffer data to the mesh.
+     *
+     * @param vao Vertex Array Object handle.
+     * @param vbo Vertex Buffer Object handle.
+     * @param vertexCount Number of vertices stored in the buffer.
+     */
+    void setVertexData(GLuint vao, GLuint vbo, uint32_t vertexCount);
 
-        /**
-         * @brief Draws the mesh using the current OpenGL context.
-         *
-         * Uses glDrawArrays or glDrawElements depending on `_useIndices`.
-         */
-        void draw() const;
+    /**
+     * @brief Assigns index buffer data to the mesh.
+     *
+     * @param ebo Element Buffer Object handle.
+     * @param indexCount Number of indices.
+     */
+    void setIndexData(GLuint ebo, uint32_t indexCount);
 
-        
-        /**
-         * @brief Draws multiple instances of the mesh.
-         *
-         * Uses instanced rendering with a pre-allocated instance VBO.
-         *
-         * @param models Vector of model matrices for each instance.
-         * @param instanceVBO OpenGL buffer handle used for instance data.
-         */
-        void drawInstanced(const std::vector<glm::mat4>& models, GLuint instanceVBO) const;
-        #pragma endregion
+#pragma endregion
 
-        #pragma region Validation
+#pragma region Bounds
 
-        /**
-         * @brief Checks if the mesh is ready to render.
-         *
-         * A mesh is valid if VAO is allocated and has vertices.
-         *
-         * @return true if valid, false otherwise.
-         */
-        [[nodiscard]] bool isValid() const {
-            return _vao != 0 && _vertexCount > 0;
-        }
+    /**
+     * @brief Returns the minimum corner of the mesh bounding box.
+     *
+     * @return glm::vec3 Minimum bounds.
+     */
+    [[nodiscard]] glm::vec3 getBoundsMin() const {
+        return _boundsMin;
+    }
 
-        #pragma endregion
+    /**
+     * @brief Returns the maximum corner of the mesh bounding box.
+     *
+     * @return glm::vec3 Maximum bounds.
+     */
+    [[nodiscard]] glm::vec3 getBoundsMax() const {
+        return _boundsMax;
+    }
 
-        #pragma region Creation
+    /**
+     * @brief Computes axis-aligned bounding box from vertex positions.
+     *
+     * @param positions Array of vertex positions.
+     */
+    void computeBounds(const std::vector<glm::vec3>& positions);
 
-        /**
-         * @brief Creates a mesh from raw vertex data.
-         *
-         * @param vertices Pointer to float array containing vertex data.
-         * @param vertexCount Number of vertices.
-         * @param stride Size of a single vertex in floats (e.g., 6 for position+normal).
-         */
-        void create(const float* vertices, uint32_t vertexCount, uint32_t stride);
+#pragma endregion
 
-        void create2D(const float* vertices, uint32_t vertexCount);
+#pragma region Lifetime
 
-        /**
-         * @brief Creates a mesh with an index buffer from raw data.
-         *
-         * @param vertices Pointer to vertex data.
-         * @param vertexCount Number of vertices.
-         * @param indices Pointer to index data.
-         * @param indexCount Number of indices.
-         * @param stride Size of a single vertex in floats.
-         */
-        void createIndexed(const float* vertices, uint32_t vertexCount, const unsigned int* indices,
-                           uint32_t indexCount, uint32_t stride);
+    /**
+     * @brief Releases all GPU resources associated with the mesh.
+     *
+     * Deletes VAO, VBO, and EBO buffers.
+     */
+    void destroy();
 
-        #pragma endregion
+#pragma endregion
 
-            
-        glm::vec3 getBoundsMin() const {
-            return _boundsMin;
-        }
-        glm::vec3 getBoundsMax() const {
-            return _boundsMax;
-        }
+  protected:
+#pragma region GPU resources
 
-        void computeBounds(const float* vertices, uint32_t vertexCount, uint32_t stride) {
-            if (vertexCount == 0)
-                return;
+    GLuint _vao = 0;
+    GLuint _vbo = 0;
+    GLuint _ebo = 0;
 
-            _boundsMin = glm::vec3(vertices[0], vertices[1], vertices[2]);
-            _boundsMax = _boundsMin;
+#pragma endregion
 
-            for (uint32_t i = 1; i < vertexCount; ++i) {
-                float x = vertices[i * stride + 0];
-                float y = vertices[i * stride + 1];
-                float z = vertices[i * stride + 2];
+#pragma region Mesh data
 
-                _boundsMin = glm::min(_boundsMin, glm::vec3(x, y, z));
-                _boundsMax = glm::max(_boundsMax, glm::vec3(x, y, z));
-            }
-        }
+    uint32_t _vertexCount = 0;
+    uint32_t _indexCount = 0;
+    bool _useIndices = false;
 
-        void recreate(const float* vertices, const unsigned int* indices, uint32_t vertexCount,
-                      uint32_t indexCount, uint32_t stride);
+#pragma endregion
 
-    private:
-        #pragma region GPU Handles
+#pragma region Bounds data
 
-        GLuint _vao = 0;
-        GLuint _vbo = 0;
-        GLuint _ebo = 0;
+    glm::vec3 _boundsMin{0.0F};
+    glm::vec3 _boundsMax{0.0F};
 
-        #pragma endregion
+#pragma endregion
 
-        #pragma region Data
+#pragma region Internal methods
 
-        uint32_t _vertexCount = 0;
-        uint32_t _indexCount = 0;
+    /**
+     * @brief Initializes and uploads index buffer data.
+     *
+     * @param indices Pointer to index array.
+     * @param indexCount Number of indices.
+     */
+    void setupIndexBuffer(const unsigned int* indices, uint32_t indexCount);
 
-        bool _useIndices = false;
-
-        glm::vec3 _boundsMin{0.0f};
-        glm::vec3 _boundsMax{0.0f};
-
-        #pragma endregion
-    };
+#pragma endregion
+};
 
 } // namespace dzemikk
 

@@ -124,7 +124,7 @@ template <typename T> AssetHandle<T> AssetManager::get(const std::string& path) 
 #if DZEMIKK_DEV_TOOLS
         spdlog::info("[AssetManager] Loaded from cache: {}", path);
 #endif
-        return AssetHandle<T>(cached);
+        return AssetHandle<T>(cached, path);
     }
 
     auto* handler = _loaders.get<T>();
@@ -143,7 +143,7 @@ template <typename T> AssetHandle<T> AssetManager::get(const std::string& path) 
     spdlog::info("[AssetManager] Loaded from file: {}", path);
 #endif
 
-    return AssetHandle<T>(result.resource);
+    return AssetHandle<T>(result.resource, path);
 }
 
 template <typename T> AssetHandle<T> AssetManager::reload(const std::string& path) {
@@ -159,7 +159,7 @@ template <typename T> AssetHandle<T> AssetManager::reload(const std::string& pat
         return {};
     }
 
-    AssetHandle<T> handle(shared);
+    AssetHandle<T> handle(shared, path);
 
     if (!handler->reload(handle, _resources.resolve(path))) {
         return {};

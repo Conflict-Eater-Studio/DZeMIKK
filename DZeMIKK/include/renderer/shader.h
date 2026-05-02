@@ -77,6 +77,7 @@ namespace dzemikk {
         void setMat2(const char* name, const glm::mat2& mat);
         void setMat3(const char* name, const glm::mat3& mat);
         void setMat4(const char* name, const glm::mat4& mat);
+        void setMat4Array(const char* name, const std::vector<glm::mat4>& matrices) const;
 
         // --- Texture samplers
         void setSampler(const char* name, int textureUnit);

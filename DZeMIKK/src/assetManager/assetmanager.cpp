@@ -78,7 +78,7 @@ void dzemikk::AssetManager::unload(const std::string& path) {
         return;
     }
 
-    handler->unloadUntyped(asset);
+    handler->unloadUntyped(asset, path);
 
     _database.remove(path);
 }

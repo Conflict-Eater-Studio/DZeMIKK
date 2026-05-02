@@ -255,7 +255,7 @@ void Engine::updateCameraArrows(float speed) {
         getAssetManager()->reload<dzemikk::Model>("models/Body Block.fbx");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Y) == GLFW_PRESS) {
-        getAssetManager()->reload<dzemikk::Shader>("shaders/quad");
+        getAssetManager()->reload<dzemikk::Shader>("shaders/skinned");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_U) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Skybox>("textures/Daylight Box_Pieces");
