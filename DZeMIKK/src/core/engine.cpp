@@ -253,7 +253,7 @@ void Engine::updateCameraArrows(float speed) {
         getAssetManager()->reload<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_T) == GLFW_PRESS) {
-        getAssetManager()->reload<dzemikk::Model>("models/Body Block.fbx");
+        getAssetManager()->reload<dzemikk::Model>("models/Flair(1).fbx");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Y) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Shader>("shaders/skinned");

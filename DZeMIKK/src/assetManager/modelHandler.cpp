@@ -71,7 +71,7 @@ bool dzemikk::ModelHandler::reload(Handle& asset, const std::string& path) {
         return false;
     }
 
-    auto newModel = loadModelFromFile(path);
+    auto newModel = loadModelFromFile(path, LoadMode::MeshOnly);
     if (!newModel) {
         return false;
     }
@@ -91,7 +91,7 @@ void dzemikk::ModelHandler::unload(Handle& asset) {
     asset = Handle{};
 }
 
-std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const std::string& path) {
+std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const std::string& path, LoadMode loadMode) {
 
     Assimp::Importer importer;
 
@@ -137,7 +137,7 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
         }
     }
 
-    if (scene->mNumAnimations > 0) {
+    if (scene->mNumAnimations > 0 && loadMode == LoadMode::All) {
         loadAnimations(scene, *skeleton);
     }
 
@@ -221,7 +221,7 @@ void dzemikk::ModelHandler::loadAnimations(const aiScene* scene, Skeleton& skele
                 continue;
 
             BoneTrack* track = clip->addBoneTrack();
-            track->bindBone(bone);
+            track->bindBone(&skeleton, boneIndex);
 
             if (bundle.translation) {
                 for (unsigned int i = 0; i < bundle.translation->mNumPositionKeys; ++i) {

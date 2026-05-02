@@ -56,10 +56,10 @@ dzemikk::Bone* dzemikk::Skeleton::getBone(int index) {
 
 
 void dzemikk::Skeleton::addClip(const std::string& name, AnimationClip* clip) {
-    _clips[name] = clip;
+    _clips[name] = std::shared_ptr<AnimationClip>(clip);
 }
 
 dzemikk::AnimationClip* dzemikk::Skeleton::getClip(const std::string& name) {
     auto it = _clips.find(name);
-    return it != _clips.end() ? it->second : nullptr;
+    return it != _clips.end() ? it->second.get() : nullptr;
 }

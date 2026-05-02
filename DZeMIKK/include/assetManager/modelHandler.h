@@ -50,6 +50,12 @@ class ModelHandler : public IAssetHandler<Model> {
     void unload(Handle& asset) override;
 
   private:
+
+    enum LoadMode { 
+        MeshOnly, 
+        All,
+    };
+    
 #pragma region Debug
     static bool isAssimpHelperNode(const std::string& name);
     static bool isBoneNode(const std::string& name, const dzemikk::Skeleton& skeleton);
@@ -65,7 +71,7 @@ class ModelHandler : public IAssetHandler<Model> {
      * @param path Path to the model file.
      * @return Shared pointer to the loaded Model, or nullptr on failure.
      */
-    static std::shared_ptr<Model> loadModelFromFile(const std::string& path);
+    static std::shared_ptr<Model> loadModelFromFile(const std::string& path, LoadMode loadMode = LoadMode::All);
 
     static std::string normalizeBoneName(const std::string& name);
     static void loadAnimations(const aiScene* scene, Skeleton& skeleton);

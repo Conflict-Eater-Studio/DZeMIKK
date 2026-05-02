@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <memory>
 
 namespace dzemikk {
 class AnimationClip;
@@ -94,7 +95,7 @@ class Skeleton {
   private:
     std::vector<Bone> _bones;
     std::unordered_map<std::string, int> _boneMap;
-    std::unordered_map<std::string, AnimationClip*> _clips;
+    std::unordered_map<std::string, std::shared_ptr<AnimationClip>> _clips;
 
     glm::mat4 _globalInverseTransform{1.0F};
 };

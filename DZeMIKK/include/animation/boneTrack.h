@@ -4,7 +4,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include "IAnimationTrack.h"
-#include "animation/bone.h"
+#include "animation/skeleton.h"
 #include "propertykey.h"
 
 #include <glm/glm.hpp>
@@ -21,10 +21,6 @@ using BoneScaleKey = PropertyKey<glm::vec3>;
 class BoneTrack : public IAnimationTrack {
   public:
     void apply(float time) override {
-        if (_bone == nullptr) {
-            return;
-        }
-
         const glm::vec3 position = samplePosition(time);
         const glm::quat rotation = sampleRotation(time);
         const glm::vec3 scale = sampleScale(time);
@@ -33,11 +29,17 @@ class BoneTrack : public IAnimationTrack {
         const glm::mat4 rotationMatrix = glm::toMat4(rotation);
         const glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0F), scale);
 
-        _bone->setLocalTransform(translationMatrix * rotationMatrix * scaleMatrix);
+        if (_skeleton && _boneIndex >= 0) {
+            Bone* bone = _skeleton->getBone(_boneIndex);
+            if (bone) {
+                bone->setLocalTransform(translationMatrix * rotationMatrix * scaleMatrix);
+            }
+        }
     }
 
-    void bindBone(Bone* bone) {
-        _bone = bone;
+    void bindBone(Skeleton* skeleton, int index) {
+        _skeleton = skeleton;
+        _boneIndex = index;
     }
 
     void addPositionKey(const BonePositionKey& key) {
@@ -52,8 +54,8 @@ class BoneTrack : public IAnimationTrack {
         _scaleKeys.push_back(key);
     }
 
-    [[nodiscard]] Bone* getBone() const {
-        return _bone;
+    [[nodiscard]] int getBone() const {
+        return _boneIndex;
     }
 
     [[nodiscard]] const std::vector<BonePositionKey>& getPositionKeys() const {
@@ -69,7 +71,8 @@ class BoneTrack : public IAnimationTrack {
     }
 
   private:
-    Bone* _bone = nullptr;
+    int _boneIndex = -1;
+    Skeleton* _skeleton = nullptr; 
 
     std::vector<BonePositionKey> _positionKeys;
     std::vector<BoneRotationKey> _rotationKeys;
