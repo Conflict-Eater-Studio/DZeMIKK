@@ -10,10 +10,11 @@
 #include <assimp/postprocess.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
+#include <iostream>s
 #include <glm/gtx/matrix_decompose.hpp>
 
 #include "assetManager/skeletonBuilder.h"
+#include "assetManager/meshBuilder.h"
 
 #if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
@@ -126,10 +127,10 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
         const bool isSkinned = mesh->HasBones();
 
         if (!isSkinned) {
-            auto staticMesh = buildStaticMesh(mesh);
+            auto staticMesh = MeshBuilder::buildStaticMesh(mesh);
             model->addMesh(staticMesh, mesh->mMaterialIndex);
         } else {
-            auto skinnedMesh = buildSkinnedMesh(mesh, *skeleton);
+            auto skinnedMesh = MeshBuilder::buildSkinnedMesh(mesh, *skeleton);
             model->addMesh(skinnedMesh, mesh->mMaterialIndex);
         }
     }
@@ -248,115 +249,4 @@ void dzemikk::ModelHandler::loadAnimations(const aiScene* scene, Skeleton& skele
 
         skeleton.addClip(name, clip);
     }
-}
-
-void dzemikk::ModelHandler::extractBoneWeights(const aiMesh* mesh, std::vector<dzemikk::SkinnedVertex>& vertices,
-                               dzemikk::Skeleton& skeleton) {
-    for (unsigned int i = 0; i < mesh->mNumBones; i++) {
-        aiBone* bone = mesh->mBones[i];
-
-        int boneID = skeleton.getBoneIndex(bone->mName.C_Str());
-
-        if (boneID == -1) {
-            continue;
-        }
-        
-        for (unsigned int w = 0; w < bone->mNumWeights; ++w) {
-            const aiVertexWeight& vw = bone->mWeights[w];
-            auto& v = vertices[vw.mVertexId];
-
-            for (size_t k = 0; k < v.weights.size(); ++k) {
-                if (v.weights[k] == 0.0F) {
-                    v.boneIDs[k] = boneID;
-                    v.weights[k] = vw.mWeight;
-                    break;
-                }
-            }
-        }
-    }
-}
-
-std::shared_ptr<dzemikk::StaticMesh> dzemikk::ModelHandler::buildStaticMesh(const aiMesh* aiMesh) {
-
-    std::vector<StaticVertex> vertices;
-    std::vector<unsigned int> indices;
-
-    vertices.resize(aiMesh->mNumVertices);
-
-    const auto* positions = aiMesh->mVertices;
-    const auto* normals = aiMesh->mNormals;
-
-    for (unsigned int v = 0; v < aiMesh->mNumVertices; ++v) {
-
-        auto& vertex = vertices[v];
-
-        const auto& pos = positions[v];
-        vertex.position = {pos.x, pos.y, pos.z};
-
-        if (aiMesh->HasNormals()) {
-            const auto& n = normals[v];
-            vertex.normal = {n.x, n.y, n.z};
-        } else {
-            vertex.normal = glm::vec3(0.0F);
-        }
-    }
-
-    indices.reserve(aiMesh->mNumFaces * 3);
-
-    for (unsigned int f = 0; f < aiMesh->mNumFaces; ++f) {
-        const aiFace& face = aiMesh->mFaces[f];
-
-        for (unsigned int j = 0; j < face.mNumIndices; ++j) {
-            indices.push_back(face.mIndices[j]);
-        }
-    }
-
-    auto mesh = std::make_shared<StaticMesh>();
-    mesh->create(vertices, indices);
-
-    return mesh;
-}
-
-std::shared_ptr<dzemikk::SkinnedMesh> dzemikk::ModelHandler::buildSkinnedMesh(const aiMesh* aiMesh,
-                                                                              Skeleton& skeleton) {
-
-    std::vector<SkinnedVertex> vertices;
-    std::vector<unsigned int> indices;
-
-    vertices.resize(aiMesh->mNumVertices);
-
-    const auto* positions = aiMesh->mVertices;
-    const auto* normals = aiMesh->mNormals;
-
-    for (unsigned int v = 0; v < aiMesh->mNumVertices; ++v) {
-
-        auto& vertex = vertices[v];
-
-        const auto& pos = positions[v];
-        vertex.position = {pos.x, pos.y, pos.z};
-
-        if (aiMesh->HasNormals()) {
-            const auto& n = normals[v];
-            vertex.normal = {n.x, n.y, n.z};
-        } else {
-            vertex.normal = glm::vec3(0.0F);
-        }
-    }
-
-    indices.reserve(aiMesh->mNumFaces * 3);
-
-    for (unsigned int f = 0; f < aiMesh->mNumFaces; ++f) {
-        const aiFace& face = aiMesh->mFaces[f];
-
-        for (unsigned int j = 0; j < face.mNumIndices; ++j) {
-            indices.push_back(face.mIndices[j]);
-        }
-    }
-
-    extractBoneWeights(aiMesh, vertices, skeleton);
-
-    auto mesh = std::make_shared<SkinnedMesh>();
-    mesh->create(vertices, indices);
-
-    return mesh;
 }
