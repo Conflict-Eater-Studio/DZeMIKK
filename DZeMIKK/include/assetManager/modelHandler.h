@@ -5,8 +5,6 @@
 #include <assimp/matrix4x4.h>
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
-#include "renderer/SkinnedMesh.h"
-#include "renderer/StaticMesh.h"
 
 namespace dzemikk {
 class Model;
@@ -72,10 +70,6 @@ class ModelHandler : public IAssetHandler<Model> {
      * @return Shared pointer to the loaded Model, or nullptr on failure.
      */
     static std::shared_ptr<Model> loadModelFromFile(const std::string& path, LoadMode loadMode = LoadMode::All);
-
-    static std::string normalizeBoneName(const std::string& name);
-    static void loadAnimations(const aiScene* scene, Skeleton& skeleton);
-
 };
 }
 
