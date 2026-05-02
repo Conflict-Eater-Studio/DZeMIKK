@@ -79,30 +79,6 @@ class ModelHandler : public IAssetHandler<Model> {
 #pragma region Assimp conversion utilities
 
     /**
-     * @brief Converts Assimp matrix format to GLM matrix format.
-     *
-     * @param m Input Assimp transformation matrix.
-     * @return glm::mat4 Converted GLM-compatible matrix.
-     */
-    static glm::mat4 aiToGlm(const aiMatrix4x4& m);
-
-    /**
-     * @brief Recursively builds a skeleton hierarchy from an Assimp scene node.
-     *
-     * Traverses the node tree and constructs a skeleton structure while accumulating
-     * hierarchical transforms. Each node's transformation is combined with its parent
-     * to produce a final bone transform in model space.
-     *
-     * @param node Current Assimp scene node.
-     * @param skeleton Output skeleton structure being constructed.
-     * @param parent Index of the parent bone (-1 for root).
-     * @param accumulatedTransform Transformation matrix accumulated from parent nodes.
-     */
-    static void buildSkeleton(aiNode* node, Skeleton& skeleton, int parent,
-                              glm::mat4 accumulatedTransform);
-    static void applyBoneOffsets(const aiScene* scene, Skeleton& skeleton);
-
-    /**
      * @brief Extracts bone weights from an Assimp mesh and applies them to vertices.
      *
      * Parses bone influence data from the mesh and assigns up to 4 bone IDs and

@@ -13,6 +13,8 @@
 #include <iostream>
 #include <glm/gtx/matrix_decompose.hpp>
 
+#include "assetManager/skeletonBuilder.h"
+
 #if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
 #endif
@@ -107,13 +109,8 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
 
     auto model = std::make_shared<Model>();
 
-    auto skeleton = std::make_shared<dzemikk::Skeleton>();
-    buildSkeleton(scene->mRootNode, *skeleton, -1, glm::mat4(1.0F));
-    applyBoneOffsets(scene, *skeleton);
-
-    skeleton->setGlobalInverseTransform(glm::inverse(aiToGlm(scene->mRootNode->mTransformation)));
-
-    model->setSkeleton(skeleton);
+    auto skeleton = SkeletonBuilder::build(scene);
+    model->setSkeleton(std::shared_ptr<Skeleton>(skeleton));
 
 
     for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
@@ -250,68 +247,6 @@ void dzemikk::ModelHandler::loadAnimations(const aiScene* scene, Skeleton& skele
             anim->mName.length > 0 ? anim->mName.C_Str() : "Anim_" + std::to_string(a);
 
         skeleton.addClip(name, clip);
-    }
-}
-
-glm::mat4 dzemikk::ModelHandler::aiToGlm(const aiMatrix4x4& m) {
-    glm::mat4 result;
-    result[0][0] = m.a1;
-    result[1][0] = m.a2;
-    result[2][0] = m.a3;
-    result[3][0] = m.a4;
-    result[0][1] = m.b1;
-    result[1][1] = m.b2;
-    result[2][1] = m.b3;
-    result[3][1] = m.b4;
-    result[0][2] = m.c1;
-    result[1][2] = m.c2;
-    result[2][2] = m.c3;
-    result[3][2] = m.c4;
-    result[0][3] = m.d1;
-    result[1][3] = m.d2;
-    result[2][3] = m.d3;
-    result[3][3] = m.d4;
-    return result;
-}
-
-void dzemikk::ModelHandler::buildSkeleton(aiNode* node, Skeleton& skeleton, int parent,
-                                          glm::mat4 accumulatedTransform) {
-    std::string name = node->mName.C_Str();
-
-    glm::mat4 local = aiToGlm(node->mTransformation);
-    glm::mat4 newAccum = accumulatedTransform * local;
-
-    int index = skeleton.addBone(name, parent);
-
-    auto* bone = skeleton.getBone(index);
-    if (bone) {
-        bone->setLocalTransform(local);       
-        bone->setBindLocalTransform(local); 
-    }
-
-    for (unsigned int i = 0; i < node->mNumChildren; ++i) {
-        aiNode* child = node->mChildren[i];
-        buildSkeleton(child, skeleton, index, newAccum);
-    }
-}
-
-void dzemikk::ModelHandler::applyBoneOffsets(const aiScene* scene, Skeleton& skeleton) {
-    for (unsigned int m = 0; m < scene->mNumMeshes; m++) {
-        const aiMesh* mesh = scene->mMeshes[m];
-
-        for (unsigned int b = 0; b < mesh->mNumBones; b++) {
-            const aiBone* bone = mesh->mBones[b];
-
-            int boneID = skeleton.getBoneIndex(bone->mName.C_Str());
-            if (boneID == -1)
-                continue;
-
-            Bone* skelBone = skeleton.getBone(boneID);
-            if (!skelBone)
-                continue;
-
-            skelBone->setOffsetMatrix(aiToGlm(bone->mOffsetMatrix));
-        }
     }
 }
 
