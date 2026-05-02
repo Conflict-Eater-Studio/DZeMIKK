@@ -6,6 +6,7 @@
 #include "IAnimationTrack.h"
 #include "animation/bone.h"
 #include "propertykey.h"
+#include "spdlog/spdlog.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -22,6 +23,9 @@ class BoneTrack : public IAnimationTrack {
   public:
     void apply(float time) override {
         if (_bone == nullptr) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::warn("[BoneTrack] BoneTrack has no bone!");
+#endif
             return;
         }
 
@@ -162,6 +166,18 @@ class BoneTrack : public IAnimationTrack {
 
         return _scaleKeys.size() - 2;
     }
+
+  public:
+    std::string getType() const override {
+        return "BoneTrack";
+    };
+    nlohmann::json serialize() const override {
+        nlohmann::json j;
+        j["positionKeys"] = _positionKeys;
+        j["rotationKeys"] = _rotationKeys;
+        j["scaleKeys"] = _scaleKeys;
+        return j;
+    };
 };
 
 } // namespace dzemikk

@@ -73,7 +73,6 @@ public:
     * @param timeInSeconds Current time within the animation (in seconds).
     */
     void apply(float timeInSeconds) const;
-    std::shared_ptr<AnimationClip> fromAssimp(aiAnimation* animation);
     void setLoop(bool loop);
     void setDuration(float duration);
     void setTickrate(float tickrate);

@@ -67,7 +67,7 @@ glm::vec3 hexToWorld(int q, int r, float size, float spacing = 0.1f, float maxHe
     return glm::vec3(x, y, z);
 }
 
-void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Material* materialA,
+void createHexIsland(dzemikk::Scene& scene, dzemikk::AssetHandle<dzemikk::Model>* mesh, dzemikk::Material* materialA,
                      dzemikk::Material* materialB, int tileCount, float size, float spacing,
                      float maxHeight) {
     std::set<Hex> island;
@@ -114,7 +114,7 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Mater
         tile->transform()->setRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
         auto renderer = tile->addComponent<dzemikk::MeshRenderer>();
-        renderer->setModel(mesh);
+        renderer->setModel(*mesh);
         renderer->setTransform(tile->transform());
 
         if ((hex.q + hex.r) % 2 == 0)
@@ -123,12 +123,13 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Mater
             renderer->setMaterial(0, materialB);
 
         auto collider = tile->addComponent<dzemikk::Collider>();
-        collider->setModel(mesh);
+        collider->setModel(mesh->get());
         collider->setTransform(tile->transform());
     }
 }
 
 Game::Game(dzemikk::Engine* engine) : engine(engine) {}
+
 void Game::start() {
     auto mainScenePtr = std::make_shared<dzemikk::Scene>();
     engine->getSceneManager()->loadScene(mainScenePtr);
@@ -416,8 +417,8 @@ void Game::setupScene() {
 
 void Game::setupSkybox() {
     auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
-    skybox.get()->setShader(engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox").get());
-    engine->getRenderer()->setSkybox(skybox.get());
+    skybox.get()->setShader(engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox"));
+    engine->getRenderer()->setSkybox(skybox);
 }
 
 void Game::setupMainCamera() {
@@ -433,40 +434,27 @@ void Game::setupMainCamera() {
 void Game::setupMaterials() {
     auto shaderA = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
     materialA = new dzemikk::Material();
-    materialA->setShader(shaderA.get());
+    materialA->setShader(shaderA);
 
     auto shaderB = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile2");
     materialB = new dzemikk::Material();
-    materialB->setShader(shaderB.get());
+    materialB->setShader(shaderB);
 
     auto quadShader = engine->getAssetManager()->get<dzemikk::Shader>("shaders/quad");
     quadMaterial = new dzemikk::Material();
-    quadMaterial->setShader(quadShader.get());
+    quadMaterial->setShader(quadShader);
 }
 
 void Game::setupWorld() {
     auto tileMesh = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
-    createHexIsland(*mainScene, tileMesh.get(), materialA, materialB, 50, 1.0f, 0.15f, 0.5f);
+    createHexIsland(*mainScene, &tileMesh, materialA, materialB, 50, 1.0f, 0.15f, 0.5f);
 
-    setupPlayer();
     setupChest();
     setupEnemy();
 }
 
-void Game::setupPlayer() {
-    playerGO = mainScene->createGameObject();
-    playerGO->transform()->setPosition(glm::vec3(0.0f, 2.5f, 0.0f));
 
-    auto playerMeshR = playerGO->addComponent<dzemikk::MeshRenderer>();
-    auto playerMesh =
-        engine->getAssetManager()->getPrimitive(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Capsule);
-
-    playerMeshR->setModel(new dzemikk::Model());
-    playerMeshR->getModel()->addMesh(std::shared_ptr<dzemikk::Mesh>(playerMesh), 0);
-    playerMeshR->setTransform(playerGO->transform());
-    playerMeshR->setMaterial(0, materialA);
-}
 
 void Game::setupChest() {
     auto chestGO = mainScene->createGameObject();
@@ -476,7 +464,7 @@ void Game::setupChest() {
     auto chestMeshR = chestGO->addComponent<dzemikk::MeshRenderer>();
     auto chestMesh = engine->getAssetManager()->get<dzemikk::Model>("models/skrzynia.fbx");
 
-    chestMeshR->setModel(chestMesh.get());
+    chestMeshR->setModel(chestMesh);
     chestMeshR->setTransform(chestGO->transform());
     chestMeshR->setMaterial(0, materialA);
 }
@@ -489,7 +477,7 @@ void Game::setupEnemy() {
     auto enemyMeshR = enemyGO->addComponent<dzemikk::MeshRenderer>();
     auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
 
-    enemyMeshR->setModel(enemyMesh.get());
+    enemyMeshR->setModel(enemyMesh);
     enemyMeshR->setTransform(enemyGO->transform());
     enemyMeshR->setMaterial(0, materialA);
     enemyMeshR->setMaterial(1, materialB);

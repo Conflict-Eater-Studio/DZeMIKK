@@ -48,7 +48,7 @@ class AnimationStateMachine;
        *
        * @param stateName Name of the target state.
        */
-        void play(std::string& stateName);
+        void play(const std::string& stateName);
 
         /**
          * @brief Sets a float parameter.
@@ -106,36 +106,36 @@ class AnimationStateMachine;
         float _currentTime = 0.0f;
     };
 
-    inline void to_json(nlohmann::json& json, const Animator& animator) {
-        json["type"] = animator.typeName();
-        json["id"] = boost::uuids::to_string(animator.getId());
-        //todo save path of statemachine getStateMachine().getPath();
-        json["stateMachine"] = animator.getStateMachine();
-        json["currentState"] = animator.getCurrentState()->getName();
-    }
-    inline void from_json(const nlohmann::json& json, Animator& animator) {
-        animator.setId(boost::uuids::(json["id"]));
-        // todo load from assetManager
-        animator.setStateMachine(json["stateMachine"]);
-        animator.play(json["currentState"]);
-    }
-
-    inline void registerAnimatorSerializer(ComponentSerializerRegistry& registry) {
-        registry.registerType(
-            "Animator",
-            [](const Component& component) {
-                const auto* slider = dynamic_cast<const Animator*>(&component);
-                if (slider == nullptr) {
-                    throw std::runtime_error("Component type mismatch for Animator serialization");
-                }
-
-                return nlohmann::json(*slider);
-            },
-            [](GameObject& gameObject, const nlohmann::json& componentJson) {
-                auto* slider = gameObject.addComponent<Animator>();
-                from_json(componentJson, *slider);
-            });
-    }
+    // inline void to_json(nlohmann::json& json, const Animator& animator) {
+    //     json["type"] = animator.typeName();
+    //     json["id"] = boost::uuids::to_string(animator.getId());
+    //     //todo save path of statemachine getStateMachine().getPath();
+    //     json["stateMachine"] = animator.getStateMachine();
+    //     json["currentState"] = animator.getCurrentState()->getName();
+    // }
+    // inline void from_json(const nlohmann::json& json, Animator& animator) {
+    //     animator.setId(boost::uuids::(json["id"]));
+    //     // todo load from assetManager
+    //     animator.setStateMachine(json["stateMachine"]);
+    //     animator.play(json["currentState"]);
+    // }
+    //
+    // inline void registerMeshRendererSerializer(ComponentSerializerRegistry& registry) {
+    //     registry.registerType(
+    //         "Animator",
+    //         [](const Component& component) {
+    //             const auto* slider = dynamic_cast<const Animator*>(&component);
+    //             if (slider == nullptr) {
+    //                 throw std::runtime_error("Component type mismatch for Animator serialization");
+    //             }
+    //
+    //             return nlohmann::json(*slider);
+    //         },
+    //         [](GameObject& gameObject, const nlohmann::json& componentJson) {
+    //             auto* slider = gameObject.addComponent<Animator>();
+    //             from_json(componentJson, *slider);
+    //         });
+    // }
 } // namespace dzemikk
 
 #endif

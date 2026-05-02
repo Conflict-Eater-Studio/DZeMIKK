@@ -1,7 +1,8 @@
 #include "ecs/components/meshRenderer.h"
 #include "renderer/model.h"
 
-void dzemikk::MeshRenderer::calculateCullingRadius(Model* model) {
+namespace dzemikk {
+void MeshRenderer::calculateCullingRadius(Model* model) {
     if (!model || model->getSubMeshes().empty()) {
         return;
     }
@@ -22,6 +23,7 @@ void dzemikk::MeshRenderer::calculateCullingRadius(Model* model) {
 }
 
 
-float dzemikk::MeshRenderer::getCullingRadius() const {
+float MeshRenderer::getCullingRadius() const {
     return _cullingRadius;
+}
 }

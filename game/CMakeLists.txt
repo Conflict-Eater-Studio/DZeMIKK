@@ -2,7 +2,7 @@ project(Game LANGUAGES CXX)
 
 add_executable(game
         src/main.cpp
-        src/game.cpp
+#        src/game.cpp
 )
 target_include_directories(game
         PUBLIC
