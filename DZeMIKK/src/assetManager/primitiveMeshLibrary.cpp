@@ -14,10 +14,10 @@ void dzemikk::PrimitiveMeshLibrary::init() {
     _meshes[PrimitiveMesh::Capsule] = PrimitiveFactory::createCapsule();
 }
 
-dzemikk::Mesh* dzemikk::PrimitiveMeshLibrary::get(PrimitiveMesh type) {
+std::shared_ptr<dzemikk::Mesh> dzemikk::PrimitiveMeshLibrary::get(PrimitiveMesh type) {
     auto it = _meshes.find(type);
     if (it != _meshes.end()) {
-        return it->second.get();
+        return it->second;
     }
 
     return nullptr;

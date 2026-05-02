@@ -83,8 +83,26 @@ void dzemikk::AssetManager::unload(const std::string& path) {
     _database.remove(path);
 }
 
+dzemikk::AssetHandle<dzemikk::Model> dzemikk::AssetManager::getPrimitiveModel(PrimitiveMeshLibrary::PrimitiveMesh type) {
+    const std::string key = "primitive/" + std::to_string(static_cast<int>(type));
+
+    if (auto cached = _database.get<Model>(key)) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[AssetManager] Primitive model from cache: {}", key);
+#endif
+        return AssetHandle<Model>(cached, key);
+    }
+
+    auto model = std::make_shared<Model>();
+    model->addMesh(_primitiveMeshLibrary.get(type), 0);
+
+    _database.store<Model>(key, model);
+
+    return AssetHandle<Model>(model, key);
+}
+
 dzemikk::Mesh* dzemikk::AssetManager::getPrimitive(PrimitiveMeshLibrary::PrimitiveMesh type) {
-    return _primitiveMeshLibrary.get(type);
+    return _primitiveMeshLibrary.get(type).get();
 }
 
 void dzemikk::AssetManager::setFMODSystem(FMOD::System* system) {

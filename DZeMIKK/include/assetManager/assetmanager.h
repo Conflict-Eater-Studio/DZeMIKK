@@ -15,6 +15,9 @@
 #include "assetManager/assetLoaderRegistry.h"
 #include "assetManager/resourceIndex.h"
 #include "assetManager/primitiveMeshLibrary.h"
+#include "assetManager/assetHandle.h"
+
+#include "renderer/model.h"
 
 namespace dzemikk {
 
@@ -72,6 +75,8 @@ class AssetManager : public IEngineModule {
     /**
      * @brief Returns built-in primitive mesh.
      */
+    AssetHandle<Model> getPrimitiveModel(PrimitiveMeshLibrary::PrimitiveMesh type);
+
     Mesh* getPrimitive(PrimitiveMeshLibrary::PrimitiveMesh type);
 
     // FOR TEST ONLY

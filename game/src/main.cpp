@@ -143,7 +143,7 @@ int main() {
 
     createHexIsland(*mainScenePtr, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
-    auto sphereMesh = engine->getAssetManager()->getPrimitive(
+    auto sphereMesh = engine->getAssetManager()->getPrimitiveModel(
         dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Sphere);
 
     float spacing = 1.5f;
@@ -181,8 +181,7 @@ int main() {
 
         auto renderer = sphereGO->addComponent<dzemikk::MeshRenderer>();
 
-        renderer->setModel(modelHandle);
-        renderer->getModel()->addMesh(std::shared_ptr<dzemikk::Mesh>(sphereMesh), 0);
+        renderer->setModel(sphereMesh);
 
         renderer->setTransform(sphereGO->transform());
         renderer->setMaterial(0, sphereMaterials[i]);
@@ -192,13 +191,9 @@ int main() {
     auto playerGO = mainScenePtr->createGameObject();
     playerGO->transform()->setPosition(glm::vec3(0.0f, 2.5f, 0.0f));
     auto playerMeshR = playerGO->addComponent<dzemikk::MeshRenderer>();
-    auto playerMesh = engine->getAssetManager()->getPrimitive(
+    auto playerMesh = engine->getAssetManager()->getPrimitiveModel(
         dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Capsule);
-
-    auto playerModelPtr = std::make_shared<dzemikk::Model>();
-    dzemikk::AssetHandle<dzemikk::Model> playerModelHandle(playerModelPtr, "primitive/capsule");
-    playerMeshR->setModel(playerModelHandle);
-    playerMeshR->getModel()->addMesh(std::shared_ptr<dzemikk::Mesh>(playerMesh), 0);
+    playerMeshR->setModel(playerMesh);
     playerMeshR->setTransform(playerGO->transform());
     playerMeshR->setMaterial(0, materialA);
 
