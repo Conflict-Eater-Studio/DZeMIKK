@@ -73,6 +73,7 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/components/ui/uiSlider.cpp"
         "${SRC_DIR}/ecs/components/ui/uiCheckbox.cpp"
         "${SRC_DIR}/ecs/components/ui/uiDropdown.cpp"
+        "${SRC_DIR}/audio/audioManager.cpp"
 )
 
 set(ENGINE_HEADERS
@@ -160,6 +161,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/components/ui/colors.h"
         "${INC_DIR}/ecs/components/ui/uiCheckbox.h"
         "${INC_DIR}/ecs/components/ui/uiDropdown.h"
+        "${INC_DIR}/audio/audioManager.h"
 )
 
 target_sources(DZeMIKK

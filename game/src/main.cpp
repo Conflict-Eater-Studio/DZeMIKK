@@ -2,6 +2,8 @@
 #include "animation/animationtrack.h"
 #include "assetManager/assetmanager.h"
 #include "assetManager/primitiveMeshLibrary.h"
+#include "audio/audioManager.h"
+#include "audio/sound.h"
 #include "core/engine.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
@@ -16,6 +18,7 @@
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
 #include "ecs/serialize/gameobjectSerializer.h"
+#include "events/key_event.h"
 #include "renderer/font.h"
 #include "renderer/material.h"
 #include "renderer/model.h"
@@ -179,7 +182,18 @@ int main() {
                   });
 
     auto* dropdown = dropdownGO->getComponent<dzemikk::UIDropdown>();
-    spdlog::info("Dropdown options count: ", dropdown->getOptions().size());
+
+    // --- Sound test ---
+    auto sound = assetManager->get<dzemikk::Sound>("audio/prime_wznoszeniePol.wav");
+    auto* audio = engine->getAudioManager();
+    engine->getInput()->OnKeyPressed.addListener([&audio, &sound](dzemikk::KeyPressedEvent& event) {
+        if (event.GetKeyCode() == GLFW_KEY_SPACE) {
+            spdlog::info("Playing sound");
+            audio->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX);
+        }
+    });
+    // --- To save your ears :)
+    audio->getMasterGroup()->setVolume(0.1F);
 
     engine->start();
 

@@ -21,6 +21,7 @@ class AssetManager;
 class AnimationModule;
 class Input;
 class Collisions;
+class AudioManager;
 
 /**
  * @brief The core application class managing the game loop and all subsystems.
@@ -45,6 +46,7 @@ class Engine {
     [[nodiscard]] AssetManager* getAssetManager() const;
     [[nodiscard]] Input* getInput() const;
     [[nodiscard]] Collisions* getCollisions() const;
+    [[nodiscard]] AudioManager* getAudioManager() const;
 
     /**
      * @brief Zwraca dynamicznie zarejestrowany moduł na podstawie jego typu.
@@ -85,6 +87,7 @@ class Engine {
     std::unique_ptr<AnimationModule> _animationModule;
     std::unique_ptr<Input> _input;
     std::unique_ptr<Collisions> _collisions;
+    std::unique_ptr<AudioManager> _audioManager;
 
     std::vector<std::unique_ptr<IEngineModule>> _modules;
 

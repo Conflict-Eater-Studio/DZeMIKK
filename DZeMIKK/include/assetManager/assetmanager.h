@@ -5,16 +5,15 @@
 #include <spdlog/spdlog.h>
 #endif
 
+#include "assetManager/assetDatabase.h"
+#include "assetManager/assetLoaderRegistry.h"
+#include "assetManager/primitiveMeshLibrary.h"
+#include "assetManager/resourceIndex.h"
 #include "core/iEngineModule.h"
 
 #include <fmod/include/fmod/fmod.hpp>
 #include <stdexcept>
 #include <string>
-
-#include "assetManager/assetDatabase.h"
-#include "assetManager/assetLoaderRegistry.h"
-#include "assetManager/resourceIndex.h"
-#include "assetManager/primitiveMeshLibrary.h"
 
 namespace dzemikk {
 
@@ -55,14 +54,12 @@ class AssetManager : public IEngineModule {
     /**
      * @brief Gets an asset handle. Loads it if not cached.
      */
-    template <typename T> 
-    AssetHandle<T> get(const std::string& path);
+    template <typename T> AssetHandle<T> get(const std::string& path);
 
     /**
      * @brief Reloads an already loaded asset.
      */
-    template <typename T> 
-    AssetHandle<T> reload(const std::string& path);
+    template <typename T> AssetHandle<T> reload(const std::string& path);
 
     /**
      * @brief Unloads asset from cache.
@@ -96,7 +93,7 @@ class AssetManager : public IEngineModule {
 
     /** @brief Resource path resolver */
     ResourceIndex _resources;
-      
+
     /** @brief Built-in primitives */
     PrimitiveMeshLibrary _primitiveMeshLibrary;
 

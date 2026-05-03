@@ -12,6 +12,7 @@
 
 #include "animation/animationmodule.h"
 #include "assetManager/assetmanager.h"
+#include "audio/audioManager.h"
 #include "audio/sound.h"
 #include "collisions/collisions.h"
 #include "core/engine.h"
@@ -50,6 +51,7 @@ void Engine::init() {
     _animationModule = std::make_unique<AnimationModule>();
     _input = std::make_unique<Input>();
     _collisions = std::make_unique<Collisions>();
+    _audioManager = std::make_unique<AudioManager>();
 
     _mainWindow->initialize();
     _assetManager->initialize();
@@ -62,6 +64,9 @@ void Engine::init() {
     _mainWindow->setEventCallback([this](Event& e) { this->OnEvent(e); });
     _input->initialize();
     _collisions->initialize();
+    _audioManager->initialize();
+
+    _assetManager->setFMODSystem(_audioManager->getSystem());
 
     _input->OnMouseScrolled.addListener(
         [&](dzemikk::MouseScrolledEvent& e) { _scrollDelta = e.GetYOffset(); });
@@ -97,6 +102,7 @@ void Engine::shutdown() {
     ImGui::DestroyContext();
 #endif
 
+    _audioManager->uninitialize();
     _mainWindow->uninitialize();
     _assetManager->uninitialize();
     _renderer->uninitialize();
@@ -119,6 +125,7 @@ void Engine::start() {
     float fixedDeltaTime = _time->getFixedDeltaTime();
     while (!_mainWindow->shouldClose()) {
         _time->update();
+        _audioManager->update(_time->getDeltaTime());
 
         float deltaTime = _time->getDeltaTime();
         Profiler::Get().BeginFrame(deltaTime);
@@ -203,6 +210,10 @@ Input* Engine::getInput() const {
 
 Collisions* Engine::getCollisions() const {
     return _collisions.get();
+}
+
+AudioManager* Engine::getAudioManager() const {
+    return _audioManager.get();
 }
 
 // template <std::derived_from<IEngineModule> T>
