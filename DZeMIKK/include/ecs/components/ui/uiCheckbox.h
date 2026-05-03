@@ -19,6 +19,7 @@ class UICheckbox : public IUIInteractable {
         glm::vec4 normalColor = glm::vec4(1.0F);
         glm::vec4 hoverColor = glm::vec4(1.0F, 1.0F, 1.0F, 0.85F);
         glm::vec4 pressedColor = glm::vec4(0.75F, 0.75F, 0.75F, 1.0F);
+        glm::vec4 checkmarkColor = glm::vec4(0.2F, 0.6F, 1.0F, 1.0F);
     };
 
     UICheckbox() = default;

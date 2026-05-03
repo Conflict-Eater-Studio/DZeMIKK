@@ -5,11 +5,9 @@
 #include "ecs/components/ui/uiActionRegistry.h"
 
 #include <algorithm>
-#include <glm/vec2.hpp>
-#include <ranges>
+#include <glm/glm.hpp>
 #include <string>
 #include <unordered_map>
-#include <utility>
 #include <variant>
 #include <vector>
 

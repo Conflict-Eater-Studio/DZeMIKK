@@ -40,8 +40,13 @@ class UIButton : public IUIInteractable {
     void setStyle(const Style& style);
     Style getStyle() const;
 
+    void setTextGO(GameObject* textGO);
+    [[nodiscard]] GameObject* getTextGO() const;
+
   private:
     void applyVisualState();
+
+    GameObject* _textGO = nullptr;
 
     Style _style{.normalColor = glm::vec4(1.0F),
                  .hoverColor = glm::vec4(0.9F, 0.9F, 0.9F, 1.0F),

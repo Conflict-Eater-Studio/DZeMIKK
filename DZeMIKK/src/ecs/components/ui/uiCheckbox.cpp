@@ -62,6 +62,10 @@ void UICheckbox::applyVisualState() {
         return;
     }
 
+    if (_checkmarkSpriteRenderer != nullptr) {
+        _checkmarkSpriteRenderer->setColor(_style.checkmarkColor);
+    }
+
     if (pressedInside() && pointerInside() && pointerDown()) {
         _backgroundSpriteRenderer->setColor(_style.pressedColor);
     } else if (isHovered()) {

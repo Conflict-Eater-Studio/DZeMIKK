@@ -50,4 +50,12 @@ void UIButton::applyVisualState() {
         _spriteRenderer->setColor(_style.normalColor);
     }
 }
+
+void UIButton::setTextGO(GameObject* textGO) {
+    _textGO = textGO;
+}
+
+GameObject* UIButton::getTextGO() const {
+    return _textGO;
+}
 } // namespace dzemikk

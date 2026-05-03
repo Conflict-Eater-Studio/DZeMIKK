@@ -262,4 +262,17 @@ void GameObject::removeSceneActive(MonoBehaviour* mono) {
         _scene->removeActive(mono);
     }
 }
+
+void GameObject::enabled(bool isEnabled) {
+    for (auto& component : _components) {
+        if (component) {
+            component->enabled(isEnabled);
+        }
+    }
+    for (auto* child : _children) {
+        if (child) {
+            child->enabled(isEnabled);
+        }
+    }
+}
 } // namespace dzemikk

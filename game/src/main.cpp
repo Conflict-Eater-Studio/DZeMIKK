@@ -142,6 +142,45 @@ int main() {
     slider->setMaxValue(100.0F);
     slider->setStep(0.1F);
 
+    auto* checkboxGO = dzemikk::UIBuilder::createCheckbox(
+        uiRootGO, {.name = "Test Checkbox",
+                   .position = {(1920.0F / 2.0F) - 25.0F, 1080.0F - 50.0F},
+                   .size = {50.0F, 50.0F},
+                   .bgMesh = quadMesh,
+                   .checkmarkMesh = quadMesh,
+                   .bgMat = quadMat.get(),
+                   .checkmarkMat = quadMat.get()});
+
+    auto* dropdownGO = dzemikk::UIBuilder::createDropdown(
+        uiRootGO, {
+                      .name = "Test Dropdown",
+                      .position = {(1920.0F / 4.0F) - 100.0F, 1080.0F - 150.0F},
+                      .size = {400.0F, 70.0F},
+                      .options =
+                          {
+                              {.text = "Option 1", .value = "opt1"},
+                              {.text = "Option 2", .value = "opt2"},
+                              {.text = "Option 3", .value = "opt3"},
+                              {.text = "Option 4", .value = "opt4"},
+                              {.text = "Option 5", .value = "opt5"},
+                              {.text = "Option 6", .value = "opt6"},
+                          },
+                      .optionHeight = 70.0F,
+                      .maxVisibleOptions = 3,
+                      .textFont = font,
+                      .bgMesh = quadMesh,
+                      .arrowMesh = quadMesh,
+                      .optionMesh = quadMesh,
+                      .optionsBgMesh = quadMesh,
+                      .bgMat = quadMat.get(),
+                      .arrowMat = quadMat.get(),
+                      .optionMat = quadMat.get(),
+                      .optionsBgMat = quadMat.get(),
+                  });
+
+    auto* dropdown = dropdownGO->getComponent<dzemikk::UIDropdown>();
+    spdlog::info("Dropdown options count: ", dropdown->getOptions().size());
+
     engine->start();
 
     return 0;
