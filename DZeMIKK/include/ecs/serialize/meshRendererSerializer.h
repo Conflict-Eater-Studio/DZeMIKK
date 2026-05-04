@@ -1,7 +1,7 @@
+#pragma once
 #ifndef DZEMIKK_MESHRENDERERSERIALIZER_H
 #define DZEMIKK_MESHRENDERERSERIALIZER_H
 
-#pragma once
 
 #include "ecs/components/meshRenderer.h"
 #include "ecs/gameobject.h"
@@ -14,7 +14,7 @@
 #include <nlohmann/json.hpp>
 
 namespace dzemikk {
-inline void to_json(nlohmann::json& json, const MeshRenderer& meshRenderer) {
+void to_json(nlohmann::json& json, const MeshRenderer& meshRenderer) {
     json["type"] = meshRenderer.typeName();
 
     // Explicitly convert UUID to string to avoid serialization errors
@@ -100,7 +100,9 @@ inline void registerMeshRendererSerializer(ComponentSerializerRegistry& registry
             if (meshRenderer == nullptr) {
                 throw std::runtime_error("Component type mismatch for MeshRenderer serialization");
             }
-            return nlohmann::json(*meshRenderer);
+            nlohmann::json j;
+            to_json(j, *meshRenderer);
+            return j;
         },
         [](const ComponentSerializerRegistry::DeserializationContext& context) {
             auto* meshRenderer = context.gameObject.addComponent<MeshRenderer>();
