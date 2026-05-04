@@ -12,7 +12,6 @@ class ThreadPool {
   public:
     struct AssetJob {
         std::string path;
-        std::type_index type = typeid(void);
         std::function<void()> execute;
     };
 

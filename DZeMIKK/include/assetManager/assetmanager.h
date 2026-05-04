@@ -260,7 +260,7 @@ std::shared_future<AssetHandle<T>> AssetManager::getAsync(const std::string& pat
             auto wrapperPromise = std::make_shared<std::promise<AssetHandle<T>>>();
             auto wrapperFuture = wrapperPromise->get_future().share();
 
-            _threadPool.enqueue({path, typeid(T), [future, wrapperPromise, path]() {
+            _threadPool.enqueue({path, [future, wrapperPromise, path]() {
                                      auto ptr = std::static_pointer_cast<T>(future.get());
                                      wrapperPromise->set_value(AssetHandle<T>(ptr, path));
                                  }});
@@ -289,7 +289,6 @@ std::shared_future<AssetHandle<T>> AssetManager::getAsync(const std::string& pat
 
     ThreadPool::AssetJob job;
     job.path = path;
-    job.type = typeid(T);
 
     job.execute = [this, path, promise]() { executeAssetLoad<T>(path, promise); };
 
@@ -298,7 +297,7 @@ std::shared_future<AssetHandle<T>> AssetManager::getAsync(const std::string& pat
     auto wrapperPromise = std::make_shared<std::promise<AssetHandle<T>>>();
     auto wrapperFuture = wrapperPromise->get_future().share();
 
-    _threadPool.enqueue({path, typeid(T), [future, wrapperPromise, path]() {
+    _threadPool.enqueue({path, [future, wrapperPromise, path]() {
                              auto ptr = std::static_pointer_cast<T>(future.get());
                              wrapperPromise->set_value(AssetHandle<T>(ptr, path));
                          }});
@@ -373,7 +372,7 @@ void AssetManager::getAsync(const std::string& path, AssetTask<T, Context> asset
             auto future = it->second;
 
             _threadPool.enqueue(
-                {path, typeid(T), [this, future, path, task = std::move(assetTask)]() mutable {
+                {path, [this, future, path, task = std::move(assetTask)]() mutable {
                      auto ptr = std::static_pointer_cast<T>(future.get());
                      task.onLoad(AssetHandle<T>(ptr, path), task.context);
                  }});
@@ -403,7 +402,6 @@ void AssetManager::getAsync(const std::string& path, AssetTask<T, Context> asset
 
     ThreadPool::AssetJob job;
     job.path = path;
-    job.type = typeid(T);
 
     job.execute = [this, path, promise, task = std::move(assetTask)]() mutable {
         executeAssetLoad<T>(path, promise);
