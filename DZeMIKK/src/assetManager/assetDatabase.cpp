@@ -1,6 +1,7 @@
 #include "assetManager/assetDatabase.h"
 
 void dzemikk::AssetDatabase::remove(const std::string& path) {
+    std::lock_guard lock(_mutex);
     auto it = _assets.find(path);
     if (it == _assets.end()) {
         return;
@@ -18,6 +19,7 @@ void dzemikk::AssetDatabase::clear() {
 }
 
 std::type_index dzemikk::AssetDatabase::getType(const std::string& path) const {
+    std::lock_guard lock(_mutex);
     auto it = _assets.find(path);
     if (it == _assets.end()) {
         return typeid(void);
@@ -27,6 +29,7 @@ std::type_index dzemikk::AssetDatabase::getType(const std::string& path) const {
 }
 
 std::shared_ptr<void> dzemikk::AssetDatabase::getRaw(const std::string& path) const{
+    std::lock_guard lock(_mutex);
     auto it = _assets.find(path);
     if (it == _assets.end()) {
         return nullptr;
@@ -36,5 +39,6 @@ std::shared_ptr<void> dzemikk::AssetDatabase::getRaw(const std::string& path) co
 }
 
 bool dzemikk::AssetDatabase::contains(const std::string& path) const {
+    std::lock_guard lock(_mutex);
     return _assets.contains(path);
 }

@@ -92,6 +92,30 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::AssetHandle<dzemikk::Model>
                      dzemikk::Material* materialB, int tileCount, float size, float spacing = 0.1f,
                      float maxHeight = 0.3f);
 
+struct EnemyInitContext {
+    dzemikk::SkinnedMeshRenderer* renderer;
+    dzemikk::GameObject* go;
+    std::shared_ptr<dzemikk::AnimationStateMachine> sm;
+};
+
+void onEnemyModelLoaded(dzemikk::AssetHandle<dzemikk::Model> model, EnemyInitContext& ctx) {
+
+    ctx.renderer->setModel(model);
+
+    auto skeleton = model.get()->getSkeleton();
+
+    dzemikk::AnimationClip* clip = nullptr;
+    clip = skeleton->getClip("mixamo.com");
+
+    auto state = ctx.sm->addState();
+    state->setClip(clip);
+}
+
+struct StaticMeshInitContext {
+    dzemikk::MeshRenderer* renderer;
+    dzemikk::GameObject* go;
+};
+
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
 
@@ -214,19 +238,16 @@ int main() {
     playerMeshR->setMaterial(0, materialA);
 
     auto enemyGO = mainScenePtr->createGameObject();
-    enemyGO->transform()->setPosition(glm::vec3(2.0f, 2.2f, 0.0f));
+    enemyGO->transform()->setPosition(glm::vec3(2.0f, .5f, 0.0f));
     enemyGO->transform()->setScale(glm::vec3(.01f, .01f, 0.01f));
     auto enemyMeshR = enemyGO->addComponent<dzemikk::SkinnedMeshRenderer>();
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
     // enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Rumba Dancing.fbx");
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Flair(1).fbx");
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Dancing Twerk.fbx");
-    auto futureEM = engine->getAssetManager()->getAsync<dzemikk::Model>("models/Dancing Twerk.fbx");
-    auto enemyMesh = futureEM.get();
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/szamankaanim.fbx");
     // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/MainC.fbx");
     // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/cooper.fbx");
-    enemyMeshR->setModel(enemyMesh);
     enemyMeshR->setTransform(enemyGO->transform());
     enemyMeshR->setMaterial(0, materialC);
     enemyMeshR->setMaterial(1, materialC);
@@ -234,38 +255,32 @@ int main() {
     enemyMeshR->setMaterial(3, materialC);
     enemyMeshR->setMaterial(4, materialC);
     enemyMeshR->setMaterial(5, materialC);
+    auto sm = std::make_shared<dzemikk::AnimationStateMachine>();
+    auto animator = enemyGO->addComponent<dzemikk::Animator>();
+    engine->getAnimationSystem()->registerAnimator(animator);
+    animator->setStateMachine(sm);
 
-    //auto animator = enemyGO->addComponent<dzemikk::Animator>();
-    //engine->getAnimationSystem()->registerAnimator(animator);
+    EnemyInitContext ctx{enemyMeshR, enemyGO, sm};
 
-    //auto skeleton = enemyMesh.get()->getSkeleton();
-    //if (!skeleton) {
-    //    std::cout << "Brak skeletonu!\n";
-    //    return -1;
-    //}
+    dzemikk::AssetManager::AssetTask<dzemikk::Model, EnemyInitContext> task;
+    task.context = ctx;
+    task.onLoad = onEnemyModelLoaded;
+    engine->getAssetManager()->getAsync("models/Dancing Twerk.fbx", task);
 
-    //dzemikk::AnimationClip* clip = nullptr;
-    //clip = skeleton->getClip("mixamo.com");
-    //clip = skeleton->getClip("Armature|ArmatureAction");
-
-    //if (!clip) {
-    //    std::cout << "Brak animacji!\n";
-    //    return -2;
-    //}
-
-    //auto sm = std::make_shared<dzemikk::AnimationStateMachine>();
-    //auto state = sm->addState();
-    //state->setClip(clip);
-
-    //animator->setStateMachine(sm);
 
     auto chestGO = mainScenePtr->createGameObject();
     chestGO->transform()->setPosition(glm::vec3(-4.0f, 2.5f, 0.0f));
     chestGO->transform()->setRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
     auto chestMeshR = chestGO->addComponent<dzemikk::MeshRenderer>();
-    auto future = engine->getAssetManager()->getAsync<dzemikk::Model>("models/skrzynia.fbx");
-    auto chestMesh = future.get();
-    chestMeshR->setModel(chestMesh);
+
+    StaticMeshInitContext smCtx{chestMeshR, chestGO};
+    dzemikk::AssetManager::AssetTask<dzemikk::Model, StaticMeshInitContext> taskChest;
+    taskChest.context = smCtx;
+    taskChest.onLoad = [](dzemikk::AssetHandle<dzemikk::Model> model, StaticMeshInitContext& ctx) {
+        ctx.renderer->setModel(model);
+    };
+    engine->getAssetManager()->getAsync<dzemikk::Model>("models/skrzynia.fbx", taskChest);
+
     chestMeshR->setTransform(chestGO->transform());
     chestMeshR->setMaterial(0, materialA);
     

@@ -67,6 +67,16 @@ class AssetManager : public IEngineModule {
     AssetHandle<T> get(const std::string& path);
 
     template <typename T> std::shared_future<AssetHandle<T>> getAsync(const std::string& path);
+
+    template <typename T, typename Context> struct AssetTask {
+        Context context;
+        std::function<void(AssetHandle<T>, Context&)> onLoad;
+    };
+
+    template <typename T, typename Context>
+    void getAsync(const std::string& path, AssetTask<T, Context> assetTask);
+
+
     /**
      * @brief Reloads an already loaded asset.
      */
@@ -130,6 +140,10 @@ class AssetManager : public IEngineModule {
     FMOD::System* _system = nullptr;
 
     ThreadPool _threadPool;
+
+    template <typename T>
+    void executeAssetLoad(const std::string& path,
+                          std::shared_ptr<std::promise<std::shared_ptr<void>>> promise);
 
 #pragma region Internal
 
@@ -243,12 +257,15 @@ std::shared_future<AssetHandle<T>> AssetManager::getAsync(const std::string& pat
 
             auto future = it->second;
 
-            return std::async(std::launch::deferred,
-                              [future, path]() {
-                                  auto ptr = std::static_pointer_cast<T>(future.get());
-                                  return AssetHandle<T>(ptr, path);
-                              })
-                .share();
+            auto wrapperPromise = std::make_shared<std::promise<AssetHandle<T>>>();
+            auto wrapperFuture = wrapperPromise->get_future().share();
+
+            _threadPool.enqueue({path, typeid(T), [future, wrapperPromise, path]() {
+                                     auto ptr = std::static_pointer_cast<T>(future.get());
+                                     wrapperPromise->set_value(AssetHandle<T>(ptr, path));
+                                 }});
+
+            return wrapperFuture;
         }
     }
 
@@ -274,49 +291,131 @@ std::shared_future<AssetHandle<T>> AssetManager::getAsync(const std::string& pat
     job.path = path;
     job.type = typeid(T);
 
-    job.execute = [this, path, promise]() {
-        auto* handler = _loaders.get<T>();
-        if (!handler) {
-            promise->set_value(nullptr);
-            return;
-        }
+    job.execute = [this, path, promise]() { executeAssetLoad<T>(path, promise); };
 
-        auto result =
-            handler->load(_resources.resolve(path), IAssetHandlerBase::LoadExecutionMode::Async);
+    _threadPool.enqueue(std::move(job));
 
-        if (!result.isValid()) {
-            _database.setFailed(path);
-            promise->set_value(nullptr);
-            return;
-        }
+    auto wrapperPromise = std::make_shared<std::promise<AssetHandle<T>>>();
+    auto wrapperFuture = wrapperPromise->get_future().share();
+
+    _threadPool.enqueue({path, typeid(T), [future, wrapperPromise, path]() {
+                             auto ptr = std::static_pointer_cast<T>(future.get());
+                             wrapperPromise->set_value(AssetHandle<T>(ptr, path));
+                         }});
+
+    return wrapperFuture;
+}
+
+template <typename T>
+void AssetManager::executeAssetLoad(const std::string& path,
+                                    std::shared_ptr<std::promise<std::shared_ptr<void>>> promise) {
+    auto* handler = _loaders.get<T>();
+    if (!handler) {
+        promise->set_value(nullptr);
+        return;
+    }
+
+    auto result =
+        handler->load(_resources.resolve(path), IAssetHandlerBase::LoadExecutionMode::Async);
+
+    if (!result.isValid()) {
+        _database.setFailed(path);
+        promise->set_value(nullptr);
+        return;
+    }
 
 #if DZEMIKK_DEV_TOOLS
-        spdlog::info("[AssetManager] Loaded in worker thread: {}", path);
+    spdlog::info("[AssetManager] Loaded in worker thread: {}", path);
 #endif
 
-        _database.setReady<T>(path, result.resource);
+    _database.setReady<T>(path, result.resource);
 
-        if constexpr (std::is_same_v<T, Model>) {
-            std::lock_guard lock(_gpuMutex);
-            _gpuUploadQueue.push(result.resource);
+    if constexpr (std::is_same_v<T, Model>) {
+        std::lock_guard lock(_gpuMutex);
+        _gpuUploadQueue.push(result.resource);
+    }
+
+    promise->set_value(result.resource);
+
+    {
+        std::lock_guard lock(_inFlightMutex);
+        _inFlight.erase(path);
+    }
+}
+
+template <typename T, typename Context>
+void AssetManager::getAsync(const std::string& path, AssetTask<T, Context> assetTask) {
+    // ---------------- READY ----------------
+    if (auto entry = _database.getEntry(path);
+        entry && entry->state == AssetDatabase::AssetState::Ready) {
+
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[AssetManager] Async (immediate ready): {}", path);
+#endif
+
+        auto ptr = std::static_pointer_cast<T>(entry->handle);
+
+        assetTask.onLoad(AssetHandle<T>(ptr, path), assetTask.context);
+        return;
+    }
+
+    // ---------------- IN-FLIGHT ----------------
+    {
+        std::lock_guard lock(_inFlightMutex);
+
+        auto it = _inFlight.find(path);
+        if (it != _inFlight.end()) {
+
+#if DZEMIKK_DEV_TOOLS
+            spdlog::info("[AssetManager] Async (waiting in-flight): {}", path);
+#endif
+
+            auto future = it->second;
+
+            _threadPool.enqueue(
+                {path, typeid(T), [this, future, path, task = std::move(assetTask)]() mutable {
+                     auto ptr = std::static_pointer_cast<T>(future.get());
+                     task.onLoad(AssetHandle<T>(ptr, path), task.context);
+                 }});
+
+            return;
         }
+    }
 
-        promise->set_value(result.resource);
+    // ---------------- START NEW LOAD ----------------
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[AssetManager] Async (new load + callback): {}", path);
+#endif
 
-        {
-            std::lock_guard lock(_inFlightMutex);
-            _inFlight.erase(path);
+    auto* handler = _loaders.get<T>();
+    if (!handler)
+        return;
+
+    auto promise = std::make_shared<std::promise<std::shared_ptr<void>>>();
+    auto future = promise->get_future().share();
+
+    {
+        std::lock_guard lock(_inFlightMutex);
+        _inFlight[path] = future;
+    }
+
+    _database.insertLoading<T>(path);
+
+    ThreadPool::AssetJob job;
+    job.path = path;
+    job.type = typeid(T);
+
+    job.execute = [this, path, promise, task = std::move(assetTask)]() mutable {
+        executeAssetLoad<T>(path, promise);
+
+        auto entry = _database.getEntry(path);
+        if (entry && entry->state == AssetDatabase::AssetState::Ready) {
+            auto ptr = std::static_pointer_cast<T>(entry->handle);
+            task.onLoad(AssetHandle<T>(ptr, path), task.context);
         }
     };
 
     _threadPool.enqueue(std::move(job));
-
-    return std::async(std::launch::deferred,
-                      [future, path]() {
-                          auto ptr = std::static_pointer_cast<T>(future.get());
-                          return AssetHandle<T>(ptr, path);
-                      })
-        .share();
 }
 
 template <typename T> AssetHandle<T> AssetManager::reload(const std::string& path) {

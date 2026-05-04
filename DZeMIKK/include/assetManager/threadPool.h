@@ -25,12 +25,13 @@ class ThreadPool {
     void enqueue(AssetJob job);
 
   private:
-    std::vector<std::thread> workers;
+    std::vector<std::thread> _workers;
 
-    std::queue<AssetJob> jobs;
-    std::mutex queueMutex;
-    std::condition_variable cv;
+    size_t _threadCount;
+    std::queue<AssetJob> _jobs;
+    std::mutex _queueMutex;
+    std::condition_variable _cv;
 
-    bool running = true;
+    bool _running = true;
 };
 }

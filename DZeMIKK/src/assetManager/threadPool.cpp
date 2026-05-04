@@ -1,25 +1,25 @@
 #include "assetManager/threadPool.h"
 
-dzemikk::ThreadPool::ThreadPool(size_t threadCount) : running(true) {
-    workers.reserve(threadCount);
+dzemikk::ThreadPool::ThreadPool(size_t threadCount) : _running(true), _threadCount(threadCount) {
+    _workers.reserve(threadCount);
 }
 
 void dzemikk::ThreadPool::start() {
     for (size_t i = 0; i < std::thread::hardware_concurrency(); i++) {
-        workers.emplace_back([this]() {
+        _workers.emplace_back([this]() {
             while (true) {
                 AssetJob job;
 
                 {
-                    std::unique_lock lock(queueMutex);
+                    std::unique_lock lock(_queueMutex);
 
-                    cv.wait(lock, [this]() { return !jobs.empty() || !running; });
+                    _cv.wait(lock, [this]() { return !_jobs.empty() || !_running; });
 
-                    if (!running && jobs.empty())
+                    if (!_running && _jobs.empty())
                         return;
 
-                    job = std::move(jobs.front());
-                    jobs.pop();
+                    job = std::move(_jobs.front());
+                    _jobs.pop();
                 }
 
                 job.execute();
@@ -30,27 +30,27 @@ void dzemikk::ThreadPool::start() {
 
 void dzemikk::ThreadPool::enqueue(AssetJob job) {
     {
-        std::lock_guard lock(queueMutex);
-        jobs.push(std::move(job));
+        std::lock_guard lock(_queueMutex);
+        _jobs.push(std::move(job));
     }
 
-    cv.notify_one();
+    _cv.notify_one();
 }
 
 void dzemikk::ThreadPool::stop() {
     {
-        std::lock_guard lock(queueMutex);
-        running = false;
+        std::lock_guard lock(_queueMutex);
+        _running = false;
     }
 
-    cv.notify_all();
+    _cv.notify_all();
 
-    for (auto& worker : workers) {
+    for (auto& worker : _workers) {
         if (worker.joinable())
             worker.join();
     }
 
-    workers.clear();
+    _workers.clear();
 }
 
 dzemikk::ThreadPool::~ThreadPool() {

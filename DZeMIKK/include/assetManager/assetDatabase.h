@@ -7,6 +7,7 @@
 #include <typeindex>
 #include <unordered_map>
 #include <future>
+#include <mutex>
 
 #if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
@@ -40,6 +41,7 @@ class AssetDatabase {
      */
     template <typename T> 
     std::shared_ptr<T> get(const std::string& path) const {
+        std::lock_guard lock(_mutex);
         auto it = _assets.find(path);
         if (it == _assets.end()) {
             return nullptr;
@@ -64,6 +66,7 @@ class AssetDatabase {
      * @param asset Shared pointer to asset.
      */
     template <typename T> void store(const std::string& path, std::shared_ptr<T> asset) {
+        std::lock_guard lock(_mutex);
         if (!asset) {
             return;
         }
@@ -123,6 +126,7 @@ class AssetDatabase {
     };
 
     template <typename T> void setReady(const std::string& path, std::shared_ptr<T> asset) {
+        std::lock_guard lock(_mutex);
         auto it = _assets.find(path);
         if (it == _assets.end())
             return;
@@ -137,6 +141,7 @@ class AssetDatabase {
     }
 
     template <typename T> void insertLoading(const std::string& path) {
+        std::lock_guard lock(_mutex);
         Entry entry;
         entry.type = typeid(T);
         entry.state = AssetState::Loading;
@@ -149,6 +154,7 @@ class AssetDatabase {
     }
 
     void setFailed(const std::string& path) {
+        std::lock_guard lock(_mutex);
         auto it = _assets.find(path);
         if (it == _assets.end()) {
             return;
@@ -163,6 +169,7 @@ class AssetDatabase {
     }
 
     Entry* getEntry(const std::string& path) {
+        std::lock_guard lock(_mutex);
         auto it = _assets.find(path);
         if (it == _assets.end())
             return nullptr;
@@ -179,6 +186,7 @@ class AssetDatabase {
      * Provides fast lookup (O(1) average) for asset retrieval.
      */
     std::unordered_map<std::string, Entry> _assets;
+    mutable std::mutex _mutex;
 };
 
 } // namespace dzemikk
