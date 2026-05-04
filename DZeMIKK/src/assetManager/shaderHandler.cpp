@@ -9,7 +9,9 @@
 const std::string dzemikk::ShaderHandler::VERT = ".vert";
 const std::string dzemikk::ShaderHandler::FRAG = ".frag";
 
-dzemikk::ShaderHandler::Result dzemikk::ShaderHandler::load(const std::string& path) {
+dzemikk::ShaderHandler::Result
+dzemikk::ShaderHandler::load(const std::string& path,
+                             LoadExecutionMode loadExecutionMode) {
     auto shader = loadShaderFromFile(path);
 
     if (!shader) {

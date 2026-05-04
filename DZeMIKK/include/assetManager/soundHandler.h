@@ -26,7 +26,8 @@ namespace dzemikk {
          * @param path Path to audio file.
          * @return AssetResult containing a valid Sound handle or error.
          */
-        Result load(const std::string& path) override;
+        Result load(const std::string& path,
+                    LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync) override;
         
         /**
          * @brief Reloads an existing sound.

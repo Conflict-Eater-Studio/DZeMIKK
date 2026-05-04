@@ -6,7 +6,9 @@
 #include <iostream>
 #include <stb/stb_image.h>
 
-dzemikk::TextureHandler::Result dzemikk::TextureHandler::load(const std::string& path) {
+dzemikk::TextureHandler::Result
+dzemikk::TextureHandler::load(const std::string& path,
+                              LoadExecutionMode loadExecutionMode) {
     auto texture = loadTextureFromFile(path);
 
     if (!texture) {

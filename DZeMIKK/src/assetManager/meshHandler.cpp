@@ -6,7 +6,9 @@
 #include <assimp/postprocess.h>
 #include <iostream>
 
-dzemikk::MeshHandler::Result dzemikk::MeshHandler::load(const std::string& path) {
+dzemikk::MeshHandler::Result
+dzemikk::MeshHandler::load(const std::string& path,
+                           LoadExecutionMode loadExecutionMode) {
     auto mesh = loadMeshFromFile(path);
 
     if (!mesh) {

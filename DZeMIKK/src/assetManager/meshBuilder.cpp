@@ -1,6 +1,85 @@
 #include "assetManager/meshBuilder.h"
 #include <assimp/scene.h>
 
+dzemikk::MeshBuilder::RawStaticMesh dzemikk::MeshBuilder::buildStaticMeshRaw(const aiMesh* mesh) {
+
+    RawStaticMesh result;
+
+    result.vertices.resize(mesh->mNumVertices);
+
+    const auto* positions = mesh->mVertices;
+    const auto* normals = mesh->mNormals;
+
+    for (unsigned int v = 0; v < mesh->mNumVertices; ++v) {
+
+        auto& vertex = result.vertices[v];
+
+        const auto& pos = positions[v];
+        vertex.position = {pos.x, pos.y, pos.z};
+
+        if (mesh->HasNormals()) {
+            const auto& n = normals[v];
+            vertex.normal = {n.x, n.y, n.z};
+        } else {
+            vertex.normal = glm::vec3(0.0F);
+        }
+    }
+
+    result.indices.reserve(mesh->mNumFaces * 3);
+
+    for (unsigned int f = 0; f < mesh->mNumFaces; ++f) {
+        const aiFace& face = mesh->mFaces[f];
+
+        for (unsigned int j = 0; j < face.mNumIndices; ++j) {
+            result.indices.push_back(face.mIndices[j]);
+        }
+    }
+
+    return result;
+}
+
+dzemikk::MeshBuilder::RawSkinnedMesh dzemikk::MeshBuilder::buildSkinnedMeshRaw(const aiMesh* aiMesh,
+                                                                               dzemikk::Skeleton& skeleton) {
+    RawSkinnedMesh result;
+
+    result.vertices.resize(aiMesh->mNumVertices);
+
+    const auto* positions = aiMesh->mVertices;
+    const auto* normals = aiMesh->mNormals;
+
+    for (unsigned int v = 0; v < aiMesh->mNumVertices; ++v) {
+
+        auto& vertex = result.vertices[v];
+
+        const auto& pos = positions[v];
+        vertex.position = {pos.x, pos.y, pos.z};
+
+        if (aiMesh->HasNormals()) {
+            const auto& n = normals[v];
+            vertex.normal = {n.x, n.y, n.z};
+        } else {
+            vertex.normal = glm::vec3(0.0F);
+        }
+
+        vertex.boneIDs = {0, 0, 0, 0};
+        vertex.weights = {0.0f, 0.0f, 0.0f, 0.0f};
+    }
+
+    result.indices.reserve(aiMesh->mNumFaces * 3);
+
+    for (unsigned int f = 0; f < aiMesh->mNumFaces; ++f) {
+        const aiFace& face = aiMesh->mFaces[f];
+
+        for (unsigned int j = 0; j < face.mNumIndices; ++j) {
+            result.indices.push_back(face.mIndices[j]);
+        }
+    }
+
+    extractBoneWeights(aiMesh, result.vertices, skeleton);
+
+    return result;
+}
+
 std::shared_ptr<dzemikk::StaticMesh> dzemikk::MeshBuilder::buildStaticMesh(const aiMesh* aiMesh) {
 
     std::vector<StaticVertex> vertices;
@@ -43,7 +122,7 @@ std::shared_ptr<dzemikk::StaticMesh> dzemikk::MeshBuilder::buildStaticMesh(const
 }
 
 std::shared_ptr<dzemikk::SkinnedMesh> dzemikk::MeshBuilder::buildSkinnedMesh(const aiMesh* aiMesh,
-                                                                              Skeleton& skeleton) {
+                                                                             Skeleton& skeleton) {
 
     std::vector<SkinnedVertex> vertices;
     std::vector<unsigned int> indices;

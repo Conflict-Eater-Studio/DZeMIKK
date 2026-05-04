@@ -39,6 +39,7 @@ template <typename T> struct AssetResult {
  * such as unloading assets without knowing their concrete type.
  */
 struct IAssetHandlerBase {
+    enum class LoadExecutionMode { Sync, Async };
     virtual ~IAssetHandlerBase() = default;
     IAssetHandlerBase() = default;
 
@@ -104,7 +105,7 @@ class IAssetHandler : public IAssetHandlerBase {
          * @param path Path to asset file.
          * @return Result containing asset handle or error.
          */
-        virtual Result load(const std::string& path) = 0;
+        virtual Result load(const std::string& path, LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync) = 0;
 
         /**
          * @brief Reloads an existing asset.

@@ -5,7 +5,9 @@
 #include <iostream>
 
 
-dzemikk::FontHandler::Result dzemikk::FontHandler::load(const std::string& path) {
+dzemikk::FontHandler::Result
+dzemikk::FontHandler::load(const std::string& path,
+                           LoadExecutionMode loadExecutionMode) {
     auto font = loadFontFromFile(path);
 
     if (!font) {

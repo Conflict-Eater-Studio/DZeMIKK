@@ -27,7 +27,8 @@ class ModelHandler : public IAssetHandler<Model> {
      * @param path Path to the model file.
      * @return Result containing the loaded Model or an error state.
      */
-    Result load(const std::string& path) override;
+    Result load(const std::string& path,
+                LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync) override;
 
     /**
      * @brief Reloads an existing model asset from a file path.
@@ -69,7 +70,9 @@ class ModelHandler : public IAssetHandler<Model> {
      * @param path Path to the model file.
      * @return Shared pointer to the loaded Model, or nullptr on failure.
      */
-    static std::shared_ptr<Model> loadModelFromFile(const std::string& path, LoadMode loadMode = LoadMode::All);
+    static std::shared_ptr<Model>
+    loadModelFromFile(const std::string& path,LoadExecutionMode loadExecutionMode =
+                          LoadExecutionMode::Sync, LoadMode loadMode = LoadMode::All);
 };
 }
 

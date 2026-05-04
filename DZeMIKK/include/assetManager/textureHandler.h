@@ -29,7 +29,8 @@ namespace dzemikk {
          * @param path Path to the image file.
          * @return AssetResult containing a valid Texture handle or error.
          */
-        Result load(const std::string& path) override;
+        Result load(const std::string& path,
+                    LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync) override;
 
         /**
          * @brief Reloads an existing texture.

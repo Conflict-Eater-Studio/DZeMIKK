@@ -6,6 +6,7 @@
 #include <string>
 #include <typeindex>
 #include <unordered_map>
+#include <future>
 
 #if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
@@ -106,7 +107,8 @@ class AssetDatabase {
      */
     [[nodiscard]] bool contains(const std::string& path) const;
 
-  private:
+    enum class AssetState { Loading, Ready, Failed };
+
     /**
      * @brief Internal representation of a stored asset.
      *
@@ -116,8 +118,67 @@ class AssetDatabase {
      */
     struct Entry {
         std::shared_ptr<void> handle;
+        std::shared_future<std::shared_ptr<void>> future;
         std::type_index type = typeid(void);
+        AssetState state = AssetState::Loading;
     };
+
+    template <typename T> void setReady(const std::string& path, std::shared_ptr<T> asset) {
+        auto it = _assets.find(path);
+        if (it == _assets.end()) {
+            throw std::runtime_error("setReady: asset not found: " + path);
+        }
+
+        if (it->second.type != typeid(T)) {
+            throw std::runtime_error("setReady: type mismatch: " + path);
+        }
+
+        it->second.handle = asset;
+        it->second.state = AssetState::Ready;
+
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[AssetDatabase] Set READY: {}", path);
+#endif
+    }
+
+    template <typename T>
+    void insertLoading(const std::string& path, std::shared_future<std::shared_ptr<void>> future) {
+
+        Entry entry;
+        entry.type = typeid(T);
+        entry.future = future;
+        entry.state = AssetState::Loading;
+
+        _assets[path] = std::move(entry);
+
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[AssetDatabase] Insert LOADING: {}", path);
+#endif
+    }
+
+    void setFailed(const std::string& path) {
+        auto it = _assets.find(path);
+        if (it == _assets.end()) {
+            return;
+        }
+
+        it->second.state = AssetState::Failed;
+        it->second.handle.reset();
+
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error("[AssetDatabase] Set FAILED: {}", path);
+#endif
+    }
+
+    Entry* getEntry(const std::string& path) {
+        auto it = _assets.find(path);
+        if (it == _assets.end())
+            return nullptr;
+
+        return &it->second;
+    }
+
+  private:
     
     /**
      * @brief Asset storage container.

@@ -5,7 +5,9 @@
 
 #include <iostream>
 
-dzemikk::SkyboxHandler::Result dzemikk::SkyboxHandler::load(const std::string& path) {
+dzemikk::SkyboxHandler::Result
+dzemikk::SkyboxHandler::load(const std::string& path,
+                             LoadExecutionMode loadExecutionMode) {
     auto skybox = loadSkyboxFromFile(path);
 
     if (!skybox) {

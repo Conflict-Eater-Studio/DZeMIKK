@@ -18,6 +18,10 @@
 #include "assetManager/assetHandle.h"
 
 #include "renderer/model.h"
+#include "audio/sound.h"
+#include <future>
+#include <queue>
+#include <functional>
 
 namespace dzemikk {
 
@@ -61,6 +65,7 @@ class AssetManager : public IEngineModule {
     template <typename T> 
     AssetHandle<T> get(const std::string& path);
 
+    template <typename T> std::shared_future<AssetHandle<T>> getAsync(const std::string& path);
     /**
      * @brief Reloads an already loaded asset.
      */
@@ -90,9 +95,27 @@ class AssetManager : public IEngineModule {
      */
     [[nodiscard]] FMOD::System* getFMODSystem() const;
 
+    std::queue<std::shared_ptr<Model>> _gpuUploadQueue;
+    std::mutex _gpuMutex;
+
+    void processGpuUploads() {
+        std::lock_guard lock(_gpuMutex);
+
+        while (!_gpuUploadQueue.empty()) {
+            auto model = _gpuUploadQueue.front();
+            _gpuUploadQueue.pop();
+
+            if (model)
+                model->uploadToGPU();
+        }
+    }
+
 #pragma endregion
 
   private:
+    std::unordered_map<std::string, std::shared_future<std::shared_ptr<void>>> _inFlight;
+    std::mutex _inFlightMutex;
+
     /** @brief Asset cache */
     AssetDatabase _database;
 
@@ -125,11 +148,28 @@ class AssetManager : public IEngineModule {
 // ================= IMPLEMENTATION =================
 
 template <typename T> AssetHandle<T> AssetManager::get(const std::string& path) {
-    if (auto cached = _database.get<T>(path)) {
+
+    auto entry = _database.getEntry(path);
+
+    if (entry) {
+
+        if (entry->state == AssetDatabase::AssetState::Ready) {
 #if DZEMIKK_DEV_TOOLS
-        spdlog::info("[AssetManager] Loaded from cache: {}", path);
+            spdlog::info("[AssetManager] Loaded from cache: {}", path);
 #endif
-        return AssetHandle<T>(cached, path);
+            return AssetHandle<T>(std::static_pointer_cast<T>(entry->handle), path);
+        }
+
+        if (entry->state == AssetDatabase::AssetState::Loading) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::info("[AssetManager] Waiting for async asset: {}", path);
+#endif
+            auto ptr = std::static_pointer_cast<T>(entry->future.get());
+
+            return AssetHandle<T>(ptr, path);
+        }
+
+        return {};
     }
 
     auto* handler = _loaders.get<T>();
@@ -137,18 +177,100 @@ template <typename T> AssetHandle<T> AssetManager::get(const std::string& path) 
         return {};
     }
 
-    auto result = handler->load(_resources.resolve(path));
-    if (!result.isValid()) {
+    auto future =
+        std::async(std::launch::deferred, [this, path, handler]() -> std::shared_ptr<void> {
+            auto result =
+                handler->load(_resources.resolve(path), IAssetHandlerBase::LoadExecutionMode::Sync);
+
+            if (!result.isValid())
+                return nullptr;
+
+            return result.resource;
+        }).share();
+
+    _database.insertLoading<T>(path, future);
+
+    auto ptr = std::static_pointer_cast<T>(future.get());
+
+    if (!ptr) {
+        _database.setFailed(path);
         return {};
     }
 
-    _database.store<T>(path, result.resource);
+    _database.setReady(path, ptr);
 
 #if DZEMIKK_DEV_TOOLS
     spdlog::info("[AssetManager] Loaded from file: {}", path);
 #endif
 
-    return AssetHandle<T>(result.resource, path);
+    return AssetHandle<T>(ptr, path);
+}
+
+template <typename T>
+std::shared_future<AssetHandle<T>> AssetManager::getAsync(const std::string& path) {
+
+    auto entry = _database.getEntry(path);
+
+    if (entry && entry->state == AssetDatabase::AssetState::Ready) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[AssetManager] Asset ready while LOADING: {}", path);
+#endif
+        auto cached = std::static_pointer_cast<T>(entry->handle);
+
+        return std::async(std::launch::deferred,
+                          [cached, path]() { return AssetHandle<T>(cached, path); })
+            .share();
+    }
+
+    if (entry && entry->state == AssetDatabase::AssetState::Loading) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[AssetManager] Asset requested while LOADING: {}", path);
+#endif
+
+        return std::async(std::launch::deferred,
+                          [entry, path]() {
+                              auto ptr = std::static_pointer_cast<T>(entry->future.get());
+#if DZEMIKK_DEV_TOOLS
+                              spdlog::info("[AssetManager] Finished waiting for: {}", path);
+#endif
+
+
+                              return AssetHandle<T>(ptr, path);
+                          })
+            .share();
+    }
+
+    auto* handler = _loaders.get<T>();
+    if (!handler) {
+        return {};
+    }
+
+    auto future = std::async(std::launch::async, [this, path, handler]() -> std::shared_ptr<void> {
+                      auto result = handler->load(_resources.resolve(path),
+                                                  IAssetHandlerBase::LoadExecutionMode::Async);
+
+                      if (!result.isValid())
+                          return nullptr;
+
+                      _database.setReady<T>(path, result.resource); 
+
+                      // TEST -> FOR MODEL ONLY FIX THIS
+                      {
+                          std::lock_guard lock(_gpuMutex);
+                          _gpuUploadQueue.push(std::static_pointer_cast<Model>(result.resource));
+                      }
+
+                      return result.resource;
+                  }).share();
+
+    _database.insertLoading<T>(path, future);
+
+    return std::async(std::launch::deferred,
+                      [future, path]() {
+                          auto ptr = std::static_pointer_cast<T>(future.get());
+                          return AssetHandle<T>(ptr, path);
+                      })
+        .share();
 }
 
 template <typename T> AssetHandle<T> AssetManager::reload(const std::string& path) {

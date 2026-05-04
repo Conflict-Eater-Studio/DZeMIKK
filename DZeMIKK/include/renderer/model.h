@@ -3,10 +3,12 @@
 
 #include "renderer/mesh.h"
 #include "animation/skeleton.h"
+#include "assetManager/meshBuilder.h"
 
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include <variant>
 
 namespace dzemikk {
 /**
@@ -111,6 +113,11 @@ class Model {
     void setSkeleton(std::shared_ptr<Skeleton> skeleton);
     std::shared_ptr<Skeleton> getSkeleton() const;
 
+    void addPending(MeshBuilder::RawStaticMesh& mesh);
+    void addPending(MeshBuilder::RawSkinnedMesh& mesh);
+
+    void uploadToGPU();
+
 #pragma endregion
 
   private:
@@ -119,6 +126,13 @@ class Model {
      */
     std::vector<SubMesh> _subMeshes;
     std::shared_ptr<Skeleton> _skeleton;
+
+    struct PendingMesh {
+        std::variant<MeshBuilder::RawStaticMesh, MeshBuilder::RawSkinnedMesh> data;
+    };
+
+    std::vector<PendingMesh> _pendingMeshes;
+    bool _gpuReady = false;
 };
 
 } // namespace dzemikk

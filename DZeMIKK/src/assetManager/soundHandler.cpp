@@ -5,7 +5,9 @@
 
 #include <iostream>dzemikk::
 
-dzemikk::SoundHandler::Result dzemikk::SoundHandler::load(const std::string& path) {
+dzemikk::SoundHandler::Result
+dzemikk::SoundHandler::load(const std::string& path,
+                            LoadExecutionMode loadExecutionMode) {
     auto sound = loadSoundFromFile(path);
 
     if (!sound) {

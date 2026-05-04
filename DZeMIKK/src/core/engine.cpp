@@ -152,6 +152,9 @@ void Engine::start() {
             DZ_PROFILE_CPU("Renderer (Total CPU)");
             _renderer->render();
         }
+
+        _assetManager->processGpuUploads();
+
 #if DZEMIKK_DEV_TOOLS
         Profiler::Get().DrawImGui();
         glDisable(GL_DEPTH_TEST);

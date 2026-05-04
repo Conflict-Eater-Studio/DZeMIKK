@@ -54,8 +54,10 @@ void dzemikk::ModelHandler::printNodeHierarchyForMesh(aiNode* node, const aiScen
 #endif
 }
 
-dzemikk::ModelHandler::Result dzemikk::ModelHandler::load(const std::string& path) {
-    auto model = loadModelFromFile(path);
+dzemikk::ModelHandler::Result
+dzemikk::ModelHandler::load(const std::string& path,
+                            LoadExecutionMode loadExecutionMode) {
+    auto model = loadModelFromFile(path, loadExecutionMode);
 
     if (!model) {
         std::cerr << "Failed to load mesh: " << path << "\n";
@@ -70,7 +72,7 @@ bool dzemikk::ModelHandler::reload(Handle& asset, const std::string& path) {
         return false;
     }
 
-    auto newModel = loadModelFromFile(path, LoadMode::MeshOnly);
+    auto newModel = loadModelFromFile(path,LoadExecutionMode::Sync, LoadMode::MeshOnly);
     if (!newModel) {
         return false;
     }
@@ -90,7 +92,9 @@ void dzemikk::ModelHandler::unload(Handle& asset) {
     asset = Handle{};
 }
 
-std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const std::string& path, LoadMode loadMode) {
+std::shared_ptr<dzemikk::Model>
+dzemikk::ModelHandler::loadModelFromFile(const std::string& path,
+                                         LoadExecutionMode loadExecutionMode, LoadMode loadMode) {
 
     Assimp::Importer importer;
 
@@ -112,7 +116,7 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
 
     for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
     #if DZEMIKK_DEV_TOOLS
-        spdlog::info("[ModelHandler] MESH {}: {}", i, scene->mMeshes[i]->mName.C_Str());
+        //spdlog::info("[ModelHandler] MESH {}: {}", i, scene->mMeshes[i]->mName.C_Str());
         //printNodeHierarchyForMesh(scene->mRootNode, scene, *skeleton);
     #endif
     }
@@ -122,12 +126,22 @@ std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const s
         const aiMesh* mesh = scene->mMeshes[i];
         const bool isSkinned = mesh->HasBones();
 
-        if (!isSkinned) {
-            auto staticMesh = MeshBuilder::buildStaticMesh(mesh);
-            model->addMesh(staticMesh, mesh->mMaterialIndex);
+        if (loadExecutionMode == LoadExecutionMode::Async) {
+            if (!isSkinned) {
+                auto raw = MeshBuilder::buildStaticMeshRaw(mesh);
+                model->addPending(raw);
+            } else {
+                auto raw = MeshBuilder::buildSkinnedMeshRaw(mesh, *skeleton);
+                model->addPending(raw);
+            }
         } else {
-            auto skinnedMesh = MeshBuilder::buildSkinnedMesh(mesh, *skeleton);
-            model->addMesh(skinnedMesh, mesh->mMaterialIndex);
+            if (!isSkinned) {
+                auto staticMesh = MeshBuilder::buildStaticMesh(mesh);
+                model->addMesh(staticMesh, mesh->mMaterialIndex);
+            } else {
+                auto skinnedMesh = MeshBuilder::buildSkinnedMesh(mesh, *skeleton);
+                model->addMesh(skinnedMesh, mesh->mMaterialIndex);
+            }
         }
     }
 
