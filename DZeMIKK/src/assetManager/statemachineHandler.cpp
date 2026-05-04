@@ -49,7 +49,7 @@ namespace dzemikk {
         auto stateMachine = std::make_shared<AnimationStateMachine>();
         try {
             // Relies on the from_json() function defined in AnimationStateMachine.h
-            // from_json(jsonData, *stateMachine);
+            from_json(jsonData, *stateMachine);
         } catch (const nlohmann::json::exception& e) {
             std::cerr << "[StateMachineHandler] JSON Deserialization Error in " << path << ": " << e.what() << std::endl;
             return nullptr;

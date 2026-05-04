@@ -79,45 +79,16 @@ public:
     void setTracks(std::vector<std::unique_ptr<IAnimationTrack>> tracks);
 
     [[nodiscard]] bool isLoop() const;
-private:
+    void setName(const std::string& name);
+    std::string getName();
+
+  private:
     std::vector<std::unique_ptr<IAnimationTrack>> _tracks;
     float _durationInTicks = 0;
     float _ticksPerSecond = 0;
     bool _loop = true;
+    std::string _nameInSkeleton;
 };
-
-inline void to_json(nlohmann::json& json, const AnimationClip& clip) {
-    json["duration"] = clip.getTickDuration();
-    json["tickRate"] = clip.getTickrate();
-    json["loop"] = clip.isLoop();
-
-    nlohmann::json tracksJson = nlohmann::json::array();
-
-    for (const auto& track : clip.getTracks()) {
-        nlohmann::json trackJson;
-        trackJson["type"] = track->getType();
-        trackJson["keys"] = track->serialize();
-
-        tracksJson.push_back(trackJson);
-    }
-
-    json["tracks"] = tracksJson;
-}
-inline void from_json(const nlohmann::json& json, AnimationClip& clip) {
-    clip.setTickrate(json["tickRate"]);
-    clip.setDuration(json["duration"]);
-    clip.setLoop(json["loop"]);
-
-    for (const auto& trackJson : json["tracks"]) {
-        std::string type = trackJson["type"];
-        nlohmann::json keys = trackJson["keys"];
-        if (type == "FloatTrack") {
-            FloatTrack* track = clip.addFloatTrack();
-            track->setKeys(keys);
-        }
-    }
-}
-
 }
 
 #endif

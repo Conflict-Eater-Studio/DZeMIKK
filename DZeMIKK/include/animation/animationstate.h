@@ -32,15 +32,5 @@ private:
     AnimationClip* _clip = nullptr;
     std::vector<Transition> _transitions;
 };
-
-inline void to_json(nlohmann::json& json, const AnimationState& state) {
-    json["name"] = state.getName();
-    json["transitions"] = state.getTransitions();
-}
-
-inline void from_json(const nlohmann::json& j, AnimationState& s) {
-    s.setName(j["name"]);
-    s.setTransitions(j["transitions"]);
-}
 }
 #endif

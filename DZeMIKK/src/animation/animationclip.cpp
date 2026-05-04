@@ -87,5 +87,11 @@ void AnimationClip::setTracks(std::vector<std::unique_ptr<IAnimationTrack>> trac
 bool AnimationClip::isLoop() const {
     return _loop;
 }
+void AnimationClip::setName(const std::string& name) {
+    _nameInSkeleton = name;
+}
+std::string AnimationClip::getName() {
+    return _nameInSkeleton;
+}
 }
 

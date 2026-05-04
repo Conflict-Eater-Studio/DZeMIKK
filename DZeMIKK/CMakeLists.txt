@@ -22,7 +22,8 @@ add_library(DZeMIKK STATIC
         include/ecs/serialize/colliderSerializer.h
         include/ecs/serialize/cameraSerializer.h
         include/ecs/serialize/ui/canvasSerializer.h
-        include/ecs/serialize/ui/imageRendererSerializer.h)
+        include/ecs/serialize/ui/imageRendererSerializer.h
+)
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"

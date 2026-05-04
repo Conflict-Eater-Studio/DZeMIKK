@@ -31,16 +31,16 @@ namespace dzemikk {
 
         clip->apply(_currentTime);
         _currentTime += deltaTime;
-        //
-        // std::vector<Transition> transitions = _currentState->getTransitions();
-        // if (transitions.empty()) return;
-        //
-        // for (auto transition: transitions) {
-        //     if (evaluate(transition.condition)) {
-        //         play(transition.targetState);
-        //         break;
-        //     };
-        // }
+
+        std::vector<Transition> transitions = _currentState->getTransitions();
+        if (transitions.empty()) return;
+
+        for (auto transition: transitions) {
+            if (evaluate(transition.condition)) {
+                play(transition.targetState);
+                break;
+            };
+        }
     }
 
     void Animator::play(const std::string& stateName) {
@@ -57,15 +57,15 @@ namespace dzemikk {
 
     }
     void Animator::setFloat(const std::string& name, float value) {
-            _parameters[name] = value;
+            _floatParams[name] = value;
     }
 
     void Animator::setBool(const std::string& name, bool value) {
-            _parameters[name] = value;
+            _boolParams[name] = value;
     }
 
     void Animator::setInt(const std::string& name, int value) {
-            _parameters[name] = value;
+            _intParams[name] = value;
     }
     void Animator::setStateMachine(const std::shared_ptr<AnimationStateMachine>& stateMachine) {
         _stateMachine = stateMachine;
@@ -77,35 +77,30 @@ namespace dzemikk {
         return _currentState;
     }
     float Animator::getFloat(const std::string& name) const {
-            auto it = _parameters.find(std::string(name));
-            if (it != _parameters.end()) {
-                if (auto val = std::get_if<float>(&it->second))
-                    return *val;
-            }
-            return 0.0f;
-        }
+        auto it = _floatParams.find(name);
+        return (it != _floatParams.end()) ? it->second : 0.0f;
+    }
 
     bool Animator::getBool(const std::string& name) const {
-            auto it = _parameters.find(std::string(name));
-            if (it != _parameters.end()) {
-                if (auto val = std::get_if<bool>(&it->second)) {
-                    return *val;
-                }
-            }
-            return false;
-        }
+        auto it = _boolParams.find(name);
+        return (it != _boolParams.end()) ? it->second : false;
+    }
 
     int Animator::getInt(const std::string& name) const {
-            auto it = _parameters.find(std::string(name));
-            if (it != _parameters.end()) {
-                if (auto val = std::get_if<int>(&it->second)) {
-                    return *val;
-                }
-            }
-            return 0;
+        auto it = _intParams.find(name);
+        return (it != _intParams.end()) ? it->second : 0;
     }
     float Animator::getCurrentTime() const {
         return _currentTime;
+    }
+    std::unordered_map<std::string, float> Animator::getFloatParams() const {
+        return _floatParams;
+    }
+    std::unordered_map<std::string, bool> Animator::getBoolParams() const {
+        return _boolParams;
+    }
+    std::unordered_map<std::string, int> Animator::getIntParams() const {
+        return _intParams;
     }
 
     std::string Animator::typeName() const {

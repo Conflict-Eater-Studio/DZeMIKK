@@ -3,6 +3,7 @@
 #define DZEMIKK_ANIMATOR_H
 
 #include "animation/animationstate.h"
+#include "assetManager/assetHandle.h"
 #include "ecs/component.h"
 #include "nlohmann/json.hpp"
 
@@ -28,8 +29,6 @@ class AnimationStateMachine;
      * while the AnimationStateMachine defines shared animation logic.
      */
     class Animator : public Component {
-    public:
-        using ParamValue = std::variant<float, bool, int>;
     public:
         /**
          * @brief Updates the animator and its state machine.
@@ -94,6 +93,9 @@ class AnimationStateMachine;
         [[nodiscard]] bool getBool(const std::string& name) const;
         [[nodiscard]] int getInt(const std::string& name) const;
         [[nodiscard]] float getCurrentTime() const;
+        [[nodiscard]] std::unordered_map<std::string, float> getFloatParams() const;
+        [[nodiscard]] std::unordered_map<std::string, bool> getBoolParams() const;
+        [[nodiscard]] std::unordered_map<std::string, int> getIntParams() const;
 
         bool evaluate(const Condition& c) const;
 
@@ -101,7 +103,9 @@ class AnimationStateMachine;
 
       private:
         std::shared_ptr<AnimationStateMachine> _stateMachine = nullptr;
-        std::unordered_map<std::string, ParamValue> _parameters;
+        std::unordered_map<std::string, float> _floatParams;
+        std::unordered_map<std::string, bool>  _boolParams;
+        std::unordered_map<std::string, int>   _intParams;
         AnimationState* _currentState = nullptr;
         float _currentTime = 0.0f;
     };

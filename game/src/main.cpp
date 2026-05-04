@@ -12,6 +12,7 @@
 #include "ecs/serialize/spriteRendererSerializer.h"
 #include "ecs/serialize/skinnedMeshSerializer.h"
 #include "ecs/serialize/cameraSerializer.h"
+#include "ecs/serialize/animation/animatorSerializer.h"
 
 #include "core/engine.h"
 #include "ecs/components/animator.h"
@@ -255,9 +256,11 @@ int main() {
         return -1;
     }
 
+    std::string name = "mixamo.com";
     dzemikk::AnimationClip* clip = nullptr;
-    clip = skeleton->getClip("mixamo.com");
-    //clip = skeleton->getClip("Armature|ArmatureAction");
+
+    clip = skeleton->getClip(name);
+    clip->setName(name);
 
     if (!clip) {
         std::cout << "Brak animacji!\n";
@@ -272,7 +275,9 @@ int main() {
 
     nlohmann::json astJson;
     dzemikk::to_json(astJson, *animator);
+    state->setClip(nullptr);
 
+    dzemikk::from_json(astJson, *animator);
     std::string t = "test";
     animator->play(t);
     

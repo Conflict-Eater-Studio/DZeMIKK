@@ -1,68 +1,137 @@
 #ifndef DZEMIKK_ANIMATORSERIALIZER_H
 #define DZEMIKK_ANIMATORSERIALIZER_H
+
 #include "../../components/animator.h"
 #include "../componentSerializerRegistry.h"
+#include "animation/animationstatemachine.h"
+#include "animation/animationstate.h"
 #include "ecs/gameobject.h"
 #include "nlohmann/json.hpp"
-
-#include "ecs/serialize/componentSerializerRegistry.h"
-#include "assetManager/assetmanager.h" // Assuming this is where your AssetManager lives
+#include <boost/uuid/uuid_io.hpp>
 
 namespace dzemikk {
 
-    inline void to_json(nlohmann::json& json, const Animator& animator) {
-        json["type"] = animator.typeName();
-        json["id"] = boost::uuids::to_string(animator.getId());
+inline void to_json(nlohmann::json& json, const Condition& c) {
+    json["parameter"] = c.parameter;
+    json["op"] = c.op;
+    json["value"] = c.value;
+}
 
-        if (auto sm = animator.getStateMachine()) {
-            json["stateMachinePath"] = sm->getPath();
-        } else {
-            json["stateMachinePath"] = nullptr;
+inline void from_json(const nlohmann::json& json, Condition& c) {
+    c.parameter = json.at("parameter").get<std::string>();
+    c.op = static_cast<Operator>(json.at("op").get<int>());
+    c.value = json.at("value");
+}
+
+inline void to_json(nlohmann::json& json, const Transition& t) {
+    json["to"] = t.targetState;
+    json["duration"] = t.duration;
+    json["condition"] = t.condition;
+}
+
+inline void to_json(nlohmann::json& json, const Animator& animator) {
+    json["type"] = animator.typeName();
+    json["id"] = boost::uuids::to_string(animator.getId());
+
+    if (auto sm = animator.getStateMachine()) {
+        nlohmann::json statesArray = nlohmann::json::array();
+        for (const auto& [name, state] : sm->getStates()) {
+            nlohmann::json stateJson;
+            stateJson["name"] = name;
+            stateJson["clip"] = state->getClip()->getName();
+            nlohmann::json transArray = nlohmann::json::array();
+            for (const auto& trans : state->getTransitions()) {
+                nlohmann::json tJson;
+                to_json(tJson, trans);
+                transArray.push_back(tJson);
+            }
+            stateJson["transitions"] = transArray;
+            statesArray.push_back(stateJson);
         }
-
-        if (animator.getCurrentState()) {
-            json["currentState"] = animator.getCurrentState()->getName();
-        }
-
-        // Serialize runtime parameters
-        json["parameters"] = nlohmann::json::object();
-        // You'll need a way to iterate _parameters if they should persist,
-        // but often Animator parameters are reset on load.
-        // If you want to save them, add a getter for the map.
+        json["stateMachine"] = statesArray;
     }
 
-    inline void from_json(const nlohmann::json& json, Animator& animator) {
-        if (json.contains("id")) {
-            animator.setId(boost::uuids::string_generator()(json["id"].get<std::string>()));
-        }
+    if (animator.getCurrentState()) {
+        json["currentStateName"] = animator.getCurrentState()->getName();
+    }
+    json["currentTime"] = animator.getCurrentTime();
 
-        if (json.contains("stateMachinePath") && !json["stateMachinePath"].is_null()) {
-            std::string path = json["stateMachinePath"];
-            auto sm = AssetManager::get().load<AnimationStateMachine>(path);
-            animator.setStateMachine(sm);
-        }
+    auto& p = json["parameters"] = nlohmann::json::object();
+    for (const auto& [name, val] : animator.getFloatParams()) p[name] = val;
+    for (const auto& [name, val] : animator.getIntParams())   p[name] = val;
+    for (const auto& [name, val] : animator.getBoolParams())  p[name] = val;
+}
 
-        if (json.contains("currentState") && !json["currentState"].is_null()) {
-            animator.play(json["currentState"].get<std::string>());
-        }
+inline void from_json(const nlohmann::json& json, Animator& animator) {
+    if (json.contains("id")) {
+        animator.setId(boost::uuids::string_generator()(json["id"].get<std::string>()));
     }
 
-    inline void registerAnimatorSerializer(ComponentSerializerRegistry& registry) {
-        registry.registerType(
-            "Animator",
-            [](const Component& component) {
-                const auto* animator = dynamic_cast<const Animator*>(&component);
-                if (animator == nullptr) {
-                    throw std::runtime_error("Component type mismatch for Animator serialization");
+    if (json.contains("stateMachine") && json["stateMachine"].is_array()) {
+        auto sm = std::make_shared<AnimationStateMachine>();
+
+        for (const auto& stateJson : json["stateMachine"]) {
+            AnimationState* state = sm->addState(stateJson.at("name").get<std::string>());
+            if (stateJson.contains("clip")) {
+                auto skinnedMeshRenderer = animator.getOwner()->getComponent<SkinnedMeshRenderer>();
+                if (skinnedMeshRenderer != nullptr) {
+                    AnimationClip* clip = skinnedMeshRenderer->getModel().get()->getSkeleton()->getClip(stateJson["clip"]);
+                    state->setClip(clip);
                 }
-                nlohmann::json j;
-                to_json(j, *animator);
-                return j;
-            },
-            [](const ComponentSerializerRegistry::DeserializationContext& context) {
-                auto* animator = gameObject.addComponent<Animator>();
-                from_json(componentJson, *animator, context.assetManager);
-            });
+                auto meshRenderer = animator.getOwner()->getComponent<MeshRenderer>();
+                if (meshRenderer != nullptr) {
+                    AnimationClip* clip2 = meshRenderer->getModel()->getSkeleton()->getClip(stateJson["clip"]);
+                    state->setClip(clip2);
+                }
+            }
+        }
+
+        for (const auto& stateJson : json["stateMachine"]) {
+            auto* sourceState = sm->getState(stateJson.at("name").get<std::string>());
+            if (stateJson.contains("transitions") && stateJson["transitions"].is_array()) {
+                for (const auto& tJson : stateJson["transitions"]) {
+                    auto* targetState = sm->getState(tJson.at("to").get<std::string>());
+                    if (targetState) {
+                        Transition t;
+                        t.targetState = targetState->getName();
+                        t.duration = tJson.at("duration").get<float>();
+                        t.condition = tJson.at("condition").get<Condition>();
+                        sourceState->addTransition(t);
+                    }
+                }
+            }
+        }
+        animator.setStateMachine(sm);
+    }
+
+    if (json.contains("parameters") && json["parameters"].is_object()) {
+        for (auto& [name, value] : json["parameters"].items()) {
+            if (value.is_boolean())         animator.setBool(name, value);
+            else if (value.is_number_integer()) animator.setInt(name, value);
+            else if (value.is_number_float())   animator.setFloat(name, value);
+        }
+    }
+
+    if (json.contains("currentStateName")) {
+        animator.play(json["currentStateName"].get<std::string>());
     }
 }
+
+inline void registerAnimatorSerializer(ComponentSerializerRegistry& registry) {
+    registry.registerType(
+        "Animator",
+        [](const Component& component) {
+            const auto* animator = dynamic_cast<const Animator*>(&component);
+            nlohmann::json j;
+            to_json(j, *animator);
+            return j;
+        },
+        [](const ComponentSerializerRegistry::DeserializationContext& context) {
+            auto* animator = context.gameObject.addComponent<Animator>();
+            from_json(context.json, *animator);
+        });
+}
+
+} // namespace dzemikk
+
 #endif
