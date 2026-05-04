@@ -16,6 +16,7 @@
 #include "assetManager/resourceIndex.h"
 #include "assetManager/primitiveMeshLibrary.h"
 #include "assetManager/assetHandle.h"
+#include "assetManager/threadPool.h"
 
 #include "renderer/model.h"
 #include "audio/sound.h"
@@ -113,9 +114,6 @@ class AssetManager : public IEngineModule {
 #pragma endregion
 
   private:
-    std::unordered_map<std::string, std::shared_future<std::shared_ptr<void>>> _inFlight;
-    std::mutex _inFlightMutex;
-
     /** @brief Asset cache */
     AssetDatabase _database;
 
@@ -131,6 +129,8 @@ class AssetManager : public IEngineModule {
     /** @brief External audio system (non-owning) */
     FMOD::System* _system = nullptr;
 
+    ThreadPool _threadPool;
+
 #pragma region Internal
 
     /**
@@ -142,79 +142,88 @@ class AssetManager : public IEngineModule {
      */
     void registerHandlers();
 
+    std::unordered_map<std::string, std::shared_future<std::shared_ptr<void>>> _inFlight;
+    std::mutex _inFlightMutex;
+
 #pragma endregion
 };
 
 // ================= IMPLEMENTATION =================
 
 template <typename T> AssetHandle<T> AssetManager::get(const std::string& path) {
+    if (auto entry = _database.getEntry(path);
+        entry && entry->state == AssetDatabase::AssetState::Ready) {
 
-    auto entry = _database.getEntry(path);
-
-    if (entry) {
-
-        if (entry->state == AssetDatabase::AssetState::Ready) {
 #if DZEMIKK_DEV_TOOLS
-            spdlog::info("[AssetManager] Loaded from cache: {}", path);
+        spdlog::info("[AssetManager] Cache hit: {}", path);
 #endif
-            return AssetHandle<T>(std::static_pointer_cast<T>(entry->handle), path);
-        }
 
-        if (entry->state == AssetDatabase::AssetState::Loading) {
+        return AssetHandle<T>(std::static_pointer_cast<T>(entry->handle), path);
+    }
+
+    {
+        std::lock_guard lock(_inFlightMutex);
+
+        auto it = _inFlight.find(path);
+        if (it != _inFlight.end()) {
+
 #if DZEMIKK_DEV_TOOLS
-            spdlog::info("[AssetManager] Waiting for async asset: {}", path);
+            spdlog::info("[AssetManager] Waiting for async (future): {}", path);
 #endif
-            auto ptr = std::static_pointer_cast<T>(entry->future.get());
+
+            auto future = it->second;
+
+            auto ptr = std::static_pointer_cast<T>(future.get());
+
+            if (!ptr)
+                return {};
 
             return AssetHandle<T>(ptr, path);
         }
-
-        return {};
     }
 
     auto* handler = _loaders.get<T>();
-    if (!handler) {
+    if (!handler)
         return {};
-    }
 
-    auto future =
-        std::async(std::launch::deferred, [this, path, handler]() -> std::shared_ptr<void> {
-            auto result =
-                handler->load(_resources.resolve(path), IAssetHandlerBase::LoadExecutionMode::Sync);
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[AssetManager] Loading sync: {}", path);
+#endif
+    _database.insertLoading<T>(path);
 
-            if (!result.isValid())
-                return nullptr;
+    auto result =
+        handler->load(_resources.resolve(path), IAssetHandlerBase::LoadExecutionMode::Sync);
 
-            return result.resource;
-        }).share();
-
-    _database.insertLoading<T>(path, future);
-
-    auto ptr = std::static_pointer_cast<T>(future.get());
-
-    if (!ptr) {
+    if (!result.isValid()) {
         _database.setFailed(path);
         return {};
     }
 
-    _database.setReady(path, ptr);
+    auto ptr = std::static_pointer_cast<T>(result.resource);
+
+    _database.setReady<T>(path, ptr);
 
 #if DZEMIKK_DEV_TOOLS
-    spdlog::info("[AssetManager] Loaded from file: {}", path);
+    spdlog::info("[AssetManager] Loaded sync: {}", path);
 #endif
+
+    if constexpr (std::is_same_v<T, Model>) {
+        std::lock_guard lock(_gpuMutex);
+        _gpuUploadQueue.push(result.resource);
+    }
 
     return AssetHandle<T>(ptr, path);
 }
 
 template <typename T>
 std::shared_future<AssetHandle<T>> AssetManager::getAsync(const std::string& path) {
+    if (auto entry = _database.getEntry(path);
+        entry && entry->state == AssetDatabase::AssetState::Ready) {
 
-    auto entry = _database.getEntry(path);
-
-    if (entry && entry->state == AssetDatabase::AssetState::Ready) {
 #if DZEMIKK_DEV_TOOLS
-        spdlog::info("[AssetManager] Asset ready while LOADING: {}", path);
+        spdlog::info("[AssetManager] Cache hit (READY): {}", path);
 #endif
+
         auto cached = std::static_pointer_cast<T>(entry->handle);
 
         return std::async(std::launch::deferred,
@@ -222,48 +231,85 @@ std::shared_future<AssetHandle<T>> AssetManager::getAsync(const std::string& pat
             .share();
     }
 
-    if (entry && entry->state == AssetDatabase::AssetState::Loading) {
+    {
+        std::lock_guard lock(_inFlightMutex);
+
+        auto it = _inFlight.find(path);
+        if (it != _inFlight.end()) {
+
 #if DZEMIKK_DEV_TOOLS
-        spdlog::info("[AssetManager] Asset requested while LOADING: {}", path);
+            spdlog::info("[AssetManager] Reusing in-flight: {}", path);
 #endif
 
-        return std::async(std::launch::deferred,
-                          [entry, path]() {
-                              auto ptr = std::static_pointer_cast<T>(entry->future.get());
-#if DZEMIKK_DEV_TOOLS
-                              spdlog::info("[AssetManager] Finished waiting for: {}", path);
-#endif
+            auto future = it->second;
 
-
-                              return AssetHandle<T>(ptr, path);
-                          })
-            .share();
+            return std::async(std::launch::deferred,
+                              [future, path]() {
+                                  auto ptr = std::static_pointer_cast<T>(future.get());
+                                  return AssetHandle<T>(ptr, path);
+                              })
+                .share();
+        }
     }
+
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[AssetManager] Enqueue async load: {}", path);
+#endif
 
     auto* handler = _loaders.get<T>();
-    if (!handler) {
+    if (!handler)
         return {};
+
+    auto promise = std::make_shared<std::promise<std::shared_ptr<void>>>();
+    auto future = promise->get_future().share();
+
+    {
+        std::lock_guard lock(_inFlightMutex);
+        _inFlight[path] = future;
     }
 
-    auto future = std::async(std::launch::async, [this, path, handler]() -> std::shared_ptr<void> {
-                      auto result = handler->load(_resources.resolve(path),
-                                                  IAssetHandlerBase::LoadExecutionMode::Async);
+    _database.insertLoading<T>(path);
 
-                      if (!result.isValid())
-                          return nullptr;
+    ThreadPool::AssetJob job;
+    job.path = path;
+    job.type = typeid(T);
 
-                      _database.setReady<T>(path, result.resource); 
+    job.execute = [this, path, promise]() {
+        auto* handler = _loaders.get<T>();
+        if (!handler) {
+            promise->set_value(nullptr);
+            return;
+        }
 
-                      // TEST -> FOR MODEL ONLY FIX THIS
-                      {
-                          std::lock_guard lock(_gpuMutex);
-                          _gpuUploadQueue.push(std::static_pointer_cast<Model>(result.resource));
-                      }
+        auto result =
+            handler->load(_resources.resolve(path), IAssetHandlerBase::LoadExecutionMode::Async);
 
-                      return result.resource;
-                  }).share();
+        if (!result.isValid()) {
+            _database.setFailed(path);
+            promise->set_value(nullptr);
+            return;
+        }
 
-    _database.insertLoading<T>(path, future);
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[AssetManager] Loaded in worker thread: {}", path);
+#endif
+
+        _database.setReady<T>(path, result.resource);
+
+        if constexpr (std::is_same_v<T, Model>) {
+            std::lock_guard lock(_gpuMutex);
+            _gpuUploadQueue.push(result.resource);
+        }
+
+        promise->set_value(result.resource);
+
+        {
+            std::lock_guard lock(_inFlightMutex);
+            _inFlight.erase(path);
+        }
+    };
+
+    _threadPool.enqueue(std::move(job));
 
     return std::async(std::launch::deferred,
                       [future, path]() {

@@ -118,22 +118,17 @@ class AssetDatabase {
      */
     struct Entry {
         std::shared_ptr<void> handle;
-        std::shared_future<std::shared_ptr<void>> future;
         std::type_index type = typeid(void);
         AssetState state = AssetState::Loading;
     };
 
     template <typename T> void setReady(const std::string& path, std::shared_ptr<T> asset) {
         auto it = _assets.find(path);
-        if (it == _assets.end()) {
-            throw std::runtime_error("setReady: asset not found: " + path);
-        }
-
-        if (it->second.type != typeid(T)) {
-            throw std::runtime_error("setReady: type mismatch: " + path);
-        }
+        if (it == _assets.end())
+            return;
 
         it->second.handle = asset;
+        it->second.type = typeid(T);
         it->second.state = AssetState::Ready;
 
 #if DZEMIKK_DEV_TOOLS
@@ -141,12 +136,9 @@ class AssetDatabase {
 #endif
     }
 
-    template <typename T>
-    void insertLoading(const std::string& path, std::shared_future<std::shared_ptr<void>> future) {
-
+    template <typename T> void insertLoading(const std::string& path) {
         Entry entry;
         entry.type = typeid(T);
-        entry.future = future;
         entry.state = AssetState::Loading;
 
         _assets[path] = std::move(entry);

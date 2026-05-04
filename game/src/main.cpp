@@ -140,21 +140,24 @@ int main() {
     // --- Tiles
 
     auto futuretile = engine->getAssetManager()->getAsync<dzemikk::Model>("models/pole.fbx");
-    auto tileMesh = futuretile.get();
+    //auto tileMesh = futuretile.get();
+
+    engine->getAssetManager()->unload("models/pole.fbx");
 
     auto futuretile2 = engine->getAssetManager()->getAsync<dzemikk::Model>("models/pole.fbx");
     auto tileMesh2 = futuretile2.get();
 
     auto m1 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
-    //engine->getAssetManager()->unload("models/pole.fbx");
-
     auto m2 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
     auto m3 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
     
     //auto tileMesh = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
-    createHexIsland(*mainScenePtr, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
+    createHexIsland(*mainScenePtr, m1, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
+
+
+    auto tileMesh = futuretile.get();
 
     auto sphereMesh = engine->getAssetManager()->getPrimitiveModel(
         dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Sphere);

@@ -53,6 +53,8 @@ void dzemikk::AssetManager::initialize() {
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(timer1 - timer0).count();
     spdlog::info("[AssetManager] Initialization finished in {} ms", ms);
 #endif
+
+    _threadPool.start();
 }
 
 void dzemikk::AssetManager::uninitialize() {
