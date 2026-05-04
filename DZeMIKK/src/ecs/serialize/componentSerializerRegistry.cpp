@@ -1,13 +1,14 @@
 #include "ecs/serialize/componentSerializerRegistry.h"
 
+#include "ecs/serialize/cameraSerializer.h"
+#include "ecs/serialize/meshRendererSerializer.h"
 #include "ecs/serialize/rectTransformSerializer.h"
+#include "ecs/serialize/skinnedMeshSerializer.h"
+#include "ecs/serialize/spriteRendererSerializer.h"
+#include "ecs/serialize/textRendererSerializer.h"
+#include "ecs/serialize/transformSerializer.h"
 #include "ecs/serialize/uiButtonSerializer.h"
 #include "ecs/serialize/uiSliderSerializer.h"
-#include "ecs/serialize/meshRendererSerializer.h"
-#include "ecs/serialize/transformSerializer.h"
-#include "ecs/serialize/textRendererSerializer.h"
-#include "ecs/serialize/spriteRendererSerializer.h"
-#include "ecs/serialize/skinnedMeshSerializer.h"
 
 #include <stdexcept>
 #include <utility>
@@ -25,6 +26,7 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerTextRendererSerializer(registry);
     registerSpriteRendererSerializer(registry);
     registerSkinnedMeshRendererSerializer(registry);
+    registerCameraSerializer(registry);
     return registry;
 }
 } // namespace
