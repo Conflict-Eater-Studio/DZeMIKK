@@ -1,7 +1,6 @@
+#pragma once
 #ifndef DZEMIKK_PREFABSERIALIZER_H
 #define DZEMIKK_PREFABSERIALIZER_H
-
-#pragma once
 
 #include <nlohmann/json.hpp>
 

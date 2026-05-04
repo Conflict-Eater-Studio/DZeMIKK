@@ -10,70 +10,69 @@
 #include "renderer/font.h"
 
 namespace dzemikk {
-inline void to_json(nlohmann::json& json, const TextRenderer& textRenderer) {
-    json["type"] = textRenderer.typeName();
-    json["id"] = boost::uuids::to_string(textRenderer.getId());
+    inline void to_json(nlohmann::json& json, const TextRenderer& textRenderer) {
+        json["type"] = textRenderer.typeName();
+        json["id"] = boost::uuids::to_string(textRenderer.getId());
 
-    json["text"] = textRenderer.text;
-    json["scale"] = textRenderer.scale;
+        json["text"] = textRenderer.text;
+        json["scale"] = textRenderer.scale;
 
-    json["color"] = { textRenderer.color.r, textRenderer.color.g, textRenderer.color.b };
+        json["color"] = { textRenderer.color.r, textRenderer.color.g, textRenderer.color.b };
 
-    if (textRenderer.font.get() != nullptr) {
-        json["font"] = textRenderer.font.getAssetPath();
-    } else {
-        json["font"] = "";
-    }
-}
-
-inline void from_json(const nlohmann::json& json, TextRenderer& textRenderer, AssetManager& assetManager) {
-    static boost::uuids::string_generator uuidGenerator;
-
-    if (json.contains("id") && json["id"].is_string()) {
-        try {
-            textRenderer.setId(uuidGenerator(json["id"].get<std::string>()));
-        } catch (const std::exception& e) {
-#if DZEMIKK_DEV_TOOLS
-            spdlog::error("Failed to parse UUID: {}", e.what());
-#endif
+        if (textRenderer.font.get() != nullptr) {
+            json["font"] = textRenderer.font.getAssetPath();
+        } else {
+            json["font"] = "";
         }
     }
 
-    textRenderer.text = json.value("text", "Hello");
-    textRenderer.scale = json.value("scale", 1.0f);
+    inline void from_json(const nlohmann::json& json, TextRenderer& textRenderer, AssetManager& assetManager) {
+        static boost::uuids::string_generator uuidGenerator;
 
-    if (json.contains("color") && json["color"].is_array() && json["color"].size() >= 3) {
-        const auto& c = json["color"];
-        textRenderer.color = glm::vec3(
-            c[0].get<float>(),
-            c[1].get<float>(),
-            c[2].get<float>()
-        );
-    }
-
-    std::string fontPath = json.value("font", "");
-    if (!fontPath.empty()) {
-        textRenderer.font = assetManager.get<Font>(fontPath);
-    }
-}
-
-inline void registerTextRendererSerializer(ComponentSerializerRegistry& registry) {
-    registry.registerType(
-        "TextRenderer",
-        [](const Component& component) {
-            const auto* renderer = dynamic_cast<const TextRenderer*>(&component);
-            if (renderer == nullptr) {
-                throw std::runtime_error("Component type mismatch for TextRenderer serialization");
+        if (json.contains("id") && json["id"].is_string()) {
+            try {
+                textRenderer.setId(uuidGenerator(json["id"].get<std::string>()));
+            } catch (const std::exception& e) {
+    #if DZEMIKK_DEV_TOOLS
+                spdlog::error("Failed to parse UUID: {}", e.what());
+    #endif
             }
-            nlohmann::json j;
-            to_json(j, *renderer);
-            return j;
-        },
-        [](const ComponentSerializerRegistry::DeserializationContext& context) {
-            auto* renderer = context.gameObject.addComponent<TextRenderer>();
-            from_json(context.json, *renderer, context.assetManager);
-        });
-}
+        }
 
+        textRenderer.text = json.value("text", "Hello");
+        textRenderer.scale = json.value("scale", 1.0f);
+
+        if (json.contains("color") && json["color"].is_array() && json["color"].size() >= 3) {
+            const auto& c = json["color"];
+            textRenderer.color = glm::vec3(
+                c[0].get<float>(),
+                c[1].get<float>(),
+                c[2].get<float>()
+            );
+        }
+
+        std::string fontPath = json.value("font", "");
+        if (!fontPath.empty()) {
+            textRenderer.font = assetManager.get<Font>(fontPath);
+        }
+    }
+
+    inline void registerTextRendererSerializer(ComponentSerializerRegistry& registry) {
+        registry.registerType(
+            "TextRenderer",
+            [](const Component& component) {
+                const auto* renderer = dynamic_cast<const TextRenderer*>(&component);
+                if (renderer == nullptr) {
+                    throw std::runtime_error("Component type mismatch for TextRenderer serialization");
+                }
+                nlohmann::json j;
+                to_json(j, *renderer);
+                return j;
+            },
+            [](const ComponentSerializerRegistry::DeserializationContext& context) {
+                auto* renderer = context.gameObject.addComponent<TextRenderer>();
+                from_json(context.json, *renderer, context.assetManager);
+            });
+    }
 }
 #endif

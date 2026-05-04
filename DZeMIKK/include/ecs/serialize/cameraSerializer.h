@@ -1,11 +1,12 @@
+#pragma once
 #ifndef DZEMIKK_CAMERASERIALIZER_H
 #define DZEMIKK_CAMERASERIALIZER_H
+
 #include "ecs/serialize/componentSerializerRegistry.h"
 #include "ecs/components/camera.h"
 #include <nlohmann/json.hpp>
 
 namespace dzemikk {
-
     inline void to_json(nlohmann::json& j, const Camera& camera) {
         j["type"] = camera.typeName();
         j["id"] = camera.getId();
@@ -21,9 +22,6 @@ namespace dzemikk {
     }
 
     inline void from_json(const nlohmann::json& j, Camera& camera) {
-        // IDs in your Camera snippet are static-incremented,
-        // so we usually don't force-set them unless your architecture requires it.
-
         float nearPlane = j.at("near").get<float>();
         float farPlane = j.at("far").get<float>();
         auto type = static_cast<Camera::ProjectionType>(j.at("projectionType").get<int>());

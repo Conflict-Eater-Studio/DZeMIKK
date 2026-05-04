@@ -1,7 +1,7 @@
+#pragma once
 #ifndef DZEMIKK_COMPONENTSERIALIZERREGISTRY_H
 #define DZEMIKK_COMPONENTSERIALIZERREGISTRY_H
 
-#pragma once
 
 #include "assetManager/assetmanager.h"
 #include "ecs/component.h"
@@ -63,6 +63,6 @@ class ComponentSerializerRegistry {
   private:
     std::unordered_map<std::string, Entry> _entries;
 };
-} // namespace dzemikk
+}
 
-#endif // DZEMIKK_COMPONENTSERIALIZERREGISTRY_H
+#endif

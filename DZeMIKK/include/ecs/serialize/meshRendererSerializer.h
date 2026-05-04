@@ -2,7 +2,6 @@
 #ifndef DZEMIKK_MESHRENDERERSERIALIZER_H
 #define DZEMIKK_MESHRENDERERSERIALIZER_H
 
-
 #include "ecs/components/meshRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/serialize/componentSerializerRegistry.h"
@@ -17,20 +16,15 @@ namespace dzemikk {
 void to_json(nlohmann::json& json, const MeshRenderer& meshRenderer) {
     json["type"] = meshRenderer.typeName();
 
-    // Explicitly convert UUID to string to avoid serialization errors
     json["id"] = boost::uuids::to_string(meshRenderer.getId());
 
-    // Safe model handle extraction
     const auto& modelHandle = meshRenderer.getModelHandle();
     json["model"] = (modelHandle.get() != nullptr) ? modelHandle.getAssetPath() : "";
 
-    // Safely iterate materials
     json["materials"] = nlohmann::json::array();
     const auto& materials = meshRenderer.getMaterials();
 
-    // Range-based for loop is cleaner and avoids manual indexing
     for (const Material* material : materials) {
-        // CRITICAL: Check if the material pointer itself is null first!
         if (material != nullptr) {
             const auto& shader = material->getShaderHandle();
             if (shader.get() != nullptr) {
@@ -84,8 +78,6 @@ inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, As
                     Material* material = new Material();
                     material->setShader(assetManager.get<Shader>(shaderPath));
                     meshRenderer.setMaterial(i, material);
-                } else {
-                    // Do nothing, or assign a default/null material if your engine requires it
                 }
             }
         }

@@ -1,7 +1,6 @@
+#pragma once
 #ifndef DZEMIKK_SERIALIZEDREF_H
 #define DZEMIKK_SERIALIZEDREF_H
-
-#pragma once
 
 #include "ecs/component.h"
 
@@ -63,7 +62,6 @@ template <typename T> class SerializedRef : public SerializedRefBase {
         _pendingId = {};
     }
 
-    // Called by deserialization to store unresolved component ID.
     void captureSerializedId(const boost::uuids::uuid& uuidValue) {
         _pendingId = uuidValue;
         if (uuidValue.is_nil()) {
@@ -71,7 +69,6 @@ template <typename T> class SerializedRef : public SerializedRefBase {
         }
     }
 
-    // Called by serialization. If unresolved, returns pending ID.
     [[nodiscard]] boost::uuids::uuid toSerializedId() const {
         if (_value != nullptr) {
             return _value->getId();

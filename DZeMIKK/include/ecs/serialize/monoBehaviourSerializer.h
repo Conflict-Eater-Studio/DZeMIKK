@@ -1,7 +1,6 @@
+#pragma once
 #ifndef DZEMIKK_MONOBEHAVIOURSERIALIZER_H
 #define DZEMIKK_MONOBEHAVIOURSERIALIZER_H
-
-#pragma once
 
 #include "ecs/components/monoBehaviour.h"
 #include "ecs/serialize/serializedRef.h"
