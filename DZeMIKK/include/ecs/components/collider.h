@@ -2,6 +2,8 @@
 #define DZEMIKK_COLLIDER_H
 
 #include "../component.h"
+#include "assetManager/assetHandle.h"
+
 #include <glm/glm.hpp>
 #include <string>
 
@@ -26,8 +28,9 @@ public:
     Collider(Collider&&) noexcept = delete;
     Collider& operator=(Collider&&) noexcept = delete;
 
-    void setModel(Model* model);
+    void setModel(AssetHandle<Model> model);
     Model* getModel() const;
+    AssetHandle<Model> getModelHandle();
 
     void setTransform(Transform* transform);
     Transform* getTransform() const;
@@ -45,7 +48,7 @@ public:
 private:
     void calculateCullingRadius(Model* model);
 
-    Model* _model = nullptr;
+    AssetHandle<Model> _model;
     Transform* _transform = nullptr;
     float _cullingRadius = 1.0f;
 };

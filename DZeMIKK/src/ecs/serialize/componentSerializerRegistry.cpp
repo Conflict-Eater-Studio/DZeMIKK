@@ -7,6 +7,7 @@
 #include "ecs/serialize/spriteRendererSerializer.h"
 #include "ecs/serialize/textRendererSerializer.h"
 #include "ecs/serialize/transformSerializer.h"
+#include "ecs/serialize/ui/canvasSerializer.h"
 #include "ecs/serialize/uiButtonSerializer.h"
 #include "ecs/serialize/uiSliderSerializer.h"
 
@@ -27,6 +28,7 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerSpriteRendererSerializer(registry);
     registerSkinnedMeshRendererSerializer(registry);
     registerCameraSerializer(registry);
+    registerCanvasSerializer(registry);
     return registry;
 }
 } // namespace

@@ -7,6 +7,11 @@
 
 #include "assetManager/assetmanager.h"
 #include "audio/sound.h"
+#include "ecs/serialize/meshRendererSerializer.h"
+#include "ecs/serialize/textRendererSerializer.h"
+#include "ecs/serialize/spriteRendererSerializer.h"
+#include "ecs/serialize/skinnedMeshSerializer.h"
+#include "ecs/serialize/cameraSerializer.h"
 
 #include "core/engine.h"
 #include "ecs/components/animator.h"
@@ -191,6 +196,8 @@ int main() {
     auto playerGO = mainScenePtr->createGameObject();
     playerGO->transform()->setPosition(glm::vec3(0.0f, 2.5f, 0.0f));
     auto playerMeshR = playerGO->addComponent<dzemikk::MeshRenderer>();
+
+
     auto playerMesh = engine->getAssetManager()->getPrimitive(
         dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Capsule);
 
@@ -201,6 +208,8 @@ int main() {
     playerMeshR->setTransform(playerGO->transform());
     playerMeshR->setMaterial(0, materialA);
 
+
+
     auto chestGO = mainScenePtr->createGameObject();
     chestGO->transform()->setPosition(glm::vec3(-4.0f, 2.5f, 0.0f));
     chestGO->transform()->setRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
@@ -210,6 +219,10 @@ int main() {
     chestMeshR->setTransform(chestGO->transform());
     chestMeshR->setMaterial(0, materialA);
 
+    nlohmann::json json;
+    dzemikk::to_json(json, *chestMeshR);
+    dzemikk::from_json(json, *playerMeshR, *engine->getAssetManager());
+
     auto enemyGO = mainScenePtr->createGameObject();
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.2f, 0.0f));
     enemyGO->transform()->setScale(glm::vec3(.01f, .01f, 0.01f));
@@ -217,7 +230,7 @@ int main() {
     // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
     //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Rumba Dancing.fbx");
     auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Flair(1).fbx");
-    //auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/szamankaanim.fbx");
+    auto enemyMesh2 = engine->getAssetManager()->get<dzemikk::Model>("models/szamankaanim.fbx");
     // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/MainC.fbx");
     // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/cooper.fbx");
     enemyMeshR->setModel(enemyMesh);
@@ -228,6 +241,10 @@ int main() {
     enemyMeshR->setMaterial(3, materialC);
     enemyMeshR->setMaterial(4, materialC);
     enemyMeshR->setMaterial(5, materialC);
+    nlohmann::json json2;
+    dzemikk::to_json(json2, *enemyMeshR);
+    enemyMeshR->setModel(enemyMesh2);
+    dzemikk::from_json(json2, *enemyMeshR, *engine->getAssetManager());
 
     auto animator = enemyGO->addComponent<dzemikk::Animator>();
     engine->getAnimationModule()->registerAnimator(animator);
@@ -240,7 +257,6 @@ int main() {
 
     dzemikk::AnimationClip* clip = nullptr;
     clip = skeleton->getClip("mixamo.com");
-    clip->addBoneTrack();
     //clip = skeleton->getClip("Armature|ArmatureAction");
 
     if (!clip) {
@@ -253,6 +269,10 @@ int main() {
 
     state->setClip(clip);
     animator->setStateMachine(sm);
+
+    nlohmann::json astJson;
+    dzemikk::to_json(astJson, *animator);
+
     std::string t = "test";
     animator->play(t);
     
@@ -275,9 +295,16 @@ int main() {
     quadRenderer->setTransform(quadGO->transform());
     quadRenderer->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
 
+
+
     auto tex = engine->getAssetManager()->get<dzemikk::Texture>("textures/tex3.png");
+    auto tex2 = engine->getAssetManager()->get<dzemikk::Texture>("textures/tex.png");
 
     quadRenderer->setTexture(tex);
+    nlohmann::json texture;
+    dzemikk::to_json(texture, *quadRenderer);
+    quadRenderer->setTexture(tex2);
+    dzemikk::from_json(texture, *quadRenderer, *engine->getAssetManager());
 
     auto quadGO2 = mainScenePtr->createGameObject();
     quadGO2->transform()->setPosition(glm::vec3(1500.0f, 950.0f, 0.0f));
@@ -308,6 +335,28 @@ int main() {
     quadSpriteUpdater->transform = quadGO3->transform();
 
     auto font = engine->getAssetManager()->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
+
+
+
+    auto* canvasGo = mainScenePtr->createGameObject("Canvas");
+    auto* canvas = canvasGo->addComponent<dzemikk::Canvas>();
+    auto* canvasRect = canvasGo->rectTransform();
+    canvasRect->setSize({1920.0F, 1080.0F});
+
+    auto* buttonText = mainScenePtr->createGameObject("Text", canvasGo);
+    auto* buttonTextRect = buttonText->rectTransform();
+    buttonTextRect->setSize({0.0F, 0.0F});
+    buttonTextRect->setAnchorMin({0.0F, 0.0F});
+    buttonTextRect->setAnchorMax({1.0F, 1.0F});
+    buttonTextRect->setPosition({0.0F, 0.0F});
+    buttonTextRect->setPivot({0.5F, 0.5F});
+    auto* buttonTextRenderer = buttonText->addComponent<dzemikk::UITextRenderer>();
+    buttonTextRenderer->text = "DUPA";
+    buttonTextRenderer->font = font.get();
+    buttonTextRenderer->scale = 1.0F;
+    buttonTextRenderer->color = glm::vec3(1.0F, 1.0F, 1.0F);
+    buttonTextRenderer->horizontalAlign = dzemikk::UITextRenderer::HorizontalAlign::Center;
+    buttonTextRenderer->verticalAlign = dzemikk::UITextRenderer::VerticalAlign::Middle;
 
     /*
     auto* canvasGo = mainScenePtr->createGameObject("Canvas");
@@ -486,14 +535,6 @@ int main() {
     auto textGO = mainScenePtr->createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
 
-    auto text = textGO->addComponent<dzemikk::TextRenderer>();
-    text->text = "Hello World!";
-    text->font = font;
-    text->scale = 1.0f;
-    text->color = glm::vec3(1.0f, 1.0f, 1.0f);
-
-    auto updater = textGO->addComponent<TextUpdater>();
-    updater->text = text;
 
     // FOR TEST ONLY - DELETE THIS
     FMOD::System* system;

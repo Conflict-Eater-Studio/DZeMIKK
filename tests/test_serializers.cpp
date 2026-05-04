@@ -344,6 +344,11 @@ TEST(MeshRendererSerialization, ToJsonExtractsModelPathFromValidHandle) {
     dzemikk::GameObject* object = scene.createGameObject("RendererObject");
     auto* renderer = object->addComponent<dzemikk::MeshRenderer>();
 
+    dzemikk::AssetManager assetManager;
+    assetManager.initialize();
+    dzemikk::AssetHandle<dzemikk::Model> model = assetManager.get<dzemikk::Model>("res/models/Body Block.fbx");
+    assetManager.uninitialize();
+
     // Mocking an AssetHandle setup (Adjust this to match how you fake handles in your tests)
     // dzemikk::AssetHandle<dzemikk::Model> mockHandle = createMockHandle("assets/models/player.obj");
     // renderer->setModel(mockHandle);

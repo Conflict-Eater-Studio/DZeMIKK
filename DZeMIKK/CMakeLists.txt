@@ -15,7 +15,14 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebIn
 endif()
 
 add_library(DZeMIKK STATIC
-        include/ecs/serialize/meshRendererSerializer.h)
+        include/ecs/serialize/meshRendererSerializer.h
+        include/ecs/serialize/textRendererSerializer.h
+        include/ecs/serialize/spriteRendererSerializer.h
+        include/ecs/serialize/skinnedMeshSerializer.h
+        include/ecs/serialize/colliderSerializer.h
+        include/ecs/serialize/cameraSerializer.h
+        include/ecs/serialize/ui/canvasSerializer.h
+        include/ecs/serialize/ui/imageRendererSerializer.h)
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"

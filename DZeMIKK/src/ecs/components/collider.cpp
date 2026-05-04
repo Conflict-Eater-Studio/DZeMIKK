@@ -4,15 +4,17 @@
 
 namespace dzemikk {
 
-void Collider::setModel(Model* model) {
+void Collider::setModel(AssetHandle<Model> model) {
     _model = model;
-    calculateCullingRadius(model);
+    calculateCullingRadius(model.get());
 }
 
 Model* Collider::getModel() const {
+    return _model.get();
+}
+AssetHandle<Model> Collider::getModelHandle() {
     return _model;
 }
-
 void Collider::setTransform(Transform* transform) {
     _transform = transform;
 }

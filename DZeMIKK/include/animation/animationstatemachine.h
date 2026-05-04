@@ -55,24 +55,6 @@ class AnimationState;
     private:
         std::unordered_map<std::string, std::unique_ptr<AnimationState>> _states;
     };
-
-    // inline void to_json(nlohmann::json& json, const AnimationStateMachine& animationStateMachine) {
-    //     json["states"] = nlohmann::json::object();
-    //
-    //     for (const auto& [name, statePtr] : animationStateMachine.getStates()) {
-    //         if (statePtr) {
-    //             json["states"][name] = *statePtr;
-    //         }
-    //     }
-    // }
-    //
-    // inline void from_json(const nlohmann::json& json, AnimationStateMachine& animationStateMachine) {
-    //     // To be implemented:
-    //     // 1. Iterate over json["states"]
-    //     // 2. Call animationStateMachine.addState(name)
-    //     // 3. Deserialize the JSON data into that new state
-    // }
-
 } // namespace dzemikk
 
 #endif

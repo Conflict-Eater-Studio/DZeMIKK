@@ -1,7 +1,8 @@
-#ifndef DZEMIKK_UISPRITERENDERER_H
-#define DZEMIKK_UISPRITERENDERER_H
+#ifndef DZEMIKK_IMAGERENDERER_H
+#define DZEMIKK_IMAGERENDERER_H
 
 #include "ecs/component.h"
+#include "assetManager/assetHandle.h"
 
 #include <glm/glm.hpp>
 
@@ -10,7 +11,6 @@ namespace dzemikk {
 class RectTransform;
 class Mesh;
 class Material;
-
 class ImageRenderer : public Component {
   public:
     using Base = Component;
@@ -24,6 +24,10 @@ class ImageRenderer : public Component {
     ImageRenderer& operator=(ImageRenderer&& other) noexcept = delete;
 
     [[nodiscard]] Mesh* getMesh() const {
+        return _mesh.get();
+    }
+
+    [[nodiscard]] AssetHandle<Mesh> getMeshHandle() const {
         return _mesh;
     }
 
@@ -43,7 +47,7 @@ class ImageRenderer : public Component {
         return _color;
     }
 
-    void setMesh(Mesh* mesh) {
+    void setMesh(const AssetHandle<Mesh>& mesh) {
         _mesh = mesh;
     }
 
@@ -68,11 +72,11 @@ class ImageRenderer : public Component {
     }
 
     [[nodiscard]] std::string typeName() const override {
-        return "UISpriteRenderer";
+        return "ImageRenderer";
     };
 
   private:
-    Mesh* _mesh = nullptr;
+    AssetHandle<Mesh> _mesh;
 
     Material* _material = nullptr;
 

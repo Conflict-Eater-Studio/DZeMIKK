@@ -23,7 +23,7 @@ struct UIButtonParams {
     std::string onEnterActionId;
     std::string onExitActionId;
     RectTransformParams rectTransformParams;
-    Mesh* mesh;
+    AssetHandle<Mesh> mesh;
     Material* material;
 };
 
