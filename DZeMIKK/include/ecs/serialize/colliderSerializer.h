@@ -19,7 +19,6 @@ namespace dzemikk {
 inline void to_json(nlohmann::json& json, const Collider& collider) {
     json["type"] = collider.typeName();
     json["id"] = boost::uuids::to_string(collider.getId());
-
     if (collider.getModelHandle().get() != nullptr) {
         json["model"] = collider.getModelHandle().getAssetPath();
     } else {
@@ -57,7 +56,7 @@ inline void from_json(const nlohmann::json& json, Collider& collider, AssetManag
     }
 }
 
-inline void registerColliderSerializer(ComponentSerializerRegistry& registry, AssetManager& assetManager) {
+inline void registerColliderSerializer(ComponentSerializerRegistry& registry) {
     registry.registerType(
         "Collider",
         [](const Component& component) {

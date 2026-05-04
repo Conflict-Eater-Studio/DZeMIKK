@@ -30,7 +30,7 @@ public:
 
     void setModel(AssetHandle<Model> model);
     Model* getModel() const;
-    AssetHandle<Model> getModelHandle();
+    AssetHandle<Model> getModelHandle() const;
 
     void setTransform(Transform* transform);
     Transform* getTransform() const;

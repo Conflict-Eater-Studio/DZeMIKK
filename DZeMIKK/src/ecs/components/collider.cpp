@@ -12,7 +12,7 @@ void Collider::setModel(AssetHandle<Model> model) {
 Model* Collider::getModel() const {
     return _model.get();
 }
-AssetHandle<Model> Collider::getModelHandle() {
+AssetHandle<Model> Collider::getModelHandle() const {
     return _model;
 }
 void Collider::setTransform(Transform* transform) {

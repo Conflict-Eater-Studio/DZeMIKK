@@ -1,6 +1,7 @@
 #include "ecs/serialize/componentSerializerRegistry.h"
 
 #include "ecs/serialize/cameraSerializer.h"
+#include "ecs/serialize/colliderSerializer.h"
 #include "ecs/serialize/meshRendererSerializer.h"
 #include "ecs/serialize/rectTransformSerializer.h"
 #include "ecs/serialize/skinnedMeshSerializer.h"
@@ -8,6 +9,7 @@
 #include "ecs/serialize/textRendererSerializer.h"
 #include "ecs/serialize/transformSerializer.h"
 #include "ecs/serialize/ui/canvasSerializer.h"
+#include "ecs/serialize/ui/uiCheckboxSerializer.h"
 #include "ecs/serialize/uiButtonSerializer.h"
 #include "ecs/serialize/uiSliderSerializer.h"
 
@@ -29,6 +31,9 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerSkinnedMeshRendererSerializer(registry);
     registerCameraSerializer(registry);
     registerCanvasSerializer(registry);
+    registerColliderSerializer(registry);
+    registerRectTransformSerializer(registry);
+    registerUICheckboxSerializer(registry);
     return registry;
 }
 } // namespace
