@@ -5,6 +5,7 @@
 #include "ecs/serialize/uiSliderSerializer.h"
 #include "ecs/serialize/meshRendererSerializer.h"
 #include "ecs/serialize/transformSerializer.h"
+#include "ecs/serialize/textRendererSerializer.h"
 
 #include <stdexcept>
 #include <utility>
@@ -19,6 +20,7 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerUIButtonSerializer(registry);
     registerUISliderSerializer(registry);
     registerMeshRendererSerializer(registry);
+    registerTextRendererSerializer(registry);
 
     return registry;
 }
