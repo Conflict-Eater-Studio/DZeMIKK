@@ -76,6 +76,7 @@ void dzemikk::Renderer::initialize() {
     )";
 
     _textShader = new Shader(vertexSrc, fragmentSrc);
+    _textShader->uploadToGPU();
 
     glGenVertexArrays(1, &textVAO);
     glGenBuffers(1, &textVBO);
@@ -118,17 +119,19 @@ void dzemikk::Renderer::render() {
 
     if (_skybox && _sceneCamera) {
 
-        float time = glfwGetTime();
+        if (_skybox.get()->gpuReady) {
+            float time = glfwGetTime();
 
-        glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), time * 0.1f, glm::vec3(0, 1, 0));
-        glm::mat4 viewNoTrans = _sceneCamera->getView() * rotation;
+            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), time * 0.1f, glm::vec3(0, 1, 0));
+            glm::mat4 viewNoTrans = _sceneCamera->getView() * rotation;
 
-        _skybox.get()->render(viewNoTrans, _sceneCamera->getProjection());
+            _skybox.get()->render(viewNoTrans, _sceneCamera->getProjection());
 
-        Profiler::Get().stats.drawCalls++;
-        Profiler::Get().stats.renderedObjects++;
-        Profiler::Get().stats.vertexCount += 36;
-        Profiler::Get().stats.triangleCount += 12;
+            Profiler::Get().stats.drawCalls++;
+            Profiler::Get().stats.renderedObjects++;
+            Profiler::Get().stats.vertexCount += 36;
+            Profiler::Get().stats.triangleCount += 12;
+        }
     }
 
     glEnable(GL_CULL_FACE);

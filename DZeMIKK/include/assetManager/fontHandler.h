@@ -53,7 +53,9 @@ class FontHandler : public IAssetHandler<Font> {
     /**
      * @brief Loads a font and creates a Font object.
      */
-    static std::shared_ptr<Font> loadFontFromFile(const std::string& path);
+      static std::shared_ptr<Font>
+      loadFontFromFile(const std::string& path,
+                       LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync);
 
     /**
      * @brief Reloads font data into an existing Font object.

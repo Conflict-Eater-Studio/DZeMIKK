@@ -60,7 +60,9 @@ namespace dzemikk {
          * @param flipVertical Whether to flip image vertically (OpenGL convention).
          * @return Shared pointer to Texture or nullptr on failure.
          */
-        static std::shared_ptr<Texture> loadTextureFromFile(const std::string& path,
+        static std::shared_ptr<Texture> loadTextureFromFile(
+            const std::string& path,
+            LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync,
                                                             bool flipVertical = true);
 
         /**

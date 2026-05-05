@@ -1,4 +1,5 @@
 #include "renderer/model.h"
+#include <iostream>
 
 void dzemikk::Model::draw() const {
     for (const auto& subMesh : _subMeshes) {
@@ -62,6 +63,7 @@ void dzemikk::Model::uploadToGPU() {
 
             auto mesh = std::make_shared<StaticMesh>();
             mesh->create(raw.vertices, raw.indices);
+            mesh->uploadToGPU();
 
             addMesh(mesh, raw.materialIndex);
         } else {
@@ -69,6 +71,7 @@ void dzemikk::Model::uploadToGPU() {
 
             auto mesh = std::make_shared<SkinnedMesh>();
             mesh->create(raw.vertices, raw.indices);
+            mesh->uploadToGPU();
 
             addMesh(mesh, raw.materialIndex);
         }

@@ -58,7 +58,9 @@ namespace dzemikk {
          * @param path Path to mesh file.
          * @return Shared pointer to loaded Mesh or nullptr on failure.
          */
-        static std::shared_ptr<Mesh> loadMeshFromFile(const std::string& path);
+        static std::shared_ptr<Mesh>
+        loadMeshFromFile(const std::string& path,
+                         LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync);
 
         /**
          * @brief Reloads mesh data into an existing Mesh instance.

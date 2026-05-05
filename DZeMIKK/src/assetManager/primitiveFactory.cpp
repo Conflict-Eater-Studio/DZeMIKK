@@ -67,6 +67,7 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCube() {
 
     auto mesh = std::make_unique<StaticMesh>();
     mesh->create(vertices, {});
+    mesh->uploadToGPU();
     return mesh;
 }
 
@@ -81,6 +82,7 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createQuad() {
 
     auto mesh = std::make_unique<StaticMesh>();
     mesh->create(vertices, {});
+    mesh->uploadToGPU();
     return mesh;
 }
 
@@ -135,6 +137,7 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createSphere() {
 
     auto mesh = std::make_unique<StaticMesh>();
     mesh->create(vertices, indices);
+    mesh->uploadToGPU();
 
     return mesh;
 }
@@ -239,6 +242,6 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
 
     auto mesh = std::make_unique<StaticMesh>();
     mesh->create(vertices, indices);
-
+    mesh->uploadToGPU();
     return mesh;
 }

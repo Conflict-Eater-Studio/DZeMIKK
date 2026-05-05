@@ -12,7 +12,7 @@ const std::string dzemikk::ShaderHandler::FRAG = ".frag";
 dzemikk::ShaderHandler::Result
 dzemikk::ShaderHandler::load(const std::string& path,
                              LoadExecutionMode loadExecutionMode) {
-    auto shader = loadShaderFromFile(path);
+    auto shader = loadShaderFromFile(path, loadExecutionMode);
 
     if (!shader) {
         std::cerr << "Failed to load shader: " << path << "\n";
@@ -22,7 +22,9 @@ dzemikk::ShaderHandler::load(const std::string& path,
     return {shader, AssetError::None};
 }
 
-std::shared_ptr<dzemikk::Shader> dzemikk::ShaderHandler::loadShaderFromFile(const std::string& path) {
+std::shared_ptr<dzemikk::Shader>
+dzemikk::ShaderHandler::loadShaderFromFile(const std::string& path,
+                                           LoadExecutionMode loadExecutionMode) {
     auto [vertPath, fragPath] = buildShaderPaths(path);
 
     std::ifstream vFile(vertPath);
@@ -37,7 +39,12 @@ std::shared_ptr<dzemikk::Shader> dzemikk::ShaderHandler::loadShaderFromFile(cons
 
     std::string fragSrc((std::istreambuf_iterator<char>(fFile)), std::istreambuf_iterator<char>());
 
-    return std::make_shared<Shader>(vertSrc.c_str(), fragSrc.c_str());
+    auto shader = std::make_shared<Shader>(vertSrc.c_str(), fragSrc.c_str());
+    if (loadExecutionMode == LoadExecutionMode::Sync) {
+        shader->uploadToGPU();
+    }
+
+    return shader;
 }
 
 bool dzemikk::ShaderHandler::reload(Handle& asset, const std::string& path) {

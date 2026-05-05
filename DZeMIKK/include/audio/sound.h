@@ -12,7 +12,7 @@ namespace dzemikk {
 class Sound {
   public:
     Sound() = default;
-    ~Sound();
+    virtual ~Sound();
 
 #pragma region Disable copy/move
 

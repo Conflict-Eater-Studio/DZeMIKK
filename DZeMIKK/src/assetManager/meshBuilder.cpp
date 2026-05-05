@@ -117,6 +117,7 @@ std::shared_ptr<dzemikk::StaticMesh> dzemikk::MeshBuilder::buildStaticMesh(const
 
     auto mesh = std::make_shared<StaticMesh>();
     mesh->create(vertices, indices);
+    mesh->uploadToGPU();
 
     return mesh;
 }
@@ -161,6 +162,7 @@ std::shared_ptr<dzemikk::SkinnedMesh> dzemikk::MeshBuilder::buildSkinnedMesh(con
 
     auto mesh = std::make_shared<SkinnedMesh>();
     mesh->create(vertices, indices);
+    mesh->uploadToGPU();
 
     return mesh;
 }

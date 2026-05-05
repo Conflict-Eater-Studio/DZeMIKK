@@ -9,7 +9,7 @@
 dzemikk::MeshHandler::Result
 dzemikk::MeshHandler::load(const std::string& path,
                            LoadExecutionMode loadExecutionMode) {
-    auto mesh = loadMeshFromFile(path);
+    auto mesh = loadMeshFromFile(path, loadExecutionMode);
 
     if (!mesh) {
         std::cerr << "Failed to load mesh: " << path << "\n";
@@ -19,7 +19,9 @@ dzemikk::MeshHandler::load(const std::string& path,
     return {mesh, AssetError::None};
 }
 
-std::shared_ptr<dzemikk::Mesh> dzemikk::MeshHandler::loadMeshFromFile(const std::string& path) {
+std::shared_ptr<dzemikk::Mesh>
+dzemikk::MeshHandler::loadMeshFromFile(const std::string& path,
+                                       LoadExecutionMode loadExecutionMode) {
     Assimp::Importer importer;
 
     const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals |
@@ -58,6 +60,10 @@ std::shared_ptr<dzemikk::Mesh> dzemikk::MeshHandler::loadMeshFromFile(const std:
 
     auto mesh = std::make_shared<StaticMesh>();
     mesh->create(vertices, indices);
+
+    if (loadExecutionMode == LoadExecutionMode::Sync) {
+        mesh->uploadToGPU();
+    }
 
     return mesh;
 }

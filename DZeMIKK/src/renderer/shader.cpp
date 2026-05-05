@@ -3,13 +3,33 @@
 #include "renderer/shader.h"
 
 dzemikk::Shader::Shader(const char* vertexSrc, const char* fragmentSrc) {
+    _vertSrc = vertexSrc;
+    _fragSrc = fragmentSrc;
+}
+
+dzemikk::Shader::~Shader() {
+    if (_program)
+        glDeleteProgram(_program);
+}
+
+void dzemikk::Shader::bind() const {
+    glUseProgram(_program);
+}
+
+void dzemikk::Shader::unbind() const {
+    glUseProgram(0);
+}
+
+void dzemikk::Shader::uploadToGPU() {
     GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vertexSrc, nullptr);
+    const char* v = _vertSrc.c_str();
+    glShaderSource(vertex, 1, &v, nullptr);
     glCompileShader(vertex);
     checkCompileErrors(vertex, "VERTEX");
 
     GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fragmentSrc, nullptr);
+    const char* f = _fragSrc.c_str();
+    glShaderSource(fragment, 1, &f, nullptr);
     glCompileShader(fragment);
     checkCompileErrors(fragment, "FRAGMENT");
 
@@ -24,19 +44,6 @@ dzemikk::Shader::Shader(const char* vertexSrc, const char* fragmentSrc) {
 
     unsigned int uniformBlockIndex = glGetUniformBlockIndex(_program, "Matrices");
     glUniformBlockBinding(_program, uniformBlockIndex, 0);
-}
-
-dzemikk::Shader::~Shader() {
-    if (_program)
-        glDeleteProgram(_program);
-}
-
-void dzemikk::Shader::bind() const {
-    glUseProgram(_program);
-}
-
-void dzemikk::Shader::unbind() const {
-    glUseProgram(0);
 }
 
 void dzemikk::Shader::setFloat(const char* name, float value) {

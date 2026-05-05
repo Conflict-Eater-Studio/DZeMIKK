@@ -4,6 +4,7 @@
 #include "renderer/StaticMesh.h"
 #include "renderer/shader.h"
 #include "assetManager/assetHandle.h"
+#include "assetManager/iGpuUploadable.h"
 
 #include <glm/glm.hpp>
 #include <memory>
@@ -17,7 +18,7 @@ namespace dzemikk {
      *
      * Supports rendering using either a solid color or a cubemap texture.
      */
-    class Skybox {
+    class Skybox: public IGpuUploadable {
     public:
         using MeshPtr = std::unique_ptr<StaticMesh>;
 
@@ -29,8 +30,8 @@ namespace dzemikk {
         /**
          * @brief Constructs a skybox with default color mode.
          */
-        Skybox();
-        ~Skybox();
+        Skybox(std::vector<std::string>& faces);
+        virtual ~Skybox();
 
         #pragma region Disable copy
 
@@ -92,6 +93,9 @@ namespace dzemikk {
 
         #pragma endregion
 
+        void uploadToGPU() override;
+
+        bool gpuReady = false;
     private:
         Mode _mode = Mode::Color;
 
@@ -100,6 +104,8 @@ namespace dzemikk {
 
         GLuint _cubemapTex = 0;
         glm::vec3 _color = glm::vec3(0.5f, 0.7f, 1.0f);
+
+        std::vector<std::string> _faces;
 
         #pragma region Initialization
 

@@ -71,7 +71,9 @@ namespace dzemikk {
          * @param path Base path to shader.
          * @return Shared pointer to Shader or nullptr.
          */
-        static std::shared_ptr<Shader> loadShaderFromFile(const std::string& path);
+        static std::shared_ptr<Shader>
+        loadShaderFromFile(const std::string& path,
+                           LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync);
 
         /**
          * @brief Reloads shader data into existing instance.

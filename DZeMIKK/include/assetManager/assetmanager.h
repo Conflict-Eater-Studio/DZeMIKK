@@ -106,18 +106,18 @@ class AssetManager : public IEngineModule {
      */
     [[nodiscard]] FMOD::System* getFMODSystem() const;
 
-    std::queue<std::shared_ptr<Model>> _gpuUploadQueue;
+    std::queue<std::shared_ptr<IGpuUploadable>> _gpuUploadQueue;
     std::mutex _gpuMutex;
 
     void processGpuUploads() {
         std::lock_guard lock(_gpuMutex);
 
         while (!_gpuUploadQueue.empty()) {
-            auto model = _gpuUploadQueue.front();
+            auto gpu = _gpuUploadQueue.front();
             _gpuUploadQueue.pop();
 
-            if (model)
-                model->uploadToGPU();
+            if (gpu)
+                gpu->uploadToGPU();
         }
     }
 
@@ -158,6 +158,9 @@ class AssetManager : public IEngineModule {
 
     std::unordered_map<std::string, std::shared_future<std::shared_ptr<void>>> _inFlight;
     std::mutex _inFlightMutex;
+
+    std::queue<std::function<void()>> _mainThreadCallbacks;
+    std::mutex _mainThreadCallbacksMutex;
 
 #pragma endregion
 };
@@ -220,11 +223,6 @@ template <typename T> AssetHandle<T> AssetManager::get(const std::string& path) 
 #if DZEMIKK_DEV_TOOLS
     spdlog::info("[AssetManager] Loaded sync: {}", path);
 #endif
-
-    if constexpr (std::is_same_v<T, Model>) {
-        std::lock_guard lock(_gpuMutex);
-        _gpuUploadQueue.push(result.resource);
-    }
 
     return AssetHandle<T>(ptr, path);
 }
@@ -329,9 +327,8 @@ void AssetManager::executeAssetLoad(const std::string& path,
 
     _database.setReady<T>(path, result.resource);
 
-    if constexpr (std::is_same_v<T, Model>) {
-        std::lock_guard lock(_gpuMutex);
-        _gpuUploadQueue.push(result.resource);
+    if (auto gpu = std::dynamic_pointer_cast<IGpuUploadable>(result.resource)) {
+        _gpuUploadQueue.push(gpu);
     }
 
     promise->set_value(result.resource);

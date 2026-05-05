@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <vector>
+#include "assetManager/iGpuUploadable.h"
 
 namespace dzemikk {
 
@@ -14,7 +15,7 @@ namespace dzemikk {
  * Encapsulates OpenGL buffers (VAO, VBO, EBO), provides rendering methods,
  * and maintains basic geometric bounds for the mesh.
  */
-class Mesh {
+class Mesh: public IGpuUploadable {
   public:
 
     /**
@@ -173,6 +174,7 @@ class Mesh {
 
 #pragma endregion
 
+    void uploadToGPU() override {};
   protected:
 #pragma region GPU resources
 

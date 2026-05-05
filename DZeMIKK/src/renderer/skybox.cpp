@@ -5,11 +5,13 @@
 
 #include "stb/stb_image.h"
 
-dzemikk::Skybox::Skybox() {
-    initCube();
+dzemikk::Skybox::Skybox(std::vector<std::string>& faces) {
+    _faces = faces;
 }
 
 void dzemikk::Skybox::initCube() {
+    if (_cubeMesh)
+        return;
     float rawVertices[] = {// cube positions
                         -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
                         1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f,
@@ -44,6 +46,14 @@ void dzemikk::Skybox::initCube() {
 
     _cubeMesh = std::make_unique<StaticMesh>();
     _cubeMesh->create(vertices, indices);
+    _cubeMesh->uploadToGPU();
+}
+
+void dzemikk::Skybox::uploadToGPU() {
+    initCube();
+    loadCubemap(_faces);
+
+    gpuReady = true;
 }
 
 dzemikk::Skybox::~Skybox() {
@@ -107,8 +117,11 @@ void dzemikk::Skybox::setMode(Mode mode) {
 void dzemikk::Skybox::render(const glm::mat4& view, const glm::mat4& projection) const {
     glDepthFunc(GL_LEQUAL);
 
-    if (!_shader.get())
+    if (!_shader.get()) {
+        std::cout << "[Skybox DEBUG] shader == NULL\n";
         return;
+    }
+
     _shader.get()->bind();
 
     glm::mat4 viewNoTranslation = glm::mat4(glm::mat3(view));

@@ -49,7 +49,12 @@ class StaticMesh : public Mesh {
     void recreate(const std::vector<StaticVertex>& vertices,
                   const std::vector<unsigned int>& indices);
 
+    void uploadToGPU() override;
 #pragma endregion
+
+  private:
+    std::vector<StaticVertex> _vertices;
+    std::vector<unsigned int> _indices;
 };
 
 } // namespace dzemikk

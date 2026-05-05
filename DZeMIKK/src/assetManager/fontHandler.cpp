@@ -8,7 +8,7 @@
 dzemikk::FontHandler::Result
 dzemikk::FontHandler::load(const std::string& path,
                            LoadExecutionMode loadExecutionMode) {
-    auto font = loadFontFromFile(path);
+    auto font = loadFontFromFile(path, loadExecutionMode);
 
     if (!font) {
         std::cerr << "Failed to load font: " << path << "\n";
@@ -18,11 +18,17 @@ dzemikk::FontHandler::load(const std::string& path,
     return {font, AssetError::None};
 }
 
-std::shared_ptr<dzemikk::Font> dzemikk::FontHandler::loadFontFromFile(const std::string& path) {
+std::shared_ptr<dzemikk::Font>
+dzemikk::FontHandler::loadFontFromFile(const std::string& path,
+                                       LoadExecutionMode loadExecutionMode) {
     auto font = std::make_shared<Font>();
 
     if (!font->load(path)) {
         return nullptr;
+    }
+
+    if (loadExecutionMode == LoadExecutionMode::Sync) {
+        font->uploadToGPU();
     }
 
     return font;

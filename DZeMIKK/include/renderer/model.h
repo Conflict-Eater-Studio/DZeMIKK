@@ -4,6 +4,7 @@
 #include "renderer/mesh.h"
 #include "animation/skeleton.h"
 #include "assetManager/meshBuilder.h"
+#include "assetManager/iGpuUploadable.h"
 
 #include <cstdint>
 #include <memory>
@@ -18,7 +19,7 @@ namespace dzemikk {
  * references a Mesh and an associated material index. This allows
  * rendering complex objects composed of multiple parts with different materials.
  */
-class Model {
+class Model : public IGpuUploadable {
   public:
     /**
      * @brief Represents a single sub-mesh within a model.
@@ -116,9 +117,9 @@ class Model {
     void addPending(MeshBuilder::RawStaticMesh& mesh);
     void addPending(MeshBuilder::RawSkinnedMesh& mesh);
 
-    void uploadToGPU();
-
 #pragma endregion
+
+    void uploadToGPU() override;
 
   private:
     /**

@@ -116,6 +116,53 @@ struct StaticMeshInitContext {
     dzemikk::GameObject* go;
 };
 
+struct FontInitContext {
+    dzemikk::TextRenderer* renderer;
+};
+
+void onFontLoaded(dzemikk::AssetHandle<dzemikk::Font> font, FontInitContext& ctx) {
+    if (!font) {
+        return;
+    }
+    ctx.renderer->font = font;
+}
+
+struct SoundInitContext {
+    FMOD::System* system;
+};
+
+void onSoundLoaded(dzemikk::AssetHandle<dzemikk::Sound> sound, SoundInitContext& ctx) {
+    sound.get()->play(ctx.system);
+}
+
+struct ShaderInitContext {
+    dzemikk::Material* material;
+};
+
+void onShaderLoad(dzemikk::AssetHandle<dzemikk::Shader> shader, ShaderInitContext& ctx) {
+    ctx.material->setShader(shader);
+}
+
+struct SkyboxInitContext {
+    dzemikk::AssetHandle<dzemikk::Shader> shader;
+    dzemikk::Renderer* renderer;
+    dzemikk::Engine* engine;
+};
+
+void onSkyboxLoad(dzemikk::AssetHandle<dzemikk::Skybox> skybox, SkyboxInitContext& ctx) {
+    auto skyboxShader = ctx.engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox");
+    skybox.get()->setShader(skyboxShader);
+    ctx.renderer->setSkybox(skybox);
+}
+
+struct TextureInitContext {
+    dzemikk::SpriteRenderer* renderer;
+};
+
+void onTextureLoad(dzemikk::AssetHandle<dzemikk::Texture> texture, TextureInitContext& ctx) {
+    ctx.renderer->setTexture(texture);
+}
+
 int main() {
     auto engine = std::make_shared<dzemikk::Engine>();
 
@@ -123,21 +170,31 @@ int main() {
     engine->getSceneManager()->loadScene(mainScenePtr);
     engine->getSceneManager()->setActiveScene(mainScenePtr);
 
-    auto shaderA = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
-    auto materialA = new dzemikk::Material();
-    materialA->setShader(shaderA);
-
-    auto shaderB = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile2");
     auto materialB = new dzemikk::Material();
+    auto shaderB = engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile2");
     materialB->setShader(shaderB);
+
+    auto materialA = new dzemikk::Material();
+    ShaderInitContext shaderCtx(materialA);
+    dzemikk::AssetManager::AssetTask<dzemikk::Shader, ShaderInitContext> taskS;
+    taskS.context = shaderCtx;
+    taskS.onLoad = onShaderLoad;
+    engine->getAssetManager()->getAsync("shaders/tile1", taskS);
+
+    auto m1 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
+    createHexIsland(*mainScenePtr, m1, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
     auto shaderC = engine->getAssetManager()->get<dzemikk::Shader>("shaders/skinned");
     auto materialC = new dzemikk::Material();
     materialC->setShader(shaderC);
 
-    auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
-    skybox.get()->setShader(engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox"));
-    engine->getRenderer()->setSkybox(skybox);
+    auto skyboxShader = engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox");
+
+    SkyboxInitContext sCtx(skyboxShader, engine->getRenderer(), engine.get());
+    dzemikk::AssetManager::AssetTask<dzemikk::Skybox, SkyboxInitContext> taskSk;
+    taskSk.context = sCtx;
+    taskSk.onLoad = onSkyboxLoad;
+    engine->getAssetManager()->getAsync("textures/Daylight Box_Pieces", taskSk);
 
     // --- Scene Camera
     auto cameraGO = mainScenePtr->createGameObject();
@@ -154,78 +211,18 @@ int main() {
     cameraUI->setOrthographic(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f);
     engine->getRenderer()->setActiveUICamera(cameraUI);
 
-    //auto m1 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
-
-    //engine->getAssetManager()->unload("models/pole.fbx");
-
-    //auto m2 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
-    //auto m3 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
-
     // --- Tiles
 
     auto futuretile = engine->getAssetManager()->getAsync<dzemikk::Model>("models/pole.fbx");
-    //auto tileMesh = futuretile.get();
 
     engine->getAssetManager()->unload("models/pole.fbx");
 
     auto futuretile2 = engine->getAssetManager()->getAsync<dzemikk::Model>("models/pole.fbx");
     auto tileMesh2 = futuretile2.get();
 
-    auto m1 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
+    //auto m2 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
+    //auto m3 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
-    auto m2 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
-    auto m3 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
-    
-    //auto tileMesh = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
-
-    createHexIsland(*mainScenePtr, m1, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
-
-
-    auto tileMesh = futuretile.get();
-
-    auto sphereMesh = engine->getAssetManager()->getPrimitiveModel(
-        dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Sphere);
-
-    float spacing = 1.5f;
-
-    std::vector<dzemikk::Material*> sphereMaterials;
-
-    auto shaderLambert = engine->getAssetManager()->get<dzemikk::Shader>("shaders/lambert");
-    auto materialLambert = new dzemikk::Material();
-    materialLambert->setShader(shaderLambert);
-
-    auto shaderPhong = engine->getAssetManager()->get<dzemikk::Shader>("shaders/phong");
-    auto materialPhong = new dzemikk::Material();
-    materialPhong->setShader(shaderPhong);
-
-    auto shaderPhongBlinn = engine->getAssetManager()->get<dzemikk::Shader>("shaders/phong-blinn");
-    auto materialPhongBlinn = new dzemikk::Material();
-    materialPhongBlinn->setShader(shaderPhongBlinn);
-
-    auto shaderRim = engine->getAssetManager()->get<dzemikk::Shader>("shaders/rim");
-    auto materialRim = new dzemikk::Material();
-    materialRim->setShader(shaderRim);
-
-    sphereMaterials.push_back(materialLambert);
-    sphereMaterials.push_back(materialPhong);
-    sphereMaterials.push_back(materialPhongBlinn);
-    sphereMaterials.push_back(materialRim);
-
-    auto modelPtr = std::make_shared<dzemikk::Model>();
-    dzemikk::AssetHandle<dzemikk::Model> modelHandle(modelPtr, "primitive/sphere");
-    for (int i = 0; i < 4; i++) {
-        auto sphereGO = mainScenePtr->createGameObject("Sphere_" + std::to_string(i));
-
-        sphereGO->transform()->setPosition(glm::vec3(i * spacing, 6.0f, 0.0f));
-        sphereGO->transform()->setScale(glm::vec3(1.0f));
-
-        auto renderer = sphereGO->addComponent<dzemikk::MeshRenderer>();
-
-        renderer->setModel(sphereMesh);
-
-        renderer->setTransform(sphereGO->transform());
-        renderer->setMaterial(0, sphereMaterials[i]);
-    }
 
     // --- Player
     auto playerGO = mainScenePtr->createGameObject();
@@ -303,9 +300,11 @@ int main() {
     quadRenderer->setTransform(quadGO->transform());
     quadRenderer->setColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
 
-    auto tex = engine->getAssetManager()->get<dzemikk::Texture>("textures/tex3.png");
-
-    quadRenderer->setTexture(tex);
+    TextureInitContext tCtx(quadRenderer);
+    dzemikk::AssetManager::AssetTask<dzemikk::Texture, TextureInitContext> taskT;
+    taskT.context = tCtx;
+    taskT.onLoad = onTextureLoad;
+    engine->getAssetManager()->getAsync("textures/tex3.png", taskT);
 
     auto quadGO2 = mainScenePtr->createGameObject();
     quadGO2->transform()->setPosition(glm::vec3(1500.0f, 950.0f, 0.0f));
@@ -335,16 +334,19 @@ int main() {
     auto quadSpriteUpdater = quadGO3->addComponent<SpriteUpdater>();
     quadSpriteUpdater->transform = quadGO3->transform();
 
-    auto font = engine->getAssetManager()->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
-
     auto textGO = mainScenePtr->createGameObject();
     textGO->transform()->setPosition(glm::vec3(50.0f, 540.0f, 0.0f));
 
     auto text = textGO->addComponent<dzemikk::TextRenderer>();
     text->text = "Hello World!";
-    text->font = font;
     text->scale = 1.0f;
     text->color = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    FontInitContext fCtx{text};
+    dzemikk::AssetManager::AssetTask<dzemikk::Font, FontInitContext> taskFont;
+    taskFont.context = fCtx;
+    taskFont.onLoad = onFontLoaded;
+    engine->getAssetManager()->getAsync("fonts/UncialAntiqua-Regular.ttf", taskFont);
 
     auto updater = textGO->addComponent<TextUpdater>();
     updater->text = text;
@@ -354,18 +356,19 @@ int main() {
     FMOD::System_Create(&system);
     system->init(512, FMOD_INIT_NORMAL, nullptr);
 
-    FMOD_OUTPUTTYPE type;
-    system->getOutput(&type);
-    spdlog::info("FMOD output type: {}", (int)type);
-
-    int numDrivers = 0;
-    system->getNumDrivers(&numDrivers);
-    spdlog::info("FMOD audio drivers: {}", numDrivers);
-
     engine->getAssetManager()->setFMODSystem(system);
+
 
     //auto sound = engine->getAssetManager()->get<dzemikk::Sound>("audio/prime_wznoszeniePol.wav");
     //sound.get()->play(system);
+
+
+    SoundInitContext ctxSound{system};
+
+    dzemikk::AssetManager::AssetTask<dzemikk::Sound, SoundInitContext> taskSound;
+    taskSound.context = ctxSound;
+    taskSound.onLoad = onSoundLoaded;
+    engine->getAssetManager()->getAsync("audio/prime_wznoszeniePol.wav", taskSound);
 
     engine->start();
 
