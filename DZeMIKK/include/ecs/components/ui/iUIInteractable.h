@@ -2,8 +2,14 @@
 #define DZEMIKK_IUIINTERACTABLE_H
 
 #include "ecs/component.h"
+#include "ecs/components/ui/uiActionRegistry.h"
 
-#include <glm/vec2.hpp>
+#include <algorithm>
+#include <glm/glm.hpp>
+#include <string>
+#include <unordered_map>
+#include <variant>
+#include <vector>
 
 namespace dzemikk {
 class IUIInteractable : public Component {
@@ -14,16 +20,125 @@ class IUIInteractable : public Component {
         return "IUIInteractable";
     }
 
-    [[nodiscard]] virtual bool containsPoint(const glm::vec2& point) const = 0;
     virtual void processPointer(const glm::vec2& point, bool isDown, bool pressedThisFrame,
-                                bool releasedThisFrame) = 0;
+                                bool releasedThisFrame, double scrollDelta) = 0;
 
-    [[nodiscard]] virtual bool isHovered() const = 0;
-    [[nodiscard]] virtual bool isPressed() const = 0;
+    virtual void onClick() {
+        emit(UIEventType::Click);
+    }
+    virtual void onEnter() {
+        emit(UIEventType::Enter);
+    }
+    virtual void onExit() {
+        emit(UIEventType::Exit);
+    }
 
-    virtual void onClick() = 0;
-    virtual void onEnter() = 0;
-    virtual void onExit() = 0;
+    void addEventListener(UIEventType eventType, const std::string& actionId) {
+        if (actionId.empty()) {
+            return;
+        }
+
+        auto& actionIds = _eventActionIds[eventType];
+        if (std::ranges::find(actionIds, actionId) == actionIds.end()) {
+            actionIds.emplace_back(actionId);
+        }
+    }
+
+    void removeEventListener(UIEventType eventType, const std::string& actionId) {
+        const auto eventIter = _eventActionIds.find(eventType);
+        if (eventIter == _eventActionIds.end()) {
+            return;
+        }
+
+        auto& actionIds = eventIter->second;
+        std::erase(actionIds, actionId);
+    }
+
+    void clearEventListeners(UIEventType eventType) {
+        _eventActionIds.erase(eventType);
+    }
+
+    [[nodiscard]] std::unordered_map<UIEventType, std::vector<std::string>>
+    getEventActions() const {
+        return _eventActionIds;
+    }
+
+  protected:
+    void emit(UIEventType eventType,
+              std::variant<std::monostate, float, bool> payload = std::monostate{}) {
+        UIEvent event(eventType, this, payload);
+
+        const auto actionIdIter = _eventActionIds.find(eventType);
+        if (actionIdIter != _eventActionIds.end()) {
+            for (const auto& actionId : actionIdIter->second) {
+                (void)UIActionRegistry::get().invoke(actionId, event);
+            }
+        }
+    }
+
+    void setPointerDown(bool value) {
+        _pointerDown = value;
+    }
+
+    void setPointerInside(bool value) {
+        _pointerInside = value;
+    }
+
+    [[nodiscard]] bool pointerDown() const {
+        return _pointerDown;
+    }
+
+    [[nodiscard]] bool pointerInside() const {
+        return _pointerInside;
+    }
+
+    [[nodiscard]] bool pressedInside() const {
+        return _pressedInside;
+    }
+
+    [[nodiscard]] bool isHovered() const {
+        return _hovered;
+    }
+
+    void setPressedInside(bool value) {
+        _pressedInside = value;
+    }
+
+    void updateHoverState() {
+        const bool nextHovered = _pointerInside;
+        if (nextHovered == _hovered) {
+            return;
+        }
+
+        _hovered = nextHovered;
+        if (_hovered) {
+            onEnter();
+        } else {
+            onExit();
+        }
+    }
+
+    void processStandardPressRelease(bool pressedThisFrame, bool releasedThisFrame) {
+        if (pressedThisFrame) {
+            setPressedInside(pointerInside());
+        }
+
+        if (releasedThisFrame) {
+            if (pressedInside() && pointerInside()) {
+                onClick();
+            }
+
+            setPressedInside(false);
+        }
+    }
+
+  private:
+    std::unordered_map<UIEventType, std::vector<std::string>> _eventActionIds;
+
+    bool _pointerInside = false;
+    bool _pointerDown = false;
+    bool _pressedInside = false;
+    bool _hovered = false;
 };
 } // namespace dzemikk
 

@@ -9,7 +9,7 @@ namespace dzemikk {
 RectTransform::RectTransform(RectTransformParams params)
     : _position(params.position), _size(params.size), _scale(params.scale),
       _rotation(params.rotation), _pivot(params.pivot), _anchorMin(params.anchorMin),
-      _anchorMax(params.anchorMax) {}
+      _anchorMax(params.anchorMax), _offsetMin(params.offsetMin), _offsetMax(params.offsetMax) {}
 
 void RectTransform::setPosition(const glm::vec2& position) {
     _position = position;
@@ -51,6 +51,20 @@ void RectTransform::setAnchorMin(const glm::vec2& anchorMin) {
 
 void RectTransform::setAnchorMax(const glm::vec2& anchorMax) {
     _anchorMax = anchorMax;
+    _localDirty = true;
+    markDirty();
+    markSizeDirty();
+}
+
+void RectTransform::setOffsetMin(const glm::vec2& offsetMin) {
+    _offsetMin = offsetMin;
+    _localDirty = true;
+    markDirty();
+    markSizeDirty();
+}
+
+void RectTransform::setOffsetMax(const glm::vec2& offsetMax) {
+    _offsetMax = offsetMax;
     _localDirty = true;
     markDirty();
     markSizeDirty();
@@ -107,6 +121,14 @@ glm::vec2 RectTransform::getAnchorMin() const {
 
 glm::vec2 RectTransform::getAnchorMax() const {
     return _anchorMax;
+}
+
+glm::vec2 RectTransform::getOffsetMin() const {
+    return _offsetMin;
+}
+
+glm::vec2 RectTransform::getOffsetMax() const {
+    return _offsetMax;
 }
 
 unsigned int RectTransform::getZIndex() const {
@@ -212,7 +234,7 @@ glm::vec2 RectTransform::getStretchSize() const {
 
     const glm::vec2 parentSize = parentRect->getSize();
     const glm::vec2 anchorSpan = glm::max(_anchorMax - _anchorMin, glm::vec2(0.0F));
-    return anchorSpan * parentSize;
+    return anchorSpan * parentSize - _offsetMin - _offsetMax;
 }
 
 void RectTransform::markSizeDirty() {
@@ -233,5 +255,13 @@ void RectTransform::markSizeDirty() {
             childRect->markSizeDirty();
         }
     }
+}
+
+bool RectTransform::containsPoint(const glm::vec2& point) const {
+    glm::vec4 localPos = glm::inverse(getWorldMatrix()) * glm::vec4(point, 0.0F, 1.0F);
+
+    glm::vec2 p = glm::vec2(localPos) / localPos[3];
+
+    return p[0] >= 0.0F && p[0] <= 1.0F && p[1] >= 0.0F && p[1] <= 1.0F;
 }
 } // namespace dzemikk

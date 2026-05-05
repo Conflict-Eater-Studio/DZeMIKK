@@ -12,6 +12,7 @@
 
 #include "animation/animationmodule.h"
 #include "assetManager/assetmanager.h"
+#include "audio/audioManager.h"
 #include "audio/sound.h"
 #include "collisions/collisions.h"
 #include "core/engine.h"
@@ -50,6 +51,7 @@ void Engine::init() {
     _animationModule = std::make_unique<AnimationModule>();
     _input = std::make_unique<Input>();
     _collisions = std::make_unique<Collisions>();
+    _audioManager = std::make_unique<AudioManager>();
 
     _mainWindow->initialize();
     _assetManager->initialize();
@@ -62,6 +64,12 @@ void Engine::init() {
     _mainWindow->setEventCallback([this](Event& e) { this->OnEvent(e); });
     _input->initialize();
     _collisions->initialize();
+    _audioManager->initialize();
+
+    _assetManager->setFMODSystem(_audioManager->getSystem());
+
+    _input->OnMouseScrolled.addListener(
+        [&](dzemikk::MouseScrolledEvent& e) { _scrollDelta = e.GetYOffset(); });
 
 #if DZEMIKK_DEV_TOOLS
     IMGUI_CHECKVERSION();
@@ -88,6 +96,10 @@ void Engine::shutdown() {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 #endif
+
+    _audioManager->uninitialize();
+    _mainWindow->uninitialize();
+    _assetManager->uninitialize();
     _renderer->uninitialize();
     _assetManager->uninitialize();
     _mainWindow->uninitialize();
@@ -102,6 +114,7 @@ void Engine::start() {
     float fixedDeltaTime = _time->getFixedDeltaTime();
     while (!_mainWindow->shouldClose()) {
         _time->update();
+        _audioManager->update(_time->getDeltaTime());
 
         float deltaTime = _time->getDeltaTime();
         Profiler::Get().BeginFrame(deltaTime);
@@ -166,7 +179,6 @@ Window* Engine::getWindow() const {
 }
 SceneManager* Engine::getSceneManager() const {
     return _sceneManager.get();
-
 }
 
 Time* Engine::getTime() const {
@@ -189,15 +201,9 @@ Collisions* Engine::getCollisions() const {
     return _collisions.get();
 }
 
-// template <std::derived_from<IEngineModule> T>
-// std::shared_ptr<T> Engine::getModule() const {
-//     for (const auto& module : _modules) {
-//         if (auto casted = std::dynamic_pointer_cast<T>(module)) {
-//             return casted;
-//         }
-//     }
-//     return nullptr;
-// }
+AudioManager* Engine::getAudioManager() const {
+    return _audioManager.get();
+}
 
 void Engine::updateCameraWASD(float speed) {
     auto* transform = _renderer->getActiveSceneCamera()->getOwner()->transform();
@@ -224,7 +230,7 @@ void Engine::updateCameraWASD(float speed) {
 
     if (glm::length(move) > 0.0f) {
         move = glm::normalize(move);
-        transform->translate(move * speed * 0.016f);
+        transform->translate(move * speed * 0.16f);
     }
 }
 
@@ -259,11 +265,6 @@ void Engine::updateCameraArrows(float speed) {
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_U) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Skybox>("textures/Daylight Box_Pieces");
-    }
-    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_I) == GLFW_PRESS) {
-        getAssetManager()->reload<dzemikk::Sound>("audio/prime_coToZaHex.wav");
-        auto sound = getAssetManager()->get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
-        sound.get()->play(getAssetManager()->getFMODSystem());
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_O) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Texture>("textures/tex3.png");
@@ -303,10 +304,12 @@ void Engine::updateMouseUI(float deltaTime) {
     std::vector<IUIInteractable*> uiElements;
     ComponentRegistry::get().getComponents<IUIInteractable>(uiElements);
     for (auto* element : uiElements) {
-        element->processPointer(pointerPos, isLeftDown, pressedThisFrame, releasedThisFrame);
+        element->processPointer(pointerPos, isLeftDown, pressedThisFrame, releasedThisFrame,
+                                _scrollDelta);
     }
 
     _wasLeftMouseDown = isLeftDown;
+    _scrollDelta = 0.0;
 }
 
 void Engine::OnEvent(Event& e) {
