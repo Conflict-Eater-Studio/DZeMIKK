@@ -14,8 +14,8 @@ namespace dzemikk {
     public:
         SceneManager() = default;
         ~SceneManager() = default;
-        void Initialize() override;
-        void UnInitialize() override;
+        void initialize() override;
+        void uninitialize() override;
         void loadScene(const std::shared_ptr<Scene>& scene);
         void unloadScene(const std::shared_ptr<Scene>& scene);
         void setActiveScene(const std::shared_ptr<Scene>& scene);

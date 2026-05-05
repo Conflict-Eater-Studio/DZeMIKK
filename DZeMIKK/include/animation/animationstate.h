@@ -10,8 +10,14 @@ namespace dzemikk {
     class AnimationClip;
     class AnimationState {
     public:
-        AnimationState(std::string name);
+        AnimationState();
+        AnimationState(const std::string& name);
+
         ~AnimationState() = default;
+
+        AnimationState(const AnimationState&) = delete;
+        AnimationState& operator=(const AnimationState&) = delete;
+
         [[nodiscard]] const std::string& getName() const noexcept;
         void setName(const std::string& name);
 

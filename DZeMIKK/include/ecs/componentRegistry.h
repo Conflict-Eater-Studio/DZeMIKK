@@ -5,6 +5,7 @@
 
 #include <concepts>
 #include <cstddef>
+#include <ranges>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
@@ -92,6 +93,22 @@ class ComponentRegistry {
             return;
         }
         for (Component* component : iter->second) {
+            out.push_back(static_cast<T*>(component));
+        }
+    }
+
+    template <typename T>
+        requires std::derived_from<T, Component>
+    void getEnabledComponents(std::vector<T*>& out) {
+        out.clear();
+        auto iter = _components.find(std::type_index(typeid(T)));
+        if (iter == _components.end()) {
+            return;
+        }
+
+        auto enabled =
+            iter->second | std::views::filter([](Component* c) { return c->isEnabled(); });
+        for (Component* component : enabled) {
             out.push_back(static_cast<T*>(component));
         }
     }

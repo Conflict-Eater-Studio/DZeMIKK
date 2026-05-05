@@ -1,54 +1,40 @@
-#ifndef DZEMIKK_ANIMATIONTRACK_H
-#define DZEMIKK_ANIMATIONTRACK_H
-#pragma once
-
-#include <vector>
-#include <string>
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
-
-namespace dzemikk {
-
-struct PositionKey {
-    float time;
-    glm::vec3 value;
-};
-
-struct RotationKey {
-    float time;
-    glm::quat value;
-};
-
-struct ScaleKey {
-    float time;
-    glm::vec3 value;
-};
-
-class AnimationTrack {
-public:
-    AnimationTrack(std::string name);
-
-    const std::string& getName() const noexcept;
-
-    void addPositionKey(float time, const glm::vec3& value);
-    void addRotationKey(float time, const glm::quat& value);
-    void addScaleKey(float time, const glm::vec3& value);
-
-    glm::vec3 interpolatePosition(float time) const;
-    glm::quat interpolateRotation(float time) const;
-    glm::vec3 interpolateScale(float time) const;
-
-private:
-    std::string _name;
-
-    std::vector<PositionKey> _positions;
-    std::vector<RotationKey> _rotations;
-    std::vector<ScaleKey> _scales;
-
-    size_t findPositionIndex(float time) const;
-    size_t findRotationIndex(float time) const;
-    size_t findScaleIndex(float time) const;
-};
-
-}
-#endif
+// #ifndef DZEMIKK_ANIMATIONTRACK_H
+// #define DZEMIKK_ANIMATIONTRACK_H
+// #pragma once
+//
+// #include <functional>
+// #include <string>
+// #include <vector>
+//
+// struct aiNodeAnim;
+// namespace dzemikk {
+//
+// class AnimationTrack {
+// public:
+//     AnimationTrack();
+//     AnimationTrack(const aiNodeAnim* track);
+//     AnimationTrack(const AnimationTrack&) = delete;
+//     AnimationTrack& operator=(const AnimationTrack&) = delete;
+//
+//     const std::string& getName() const noexcept;
+//     void setName(const std::string& name);
+//
+//     void interpolate(float time);
+//
+//     void setProperty(const FloatProperty& property);
+//     FloatProperty getProperty() const;
+//
+//     const std::vector<FloatPropertyKey>& getKeys() const noexcept;
+//     void addKey(FloatPropertyKey key);
+//     void setKeys(std::vector<FloatPropertyKey> keys);
+//
+// private:
+//     std::string _name;
+//     FloatProperty _property;
+//     std::vector<FloatPropertyKey> _keys;
+//
+//     size_t findPropertyIndex(float time) const;
+// };
+//
+// }
+// #endif

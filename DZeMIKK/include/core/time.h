@@ -17,8 +17,8 @@ namespace dzemikk {
         float getDeltaTime() const;
         float getFixedDeltaTime() const;
         float getTime() const;
-        void Initialize() override;
-        void UnInitialize() override;
+        void initialize() override;
+        void uninitialize() override;
     private:
         float _lastFrameTime;
     };
