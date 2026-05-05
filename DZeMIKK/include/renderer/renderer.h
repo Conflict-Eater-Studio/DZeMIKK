@@ -4,13 +4,13 @@
 #include "core/iEngineModule.h"
 #include "frustum.h"
 #include "skybox.h"
-
-#include <glm/glm.hpp>
+#include "assetManager/assetHandle.h"
 #include <memory>   
 
 namespace dzemikk {
 
     class MeshRenderer;
+    class SkinnedMeshRenderer;
     class SpriteRenderer;
     class Mesh;
     class Material;
@@ -103,12 +103,12 @@ namespace dzemikk {
         /**
          * @brief Sets a custom skybox using a cubemap texture.
          */
-        void setSkybox(Skybox* skybox);
+        void setSkybox(AssetHandle<Skybox> skybox);
 
         /**
          * @brief Returns the currently active skybox.
          */
-        [[nodiscard]] const Skybox* getSkybox() const;
+        [[nodiscard]] const AssetHandle<Skybox> getSkybox() const;
 
         #pragma endregion
 
@@ -135,6 +135,7 @@ namespace dzemikk {
 
         std::vector<MeshRenderer*> _meshRenderers;
         std::vector<SpriteRenderer*> _spriteRenderers;
+        std::vector<SkinnedMeshRenderer*> _skinnedRenderers;
 
         glm::mat4 _view = glm::mat4(1.0f);
         glm::mat4 _projection = glm::mat4(1.0f);
@@ -147,11 +148,18 @@ namespace dzemikk {
         unsigned int _uboMatrices;
         Frustum _frustum;
 
-        Skybox* _skybox;
+        AssetHandle<Skybox> _skybox;
 
         Shader* _textShader = nullptr;
         GLuint textVAO = 0;
         GLuint textVBO = 0;
+
+        //FOR TEST ONLY - DELETE THIS
+        glm::vec3 _debugLightDir = glm::vec3(1.0f, 10.0f, -15.0f);
+        glm::vec3 _debugLightColor = glm::vec3(1.0f);
+        float _debugLightIntensity = 1.0f;
+
+        void renderDebugUI();
 
         #pragma endregion
     };

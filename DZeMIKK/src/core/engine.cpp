@@ -160,6 +160,9 @@ void Engine::start() {
             DZ_PROFILE_CPU("Renderer (Total CPU)");
             _renderer->render();
         }
+
+        _assetManager->update();
+
 #if DZEMIKK_DEV_TOOLS
         Profiler::Get().DrawImGui();
         glDisable(GL_DEPTH_TEST);
@@ -258,10 +261,10 @@ void Engine::updateCameraArrows(float speed) {
         getAssetManager()->reload<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_T) == GLFW_PRESS) {
-        getAssetManager()->reload<dzemikk::Model>("models/Body Block.fbx");
+        getAssetManager()->reload<dzemikk::Model>("models/Flair(1).fbx");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Y) == GLFW_PRESS) {
-        getAssetManager()->reload<dzemikk::Shader>("shaders/quad");
+        getAssetManager()->reload<dzemikk::Shader>("shaders/skinned");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_U) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Skybox>("textures/Daylight Box_Pieces");

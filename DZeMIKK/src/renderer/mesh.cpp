@@ -1,22 +1,14 @@
+#define BUFFER_OFFSET(i) reinterpret_cast<void*>(static_cast<uintptr_t>(i))
+
 #include "renderer/mesh.h"
 #include <GLFW/glfw3.h>
 
 dzemikk::Mesh::~Mesh() {
-    if (!glfwGetCurrentContext())
+    if (!glfwGetCurrentContext()) {
         return;
+    }
 
-    if (_ebo) {
-        glDeleteBuffers(1, &_ebo);
-        _ebo = 0;
-    }
-    if (_vbo) {
-        glDeleteBuffers(1, &_vbo);
-        _vbo = 0;
-    }
-    if (_vao) {
-        glDeleteVertexArrays(1, &_vao);
-        _vao = 0;
-    }
+    destroy();
 }
 
 void dzemikk::Mesh::setVertexData(GLuint vao, GLuint vbo, uint32_t vertexCount) {
@@ -31,9 +23,25 @@ void dzemikk::Mesh::setIndexData(GLuint ebo, uint32_t indexCount) {
     _useIndices = true;
 }
 
+void dzemikk::Mesh::setupIndexBuffer(const unsigned int* indices, uint32_t indexCount) {
+    _indexCount = indexCount;
+    _useIndices = (indexCount > 0);
+
+    if (!_useIndices) {
+        return;
+    }
+
+    glGenBuffers(1, &_ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                 static_cast<GLsizeiptr>(indexCount * sizeof(unsigned int)), indices,
+                 GL_STATIC_DRAW);
+}
+
 void dzemikk::Mesh::draw() const {
-    if (!isValid())
+    if (!isValid()) {
         return; 
+    }
 
     glBindVertexArray(_vao);
 
@@ -44,141 +52,62 @@ void dzemikk::Mesh::draw() const {
     }
 }
 
-void dzemikk::Mesh::create(const float* vertices, uint32_t vertexCount, uint32_t stride) {
-    _vertexCount = vertexCount;
-
-    glGenVertexArrays(1, &_vao);
-    glBindVertexArray(_vao);
-
-    glGenBuffers(1, &_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertexCount * stride * sizeof(float), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float),
-                          (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-
-    computeBounds(vertices, vertexCount, stride);
-}
-
-void dzemikk::Mesh::createIndexed(const float* vertices, uint32_t vertexCount, const unsigned int* indices,
-                         uint32_t indexCount, uint32_t stride) {
-    this->_vertexCount = vertexCount;
-    this->_indexCount = indexCount;
-    this->_useIndices = true;
-
-    glGenVertexArrays(1, &_vao);
-    glBindVertexArray(_vao);
-
-    glGenBuffers(1, &_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertexCount * stride * sizeof(float), vertices, GL_STATIC_DRAW);
-
-    glGenBuffers(1, &_ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(unsigned int), indices,
-                 GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float),
-                          (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-
-    computeBounds(vertices, vertexCount, stride);
-}
-
 void dzemikk::Mesh::drawInstanced(const std::vector<glm::mat4>& models, GLuint instanceVBO) const {
     glBindVertexArray(_vao);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, models.size() * sizeof(glm::mat4), models.data(),
-                 GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(models.size() * sizeof(glm::mat4)),
+                 models.data(), GL_DYNAMIC_DRAW);
 
     for (int i = 0; i < 4; i++) {
         glVertexAttribPointer(2 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
-                              (void*)(sizeof(glm::vec4) * i));
+                              BUFFER_OFFSET(sizeof(glm::vec4) * i));
         glEnableVertexAttribArray(2 + i);
         glVertexAttribDivisor(2 + i, 1);
     }
 
     if (_useIndices) {
-        glDrawElementsInstanced(GL_TRIANGLES, _indexCount, GL_UNSIGNED_INT, 0, models.size());
+        glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(_indexCount), GL_UNSIGNED_INT,
+                                nullptr, static_cast<GLsizei>(models.size()));
     } else {
-        glDrawArraysInstanced(GL_TRIANGLES, 0, _vertexCount, models.size());
+        glDrawArraysInstanced(GL_TRIANGLES, 0, static_cast<GLsizei>(_vertexCount),
+                              static_cast<GLsizei>(models.size()));
     }
     glBindVertexArray(0);
 }
 
-void dzemikk::Mesh::create2D(const float* vertices, uint32_t vertexCount) {
-    _vertexCount = vertexCount;
-
-    glGenVertexArrays(1, &_vao);
-    glBindVertexArray(_vao);
-
-    glGenBuffers(1, &_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertexCount * 4 * sizeof(float), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
+bool dzemikk::Mesh::isValid() const {
+    return _vao != 0 && _vertexCount > 0;
 }
 
-void dzemikk::Mesh::recreate(const float* vertices, const unsigned int* indices,
-                             uint32_t vertexCount, uint32_t indexCount, uint32_t stride) {
+void dzemikk::Mesh::destroy() {
     if (_ebo) {
         glDeleteBuffers(1, &_ebo);
         _ebo = 0;
     }
-
     if (_vbo) {
         glDeleteBuffers(1, &_vbo);
         _vbo = 0;
     }
-
     if (_vao) {
         glDeleteVertexArrays(1, &_vao);
         _vao = 0;
     }
 
-    _useIndices = (indexCount > 0);
-    _vertexCount = vertexCount;
-    _indexCount = indexCount;
+    _vertexCount = 0;
+    _indexCount = 0;
+    _useIndices = false;
+}
 
-    glGenVertexArrays(1, &_vao);
-    glBindVertexArray(_vao);
-
-    glGenBuffers(1, &_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertexCount * stride * sizeof(float), vertices, GL_STATIC_DRAW);
-
-    if (_useIndices) {
-        glGenBuffers(1, &_ebo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * sizeof(unsigned int), indices,
-                     GL_STATIC_DRAW);
+void dzemikk::Mesh::computeBounds(const std::vector<glm::vec3>& positions) {
+    if (positions.empty()) {
+        return;
     }
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    _boundsMin = positions[0];
+    _boundsMax = positions[0];
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride * sizeof(float),
-                          (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-
-    computeBounds(vertices, vertexCount, stride);
-}
+    for (const auto& p : positions) {
+        _boundsMin = glm::min(_boundsMin, p);
+        _boundsMax = glm::max(_boundsMax, p);
+    }
+};

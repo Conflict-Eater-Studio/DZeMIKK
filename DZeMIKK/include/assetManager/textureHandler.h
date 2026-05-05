@@ -29,7 +29,8 @@ namespace dzemikk {
          * @param path Path to the image file.
          * @return AssetResult containing a valid Texture handle or error.
          */
-        Result load(const std::string& path) override;
+        Result load(const std::string& path,
+                    LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync) override;
 
         /**
          * @brief Reloads an existing texture.
@@ -59,7 +60,9 @@ namespace dzemikk {
          * @param flipVertical Whether to flip image vertically (OpenGL convention).
          * @return Shared pointer to Texture or nullptr on failure.
          */
-        static std::shared_ptr<Texture> loadTextureFromFile(const std::string& path,
+        static std::shared_ptr<Texture> loadTextureFromFile(
+            const std::string& path,
+            LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync,
                                                             bool flipVertical = true);
 
         /**

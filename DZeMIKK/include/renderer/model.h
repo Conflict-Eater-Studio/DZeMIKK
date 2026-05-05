@@ -2,10 +2,14 @@
 #define DZEMIKK_MODEL_H
 
 #include "renderer/mesh.h"
+#include "animation/skeleton.h"
+#include "assetManager/meshBuilder.h"
+#include "assetManager/iGpuUploadable.h"
 
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include <variant>
 
 namespace dzemikk {
 /**
@@ -15,7 +19,7 @@ namespace dzemikk {
  * references a Mesh and an associated material index. This allows
  * rendering complex objects composed of multiple parts with different materials.
  */
-class Model {
+class Model : public IGpuUploadable {
   public:
     /**
      * @brief Represents a single sub-mesh within a model.
@@ -107,13 +111,63 @@ class Model {
      */
     [[nodiscard]] const SubMesh* getSubMesh(std::size_t index) const;
 
+    /**
+     * @brief Sets skeleton used by the model (for skinned meshes).
+     */
+    void setSkeleton(std::shared_ptr<Skeleton> skeleton);
+
+    /**
+     * @brief Returns model skeleton if available.
+     */
+    std::shared_ptr<Skeleton> getSkeleton() const;
+
+    /**
+     * @brief Adds raw static mesh to pending GPU upload queue.
+     */
+    void addPending(MeshBuilder::RawStaticMesh& mesh);
+
+    /**
+     * @brief Adds raw skinned mesh to pending GPU upload queue.
+     */
+    void addPending(MeshBuilder::RawSkinnedMesh& mesh);
+
 #pragma endregion
+
+    /**
+     * @brief Uploads resource data to the GPU.
+     *
+     * Transfers CPU-side asset data into GPU memory so it can be used
+     * for rendering. Called after the asset has been fully loaded.
+     */
+    void uploadToGPU() override;
 
   private:
     /**
-     *Container of all sub-meshes in the model
+     * @brief Container of all sub-meshes in the model.
      */
     std::vector<SubMesh> _subMeshes;
+
+    /**
+     * @brief Skeleton used for skinned animation (if present).
+     */
+    std::shared_ptr<Skeleton> _skeleton;
+
+    /**
+     * @brief Pending mesh data waiting for GPU upload.
+     */
+    struct PendingMesh {
+        std::variant<MeshBuilder::RawStaticMesh, MeshBuilder::RawSkinnedMesh> data;
+    };
+
+    /**
+     * @brief Queue of meshes awaiting GPU upload.
+     */
+    std::vector<PendingMesh> _pendingMeshes;
+
+    /**
+     * @brief Indicates whether GPU resources have been initialized.
+     */
+    bool _gpuReady = false;
 };
 
 } // namespace dzemikk

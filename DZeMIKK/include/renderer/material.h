@@ -1,6 +1,8 @@
 #ifndef DZEMIKK_MATERIAL_H
 #define DZEMIKK_MATERIAL_H
 
+#include "assetManager/assetHandle.h"
+
 namespace dzemikk {
 
     class Shader;
@@ -37,7 +39,7 @@ namespace dzemikk {
          * @return Shader* Pointer to shader.
          */
         [[nodiscard]] Shader* getShader() const {
-            return _shader;
+            return _shader.get();
         }
 
         #pragma endregion
@@ -49,7 +51,7 @@ namespace dzemikk {
          *
          * @param shader Pointer to shader.
          */
-        void setShader(Shader* shader) {
+        void setShader(AssetHandle<Shader> shader) {
             _shader = shader;
         }
 
@@ -63,7 +65,7 @@ namespace dzemikk {
          * @return true If shader is set.
          */
         [[nodiscard]] bool isValid() const {
-            return _shader != nullptr;
+            return _shader.get() != nullptr;
         }
 
         #pragma endregion
@@ -74,7 +76,7 @@ namespace dzemikk {
         /**
          * @brief Non-owning pointer to shader resource.
          */
-        Shader* _shader = nullptr;
+        AssetHandle<Shader> _shader;
 
         #pragma endregion
     };

@@ -5,8 +5,10 @@
 
 #include <iostream>
 
-dzemikk::SkyboxHandler::Result dzemikk::SkyboxHandler::load(const std::string& path) {
-    auto skybox = loadSkyboxFromFile(path);
+dzemikk::SkyboxHandler::Result
+dzemikk::SkyboxHandler::load(const std::string& path,
+                             LoadExecutionMode loadExecutionMode) {
+    auto skybox = loadSkyboxFromFile(path, loadExecutionMode);
 
     if (!skybox) {
         std::cerr << "[AssetManager] Skybox load failed: " << path << "\n";
@@ -16,13 +18,17 @@ dzemikk::SkyboxHandler::Result dzemikk::SkyboxHandler::load(const std::string& p
     return {skybox, AssetError::None};
 }
 
-std::shared_ptr<dzemikk::Skybox> dzemikk::SkyboxHandler::loadSkyboxFromFile(const std::string& path) {
+std::shared_ptr<dzemikk::Skybox>
+dzemikk::SkyboxHandler::loadSkyboxFromFile(const std::string& path,
+                                           LoadExecutionMode loadExecutionMode) {
     std::vector<std::string> faces = buildFaces(path);
 
-    auto skybox = std::make_shared<Skybox>();
+    auto skybox = std::make_shared<Skybox>(faces);
 
     try {
-        skybox->loadCubemap(faces);
+        if (loadExecutionMode == LoadExecutionMode::Sync) {
+                    skybox->uploadToGPU();
+        }
     } catch (const std::exception& e) {
         std::cerr << "[AssetManager] Skybox load failed: " << e.what() << "\n";
         return nullptr;

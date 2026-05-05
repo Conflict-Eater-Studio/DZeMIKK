@@ -1,65 +1,90 @@
 #include "assetManager/primitiveFactory.h"
-#include "renderer/mesh.h"
+#include "renderer/StaticMesh.h"
 #include <glm/ext/scalar_constants.hpp>
 #include <glm/gtc/constants.hpp>
 
 std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCube() {
-    auto mesh = std::make_unique<dzemikk::Mesh>();
+    std::vector<StaticVertex> vertices;
+    vertices.reserve(36);
 
-    float vertices[] = {// --- Front face
-                            -0.5F, -0.5F, 0.5F, 0.0F, 0.0F, 1.0F, 0.5F, -0.5F, 0.5F, 0.0F, 0.0F, 1.0F,
-                            0.5F, 0.5F, 0.5F, 0.0F, 0.0F, 1.0F,
+    auto add = [&](glm::vec3 pos, glm::vec3 normal, glm::vec2 uv) {
+        vertices.push_back(StaticVertex(pos, normal, uv));
+    };
 
-                            0.5F, 0.5F, 0.5F, 0.0F, 0.0F, 1.0F, -0.5F, 0.5F, 0.5F, 0.0F, 0.0F, 1.0F,
-                            -0.5F, -0.5F, 0.5F, 0.0F, 0.0F, 1.0F,
+    // --- Front (+Z)
+    add({-0.5F, -0.5F, 0.5F}, {0, 0, 1}, {0, 0});
+    add({0.5F, -0.5F, 0.5F}, {0, 0, 1}, {1, 0});
+    add({0.5F, 0.5F, 0.5F}, {0, 0, 1}, {1, 1});
 
-                            // --- Back face
-                            -0.5F, -0.5F, -0.5F, 0.0F, 0.0F, -1.0F, 0.5F, 0.5F, -0.5F, 0.0F, 0.0F,
-                            -1.0F, 0.5F, -0.5F, -0.5F, 0.0F, 0.0F, -1.0F,
+    add({0.5F, 0.5F, 0.5F}, {0, 0, 1}, {1, 1});
+    add({-0.5F, 0.5F, 0.5F}, {0, 0, 1}, {0, 1});
+    add({-0.5F, -0.5F, 0.5F}, {0, 0, 1}, {0, 0});
 
-                            0.5F, 0.5F, -0.5F, 0.0F, 0.0F, -1.0F, -0.5F, -0.5F, -0.5F, 0.0F, 0.0F,
-                            -1.0F, -0.5F, 0.5F, -0.5F, 0.0F, 0.0F, -1.0F,
+    // --- Back (-Z)
+    add({-0.5F, -0.5F, -0.5F}, {0, 0, -1}, {1, 0});
+    add({0.5F, 0.5F, -0.5F}, {0, 0, -1}, {0, 1});
+    add({0.5F, -0.5F, -0.5F}, {0, 0, -1}, {0, 0});
 
-                            // --- Left face
-                            -0.5F, -0.5F, -0.5F, -1.0F, 0.0F, 0.0F, -0.5F, -0.5F, 0.5F, -1.0F, 0.0F,
-                            0.0F, -0.5F, 0.5F, 0.5F, -1.0F, 0.0F, 0.0F,
+    add({0.5F, 0.5F, -0.5F}, {0, 0, -1}, {0, 1});
+    add({-0.5F, -0.5F, -0.5F}, {0, 0, -1}, {1, 0});
+    add({-0.5F, 0.5F, -0.5F}, {0, 0, -1}, {1, 1});
 
-                            -0.5F, 0.5F, 0.5F, -1.0F, 0.0F, 0.0F, -0.5F, 0.5F, -0.5F, -1.0F, 0.0F, 0.0F,
-                            -0.5F, -0.5F, -0.5F, -1.0F, 0.0F, 0.0F,
+    // --- Left (-X)
+    add({-0.5F, -0.5F, -0.5F}, {-1, 0, 0}, {0, 0});
+    add({-0.5F, -0.5F, 0.5F}, {-1, 0, 0}, {1, 0});
+    add({-0.5F, 0.5F, 0.5F}, {-1, 0, 0}, {1, 1});
 
-                            // --- Right face
-                            0.5F, -0.5F, -0.5F, 1.0F, 0.0F, 0.0F, 0.5F, 0.5F, 0.5F, 1.0F, 0.0F, 0.0F,
-                            0.5F, -0.5F, 0.5F, 1.0F, 0.0F, 0.0F,
+    add({-0.5F, 0.5F, 0.5F}, {-1, 0, 0}, {1, 1});
+    add({-0.5F, 0.5F, -0.5F}, {-1, 0, 0}, {0, 1});
+    add({-0.5F, -0.5F, -0.5F}, {-1, 0, 0}, {0, 0});
 
-                            0.5F, 0.5F, 0.5F, 1.0F, 0.0F, 0.0F, 0.5F, -0.5F, -0.5F, 1.0F, 0.0F, 0.0F,
-                            0.5F, 0.5F, -0.5F, 1.0F, 0.0F, 0.0F,
+    // --- Right (+X)
+    add({0.5F, -0.5F, -0.5F}, {1, 0, 0}, {1, 0});
+    add({0.5F, 0.5F, 0.5F}, {1, 0, 0}, {0, 1});
+    add({0.5F, -0.5F, 0.5F}, {1, 0, 0}, {0, 0});
 
-                            // --- Top face
-                            -0.5F, 0.5F, -0.5F, 0.0F, 1.0F, 0.0F, -0.5F, 0.5F, 0.5F, 0.0F, 1.0F, 0.0F,
-                            0.5F, 0.5F, 0.5F, 0.0F, 1.0F, 0.0F,
+    add({0.5F, 0.5F, 0.5F}, {1, 0, 0}, {0, 1});
+    add({0.5F, -0.5F, -0.5F}, {1, 0, 0}, {1, 0});
+    add({0.5F, 0.5F, -0.5F}, {1, 0, 0}, {1, 1});
 
-                            0.5F, 0.5F, 0.5F, 0.0F, 1.0F, 0.0F, 0.5F, 0.5F, -0.5F, 0.0F, 1.0F, 0.0F,
-                            -0.5F, 0.5F, -0.5F, 0.0F, 1.0F, 0.0F,
+    // --- Top (+Y)
+    add({-0.5F, 0.5F, -0.5F}, {0, 1, 0}, {0, 0});
+    add({-0.5F, 0.5F, 0.5F}, {0, 1, 0}, {0, 1});
+    add({0.5F, 0.5F, 0.5F}, {0, 1, 0}, {1, 1});
 
-                            // --- Bottom face
-                            -0.5F, -0.5F, -0.5F, 0.0F, -1.0F, 0.0F, 0.5F, -0.5F, 0.5F, 0.0F, -1.0F,
-                            0.0F, -0.5F, -0.5F, 0.5F, 0.0F, -1.0F, 0.0F,
+    add({0.5F, 0.5F, 0.5F}, {0, 1, 0}, {1, 1});
+    add({0.5F, 0.5F, -0.5F}, {0, 1, 0}, {1, 0});
+    add({-0.5F, 0.5F, -0.5F}, {0, 1, 0}, {0, 0});
 
-                            0.5F, -0.5F, 0.5F, 0.0F, -1.0F, 0.0F, -0.5F, -0.5F, -0.5F, 0.0F, -1.0F,
-                            0.0F, 0.5F, -0.5F, -0.5F, 0.0F, -1.0F, 0.0F};
+    // --- Bottom (-Y)
+    add({-0.5F, -0.5F, -0.5F}, {0, -1, 0}, {0, 1});
+    add({0.5F, -0.5F, 0.5F}, {0, -1, 0}, {1, 0});
+    add({-0.5F, -0.5F, 0.5F}, {0, -1, 0}, {0, 0});
 
-    mesh->create(vertices, 36, 6);
+    add({0.5F, -0.5F, 0.5F}, {0, -1, 0}, {1, 0});
+    add({-0.5F, -0.5F, -0.5F}, {0, -1, 0}, {0, 1});
+    add({0.5F, -0.5F, -0.5F}, {0, -1, 0}, {1, 1});
+
+    auto mesh = std::make_unique<StaticMesh>();
+    mesh->create(vertices, {});
+    mesh->uploadToGPU();
     return mesh;
 }
 
 std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createQuad() {
-    auto mesh = std::make_unique<dzemikk::Mesh>();
-    float vertices[] = {// pos        // uv
-                        0.0F, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 1.0F, 1.0F,
+    std::vector<StaticVertex> vertices = {
+        StaticVertex({0, 0, 0}, {0, 0, 1}, {0, 0}),
+        StaticVertex({1, 0, 0}, {0, 0, 1}, {1, 0}),
+        StaticVertex({1, 1, 0}, {0, 0, 1}, {1, 1}),
 
-                        1.0F, 1.0F, 1.0F, 1.0F, 0.0F, 1.0F, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F};
+        StaticVertex({1, 1, 0}, {0, 0, 1}, {1, 1}), 
+        StaticVertex({0, 1, 0}, {0, 0, 1}, {0, 1}),
+        StaticVertex({0, 0, 0}, {0, 0, 1}, {0, 0}),
+    };
 
-    mesh->create2D(vertices, 6);
+    auto mesh = std::make_unique<StaticMesh>();
+    mesh->create(vertices, {});
+    mesh->uploadToGPU();
     return mesh;
 }
 
@@ -68,15 +93,18 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createSphere() {
     const int slices = 16;
     const float radius = 0.5F;
 
-    std::vector<float> vertices;
+    std::vector<StaticVertex> vertices;
     std::vector<unsigned int> indices;
 
+    vertices.reserve((stacks + 1) * (slices + 1));
+
+    // --- Vertices
     for (int i = 0; i <= stacks; ++i) {
-        float v = (float)i / stacks;
+        float v = static_cast<float>(i) / stacks;
         float phi = v * glm::pi<float>();
 
         for (int j = 0; j <= slices; ++j) {
-            float u = (float)j / slices;
+            float u = static_cast<float>(j) / slices;
             float theta = u * glm::two_pi<float>();
 
             float x = radius * sinf(phi) * cosf(theta);
@@ -86,14 +114,17 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createSphere() {
             glm::vec3 pos(x, y, z);
             glm::vec3 normal = glm::normalize(pos);
 
-            // NOLINTNEXTLINE(cppcoreguidelines-pro-type-union-access)
-            vertices.insert(vertices.end(), {pos.x, pos.y, pos.z, normal.x, normal.y, normal.z});
+            // UV mapping (equirectangular)
+            glm::vec2 uv(u, v);
+
+            vertices.push_back(StaticVertex(pos, normal, uv));
         }
     }
 
+    // --- Indices
     for (int i = 0; i < stacks; ++i) {
         for (int j = 0; j < slices; ++j) {
-            int first = (i * (slices + 1)) + j;
+            int first = i * (slices + 1) + j;
             int second = first + slices + 1;
 
             indices.push_back(first);
@@ -106,48 +137,40 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createSphere() {
         }
     }
 
-    auto mesh = std::make_unique<dzemikk::Mesh>();
-    mesh->createIndexed(vertices.data(), vertices.size() / 6, indices.data(), indices.size(), 6);
+    auto mesh = std::make_unique<StaticMesh>();
+    mesh->create(vertices, indices);
+    mesh->uploadToGPU();
 
     return mesh;
 }
 
 std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
-    auto mesh = std::make_unique<dzemikk::Mesh>();
-
     const int segments = 24;
     const int rings = 12;
 
     const float radius = 0.5F;
     const float height = 1.0F;
+    float halfH = height * 0.5F;
 
-    std::vector<float> vertices;
+    std::vector<StaticVertex> vertices;
     std::vector<unsigned int> indices;
 
-    auto addVertex = [&](const glm::vec3& pos) {
+    auto addVertex = [&](glm::vec3 pos, glm::vec2 uv) {
         glm::vec3 normal = glm::normalize(pos);
-
-        vertices.push_back(pos.x);
-        vertices.push_back(pos.y);
-        vertices.push_back(pos.z);
-
-        vertices.push_back(normal.x);
-        vertices.push_back(normal.y);
-        vertices.push_back(normal.z);
+        vertices.push_back(StaticVertex(pos, normal, uv));
     };
-
-    auto indexOf = [&](int ring, int seg) { return (ring * (segments + 1)) + seg; };
-
-    float halfH = height * 0.5F;
 
     for (int i = 0; i <= 1; i++) {
         float y = (-halfH) + ((float)i * height);
+        float v = (float)i; // 0 bottom, 1 top
 
         for (int j = 0; j <= segments; j++) {
-            float a = (float)j / segments * glm::two_pi<float>();
+            float u = (float)j / segments;
+            float a = u * glm::two_pi<float>();
 
             glm::vec3 pos(cos(a) * radius, y, sin(a) * radius);
-            addVertex(pos);
+
+            addVertex(pos, {u, v});
         }
     }
 
@@ -161,11 +184,11 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
                                        (unsigned)i2, (unsigned)i3});
     }
 
-    std::size_t baseTop = vertices.size() / 6;
+    std::size_t baseTop = vertices.size();
 
     for (int i = 0; i <= rings; i++) {
         float v = (float)i / rings;
-        float phi = v * (glm::half_pi<float>());
+        float phi = v * glm::half_pi<float>();
 
         for (int j = 0; j <= segments; j++) {
             float u = (float)j / segments;
@@ -174,7 +197,9 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
             glm::vec3 pos(cos(theta) * cos(phi) * radius, (sin(phi) * radius) + halfH,
                           sin(theta) * cos(phi) * radius);
 
-            addVertex(pos);
+            glm::vec2 uv(u, 1.0F - v);
+
+            addVertex(pos, uv);
         }
     }
 
@@ -188,11 +213,11 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
         }
     }
 
-    std::size_t baseBottom = vertices.size() / 6;
+    std::size_t baseBottom = vertices.size();
 
     for (int i = 0; i <= rings; i++) {
         float v = (float)i / rings;
-        float phi = v * (glm::half_pi<float>());
+        float phi = v * glm::half_pi<float>();
 
         for (int j = 0; j <= segments; j++) {
             float u = (float)j / segments;
@@ -201,13 +226,15 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
             glm::vec3 pos(cos(theta) * cos(phi) * radius, ((-sin(phi)) * radius) - halfH,
                           sin(theta) * cos(phi) * radius);
 
-            addVertex(pos);
+            glm::vec2 uv(u, v);
+
+            addVertex(pos, uv);
         }
     }
 
     for (int i = 0; i < rings; i++) {
         for (int j = 0; j < segments; j++) {
-            int a = (int)baseBottom + ((int)i * (segments + 1)) + j;
+            int a = (int)baseBottom + (i * (segments + 1)) + j;
             int b = a + segments + 1;
 
             indices.insert(indices.end(), {(unsigned)a, (unsigned)a + 1, (unsigned)b,
@@ -215,7 +242,8 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
         }
     }
 
-    mesh->createIndexed(vertices.data(), vertices.size() / 6, indices.data(), indices.size(), 6);
-
+    auto mesh = std::make_unique<StaticMesh>();
+    mesh->create(vertices, indices);
+    mesh->uploadToGPU();
     return mesh;
 }

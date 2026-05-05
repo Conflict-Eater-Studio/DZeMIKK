@@ -1,4 +1,5 @@
 #include "renderer/model.h"
+#include <iostream>
 
 void dzemikk::Model::draw() const {
     for (const auto& subMesh : _subMeshes) {
@@ -34,4 +35,48 @@ const dzemikk::Model::SubMesh* dzemikk::Model::getSubMesh(std::size_t index) con
     }
         
     return &_subMeshes[index];
+}
+
+void dzemikk::Model::setSkeleton(std::shared_ptr<Skeleton> skeleton) {
+    _skeleton = skeleton;
+}
+
+std::shared_ptr<dzemikk::Skeleton> dzemikk::Model::getSkeleton() const {
+    return _skeleton;
+}
+
+void dzemikk::Model::addPending(MeshBuilder::RawStaticMesh& mesh) {
+    _pendingMeshes.push_back(PendingMesh{mesh});
+}
+
+void dzemikk::Model::addPending(MeshBuilder::RawSkinnedMesh& mesh) {
+    _pendingMeshes.push_back(PendingMesh{mesh});
+}
+
+void dzemikk::Model::uploadToGPU() {
+    if (_gpuReady)
+        return;
+
+    for (auto& pending : _pendingMeshes) {
+        if (std::holds_alternative<MeshBuilder::RawStaticMesh>(pending.data)) {
+            auto& raw = std::get<MeshBuilder::RawStaticMesh>(pending.data);
+
+            auto mesh = std::make_shared<StaticMesh>();
+            mesh->create(raw.vertices, raw.indices);
+            mesh->uploadToGPU();
+
+            addMesh(mesh, raw.materialIndex);
+        } else {
+            auto& raw = std::get<MeshBuilder::RawSkinnedMesh>(pending.data);
+
+            auto mesh = std::make_shared<SkinnedMesh>();
+            mesh->create(raw.vertices, raw.indices);
+            mesh->uploadToGPU();
+
+            addMesh(mesh, raw.materialIndex);
+        }
+    }
+
+    _pendingMeshes.clear();
+    _gpuReady = true;
 }

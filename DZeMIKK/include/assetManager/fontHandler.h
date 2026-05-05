@@ -29,7 +29,7 @@ class FontHandler : public IAssetHandler<Font> {
      * @return AssetResult containing a valid Font handle on success,
      *         or an error state on failure.
      */
-    Result load(const std::string& path) override;
+    Result load(const std::string& path, LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync) override;
 
     /**
      * @brief Reloads an already loaded font asset from disk.
@@ -53,7 +53,9 @@ class FontHandler : public IAssetHandler<Font> {
     /**
      * @brief Loads a font and creates a Font object.
      */
-    static std::shared_ptr<Font> loadFontFromFile(const std::string& path);
+      static std::shared_ptr<Font>
+      loadFontFromFile(const std::string& path,
+                       LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync);
 
     /**
      * @brief Reloads font data into an existing Font object.

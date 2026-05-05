@@ -1,6 +1,14 @@
 #include "renderer/texture.h"
 
-dzemikk::Texture::Texture() = default;
+dzemikk::Texture::Texture(unsigned char* data, int width, int height, int channels,
+    bool generateMipmaps) {
+    size_t size = static_cast<size_t>(width * height * channels);
+    _data.assign(data, data + size);
+    _width = width;
+    _height = height;
+    _channels = channels;
+    _generateMipmaps = generateMipmaps;
+}
 
 dzemikk::Texture::~Texture() {
     release();
@@ -65,13 +73,14 @@ void dzemikk::Texture::release() {
     }
 }
 
+void dzemikk::Texture::uploadToGPU() {
+    initFromData(reinterpret_cast<unsigned char*>(_data.data()), _width, _height, _channels,
+                 _generateMipmaps);
+}
+
 void dzemikk::Texture::initFromData(unsigned char* data, int width, int height, int channels,
                            bool generateMipmaps) {
     release();
-
-    _width = width;
-    _height = height;
-    _channels = channels;
 
     GLenum format = GL_RGB;
     if (channels == 1)

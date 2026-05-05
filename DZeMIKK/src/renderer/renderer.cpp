@@ -5,6 +5,7 @@
 #include "ecs/componentRegistry.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
+#include "ecs/components/skinnedMeshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
 #include "ecs/components/transform.h"
@@ -25,6 +26,12 @@
 #include <limits>
 #include <map>
 
+#if DZEMIKK_DEV_TOOLS
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <imgui.h>
+#endif
+
 void dzemikk::Renderer::initialize() {
     _view = glm::mat4(1.0f);
     _projection = glm::mat4(1.0f);
@@ -39,8 +46,6 @@ void dzemikk::Renderer::initialize() {
     glBindBufferRange(GL_UNIFORM_BUFFER, 0, _uboMatrices, 0, 2 * sizeof(glm::mat4));
 
     glEnable(GL_MULTISAMPLE);
-
-    _skybox = new Skybox();
 
     const char* vertexSrc = R"(
     #version 330 core
@@ -71,6 +76,7 @@ void dzemikk::Renderer::initialize() {
     )";
 
     _textShader = new Shader(vertexSrc, fragmentSrc);
+    _textShader->uploadToGPU();
 
     glGenVertexArrays(1, &textVAO);
     glGenBuffers(1, &textVBO);
@@ -113,17 +119,19 @@ void dzemikk::Renderer::render() {
 
     if (_skybox && _sceneCamera) {
 
-        float time = glfwGetTime();
+        if (_skybox.get()->gpuReady) {
+            float time = glfwGetTime();
 
-        glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), time * 0.1f, glm::vec3(0, 1, 0));
-        glm::mat4 viewNoTrans = _sceneCamera->getView() * rotation;
+            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), time * 0.1f, glm::vec3(0, 1, 0));
+            glm::mat4 viewNoTrans = _sceneCamera->getView() * rotation;
 
-        _skybox->render(viewNoTrans, _sceneCamera->getProjection());
+            _skybox.get()->render(viewNoTrans, _sceneCamera->getProjection());
 
-        Profiler::Get().stats.drawCalls++;
-        Profiler::Get().stats.renderedObjects++;
-        Profiler::Get().stats.vertexCount += 36;
-        Profiler::Get().stats.triangleCount += 12;
+            Profiler::Get().stats.drawCalls++;
+            Profiler::Get().stats.renderedObjects++;
+            Profiler::Get().stats.vertexCount += 36;
+            Profiler::Get().stats.triangleCount += 12;
+        }
     }
 
     glEnable(GL_CULL_FACE);
@@ -225,13 +233,69 @@ void dzemikk::Renderer::render() {
 
             shader->bind();
 
-            shader->setVec4("meshColor", batch.color);
-            shader->setVec3("lightDir", glm::vec3(1.0f, -1.0f, -1.0f));
-            shader->setVec3("lightColor", glm::vec3(1.0f));
+            shader->setVec3("lightDir", _debugLightDir);
+            shader->setVec3("lightColor", _debugLightColor);
+            shader->setFloat("lightIntensity", _debugLightIntensity);
             shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
+            shader->setVec3("viewPos", _sceneCamera->getOwner()->transform()->getPosition());
 
             mesh->drawInstanced(batch.models, batch.instanceVBO);
             Profiler::Get().stats.drawCalls++;
+        }
+    }
+
+    ComponentRegistry::get().getComponents<SkinnedMeshRenderer>(_skinnedRenderers);
+
+    {
+        DZ_PROFILE_GPU("Skinned Rendering");
+
+        for (auto* r : _skinnedRenderers) {
+            if (!r)
+                continue;
+
+            Model* model = r->getModel().get();
+            Transform* transform = r->getTransform();
+
+            if (!model || !transform)
+                continue;
+
+            auto skeleton = model->getSkeleton();
+            if (!skeleton)
+                continue;
+
+            auto& bones = r->getBoneMatrices();
+
+            if (bones.size() != skeleton->getBoneCount()) {
+                bones.resize(skeleton->getBoneCount(), glm::mat4(1.0f));
+            }
+
+            r->calculateBoneMatrices(0, glm::mat4(1.0f));
+
+            for (size_t i = 0; i < model->getSubMeshes().size(); i++) {
+
+                const auto* sub = model->getSubMesh(i);
+                if (!sub)
+                    continue;
+
+                Material* mat = r->getMaterial(i);
+                if (!mat)
+                    continue;
+
+                Shader* shader = mat->getShader();
+                shader->bind();
+
+                shader->setMat4("model", transform->getWorldMatrix());
+                shader->setVec3("lightDir", glm::vec3(1.0f, -1.0f, -1.0f));
+                shader->setVec3("lightColor", glm::vec3(1.0f));
+                shader->setMat4Array("u_Bones", bones);
+
+                sub->mesh->draw();
+
+                Profiler::Get().stats.drawCalls++;
+                Profiler::Get().stats.renderedObjects++;
+                Profiler::Get().stats.vertexCount += sub->mesh->getVertexCount();
+                Profiler::Get().stats.triangleCount += sub->mesh->getVertexCount() / 3;
+            }
         }
     }
 
@@ -331,7 +395,7 @@ void dzemikk::Renderer::render() {
 
             glBindVertexArray(textVAO);
             for (char c : t->text) {
-                Character ch = t->font->characters[c];
+                Character ch = t->font.get()->characters[c];
 
                 float xpos = x + ch.bearing.x * t->scale;
                 float ypos = y - (ch.size.y - ch.bearing.y) * t->scale;
@@ -494,6 +558,8 @@ void dzemikk::Renderer::render() {
             glBindVertexArray(0);
         }
     }
+
+    renderDebugUI();
 }
 
 const dzemikk::Camera* dzemikk::Renderer::getActiveSceneCamera() const {
@@ -537,14 +603,29 @@ void dzemikk::Renderer::setActiveUICameraById(int cameraId) {
     std::cerr << "[Renderer] Warning: UI camera with ID " << cameraId << " not found.\n";
 }
 
-void dzemikk::Renderer::setSkybox(Skybox* skybox) {
-    if (!skybox) {
-        _skybox = nullptr;
+void dzemikk::Renderer::setSkybox(AssetHandle<Skybox> skybox) {
+    if (!skybox.get()) {
         return;
     }
     _skybox = skybox;
 }
 
-const dzemikk::Skybox* dzemikk::Renderer::getSkybox() const {
+const dzemikk::AssetHandle<dzemikk::Skybox> dzemikk::Renderer::getSkybox() const {
     return _skybox;
+}
+
+void dzemikk::Renderer::renderDebugUI() {
+    ImGui::Begin("Renderer Debug");
+
+    ImGui::Text("Directional Light");
+
+    ImGui::DragFloat3("Light Dir", &_debugLightDir.x, 0.01f);
+    ImGui::ColorEdit3("Light Color", &_debugLightColor.x);
+    ImGui::SliderFloat("Intensity", &_debugLightIntensity, 0.0f, 10.0f);
+
+    if (ImGui::Button("Normalize Dir")) {
+        _debugLightDir = glm::normalize(_debugLightDir);
+    }
+
+    ImGui::End();
 }
