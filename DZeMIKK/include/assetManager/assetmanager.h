@@ -54,6 +54,7 @@ class AssetManager : public IEngineModule {
 
     void initialize() override;
     void uninitialize() override;
+    void update();
 
 #pragma endregion
 
@@ -137,14 +138,6 @@ class AssetManager : public IEngineModule {
      */
     [[nodiscard]] FMOD::System* getFMODSystem() const;
 
-    /**
-     * @brief Processes pending GPU upload queue.
-     *
-     * @note Should be called on main/render thread.
-     * @note Uploads resources marked as GPU uploadable.
-     */
-    void processGpuUploads();
-
 #pragma endregion
 
   private:
@@ -204,6 +197,13 @@ class AssetManager : public IEngineModule {
      */
     void registerHandlers();
 
+    /**
+     * @brief Processes pending GPU upload queue.
+     *
+     * @note Should be called on main/render thread.
+     * @note Uploads resources marked as GPU uploadable.
+     */
+    void processGpuUploads();
 };
 
 // ================================== IMPLEMENTATION ==================================

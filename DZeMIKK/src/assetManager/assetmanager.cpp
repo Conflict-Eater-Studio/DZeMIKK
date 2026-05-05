@@ -143,3 +143,7 @@ void dzemikk::AssetManager::registerHandlers() {
     _loaders.registerHandler<Sound>(std::make_unique<SoundHandler>());
     _loaders.registerHandler<Model>(std::make_unique<ModelHandler>());
 }
+
+void dzemikk::AssetManager::update() {
+    processGpuUploads();
+}

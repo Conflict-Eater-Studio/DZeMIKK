@@ -153,7 +153,7 @@ void Engine::start() {
             _renderer->render();
         }
 
-        _assetManager->processGpuUploads();
+        _assetManager->update();
 
 #if DZEMIKK_DEV_TOOLS
         Profiler::Get().DrawImGui();
