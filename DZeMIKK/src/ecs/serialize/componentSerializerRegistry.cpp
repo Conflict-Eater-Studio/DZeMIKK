@@ -1,5 +1,6 @@
 #include "ecs/serialize/componentSerializerRegistry.h"
 
+#include "ecs/serialize/animation/animatorSerializer.h"
 #include "ecs/serialize/cameraSerializer.h"
 #include "ecs/serialize/colliderSerializer.h"
 #include "ecs/serialize/meshRendererSerializer.h"
@@ -8,11 +9,12 @@
 #include "ecs/serialize/spriteRendererSerializer.h"
 #include "ecs/serialize/textRendererSerializer.h"
 #include "ecs/serialize/transformSerializer.h"
+#include "ecs/serialize/ui/UITextRenderSerializer.h"
 #include "ecs/serialize/ui/canvasSerializer.h"
 #include "ecs/serialize/ui/uiCheckboxSerializer.h"
 #include "ecs/serialize/uiButtonSerializer.h"
 #include "ecs/serialize/uiSliderSerializer.h"
-#include "ecs/serialize/animation/animatorSerializer.h"
+
 #include <stdexcept>
 #include <utility>
 
@@ -22,6 +24,7 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     ComponentSerializerRegistry registry;
 
     registerTransformSerializer(registry);
+    registerCanvasSerializer(registry);
     registerRectTransformSerializer(registry);
     registerUIButtonSerializer(registry);
     registerUISliderSerializer(registry);
@@ -30,11 +33,11 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerSpriteRendererSerializer(registry);
     registerSkinnedMeshRendererSerializer(registry);
     registerCameraSerializer(registry);
-    registerCanvasSerializer(registry);
     registerColliderSerializer(registry);
     registerRectTransformSerializer(registry);
     registerUICheckboxSerializer(registry);
     registerAnimatorSerializer(registry);
+    registerUITextRendererSerializer(registry);
 
     return registry;
 }

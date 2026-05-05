@@ -11,10 +11,17 @@ namespace dzemikk {
         j["type"] = canvas.typeName();
         j["id"] = boost::uuids::to_string(canvas.getId());
     }
-    inline void from_json(const nlohmann::json& j, Canvas& canvas) {
-        if (j.contains("id")) {
-            canvas.setId(boost::uuids::string_generator()(j["id"].get<std::string>()));
+    inline void from_json(const nlohmann::json& json, Canvas& canvas) {
+        if (!json.contains("type") || !json["type"].is_string() || json["type"] != canvas.typeName()) {
+            throw std::runtime_error("Invalid component type for Canvas deserialization");
         }
+
+        if (!json.contains("id")) {
+            throw std::runtime_error("Missing fields for Canvas deserialization");
+        }
+
+        canvas.setId(boost::uuids::string_generator()(json["id"].get<std::string>()));
+
     }
     inline void registerCanvasSerializer(ComponentSerializerRegistry& registry) {
         registry.registerType(

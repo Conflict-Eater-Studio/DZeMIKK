@@ -28,25 +28,32 @@ namespace dzemikk {
         json["checkmarkRenderer"] = nlohmann::json();
         dzemikk::to_json(json["checkmarkRenderer"], *button.getCheckmarkSpriteRenderer());
     }
-    inline void from_json(const nlohmann::json& j, UICheckbox& checkbox, AssetManager* assetManager) {
-        if (j.contains("id")) {
-            checkbox.setId(boost::uuids::string_generator()(j["id"].get<std::string>()));
+    inline void from_json(const nlohmann::json& json, UICheckbox& checkbox, AssetManager* assetManager) {
+        if (!json.contains("type") || !json["type"].is_string() || json["type"] != checkbox.typeName()) {
+            throw std::runtime_error("Invalid component type for UICheckbox deserialization");
         }
 
-        if (j.contains("value")) {
-            // You might need a setValue method in UICheckbox to update visuals properly
-            // For now, we assume click logic handles the toggle
+        if (!json.contains("id")
+            || !json.contains("colors") || !json["colors"].contains("normal")
+            || !json["colors"].contains("hover") || !json["colors"].contains("pressed")
+            || !json["colors"].contains("normal")
+            || !json.contains("actions") || !json["actions"].contains("onClickId")
+            || !json["actions"].contains("onClickId")
+            || !json["actions"].contains("onEnterId")
+            || !json["actions"].contains("onExitId")
+            ) {
+            throw std::runtime_error("Missing fields for UICheckbox deserialization");
         }
 
-        if (j.contains("colors")) {
-            auto c = j["colors"];
+        if (json.contains("colors")) {
+            auto c = json["colors"];
             checkbox.setNormalColor({c["normal"][0], c["normal"][1], c["normal"][2], c["normal"][3]});
             checkbox.setHoverColor({c["hover"][0], c["hover"][1], c["hover"][2], c["hover"][3]});
             checkbox.setPressedColor({c["pressed"][0], c["pressed"][1], c["pressed"][2], c["pressed"][3]});
         }
 
-        if (j.contains("actions")) {
-            auto a = j["actions"];
+        if (json.contains("actions")) {
+            auto a = json["actions"];
             checkbox.setOnClickActionId(a.value("onClickId", ""));
             checkbox.setOnEnterActionId(a.value("onEnterId", ""));
             checkbox.setOnExitActionId(a.value("onExitId", ""));
@@ -54,8 +61,8 @@ namespace dzemikk {
 
         auto* background = checkbox.getOwner()->addComponent<ImageRenderer>();
         auto* checkmark = checkbox.getOwner()->addComponent<ImageRenderer>();
-        dzemikk::from_json(j["backgroundRenderer"], *background, assetManager);
-        dzemikk::from_json(j["checkmarkRenderer"], *checkmark, assetManager);
+        dzemikk::from_json(json["backgroundRenderer"], *background, assetManager);
+        dzemikk::from_json(json["checkmarkRenderer"], *checkmark, assetManager);
     }
 
     inline void registerUICheckboxSerializer(ComponentSerializerRegistry& registry) {

@@ -33,22 +33,22 @@ inline void to_json(nlohmann::json& json, const Collider& collider) {
     json["scale"] = { scale.x, scale.y, scale.z };
 }
 
-inline void from_json(const nlohmann::json& json, Collider& collider, AssetManager& assetManager) {
+inline void from_json(const nlohmann::json& json, Collider& collider, AssetManager* assetManager) {
     static boost::uuids::string_generator uuidGenerator;
 
-    if (json.contains("id") && json["id"].is_string()) {
-        try {
-            collider.setId(uuidGenerator(json["id"].get<std::string>()));
-        } catch (const std::exception& e) {
-#if DZEMIKK_DEV_TOOLS
-            spdlog::warn("Malformed UUID in Collider JSON: {}", e.what());
-#endif
-        }
+    if (!json.contains("type") || !json["type"].is_string() || json["type"] != collider.typeName()) {
+        throw std::runtime_error("Invalid component type for Collider deserialization");
     }
+
+    if (!json.contains("id") || !json.contains("model")) {
+        throw std::runtime_error("Missing fields for Collider deserialization");
+    }
+
+    collider.setId(uuidGenerator(json["id"].get<std::string>()));
 
     std::string modelPath = json.value("model", "");
     if (!modelPath.empty()) {
-        collider.setModel(assetManager.get<Model>(modelPath));
+        collider.setModel(assetManager->get<Model>(modelPath));
     } else {
 #if DZEMIKK_DEV_TOOLS
         spdlog::debug("Collider initialized without a model path.");
@@ -70,7 +70,7 @@ inline void registerColliderSerializer(ComponentSerializerRegistry& registry) {
         },
         [](const ComponentSerializerRegistry::DeserializationContext& context) {
             auto* collider = context.gameObject.addComponent<Collider>();
-            // from_json(context.json, *collider, context.assetManager);
+            from_json(context.json, *collider, context.assetManager);
         });
 }
 }

@@ -22,7 +22,7 @@ namespace dzemikk {
         auto size = trs.getSize();
         auto zIndex = trs.getZIndex();
 
-        json["type"] = "RectTransform";
+        json["type"] = trs.typeName();
         json["id"] = boost::uuids::to_string(trs.getId());
         json["position"] = {pos[0], pos[1]};
         json["rotation"] = rot;

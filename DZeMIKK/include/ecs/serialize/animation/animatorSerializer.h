@@ -2,14 +2,17 @@
 #ifndef DZEMIKK_ANIMATORSERIALIZER_H
 #define DZEMIKK_ANIMATORSERIALIZER_H
 
-#include "ecs/components/animator.h"
-#include "ecs/serialize/componentSerializerRegistry.h"
-#include "animation/animationstatemachine.h"
-#include "animation/animationstate.h"
 #include "animation/animationclip.h"
+#include "animation/animationstate.h"
+#include "animation/animationstatemachine.h"
+#include "ecs/components/animator.h"
+#include "ecs/components/skinnedMeshRenderer.h"
+#include "ecs/components/meshRenderer.h"
 #include "ecs/gameobject.h"
-#include <nlohmann/json.hpp>
+#include "ecs/serialize/componentSerializerRegistry.h"
+
 #include <boost/uuid/uuid_io.hpp>
+#include <nlohmann/json.hpp>
 
 namespace dzemikk {
     inline void to_json(nlohmann::json& json, const Condition& c) {
@@ -61,58 +64,58 @@ namespace dzemikk {
     }
 
     inline void from_json(const nlohmann::json& json, Animator& animator) {
-        if (json.contains("id")) {
-            animator.setId(boost::uuids::string_generator()(json["id"].get<std::string>()));
+        if (!json.contains("type") || !json["type"].is_string() || json["type"] != animator.typeName()) {
+            throw std::runtime_error("Invalid component type for Animator deserialization");
         }
 
-        if (json.contains("stateMachine") && json["stateMachine"].is_array()) {
-            auto sm = std::make_shared<AnimationStateMachine>();
+        if (!json.contains("id") || !json.contains("stateMachine") || !json["stateMachine"].is_array() || !json.contains("parameters") || !json["parameters"].is_object() || !json.contains("currentStateName") ) {
+            throw std::runtime_error("Missing fields for Animator deserialization");
+        }
 
-            for (const auto& stateJson : json["stateMachine"]) {
-                AnimationState* state = sm->addState(stateJson.at("name").get<std::string>());
-                if (stateJson.contains("clip")) {
-                    auto skinnedMeshRenderer = animator.getOwner()->getComponent<SkinnedMeshRenderer>();
-                    if (skinnedMeshRenderer != nullptr) {
-                        AnimationClip* clip = skinnedMeshRenderer->getModel().get()->getSkeleton()->getClip(stateJson["clip"]);
-                        state->setClip(clip);
-                    }
-                    auto meshRenderer = animator.getOwner()->getComponent<MeshRenderer>();
-                    if (meshRenderer != nullptr) {
-                        AnimationClip* clip2 = meshRenderer->getModel()->getSkeleton()->getClip(stateJson["clip"]);
-                        state->setClip(clip2);
+        animator.setId(boost::uuids::string_generator()(json["id"].get<std::string>()));
+
+        auto sm = std::make_shared<AnimationStateMachine>();
+
+        for (const auto& stateJson : json["stateMachine"]) {
+            AnimationState* state = sm->addState(stateJson.at("name").get<std::string>());
+            if (stateJson.contains("clip")) {
+                auto skinnedMeshRenderer = animator.getOwner()->getComponent<SkinnedMeshRenderer>();
+                if (skinnedMeshRenderer != nullptr) {
+                    AnimationClip* clip = skinnedMeshRenderer->getModel().get()->getSkeleton()->getClip(stateJson["clip"]);
+                    state->setClip(clip);
+                }
+                auto meshRenderer = animator.getOwner()->getComponent<MeshRenderer>();
+                if (meshRenderer != nullptr) {
+                    AnimationClip* clip2 = meshRenderer->getModel()->getSkeleton()->getClip(stateJson["clip"]);
+                    state->setClip(clip2);
+                }
+            }
+        }
+
+        for (const auto& stateJson : json["stateMachine"]) {
+            auto* sourceState = sm->getState(stateJson.at("name").get<std::string>());
+            if (stateJson.contains("transitions") && stateJson["transitions"].is_array()) {
+                for (const auto& tJson : stateJson["transitions"]) {
+                    auto* targetState = sm->getState(tJson.at("to").get<std::string>());
+                    if (targetState) {
+                        Transition t;
+                        t.targetState = targetState->getName();
+                        t.duration = tJson.at("duration").get<float>();
+                        t.condition = tJson.at("condition").get<Condition>();
+                        sourceState->addTransition(t);
                     }
                 }
             }
+        }
+        animator.setStateMachine(sm);
 
-            for (const auto& stateJson : json["stateMachine"]) {
-                auto* sourceState = sm->getState(stateJson.at("name").get<std::string>());
-                if (stateJson.contains("transitions") && stateJson["transitions"].is_array()) {
-                    for (const auto& tJson : stateJson["transitions"]) {
-                        auto* targetState = sm->getState(tJson.at("to").get<std::string>());
-                        if (targetState) {
-                            Transition t;
-                            t.targetState = targetState->getName();
-                            t.duration = tJson.at("duration").get<float>();
-                            t.condition = tJson.at("condition").get<Condition>();
-                            sourceState->addTransition(t);
-                        }
-                    }
-                }
-            }
-            animator.setStateMachine(sm);
+        for (auto& [name, value] : json["parameters"].items()) {
+            if (value.is_boolean())         animator.setBool(name, value);
+            else if (value.is_number_integer()) animator.setInt(name, value);
+            else if (value.is_number_float())   animator.setFloat(name, value);
         }
 
-        if (json.contains("parameters") && json["parameters"].is_object()) {
-            for (auto& [name, value] : json["parameters"].items()) {
-                if (value.is_boolean())         animator.setBool(name, value);
-                else if (value.is_number_integer()) animator.setInt(name, value);
-                else if (value.is_number_float())   animator.setFloat(name, value);
-            }
-        }
-
-        if (json.contains("currentStateName")) {
-            animator.play(json["currentStateName"].get<std::string>());
-        }
+        animator.play(json["currentStateName"].get<std::string>());
     }
 
     inline void registerAnimatorSerializer(ComponentSerializerRegistry& registry) {

@@ -11,12 +11,7 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/string_generator.hpp>
 
-#if DZEMIKK_DEV_TOOLS
-#include <spdlog/spdlog.h>
-#endif
-
 namespace dzemikk {
-
     inline void to_json(nlohmann::json& json, const SpriteRenderer& spriteRenderer) {
         json["type"] = spriteRenderer.typeName();
         json["id"] = boost::uuids::to_string(spriteRenderer.getId());
@@ -34,25 +29,23 @@ namespace dzemikk {
     inline void from_json(const nlohmann::json& json, SpriteRenderer& spriteRenderer, AssetManager* assetManager) {
         static boost::uuids::string_generator uuidGenerator;
 
-        if (json.contains("id") && json["id"].is_string()) {
-            try {
-                spriteRenderer.setId(uuidGenerator(json["id"].get<std::string>()));
-            } catch (const std::exception& e) {
-    #if DZEMIKK_DEV_TOOLS
-                spdlog::warn("Malformed UUID in SpriteRenderer JSON: {}", e.what());
-    #endif
-            }
+        if (!json.contains("type") || !json["type"].is_string() || json["type"] != spriteRenderer.typeName()) {
+            throw std::runtime_error("Invalid component type for SpriteRenderer deserialization");
         }
 
-        if (json.contains("color") && json["color"].is_array() && json["color"].size() >= 4) {
-            const auto& c = json["color"];
-            spriteRenderer.setColor(glm::vec4(
-                c[0].get<float>(),
-                c[1].get<float>(),
-                c[2].get<float>(),
-                c[3].get<float>()
-            ));
+        if (!json.contains("id") || !json.contains("color") || json["color"].size() < 4 || !json["color"].is_array() || !json.contains("texture")) {
+            throw std::runtime_error("Missing fields for Transform deserialization");
         }
+
+        spriteRenderer.setId(uuidGenerator(json["id"].get<std::string>()));
+
+        const auto& c = json["color"];
+        spriteRenderer.setColor(glm::vec4(
+            c[0].get<float>(),
+            c[1].get<float>(),
+            c[2].get<float>(),
+            c[3].get<float>()
+        ));
 
         std::string texturePath = json.value("texture", "");
         if (!texturePath.empty()) {
@@ -66,9 +59,6 @@ namespace dzemikk {
             [](const Component& component) {
                 const auto* renderer = dynamic_cast<const SpriteRenderer*>(&component);
                 if (renderer == nullptr) {
-    #if DZEMIKK_DEV_TOOLS
-                    spdlog::error("Component type mismatch during SpriteRenderer serialization!");
-    #endif
                     throw std::runtime_error("Component type mismatch for SpriteRenderer serialization");
                 }
                 nlohmann::json j;

@@ -137,7 +137,7 @@ int main() {
 
     auto tileMesh = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
-    createHexIsland(*mainScenePtr, tileMesh, materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
+    createHexIsland(*mainScenePtr, tileMesh, materialA, materialB, 10, 1.0f, 0.15f, 0.5f);
 
     auto sphereMesh = engine->getAssetManager()->getPrimitive(
         dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Sphere);
@@ -212,7 +212,7 @@ int main() {
     chestMeshR->setMaterial(0, materialA);
 
     auto enemyGO = mainScenePtr->createGameObject();
-    enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.2f, 0.0f));
+    enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 0.0f));
     enemyGO->transform()->setScale(glm::vec3(.01f, .01f, 0.01f));
     auto enemyMeshR = enemyGO->addComponent<dzemikk::SkinnedMeshRenderer>();
     // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
@@ -230,37 +230,35 @@ int main() {
     enemyMeshR->setMaterial(4, materialC);
     enemyMeshR->setMaterial(5, materialC);
 
-    // auto animator = enemyGO->addComponent<dzemikk::Animator>();
-    // engine->getAnimationModule()->registerAnimator(animator);
-    //
-    // auto skeleton = enemyMesh.get()->getSkeleton();
-    // if (!skeleton) {
-    //     std::cout << "Brak skeletonu!\n";
-    //     return -1;
-    // }
-    //
-    // std::string name = "mixamo.com";
-    // dzemikk::AnimationClip* clip = nullptr;
-    //
-    // clip = skeleton->getClip(name);
-    // clip->setName(name);
-    //
-    // if (!clip) {
-    //     std::cout << "Brak animacji!\n";
-    //     return -2;
-    // }
-    //
-    // auto sm = std::make_shared<dzemikk::AnimationStateMachine>();
-    // auto state = sm->addState("test");
-    //
-    // state->setClip(clip);
-    // animator->setStateMachine(sm);
-    //
-    // state->setClip(nullptr);
-    //
-    // std::string t = "test";
-    // animator->play(t);
-    //
+    auto animator = enemyGO->addComponent<dzemikk::Animator>();
+    engine->getAnimationModule()->registerAnimator(animator);
+
+    auto skeleton = enemyMesh.get()->getSkeleton();
+    if (!skeleton) {
+        std::cout << "Brak skeletonu!\n";
+        return -1;
+    }
+
+    std::string name = "mixamo.com";
+    dzemikk::AnimationClip* clip = nullptr;
+
+    clip = skeleton->getClip(name);
+    clip->setName(name);
+
+    if (!clip) {
+        std::cout << "Brak animacji!\n";
+        return -2;
+    }
+
+    auto sm = std::make_shared<dzemikk::AnimationStateMachine>();
+    auto state = sm->addState("test");
+
+    state->setClip(clip);
+    animator->setStateMachine(sm);
+
+    std::string t = "test";
+    animator->play(t);
+
     // --- Quad GameObject
     auto quadGO = new dzemikk::GameObject();
     quadGO->transform()->setPosition(glm::vec3(100.0f, 300.0f, 0.0f));
@@ -320,25 +318,27 @@ int main() {
 
 
 
-    auto* canvasGo = mainScenePtr->createGameObject("Canvas");
-    auto* canvas = canvasGo->addComponent<dzemikk::Canvas>();
-    auto* canvasRect = canvasGo->rectTransform();
-    canvasRect->setSize({1920.0F, 1080.0F});
-
-    auto* buttonText = mainScenePtr->createGameObject("Text", canvasGo);
-    auto* buttonTextRect = buttonText->rectTransform();
-    buttonTextRect->setSize({0.0F, 0.0F});
-    buttonTextRect->setAnchorMin({0.0F, 0.0F});
-    buttonTextRect->setAnchorMax({1.0F, 1.0F});
-    buttonTextRect->setPosition({0.0F, 0.0F});
-    buttonTextRect->setPivot({0.5F, 0.5F});
-    auto* buttonTextRenderer = buttonText->addComponent<dzemikk::UITextRenderer>();
-    buttonTextRenderer->text = "DUPA";
-    buttonTextRenderer->font = font.get();
-    buttonTextRenderer->scale = 1.0F;
-    buttonTextRenderer->color = glm::vec3(1.0F, 1.0F, 1.0F);
-    buttonTextRenderer->horizontalAlign = dzemikk::UITextRenderer::HorizontalAlign::Center;
-    buttonTextRenderer->verticalAlign = dzemikk::UITextRenderer::VerticalAlign::Middle;
+    // auto* canvasGo = mainScenePtr->createGameObject("Canvas");
+    // auto* canvas = canvasGo->addComponent<dzemikk::Canvas>();
+    // auto* canvasRect = canvasGo->rectTransform();
+    // canvasRect->setSize({1920.0F, 1080.0F});
+    //
+    // auto* buttonText = mainScenePtr->createGameObject("Text", canvasGo);
+    // auto* buttonTextRect = buttonText->rectTransform();
+    // buttonTextRect->setSize({0.0F, 0.0F});
+    // buttonTextRect->setAnchorMin({0.0F, 0.0F});
+    // buttonTextRect->setAnchorMax({1.0F, 1.0F});
+    // buttonTextRect->setPosition({0.0F, 0.0F});
+    // buttonTextRect->setPivot({0.5F, 0.5F});
+    //
+    // auto* buttonTextRenderer = buttonText->addComponent<dzemikk::UITextRenderer>();
+    // buttonTextRenderer->text = "DUPA";
+    // buttonTextRenderer->fontAsset = font;
+    // buttonTextRenderer->font = font.get();
+    // buttonTextRenderer->scale = 1.0F;
+    // buttonTextRenderer->color = glm::vec3(1.0F, 1.0F, 1.0F);
+    // buttonTextRenderer->horizontalAlign = dzemikk::UITextRenderer::HorizontalAlign::Center;
+    // buttonTextRenderer->verticalAlign = dzemikk::UITextRenderer::VerticalAlign::Middle;
 
     /*
     auto* canvasGo = mainScenePtr->createGameObject("Canvas");
@@ -567,11 +567,15 @@ int main() {
         }
     });(
     */
-    // dzemikk::SceneSerializer sceneSerializer = dzemikk::SceneSerializer();
-    // nlohmann::json sceneJson = sceneSerializer.serialize(*mainScenePtr);
-    //
-    // std::shared_ptr<dzemikk::Scene> scene = std::make_shared<dzemikk::Scene>();
-    // sceneSerializer.deserializeInto(*scene, sceneJson, engine->getAssetManager());
+
+    dzemikk::SceneSerializer sceneSerializer = dzemikk::SceneSerializer();
+    nlohmann::json sceneJson = sceneSerializer.serialize(*mainScenePtr);
+
+    std::shared_ptr<dzemikk::Scene> scene = std::make_shared<dzemikk::Scene>();
+    sceneSerializer.deserializeInto(*scene, sceneJson, engine->getAssetManager());
+
+    engine->getSceneManager()->loadScene(scene);
+    engine->getSceneManager()->setActiveScene(scene);
 
     engine->start();
 

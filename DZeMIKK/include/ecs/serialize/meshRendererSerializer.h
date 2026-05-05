@@ -44,15 +44,15 @@ void to_json(nlohmann::json& json, const MeshRenderer& meshRenderer) {
 inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, AssetManager* assetManager) {
     static boost::uuids::string_generator uuidGenerator;
 
-    if (json.contains("id") && json["id"].is_string()) {
-        try {
-            meshRenderer.setId(uuidGenerator(json["id"].get<std::string>()));
-        } catch (const std::exception& e) {
-#if DZEMIKK_DEV_TOOLS
-            spdlog::error("Failed to parse UUID: {}", e.what());
-#endif
-        }
+    if (!json.contains("type") || !json["type"].is_string() || json["type"] != meshRenderer.typeName()) {
+        throw std::runtime_error("Invalid component type for MeshRenderer deserialization");
     }
+
+    if (!json.contains("id") || !json.contains("model") || !json.contains("color") || !json.contains("materials") || !json["materials"].is_array()) {
+        throw std::runtime_error("Missing fields for MeshRenderer deserialization");
+    }
+
+    meshRenderer.setId(uuidGenerator(json["id"].get<std::string>()));
 
     std::string modelPath = json.value("model", "");
     if (!modelPath.empty()) {

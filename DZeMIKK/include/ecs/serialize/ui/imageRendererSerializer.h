@@ -23,24 +23,23 @@ inline void to_json(nlohmann::json& j, const ImageRenderer& renderer) {
     }
 }
 
-inline void from_json(const nlohmann::json& j, ImageRenderer& renderer, AssetManager* assetManager) {
-    if (j.contains("id")) {
-        renderer.setId(boost::uuids::string_generator()(j["id"].get<std::string>()));
+inline void from_json(const nlohmann::json& json, ImageRenderer& renderer, AssetManager* assetManager) {
+    if (!json.contains("type") || !json["type"].is_string() || json["type"] != renderer.typeName()) {
+        throw std::runtime_error("Invalid component type for ImageRenderer deserialization");
     }
+    if (!json.contains("id") || !json.contains("color") || !json["color"].is_array() || !json.contains("meshPath")  || !json.contains("materialPath")) {
+        throw std::runtime_error("Missing fields for UICheckbox deserialization");
+        }
+    renderer.setId(boost::uuids::string_generator()(json["id"].get<std::string>()));
+    renderer.setColor(glm::vec4(json["color"][0], json["color"][1], json["color"][2], json["color"][3]));
 
-    if (j.contains("color") && j["color"].is_array()) {
-        renderer.setColor(glm::vec4(j["color"][0], j["color"][1], j["color"][2], j["color"][3]));
-    }
+    std::string meshPath = json.value("meshPath", "");
+    renderer.setMesh(assetManager->get<Mesh>(meshPath));
 
-    if (j.contains("meshPath") && !j["meshPath"].is_null()) {
-        renderer.setMesh(assetManager->get<Mesh>(j["meshPath"]));
-    }
-
-    if (j.contains("materialPath") && !j["materialPath"].is_null()) {
-        Material* material = nullptr;
-        material->setShader(assetManager->get<Shader>(j["materialPath"]));
-        renderer.setMaterial(material);
-    }
+    std::string shaderPath = json.value("materialPath", "");
+    Material* material = nullptr;
+    material->setShader(assetManager->get<Shader>(shaderPath));
+    renderer.setMaterial(material);
 }
 
 inline void registerImageRendererSerializer(ComponentSerializerRegistry& registry) {

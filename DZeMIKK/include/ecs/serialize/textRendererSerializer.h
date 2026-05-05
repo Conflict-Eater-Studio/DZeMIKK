@@ -29,27 +29,24 @@ namespace dzemikk {
     inline void from_json(const nlohmann::json& json, TextRenderer& textRenderer, AssetManager* assetManager) {
         static boost::uuids::string_generator uuidGenerator;
 
-        if (json.contains("id") && json["id"].is_string()) {
-            try {
-                textRenderer.setId(uuidGenerator(json["id"].get<std::string>()));
-            } catch (const std::exception& e) {
-    #if DZEMIKK_DEV_TOOLS
-                spdlog::error("Failed to parse UUID: {}", e.what());
-    #endif
-            }
+        if (!json.contains("type") || !json["type"].is_string() || json["type"] != textRenderer.typeName()) {
+            throw std::runtime_error("Invalid component type for TextRenderer deserialization");
         }
 
+        if (!json.contains("id") || !json.contains("text") || !json.contains("scale") || !json.contains("color") || json["color"].size() < 3 || !json["color"].is_array() || !json.contains("font")) {
+            throw std::runtime_error("Missing fields for Transform deserialization");
+        }
+
+        textRenderer.setId(uuidGenerator(json["id"].get<std::string>()));
         textRenderer.text = json.value("text", "Hello");
         textRenderer.scale = json.value("scale", 1.0f);
 
-        if (json.contains("color") && json["color"].is_array() && json["color"].size() >= 3) {
-            const auto& c = json["color"];
-            textRenderer.color = glm::vec3(
-                c[0].get<float>(),
-                c[1].get<float>(),
-                c[2].get<float>()
+        const auto& c = json["color"];
+        textRenderer.color = glm::vec3(
+            c[0].get<float>(),
+            c[1].get<float>(),
+            c[2].get<float>()
             );
-        }
 
         std::string fontPath = json.value("font", "");
         if (!fontPath.empty()) {

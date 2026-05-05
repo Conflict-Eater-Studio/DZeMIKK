@@ -38,17 +38,18 @@ namespace dzemikk {
     inline void from_json(const nlohmann::json& json, SkinnedMeshRenderer& renderer, AssetManager* assetManager) {
         static boost::uuids::string_generator uuidGenerator;
 
-        if (json.contains("id") && json["id"].is_string()) {
-            try {
-                renderer.setId(uuidGenerator(json["id"].get<std::string>()));
-            } catch (const std::exception& e) {
-    #if DZEMIKK_DEV_TOOLS
-                spdlog::error("Exception parsing SkinnedMeshRenderer UUID: {}", e.what());
-    #endif
-            }
+        if (!json.contains("type") || !json["type"].is_string() || json["type"] != renderer.typeName()) {
+            throw std::runtime_error("Invalid component type for SkinnedMeshRenderer deserialization");
         }
 
+        if (!json.contains("id") || !json.contains("model") || !json.contains("materials") || !json["materials"].is_array()) {
+            throw std::runtime_error("Missing fields for SkinnedMeshRenderer deserialization");
+
+        }
+
+        renderer.setId(uuidGenerator(json["id"].get<std::string>()));
         std::string modelPath = json.value("model", "");
+
         if (!modelPath.empty()) {
             renderer.setModel(assetManager->get<Model>(modelPath));
         }
@@ -59,19 +60,13 @@ namespace dzemikk {
                 if (materialsJson[i].is_string()) {
                     std::string shaderPath = materialsJson[i].get<std::string>();
                     if (!shaderPath.empty()) {
-                        try {
                             Material* material = new Material();
                             material->setShader(assetManager->get<Shader>(shaderPath));
                             renderer.setMaterial(i, material);
-                        } catch (const std::exception& e) {
-    #if DZEMIKK_DEV_TOOLS
-                            spdlog::error("Exception loading material for SkinnedMeshRenderer: {}", e.what());
-    #endif
                         }
                     }
                 }
             }
-        }
     }
 
     inline void registerSkinnedMeshRendererSerializer(ComponentSerializerRegistry& registry) {

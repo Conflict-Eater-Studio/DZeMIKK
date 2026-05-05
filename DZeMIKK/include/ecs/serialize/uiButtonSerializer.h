@@ -33,7 +33,7 @@ namespace dzemikk {
     inline void from_json(const nlohmann::json& json, UIButton& button) {
         static boost::uuids::string_generator uuidGenerator;
 
-        if (!json.contains("type") || !json["type"].is_string() || json["type"] != "UIButton") {
+        if (!json.contains("type") || !json["type"].is_string() || json["type"] != button.typeName()) {
             throw std::runtime_error("Invalid component type for UIButton deserialization");
         }
 
