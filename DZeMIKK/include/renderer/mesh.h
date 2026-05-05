@@ -174,7 +174,14 @@ class Mesh: public IGpuUploadable {
 
 #pragma endregion
 
+    /**
+     * @brief Uploads resource data to the GPU.
+     *
+     * Transfers CPU-side asset data into GPU memory so it can be used
+     * for rendering. Called after the asset has been fully loaded.
+     */
     void uploadToGPU() override {};
+
   protected:
 #pragma region GPU resources
 
