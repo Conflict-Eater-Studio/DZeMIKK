@@ -8,62 +8,62 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCube() {
     vertices.reserve(36);
 
     auto add = [&](glm::vec3 pos, glm::vec3 normal, glm::vec2 uv) {
-        vertices.push_back({pos, normal, uv});
+        vertices.push_back(StaticVertex(pos, normal, uv));
     };
 
     // --- Front (+Z)
-    add({-0.5f, -0.5f, 0.5f}, {0, 0, 1}, {0, 0});
-    add({0.5f, -0.5f, 0.5f}, {0, 0, 1}, {1, 0});
-    add({0.5f, 0.5f, 0.5f}, {0, 0, 1}, {1, 1});
+    add({-0.5F, -0.5F, 0.5F}, {0, 0, 1}, {0, 0});
+    add({0.5F, -0.5F, 0.5F}, {0, 0, 1}, {1, 0});
+    add({0.5F, 0.5F, 0.5F}, {0, 0, 1}, {1, 1});
 
-    add({0.5f, 0.5f, 0.5f}, {0, 0, 1}, {1, 1});
-    add({-0.5f, 0.5f, 0.5f}, {0, 0, 1}, {0, 1});
-    add({-0.5f, -0.5f, 0.5f}, {0, 0, 1}, {0, 0});
+    add({0.5F, 0.5F, 0.5F}, {0, 0, 1}, {1, 1});
+    add({-0.5F, 0.5F, 0.5F}, {0, 0, 1}, {0, 1});
+    add({-0.5F, -0.5F, 0.5F}, {0, 0, 1}, {0, 0});
 
     // --- Back (-Z)
-    add({-0.5f, -0.5f, -0.5f}, {0, 0, -1}, {1, 0});
-    add({0.5f, 0.5f, -0.5f}, {0, 0, -1}, {0, 1});
-    add({0.5f, -0.5f, -0.5f}, {0, 0, -1}, {0, 0});
+    add({-0.5F, -0.5F, -0.5F}, {0, 0, -1}, {1, 0});
+    add({0.5F, 0.5F, -0.5F}, {0, 0, -1}, {0, 1});
+    add({0.5F, -0.5F, -0.5F}, {0, 0, -1}, {0, 0});
 
-    add({0.5f, 0.5f, -0.5f}, {0, 0, -1}, {0, 1});
-    add({-0.5f, -0.5f, -0.5f}, {0, 0, -1}, {1, 0});
-    add({-0.5f, 0.5f, -0.5f}, {0, 0, -1}, {1, 1});
+    add({0.5F, 0.5F, -0.5F}, {0, 0, -1}, {0, 1});
+    add({-0.5F, -0.5F, -0.5F}, {0, 0, -1}, {1, 0});
+    add({-0.5F, 0.5F, -0.5F}, {0, 0, -1}, {1, 1});
 
     // --- Left (-X)
-    add({-0.5f, -0.5f, -0.5f}, {-1, 0, 0}, {0, 0});
-    add({-0.5f, -0.5f, 0.5f}, {-1, 0, 0}, {1, 0});
-    add({-0.5f, 0.5f, 0.5f}, {-1, 0, 0}, {1, 1});
+    add({-0.5F, -0.5F, -0.5F}, {-1, 0, 0}, {0, 0});
+    add({-0.5F, -0.5F, 0.5F}, {-1, 0, 0}, {1, 0});
+    add({-0.5F, 0.5F, 0.5F}, {-1, 0, 0}, {1, 1});
 
-    add({-0.5f, 0.5f, 0.5f}, {-1, 0, 0}, {1, 1});
-    add({-0.5f, 0.5f, -0.5f}, {-1, 0, 0}, {0, 1});
-    add({-0.5f, -0.5f, -0.5f}, {-1, 0, 0}, {0, 0});
+    add({-0.5F, 0.5F, 0.5F}, {-1, 0, 0}, {1, 1});
+    add({-0.5F, 0.5F, -0.5F}, {-1, 0, 0}, {0, 1});
+    add({-0.5F, -0.5F, -0.5F}, {-1, 0, 0}, {0, 0});
 
     // --- Right (+X)
-    add({0.5f, -0.5f, -0.5f}, {1, 0, 0}, {1, 0});
-    add({0.5f, 0.5f, 0.5f}, {1, 0, 0}, {0, 1});
-    add({0.5f, -0.5f, 0.5f}, {1, 0, 0}, {0, 0});
+    add({0.5F, -0.5F, -0.5F}, {1, 0, 0}, {1, 0});
+    add({0.5F, 0.5F, 0.5F}, {1, 0, 0}, {0, 1});
+    add({0.5F, -0.5F, 0.5F}, {1, 0, 0}, {0, 0});
 
-    add({0.5f, 0.5f, 0.5f}, {1, 0, 0}, {0, 1});
-    add({0.5f, -0.5f, -0.5f}, {1, 0, 0}, {1, 0});
-    add({0.5f, 0.5f, -0.5f}, {1, 0, 0}, {1, 1});
+    add({0.5F, 0.5F, 0.5F}, {1, 0, 0}, {0, 1});
+    add({0.5F, -0.5F, -0.5F}, {1, 0, 0}, {1, 0});
+    add({0.5F, 0.5F, -0.5F}, {1, 0, 0}, {1, 1});
 
     // --- Top (+Y)
-    add({-0.5f, 0.5f, -0.5f}, {0, 1, 0}, {0, 0});
-    add({-0.5f, 0.5f, 0.5f}, {0, 1, 0}, {0, 1});
-    add({0.5f, 0.5f, 0.5f}, {0, 1, 0}, {1, 1});
+    add({-0.5F, 0.5F, -0.5F}, {0, 1, 0}, {0, 0});
+    add({-0.5F, 0.5F, 0.5F}, {0, 1, 0}, {0, 1});
+    add({0.5F, 0.5F, 0.5F}, {0, 1, 0}, {1, 1});
 
-    add({0.5f, 0.5f, 0.5f}, {0, 1, 0}, {1, 1});
-    add({0.5f, 0.5f, -0.5f}, {0, 1, 0}, {1, 0});
-    add({-0.5f, 0.5f, -0.5f}, {0, 1, 0}, {0, 0});
+    add({0.5F, 0.5F, 0.5F}, {0, 1, 0}, {1, 1});
+    add({0.5F, 0.5F, -0.5F}, {0, 1, 0}, {1, 0});
+    add({-0.5F, 0.5F, -0.5F}, {0, 1, 0}, {0, 0});
 
     // --- Bottom (-Y)
-    add({-0.5f, -0.5f, -0.5f}, {0, -1, 0}, {0, 1});
-    add({0.5f, -0.5f, 0.5f}, {0, -1, 0}, {1, 0});
-    add({-0.5f, -0.5f, 0.5f}, {0, -1, 0}, {0, 0});
+    add({-0.5F, -0.5F, -0.5F}, {0, -1, 0}, {0, 1});
+    add({0.5F, -0.5F, 0.5F}, {0, -1, 0}, {1, 0});
+    add({-0.5F, -0.5F, 0.5F}, {0, -1, 0}, {0, 0});
 
-    add({0.5f, -0.5f, 0.5f}, {0, -1, 0}, {1, 0});
-    add({-0.5f, -0.5f, -0.5f}, {0, -1, 0}, {0, 1});
-    add({0.5f, -0.5f, -0.5f}, {0, -1, 0}, {1, 1});
+    add({0.5F, -0.5F, 0.5F}, {0, -1, 0}, {1, 0});
+    add({-0.5F, -0.5F, -0.5F}, {0, -1, 0}, {0, 1});
+    add({0.5F, -0.5F, -0.5F}, {0, -1, 0}, {1, 1});
 
     auto mesh = std::make_unique<StaticMesh>();
     mesh->create(vertices, {});
@@ -73,11 +73,13 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCube() {
 
 std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createQuad() {
     std::vector<StaticVertex> vertices = {
-        {{0, 0, 0}, {0, 0, 1}, {0, 0}}, {{1, 0, 0}, {0, 0, 1}, {1, 0}},
-        {{1, 1, 0}, {0, 0, 1}, {1, 1}},
+        StaticVertex({0, 0, 0}, {0, 0, 1}, {0, 0}),
+        StaticVertex({1, 0, 0}, {0, 0, 1}, {1, 0}),
+        StaticVertex({1, 1, 0}, {0, 0, 1}, {1, 1}),
 
-        {{1, 1, 0}, {0, 0, 1}, {1, 1}}, {{0, 1, 0}, {0, 0, 1}, {0, 1}},
-        {{0, 0, 0}, {0, 0, 1}, {0, 0}},
+        StaticVertex({1, 1, 0}, {0, 0, 1}, {1, 1}), 
+        StaticVertex({0, 1, 0}, {0, 0, 1}, {0, 1}),
+        StaticVertex({0, 0, 0}, {0, 0, 1}, {0, 0}),
     };
 
     auto mesh = std::make_unique<StaticMesh>();
@@ -89,7 +91,7 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createQuad() {
 std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createSphere() {
     const int stacks = 16;
     const int slices = 16;
-    const float radius = 0.5f;
+    const float radius = 0.5F;
 
     std::vector<StaticVertex> vertices;
     std::vector<unsigned int> indices;
@@ -115,7 +117,7 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createSphere() {
             // UV mapping (equirectangular)
             glm::vec2 uv(u, v);
 
-            vertices.push_back({pos, normal, uv});
+            vertices.push_back(StaticVertex(pos, normal, uv));
         }
     }
 
@@ -146,16 +148,16 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
     const int segments = 24;
     const int rings = 12;
 
-    const float radius = 0.5f;
-    const float height = 1.0f;
-    float halfH = height * 0.5f;
+    const float radius = 0.5F;
+    const float height = 1.0F;
+    float halfH = height * 0.5F;
 
     std::vector<StaticVertex> vertices;
     std::vector<unsigned int> indices;
 
     auto addVertex = [&](glm::vec3 pos, glm::vec2 uv) {
         glm::vec3 normal = glm::normalize(pos);
-        vertices.push_back({pos, normal, uv});
+        vertices.push_back(StaticVertex(pos, normal, uv));
     };
 
     for (int i = 0; i <= 1; i++) {
@@ -195,7 +197,7 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
             glm::vec3 pos(cos(theta) * cos(phi) * radius, (sin(phi) * radius) + halfH,
                           sin(theta) * cos(phi) * radius);
 
-            glm::vec2 uv(u, 1.0f - v);
+            glm::vec2 uv(u, 1.0F - v);
 
             addVertex(pos, uv);
         }

@@ -57,8 +57,13 @@ template <typename T> class AssetHandle {
         return isValid();
     }
 
+    /**
+     * @brief Returns asset path associated with this handle.
+     *
+     * @return Path string.
+     */
     [[nodiscard]] std::string getAssetPath() const {
-        return _path;
+        return *_path;
     }
 
   private:
@@ -68,6 +73,12 @@ template <typename T> class AssetHandle {
      * Does not affect asset lifetime.
      */
     std::weak_ptr<T> _ptr;
+
+    /**
+     * @brief Shared storage of asset path.
+     *
+     * Shared to allow cheap copying of handles.
+     */
     std::shared_ptr<AssetPath> _path;
 };
 } // namespace dzemikk

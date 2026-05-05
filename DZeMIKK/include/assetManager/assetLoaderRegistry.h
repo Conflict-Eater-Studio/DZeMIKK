@@ -31,15 +31,7 @@ class AssetLoaderRegistry {
      * @tparam T Asset type.
      * @return IAssetHandler<T>* Pointer to handler or nullptr if not registered.
      */
-    template <typename T> 
-    IAssetHandler<T>* get() const{
-        auto it = _handlers.find(typeid(T));
-        if (it == _handlers.end()) {
-            return nullptr;
-        }
-
-        return static_cast<IAssetHandler<T>*>(it->second.get());
-    }
+    template <typename T> IAssetHandler<T>* get() const;
     
     /**
      * @brief Registers a handler for a given asset type.
@@ -47,14 +39,7 @@ class AssetLoaderRegistry {
      * @tparam T Asset type.
      * @param handler Unique pointer to handler instance.
      */
-    template <typename T> 
-    void registerHandler(std::unique_ptr<IAssetHandler<T>> handler) {
-        if (!handler) {
-            return;
-        }
-
-        _handlers[typeid(T)] = std::move(handler);
-    }
+    template <typename T> void registerHandler(std::unique_ptr<IAssetHandler<T>> handler);
 
     /**
      * @brief Removes all registered handlers.
@@ -83,6 +68,25 @@ class AssetLoaderRegistry {
      */
     std::unordered_map<std::type_index, std::unique_ptr<IAssetHandlerBase>> _handlers;
 };
+
+// ================================== IMPLEMENTATION ==================================
+template <typename T> IAssetHandler<T>* AssetLoaderRegistry::get() const {
+    auto it = _handlers.find(typeid(T));
+    if (it == _handlers.end()) {
+        return nullptr;
+    }
+
+    return static_cast<IAssetHandler<T>*>(it->second.get());
+}
+
+template <typename T>
+void AssetLoaderRegistry::registerHandler(std::unique_ptr<IAssetHandler<T>> handler) {
+    if (!handler) {
+        return;
+    }
+
+    _handlers[typeid(T)] = std::move(handler);
+}
 
 } // namespace dzemikk
 

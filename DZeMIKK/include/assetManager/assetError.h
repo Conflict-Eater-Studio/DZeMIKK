@@ -1,6 +1,8 @@
 #ifndef DZEMIKK_ASSET_ERROR_H
 #define DZEMIKK_ASSET_ERROR_H
 
+#include <cstdint>
+
 namespace dzemikk {
 /**
  * @brief Represents possible errors that can occur during asset operations.

@@ -62,7 +62,7 @@ dzemikk::MeshBuilder::RawSkinnedMesh dzemikk::MeshBuilder::buildSkinnedMeshRaw(c
         }
 
         vertex.boneIDs = {0, 0, 0, 0};
-        vertex.weights = {0.0f, 0.0f, 0.0f, 0.0f};
+        vertex.weights = {0.0F, 0.0F, 0.0F, 0.0F};
     }
 
     result.indices.reserve(aiMesh->mNumFaces * 3);

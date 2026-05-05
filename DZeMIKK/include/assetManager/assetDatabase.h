@@ -40,23 +40,7 @@ class AssetDatabase {
      * @throws std::runtime_error if type mismatch occurs.
      */
     template <typename T> 
-    std::shared_ptr<T> get(const std::string& path) const {
-        std::lock_guard lock(_mutex);
-        auto it = _assets.find(path);
-        if (it == _assets.end()) {
-            return nullptr;
-        }
-
-        if (it->second.type != typeid(T)) {
-            throw std::runtime_error("Asset type mismatch: " + path);
-        }
-
-#if DZEMIKK_DEV_TOOLS
-        spdlog::info("[AssetDatabase] Cache hit: {}", path);
-#endif
-
-        return std::static_pointer_cast<T>(it->second.handle);
-    }
+    std::shared_ptr<T> get(const std::string& path) const;
 
     /**
      * @brief Stores an asset in the database.
@@ -65,22 +49,7 @@ class AssetDatabase {
      * @param path Asset path key.
      * @param asset Shared pointer to asset.
      */
-    template <typename T> void store(const std::string& path, std::shared_ptr<T> asset) {
-        std::lock_guard lock(_mutex);
-        if (!asset) {
-            return;
-        }
-
-        Entry entry;
-        entry.handle = asset;
-        entry.type = typeid(T);
-
-        _assets[path] = std::move(entry);
-
-#if DZEMIKK_DEV_TOOLS
-        spdlog::info("[AssetDatabase] Stored: {}", path);
-#endif
-    }
+    template <typename T> void store(const std::string& path, std::shared_ptr<T> asset);
 
     /**
      * @brief Removes an asset from the database.
@@ -92,7 +61,6 @@ class AssetDatabase {
      */
     void clear();
 
-    
     /**
      * @brief Returns the stored type of an asset.
      *
@@ -110,7 +78,14 @@ class AssetDatabase {
      */
     [[nodiscard]] bool contains(const std::string& path) const;
 
-    enum class AssetState { Loading, Ready, Failed };
+     /**
+     * @brief Represents lifecycle state of an asset.
+     */
+    enum class AssetState : std::uint8_t {
+        Loading,
+        Ready,
+        Failed
+    };
 
     /**
      * @brief Internal representation of a stored asset.
@@ -125,60 +100,47 @@ class AssetDatabase {
         AssetState state = AssetState::Loading;
     };
 
-    template <typename T> void setReady(const std::string& path, std::shared_ptr<T> asset) {
-        std::lock_guard lock(_mutex);
-        auto it = _assets.find(path);
-        if (it == _assets.end())
-            return;
+    /**
+     * @brief Marks asset as READY and assigns loaded data.
+     *
+     * @tparam T Asset type.
+     * @param path Asset path key.
+     * @param asset Loaded asset.
+     *
+     * @note Used by AssetManager after successful load.
+     * @warning Overwrites previous handle (old references may become stale).
+     */
+    template <typename T> void setReady(const std::string& path, std::shared_ptr<T> asset);
 
-        it->second.handle = asset;
-        it->second.type = typeid(T);
-        it->second.state = AssetState::Ready;
+    /**
+     * @brief Inserts placeholder entry in LOADING state.
+     *
+     * @tparam T Asset type.
+     * @param path Asset path key.
+     *
+     * @note Used before async loading begins.
+     * @warning Overwrites existing entry
+     */
+    template <typename T> void insertLoading(const std::string& path);
 
-#if DZEMIKK_DEV_TOOLS
-        spdlog::info("[AssetDatabase] Set READY: {}", path);
-#endif
-    }
+    /**
+     * @brief Marks asset as FAILED and clears its data.
+     *
+     * @param path Asset path key.
+     *
+     * @note After this call, handle is nullptr.
+     */
+    void setFailed(const std::string& path);
 
-    template <typename T> void insertLoading(const std::string& path) {
-        std::lock_guard lock(_mutex);
-        Entry entry;
-        entry.type = typeid(T);
-        entry.state = AssetState::Loading;
-
-        _assets[path] = std::move(entry);
-
-#if DZEMIKK_DEV_TOOLS
-        spdlog::info("[AssetDatabase] Insert LOADING: {}", path);
-#endif
-    }
-
-    void setFailed(const std::string& path) {
-        std::lock_guard lock(_mutex);
-        auto it = _assets.find(path);
-        if (it == _assets.end()) {
-            return;
-        }
-
-        it->second.state = AssetState::Failed;
-        it->second.handle.reset();
-
-#if DZEMIKK_DEV_TOOLS
-        spdlog::error("[AssetDatabase] Set FAILED: {}", path);
-#endif
-    }
-
-    Entry* getEntry(const std::string& path) {
-        std::lock_guard lock(_mutex);
-        auto it = _assets.find(path);
-        if (it == _assets.end())
-            return nullptr;
-
-        return &it->second;
-    }
+    /**
+     * @brief Retrieves pointer to internal entry.
+     *
+     * @param path Asset path key.
+     * @return Pointer to Entry or nullptr if not found.
+     */
+    Entry* getEntry(const std::string& path);
 
   private:
-    
     /**
      * @brief Asset storage container.
      *
@@ -188,6 +150,72 @@ class AssetDatabase {
     std::unordered_map<std::string, Entry> _assets;
     mutable std::mutex _mutex;
 };
+
+
+// ================================== IMPLEMENTATION ==================================
+template <typename T> std::shared_ptr<T> AssetDatabase::get(const std::string& path) const {
+    std::lock_guard lock(_mutex);
+    auto it = _assets.find(path);
+    if (it == _assets.end()) {
+        return nullptr;
+    }
+
+    if (it->second.type != typeid(T)) {
+        throw std::runtime_error("Asset type mismatch: " + path);
+    }
+
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[AssetDatabase] Cache hit: {}", path);
+#endif
+
+    return std::static_pointer_cast<T>(it->second.handle);
+}
+
+template <typename T> void AssetDatabase::store(const std::string& path, std::shared_ptr<T> asset) {
+    std::lock_guard lock(_mutex);
+    if (!asset) {
+        return;
+    }
+
+    Entry entry;
+    entry.handle = asset;
+    entry.type = typeid(T);
+
+    _assets[path] = std::move(entry);
+
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[AssetDatabase] Stored: {}", path);
+#endif
+}
+
+template <typename T> void AssetDatabase::setReady(const std::string& path, std::shared_ptr<T> asset) {
+    std::lock_guard lock(_mutex);
+    auto it = _assets.find(path);
+    if (it == _assets.end()) {
+        return;
+    }
+
+    it->second.handle = asset;
+    it->second.type = typeid(T);
+    it->second.state = AssetState::Ready;
+
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[AssetDatabase] Set READY: {}", path);
+#endif
+}
+
+template <typename T> void AssetDatabase::insertLoading(const std::string& path) {
+    std::lock_guard lock(_mutex);
+    Entry entry;
+    entry.type = typeid(T);
+    entry.state = AssetState::Loading;
+
+    _assets[path] = std::move(entry);
+
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[AssetDatabase] Insert LOADING: {}", path);
+#endif
+}
 
 } // namespace dzemikk
 #endif // DZEMIKK_ASSET_DATABASE_H

@@ -121,6 +121,19 @@ FMOD::System* dzemikk::AssetManager::getFMODSystem() const{
     return _system;
 }
 
+void dzemikk::AssetManager::processGpuUploads() {
+    std::lock_guard lock(_gpuMutex);
+
+    while (!_gpuUploadQueue.empty()) {
+        auto gpu = _gpuUploadQueue.front();
+        _gpuUploadQueue.pop();
+
+        if (gpu) {
+            gpu->uploadToGPU();
+        }
+    }
+}
+
 void dzemikk::AssetManager::registerHandlers() {
     _loaders.registerHandler<Mesh>(std::make_unique<MeshHandler>());
     _loaders.registerHandler<Shader>(std::make_unique<ShaderHandler>());

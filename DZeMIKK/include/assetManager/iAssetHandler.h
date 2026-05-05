@@ -39,7 +39,7 @@ template <typename T> struct AssetResult {
  * such as unloading assets without knowing their concrete type.
  */
 struct IAssetHandlerBase {
-    enum class LoadExecutionMode { Sync, Async };
+    enum class LoadExecutionMode : std::uint8_t { Sync, Async };
     virtual ~IAssetHandlerBase() = default;
     IAssetHandlerBase() = default;
 
@@ -86,7 +86,7 @@ class IAssetHandler : public IAssetHandlerBase {
          */
         using Result = AssetResult<T>;
 
-        virtual ~IAssetHandler() = default;
+        ~IAssetHandler() override = default;
 
         /**
          * @brief Default constructor.
@@ -123,6 +123,12 @@ class IAssetHandler : public IAssetHandlerBase {
          */
         virtual void unload(Handle& asset) = 0;
 
+        /**
+         * @brief Unloads a type-erased asset.
+         *
+         * Converts void pointer back to typed asset and forwards
+         * it to typed unload implementation.
+         */
         void unloadUntyped(std::shared_ptr<void> asset, const std::string& path) override {
             auto typed = std::static_pointer_cast<T>(asset);
             Handle handle(typed, path);

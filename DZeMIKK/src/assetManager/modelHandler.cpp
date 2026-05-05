@@ -27,10 +27,11 @@ bool dzemikk::ModelHandler::isBoneNode(const std::string& name, const dzemikk::S
 void dzemikk::ModelHandler::printNodeHierarchyForMesh(aiNode* node, const aiScene* scene,
                                const dzemikk::Skeleton& skeleton, int depth) {
 #if DZEMIKK_DEV_TOOLS
-    if (!node)
+    if (!node) {
         return;
+    }
 
-    std::string indent(depth * 2, ' ');
+    std::string indent(static_cast<std::size_t>(depth * 2), ' ');
     std::string name = node->mName.C_Str();
 
     bool isHelper = isAssimpHelperNode(name);
@@ -39,12 +40,15 @@ void dzemikk::ModelHandler::printNodeHierarchyForMesh(aiNode* node, const aiScen
 
     std::string line = indent + name;
 
-    if (isHelper)
+    if (isHelper) {
         line += " [ASSIMP_HELPER]";
-    if (isBone)
+    }
+    if (isBone) {
         line += " [BONE]";
-    if (hasMeshes)
+    }
+    if (hasMeshes) {
         line += " [MESHES: " + std::to_string(node->mNumMeshes) + "]";
+    }
 
     spdlog::info("[ModelHandler] {}", line);
 
@@ -110,7 +114,7 @@ dzemikk::ModelHandler::loadModelFromFile(const std::string& path,
 
     auto model = std::make_shared<Model>();
 
-    auto skeleton = SkeletonBuilder::build(scene);
+    auto *skeleton = SkeletonBuilder::build(scene);
     model->setSkeleton(std::shared_ptr<Skeleton>(skeleton));
 
 

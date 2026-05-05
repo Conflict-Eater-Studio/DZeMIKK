@@ -48,8 +48,9 @@ dzemikk::ShaderHandler::loadShaderFromFile(const std::string& path,
 }
 
 bool dzemikk::ShaderHandler::reload(Handle& asset, const std::string& path) {
-    if (!asset)
+    if (!asset) {
         return false;
+    }
 
     return reloadShader(path, *asset.get());
 }

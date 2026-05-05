@@ -49,17 +49,24 @@ class ModelHandler : public IAssetHandler<Model> {
     void unload(Handle& asset) override;
 
   private:
-
-    enum LoadMode { 
+    /**
+     * @brief Controls loading scope.
+     */
+    enum LoadMode : std::uint8_t { 
         MeshOnly, 
         All,
     };
     
 #pragma region Debug
+    /** @brief Checks if node is Assimp helper node */
     static bool isAssimpHelperNode(const std::string& name);
+
+    /** @brief Checks if node is bone in skeleton */
     static bool isBoneNode(const std::string& name, const dzemikk::Skeleton& skeleton);
+
+    /** @brief Debug print of scene node hierarchy */
     static void printNodeHierarchyForMesh(aiNode* node, const aiScene* scene,
-                                   const dzemikk::Skeleton& skeleton, int depth = 0);
+                                          const dzemikk::Skeleton& skeleton, int depth = 0);
 #pragma endregion
 
     /**

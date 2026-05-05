@@ -20,7 +20,7 @@ void dzemikk::SkeletonBuilder::buildSkeleton(aiNode* node, Skeleton& skeleton, i
 }
 
 dzemikk::Skeleton* dzemikk::SkeletonBuilder::build(const aiScene* scene) {
-    auto skeleton = new Skeleton();
+    auto *skeleton = new Skeleton();
     buildSkeleton(scene->mRootNode, *skeleton, -1);
     applyBoneOffsets(scene, *skeleton);
 
@@ -32,8 +32,8 @@ dzemikk::Skeleton* dzemikk::SkeletonBuilder::build(const aiScene* scene) {
 glm::mat4 dzemikk::SkeletonBuilder::aiToGlm(const aiMatrix4x4& m) {
     // Assimp uses row-major matrices, GLM uses column-major.
     // This is a direct transposition mapping.
-    return glm::mat4(m.a1, m.b1, m.c1, m.d1, m.a2, m.b2, m.c2, m.d2, m.a3, m.b3, m.c3, m.d3, m.a4,
-                     m.b4, m.c4, m.d4);
+    return {m.a1, m.b1, m.c1, m.d1, m.a2, m.b2, m.c2, m.d2,
+            m.a3, m.b3, m.c3, m.d3, m.a4, m.b4, m.c4, m.d4};
 }
 
 void dzemikk::SkeletonBuilder::applyBoneOffsets(const aiScene* scene, Skeleton& skeleton) {

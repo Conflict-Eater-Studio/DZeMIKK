@@ -1,10 +1,11 @@
 #include "assetManager/threadPool.h"
 
-dzemikk::ThreadPool::ThreadPool(size_t threadCount) : _running(true), _threadCount(threadCount) {
+dzemikk::ThreadPool::ThreadPool(size_t threadCount) : _threadCount(threadCount) {
     _workers.reserve(threadCount);
 }
 
 void dzemikk::ThreadPool::start() {
+    _running = true;
     for (size_t i = 0; i < std::thread::hardware_concurrency(); i++) {
         _workers.emplace_back([this]() {
             while (true) {
@@ -15,8 +16,9 @@ void dzemikk::ThreadPool::start() {
 
                     _cv.wait(lock, [this]() { return !_jobs.empty() || !_running; });
 
-                    if (!_running && _jobs.empty())
+                    if (!_running && _jobs.empty()) {
                         return;
+                    }
 
                     job = std::move(_jobs.front());
                     _jobs.pop();
@@ -46,8 +48,9 @@ void dzemikk::ThreadPool::stop() {
     _cv.notify_all();
 
     for (auto& worker : _workers) {
-        if (worker.joinable())
+        if (worker.joinable()) {
             worker.join();
+        }
     }
 
     _workers.clear();
