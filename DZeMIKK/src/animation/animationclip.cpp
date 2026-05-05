@@ -5,7 +5,6 @@
 #include <assimp/anim.h>
 
 #include "animation/animationclip.h"
-#include "animation/animationtrack.h"
 #include "animation/floattrack.h"
 #include "animation/vectortrack.h"
 #include "animation/quaterniontrack.h"
@@ -49,15 +48,19 @@ BoneTrack* AnimationClip::addBoneTrack() {
 }
 
 void AnimationClip::apply(float timeInSeconds) const {
-    float time = timeInSeconds * getTickrate();
-    float keyframe = fmod(time, getTickDuration());
+    float time = timeInSeconds * _ticksPerSecond;
 
     if (_tracks.empty()) {
-#if DZEMIKK_DEV_TOOLS
-        spdlog::warn("AnimationClip has no tracks!");
-#endif
         return;
     }
+
+    float keyframe = time;
+    if (_loop) {
+        keyframe = fmod(time, _durationInTicks);
+    } else if (_durationInTicks > 0.0f && time > _durationInTicks) {
+        keyframe = _durationInTicks;
+    }
+
     for (auto& track : _tracks) {
         track->apply(keyframe);
     }
@@ -128,6 +131,12 @@ std::shared_ptr<AnimationClip> AnimationClip::fromAssimp(aiAnimation* animation)
 #endif
 
     return clip;
+}
+void AnimationClip::setLoop(bool loop) {
+    _loop = loop;
+}
+bool AnimationClip::isLoop() const {
+    return _loop;
 }
 }
 

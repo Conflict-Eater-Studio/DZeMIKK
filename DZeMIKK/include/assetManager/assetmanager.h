@@ -5,6 +5,10 @@
 #include <spdlog/spdlog.h>
 #endif
 
+#include "assetManager/assetDatabase.h"
+#include "assetManager/assetLoaderRegistry.h"
+#include "assetManager/primitiveMeshLibrary.h"
+#include "assetManager/resourceIndex.h"
 #include "core/iEngineModule.h"
 
 #include <fmod/include/fmod/fmod.hpp>
@@ -76,8 +80,7 @@ class AssetManager : public IEngineModule {
      * @note Blocks if asset is not yet loaded.
      * @note May reuse in-flight async load if already running.
      */
-    template <typename T> 
-    AssetHandle<T> get(const std::string& path);
+    template <typename T> AssetHandle<T> get(const std::string& path);
 
     /**
      * @brief Asynchronously loads an asset (future-based API).
@@ -102,8 +105,7 @@ class AssetManager : public IEngineModule {
      *
      * @note Keeps handle valid, updates underlying resource.
      */
-    template <typename T> 
-    AssetHandle<T> reload(const std::string& path);
+    template <typename T> AssetHandle<T> reload(const std::string& path);
 
     /**
      * @brief Removes asset from cache.
@@ -149,7 +151,7 @@ class AssetManager : public IEngineModule {
 
     /** @brief Resource path resolver */
     ResourceIndex _resources;
-      
+
     /** @brief Built-in primitives */
     PrimitiveMeshLibrary _primitiveMeshLibrary;
 

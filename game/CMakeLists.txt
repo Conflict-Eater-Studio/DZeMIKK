@@ -2,6 +2,10 @@ project(Game LANGUAGES CXX)
 
 add_executable(game
                 src/main.cpp
+                src/map/HexChunk.cpp
+                src/map/grid.cpp
+                src/scripts/world/world.cpp
+                src/main.cpp
 )
 target_include_directories(game
         PUBLIC
@@ -12,10 +16,11 @@ target_link_libraries(game
         PUBLIC
         DZeMIKK
 )
+
 if (MSVC)
-    target_compile_options(game PRIVATE /utf-8)
+  target_compile_options(game PRIVATE /utf-8)
 else()
-    target_compile_options(game PRIVATE -finput-charset=UTF-8)
+  target_compile_options(game PRIVATE -finput-charset=UTF-8)
 endif()
 
 add_custom_command(TARGET game POST_BUILD

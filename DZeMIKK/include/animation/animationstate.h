@@ -7,30 +7,33 @@
 #include "animation/transition.h"
 
 namespace dzemikk {
-    class AnimationClip;
-    class AnimationState {
-    public:
-        AnimationState();
-        AnimationState(const std::string& name);
+class AnimationClip;
+class AnimationState {
+public:
+    AnimationState();
+    AnimationState(const std::string& name);
 
-        ~AnimationState() = default;
+    ~AnimationState() = default;
 
-        AnimationState(const AnimationState&) = delete;
-        AnimationState& operator=(const AnimationState&) = delete;
+    AnimationState(const AnimationState&) = delete;
+    AnimationState& operator=(const AnimationState&) = delete;
 
-        [[nodiscard]] const std::string& getName() const noexcept;
-        void setName(const std::string& name);
+    [[nodiscard]] const std::string& getName() const noexcept;
+    void setName(const std::string& name);
 
-        [[nodiscard]] AnimationClip* getClip() const noexcept;
-        void setClip(AnimationClip* clip);
+    [[nodiscard]] AnimationClip* getClip() const noexcept;
+    void setClip(AnimationClip* clip);
 
-        [[nodiscard]] const std::vector<Transition>& getTransitions() const noexcept;
-        void addTransition(const Transition& transition);
-        void update(float deltaTime);
-    private:
-        std::string _name;
-        AnimationClip* _clip = nullptr;
-        std::vector<Transition> _transitions;
-    };
+    [[nodiscard]] const std::vector<Transition>& getTransitions() const noexcept;
+    void addTransition(const Transition& transition);
+
+    void resetTime() noexcept;
+    void update(float deltaTime);
+private:
+    std::string _name;
+    AnimationClip* _clip = nullptr;
+    std::vector<Transition> _transitions;
+    float _currentTime = 0.0f;
+};
 }
 #endif

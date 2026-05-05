@@ -1,7 +1,7 @@
 #ifndef DZEMIKK_SOUND_H
 #define DZEMIKK_SOUND_H
 
-#include<fmod/include/fmod/fmod.hpp>
+#include <fmod/include/fmod/fmod.hpp>
 #include <string>
 
 namespace dzemikk {
@@ -24,11 +24,10 @@ class Sound {
 #pragma endregion
 
     void init(FMOD::Sound* sound);
-    void play(FMOD::System* system);
 
     void replaceSound(FMOD::Sound* newSound);
 
-    FMOD::Sound* getRaw() const {
+    [[nodiscard]] FMOD::Sound* getRaw() const {
         return _sound;
     }
 

@@ -17,6 +17,6 @@
 
         vec3 diffuse = diff * lightColor * lightIntensity;
 
-        vec3 result = diffuse * objectColor;
-        FragColor = vec4(result, 1.0);
+        vec3 result = diffuse * objectColor * meshColor.rgb;
+        FragColor = vec4(result, meshColor.a);
     }

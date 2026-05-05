@@ -1,0 +1,406 @@
+$ cmake -S . -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug -DFMOD_LIBS_PATH=D:\Dependencies\FMOD Studio API Windows\api\core\lib\x64 -G Ninja
+-- The C compiler identification is GNU 13.2.0
+-- The CXX compiler identification is GNU 13.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/Strawberry/c/bin/gcc.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/Strawberry/c/bin/c++.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+FMOD_LIBS_PATH:D:/Dependencies/FMOD Studio API Windows/api/core/lib/x64
+-- Shared libraries disabled
+-- compiling zlib from sources
+-- Looking for sys/types.h
+-- Looking for sys/types.h - found
+-- Looking for stdint.h
+-- Looking for stdint.h - found
+-- Looking for stddef.h
+-- Looking for stddef.h - found
+-- Check size of off64_t
+-- Check size of off64_t - done
+-- Looking for fseeko
+-- Looking for fseeko - found
+-- Looking for unistd.h
+-- Looking for unistd.h - found
+-- Applying MinGW StepFileGen1.cpp Debug Workaround
+-- VRML disabled
+-- tinyusdz disabled
+-- Enabled importer formats: AMF 3DS AC ASE ASSBIN B3D BVH COLLADA DXF CSM HMP IRRMESH IQM IRR LWO LWS MD2 MD3 MD5 MDC MDL NFF NDO OFF OBJ OGRE OPENGEX PLY MS3D COB BLEND IFC XGL FBX Q3D Q3BSP RAW SIB SMD STL TERRAGEN 3D X X3D GLTF 3MF MMD
+-- Disabled importer formats: USD
+-- Enabled exporter formats: OBJ OPENGEX PLY 3DS ASSBIN ASSXML COLLADA FBX STL X X3D GLTF 3MF PBRT ASSJSON STEP
+-- Disabled exporter formats:
+-- Treating all warnings as errors (for assimp library only)
+-- GLM: Version 1.0.3
+-- GLM: Build with C++ features auto detection
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Found Doxygen: C:/Strawberry/c/bin/doxygen.exe (found version "1.10.0") found components: doxygen
+-- Looking for dinput.h
+-- Looking for dinput.h - found
+-- Looking for xinput.h
+-- Looking for xinput.h - found
+-- Performing Test _GLFW_HAS_DEP
+-- Performing Test _GLFW_HAS_DEP - Success
+-- Performing Test _GLFW_HAS_ASLR
+-- Performing Test _GLFW_HAS_ASLR - Success
+-- Performing Test _GLFW_HAS_64ASLR
+-- Performing Test _GLFW_HAS_64ASLR - Success
+-- Using Win32 for window creation
+-- Could NOT find PkgConfig (missing: PKG_CONFIG_EXECUTABLE) 
+-- Enabled dynamic loading of HarfBuzz library at runtime.
+-- Could NOT find ZLIB (missing: ZLIB_LIBRARY ZLIB_INCLUDE_DIR) 
+-- Could NOT find PNG (missing: PNG_LIBRARY PNG_PNG_INCLUDE_DIR) 
+-- Could NOT find ZLIB (missing: ZLIB_LIBRARY ZLIB_INCLUDE_DIR) 
+-- Could NOT find BZip2 (missing: BZIP2_LIBRARIES BZIP2_INCLUDE_DIR) 
+-- Could NOT find BrotliDec (missing: BROTLIDEC_INCLUDE_DIRS BROTLIDEC_LIBRARIES) 
+Cloning into 'googletest-src'...
+HEAD is now at b514bdc8 Update version strings to 1.15.2 (#4583)
+-- Configuring done (87.8s)
+-- Generating done (0.4s)
+-- Build files have been written to: C:/Users/Tekku/Desktop/DZeMIKK/cmake-build-debug
+$ cmake --build cmake-build-debug --target game -j 10
+[1/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/adler32.c.obj
+[2/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/crc32.c.obj
+[3/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/compress.c.obj
+[4/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/gzclose.c.obj
+[5/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/infback.c.obj
+[6/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/gzlib.c.obj
+[7/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/gzread.c.obj
+[8/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/gzwrite.c.obj
+[9/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/inflate.c.obj
+[10/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/deflate.c.obj
+[11/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/inftrees.c.obj
+[12/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/uncompr.c.obj
+[13/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/inffast.c.obj
+[14/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/zutil.c.obj
+[15/376] Building C object _deps/assimp-build/contrib/zlib/CMakeFiles/zlibstatic.dir/trees.c.obj
+[16/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/init.c.obj
+[17/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/vulkan.c.obj
+[18/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/context.c.obj
+[19/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/monitor.c.obj
+[20/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/window.c.obj
+[21/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/win32_init.c.obj
+[22/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/input.c.obj
+[23/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/win32_joystick.c.obj
+[24/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/win32_time.c.obj
+[25/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/win32_monitor.c.obj
+[26/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/win32_thread.c.obj
+[27/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/wgl_context.c.obj
+[28/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/egl_context.c.obj
+[29/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/osmesa_context.c.obj
+[30/376] Building C object _deps/glfw-build/src/CMakeFiles/glfw.dir/win32_window.c.obj
+[31/376] Building C object DZeMIKK/CMakeFiles/glad.dir/extern/glad/glad.c.obj
+[32/376] Linking C static library _deps\assimp-build\contrib\zlib\libzlibstaticd.a
+[33/376] Building CXX object DZeMIKK/CMakeFiles/imgui.dir/extern/imgui/imgui_tables.cpp.obj
+[34/376] Building CXX object DZeMIKK/CMakeFiles/imgui.dir/extern/imgui/backends/imgui_impl_opengl3.cpp.obj
+[35/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/CApi/CInterfaceIOWrapper.cpp.obj
+[36/376] Building CXX object DZeMIKK/CMakeFiles/imgui.dir/extern/imgui/imgui_draw.cpp.obj
+[37/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/Compression.cpp.obj
+[38/376] Building CXX object DZeMIKK/CMakeFiles/imgui.dir/extern/imgui/backends/imgui_impl_glfw.cpp.obj
+[39/376] Building CXX object DZeMIKK/CMakeFiles/imgui.dir/extern/imgui/imgui_widgets.cpp.obj
+[40/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/BaseProcess.cpp.obj
+[41/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/DefaultIOStream.cpp.obj
+[42/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/IOSystem.cpp.obj
+[43/376] Building CXX object DZeMIKK/CMakeFiles/imgui.dir/extern/imgui/imgui.cpp.obj
+[44/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/PostStepRegistry.cpp.obj
+[45/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/ZipArchiveIOSystem.cpp.obj
+[46/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/SGSpatialSort.cpp.obj
+[47/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/VertexTriangleAdjacency.cpp.obj
+[48/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/BaseImporter.cpp.obj
+[49/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/DefaultIOSystem.cpp.obj
+[50/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/Assimp.cpp.obj
+[51/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/SpatialSort.cpp.obj
+[52/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/ScenePreprocessor.cpp.obj
+[53/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/StandardShapes.cpp.obj
+[54/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/TargetAnimation.cpp.obj
+[55/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/SkeletonMeshBuilder.cpp.obj
+[56/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/RemoveComments.cpp.obj
+[57/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/simd.cpp.obj
+[58/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/scene.cpp.obj
+[59/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/Bitmap.cpp.obj
+[60/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/material.cpp.obj
+[61/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/Version.cpp.obj
+[62/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/CreateAnimMesh.cpp.obj
+[63/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/Importer.cpp.obj
+[64/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/AssertHandler.cpp.obj
+[65/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/SceneCombiner.cpp.obj
+[66/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/Subdivision.cpp.obj
+[67/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/Exceptional.cpp.obj
+[68/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Geometry/GeometryUtils.cpp.obj
+[69/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/Base64.cpp.obj
+[70/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/CApi/AssimpCExport.cpp.obj
+[71/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/ImporterRegistry.cpp.obj
+[72/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/ComputeUVMappingProcess.cpp.obj
+[73/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/CalcTangentsProcess.cpp.obj
+[74/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/ConvertToLHProcess.cpp.obj
+[75/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/DefaultLogger.cpp.obj
+[76/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/EmbedTexturesProcess.cpp.obj
+[77/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/FindInstancesProcess.cpp.obj
+[78/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/FindDegenerates.cpp.obj
+[79/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/FixNormalsStep.cpp.obj
+[80/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/DropFaceNormalsProcess.cpp.obj
+[81/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/FindInvalidDataProcess.cpp.obj
+[82/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Common/Exporter.cpp.obj
+[83/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/GenVertexNormalsProcess.cpp.obj
+[84/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/GenFaceNormalsProcess.cpp.obj
+[85/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/ImproveCacheLocality.cpp.obj
+[86/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/LimitBoneWeightsProcess.cpp.obj
+[87/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/PretransformVertices.cpp.obj
+[88/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/RemoveRedundantMaterials.cpp.obj
+[89/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/RemoveVCProcess.cpp.obj
+[90/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/JoinVerticesProcess.cpp.obj
+[91/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/SortByPTypeProcess.cpp.obj
+[92/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/TextureTransform.cpp.obj
+[93/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/SplitLargeMeshes.cpp.obj
+[94/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/TriangulateProcess.cpp.obj
+[95/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/ValidateDataStructure.cpp.obj
+[96/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/OptimizeMeshes.cpp.obj
+[97/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/ProcessHelper.cpp.obj
+[98/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/OptimizeGraph.cpp.obj
+[99/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/GenBoundingBoxesProcess.cpp.obj
+[100/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/MakeVerboseFormat.cpp.obj
+[101/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/ScaleProcess.cpp.obj
+[102/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/DeboneProcess.cpp.obj
+[103/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/ArmaturePopulate.cpp.obj
+[104/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Material/MaterialSystem.cpp.obj
+[105/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/STEPParser/STEPFileEncoding.cpp.obj
+[106/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/glTFCommon/glTFCommon.cpp.obj
+[107/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/PostProcessing/SplitByBoneCountProcess.cpp.obj
+[108/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/AMF/AMFImporter_Geometry.cpp.obj
+[109/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/AMF/AMFImporter_Material.cpp.obj
+[110/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/AMF/AMFImporter.cpp.obj
+[111/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/3DS/3DSConverter.cpp.obj
+[112/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/AMF/AMFImporter_Postprocess.cpp.obj
+[113/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/STEPParser/STEPFileReader.cpp.obj
+[114/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Assbin/AssbinLoader.cpp.obj
+[115/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/AC/ACLoader.cpp.obj
+[116/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/3DS/3DSLoader.cpp.obj
+[117/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Collada/ColladaHelper.cpp.obj
+[118/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/ASE/ASEParser.cpp.obj
+[119/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/BVH/BVHLoader.cpp.obj
+[120/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/ASE/ASELoader.cpp.obj
+[121/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/B3D/B3DImporter.cpp.obj
+[122/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/CSM/CSMLoader.cpp.obj
+[123/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Irr/IRRShared.cpp.obj
+[124/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/HMP/HMPLoader.cpp.obj
+[125/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/LWO/LWOAnimation.cpp.obj
+[126/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/IQM/IQMImporter.cpp.obj
+[127/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/DXF/DXFLoader.cpp.obj
+[128/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Irr/IRRMeshLoader.cpp.obj
+[129/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/LWO/LWOBLoader.cpp.obj
+[130/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Irr/IRRLoader.cpp.obj
+[131/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/MD2/MD2Loader.cpp.obj
+[132/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Collada/ColladaLoader.cpp.obj
+[133/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/LWO/LWOMaterial.cpp.obj
+[134/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/MD3/MD3Loader.cpp.obj
+[135/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/LWS/LWSLoader.cpp.obj
+[136/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/MD5/MD5Loader.cpp.obj
+[137/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/MDC/MDCLoader.cpp.obj
+[138/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/MDL/MDLMaterialLoader.cpp.obj
+[139/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/MDL/HalfLife/UniqueNameGenerator.cpp.obj
+[140/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/MD5/MD5Parser.cpp.obj
+[141/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Collada/ColladaParser.cpp.obj
+[142/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/LWO/LWOLoader.cpp.obj
+[143/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/MDL/MDLLoader.cpp.obj
+[144/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/OFF/OFFLoader.cpp.obj
+[145/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/NDO/NDOLoader.cpp.obj
+[146/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/MDL/HalfLife/HL1MDLLoader.cpp.obj
+[147/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Obj/ObjFileMtlImporter.cpp.obj
+[148/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/NFF/NFFLoader.cpp.obj
+[149/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Obj/ObjFileImporter.cpp.obj
+[150/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Ogre/OgreImporter.cpp.obj
+[151/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Obj/ObjFileParser.cpp.obj
+[152/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Ogre/OgreStructs.cpp.obj
+[153/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Ogre/OgreMaterial.cpp.obj
+[154/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Ply/PlyLoader.cpp.obj
+[155/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Ogre/OgreBinarySerializer.cpp.obj
+[156/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Ply/PlyParser.cpp.obj
+[157/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Ogre/OgreXmlSerializer.cpp.obj
+[158/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/MS3D/MS3DLoader.cpp.obj
+[159/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/OpenGEX/OpenGEXImporter.cpp.obj
+[160/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Blender/BlenderDNA.cpp.obj
+[161/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/COB/COBLoader.cpp.obj
+[162/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Blender/BlenderModifier.cpp.obj
+[163/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Blender/BlenderTessellator.cpp.obj
+[164/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Blender/BlenderCustomData.cpp.obj
+[165/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Blender/BlenderBMesh.cpp.obj
+[166/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Blender/BlenderLoader.cpp.obj
+[167/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/IFC/IFCReaderGen2_2x3.cpp.obj
+[168/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/IFC/IFCProfile.cpp.obj
+[169/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Blender/BlenderScene.cpp.obj
+[170/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/IFC/IFCMaterial.cpp.obj
+[171/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/IFC/IFCLoader.cpp.obj
+[172/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/IFC/IFCUtil.cpp.obj
+[173/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/IFC/IFCCurve.cpp.obj
+[174/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/IFC/IFCGeometry.cpp.obj
+[175/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXTokenizer.cpp.obj
+[176/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXImporter.cpp.obj
+[177/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXParser.cpp.obj
+[178/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/IFC/IFCBoolean.cpp.obj
+[179/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXDocument.cpp.obj
+[180/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXProperties.cpp.obj
+[181/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/XGL/XGLLoader.cpp.obj
+[182/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXMaterial.cpp.obj
+[183/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXMeshGeometry.cpp.obj
+[184/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXModel.cpp.obj
+[185/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXAnimation.cpp.obj
+[186/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXNodeAttribute.cpp.obj
+[187/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXBinaryTokenizer.cpp.obj
+[188/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXDeformer.cpp.obj
+[189/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Q3BSP/Q3BSPFileParser.cpp.obj
+[190/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/IFC/IFCOpenings.cpp.obj
+[191/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXDocumentUtil.cpp.obj
+[192/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Q3D/Q3DLoader.cpp.obj
+[193/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Q3BSP/Q3BSPFileImporter.cpp.obj
+[194/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Raw/RawLoader.cpp.obj
+[195/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Terragen/TerragenLoader.cpp.obj
+[196/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/SIB/SIBImporter.cpp.obj
+[197/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/STL/STLLoader.cpp.obj
+[198/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Unreal/UnrealLoader.cpp.obj
+[199/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXConverter.cpp.obj
+[200/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/SMD/SMDLoader.cpp.obj
+[201/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X/XFileImporter.cpp.obj
+[202/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DImporter.cpp.obj
+[203/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DImporter_Geometry2D.cpp.obj
+[204/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DImporter_Group.cpp.obj
+[205/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DImporter_Light.cpp.obj
+[206/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X/XFileParser.cpp.obj
+[207/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DImporter_Networking.cpp.obj
+[208/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DImporter_Geometry3D.cpp.obj
+[209/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DImporter_Metadata.cpp.obj
+[210/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DImporter_Postprocess.cpp.obj
+[211/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/VRML/VrmlConverter.cpp.obj
+[212/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DImporter_Shape.cpp.obj
+[213/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DImporter_Texturing.cpp.obj
+[214/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DImporter_Rendering.cpp.obj
+[215/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DXmlHelper.cpp.obj
+[216/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DGeoHelper.cpp.obj
+[217/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/3MF/D3MFImporter.cpp.obj
+[218/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/3MF/D3MFOpcPackage.cpp.obj
+[219/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/OpenGEX/OpenGEXExporter.cpp.obj
+[220/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/3MF/XmlSerializer.cpp.obj
+[221/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/MMD/MMDPmxParser.cpp.obj
+[222/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Assbin/AssbinExporter.cpp.obj
+[223/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/MMD/MMDImporter.cpp.obj
+[224/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Ply/PlyExporter.cpp.obj
+[225/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Obj/ObjExporter.cpp.obj
+[226/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/3DS/3DSExporter.cpp.obj
+[227/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Assxml/AssxmlExporter.cpp.obj
+[228/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Assbin/AssbinFileWriter.cpp.obj
+[229/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Assxml/AssxmlFileWriter.cpp.obj
+[230/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXExportNode.cpp.obj
+[231/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXExportProperty.cpp.obj
+[232/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/STL/STLExporter.cpp.obj
+[233/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X/XFileExporter.cpp.obj
+[234/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Collada/ColladaExporter.cpp.obj
+[235/376] Building C object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Assjson/cencode.c.obj
+[236/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/X3D/X3DExporter.cpp.obj
+[237/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/glTF/glTFImporter.cpp.obj
+[238/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/3MF/D3MFExporter.cpp.obj
+[239/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/Pbrt/PbrtExporter.cpp.obj
+[240/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Assjson/json_exporter.cpp.obj
+[241/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXUtil.cpp.obj
+[242/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Assjson/mesh_splitter.cpp.obj
+[243/376] Building C object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/unzip/ioapi.c.obj
+[244/376] Building C object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/unzip/unzip.c.obj
+[245/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/poly2tri/poly2tri/sweep/advancing_front.cc.obj
+[246/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/poly2tri/poly2tri/common/shapes.cc.obj
+[247/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/Step/StepExporter.cpp.obj
+[248/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/poly2tri/poly2tri/sweep/cdt.cc.obj
+[249/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/poly2tri/poly2tri/sweep/sweep.cc.obj
+[250/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/glTF2/glTF2Importer.cpp.obj
+[251/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/FBX/FBXExporter.cpp.obj
+[252/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/poly2tri/poly2tri/sweep/sweep_context.cc.obj
+[253/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/openddlparser/code/OpenDDLCommon.cpp.obj
+[254/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/openddlparser/code/DDLNode.cpp.obj
+[255/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/openddlparser/code/Value.cpp.obj
+[256/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/Open3DGC/o3dgcArithmeticCodec.cpp.obj
+[257/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/Open3DGC/o3dgcDynamicVectorDecoder.cpp.obj
+[258/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/openddlparser/code/OpenDDLStream.cpp.obj
+[259/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/openddlparser/code/OpenDDLExport.cpp.obj
+[260/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/Open3DGC/o3dgcTools.cpp.obj
+[261/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/Open3DGC/o3dgcDynamicVectorEncoder.cpp.obj
+[262/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/Open3DGC/o3dgcTriangleFans.cpp.obj
+[263/376] Linking C static library _deps\glfw-build\src\libglfw3d.a
+[264/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/openddlparser/code/OpenDDLParser.cpp.obj
+[265/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/clipper/clipper.cpp.obj
+[266/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftbbox.c.obj
+[267/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftbdf.c.obj
+[268/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftbitmap.c.obj
+[269/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftcid.c.obj
+[270/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftfstype.c.obj
+[271/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftbase.c.obj
+[272/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftgasp.c.obj
+[273/376] Building C object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/zip/src/zip.c.obj
+[274/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftglyph.c.obj
+[275/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftgxval.c.obj
+[276/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftinit.c.obj
+[277/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftmm.c.obj
+[278/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftotval.c.obj
+[279/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftpatent.c.obj
+[280/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/glTF2/glTF2Exporter.cpp.obj
+[281/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftpfr.c.obj
+[282/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/glTF/glTFExporter.cpp.obj
+[283/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftsynth.c.obj
+[284/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/__/contrib/pugixml/src/pugixml.cpp.obj
+[285/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/fttype1.c.obj
+[286/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftwinfnt.c.obj
+[287/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftstroke.c.obj
+[288/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/bzip2/ftbzip2.c.obj
+[289/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/bdf/bdf.c.obj
+[290/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/hvf/hvf.c.obj
+[291/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/cache/ftcache.c.obj
+[292/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/cid/type1cid.c.obj
+[293/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/lzw/ftlzw.c.obj
+[294/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/autofit/autofit.c.obj
+[295/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/gzip/ftgzip.c.obj
+[296/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/cff/cff.c.obj
+[297/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/pcf/pcf.c.obj
+[298/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/psnames/psnames.c.obj
+[299/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/raster/raster.c.obj
+[300/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/pfr/pfr.c.obj
+[301/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/pshinter/pshinter.c.obj
+[302/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/sdf/sdf.c.obj
+[303/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/smooth/smooth.c.obj
+[304/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/svg/svg.c.obj
+[305/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/winfonts/winfnt.c.obj
+[306/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/type42/type42.c.obj
+[307/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/builds/windows/ftdebug.c.obj
+[308/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/psaux/psaux.c.obj
+[309/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/type1/type1.c.obj
+[310/376] Building RC object _deps/freetype-build/CMakeFiles/freetype.dir/src/base/ftver.rc.obj
+[311/376] Building CXX object DZeMIKK/CMakeFiles/DZeMIKK.dir/src/core/time.cpp.obj
+[312/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/sfnt/sfnt.c.obj
+[313/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/builds/windows/ftsystem.c.obj
+[314/376] Building C object _deps/freetype-build/CMakeFiles/freetype.dir/src/truetype/truetype.c.obj
+[315/376] Building CXX object DZeMIKK/CMakeFiles/DZeMIKK.dir/src/core/profiler.cpp.obj
+[316/376] Building CXX object DZeMIKK/CMakeFiles/DZeMIKK.dir/src/renderer/renderer.cpp.obj
+FAILED: DZeMIKK/CMakeFiles/DZeMIKK.dir/src/renderer/renderer.cpp.obj 
+C:/Strawberry/c/bin/ccache.exe C:\Strawberry\c\bin\c++.exe -DDZEMIKK_DEV_TOOLS=1 -DDZeMIKK_VERSION_MAJOR=1 -DDZeMIKK_VERSION_MINOR=0 -DDZeMIKK_VERSION_REVISION=0 -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/glm/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/boost/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/assimp/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/freetype/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/fmod/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/glad/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/glad/include/glad -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/KHR/include -IC:/Users/Tekku/Desktop/DZeMIKK/cmake-build-debug/_deps/glfw-src/include -IC:/Users/Tekku/Desktop/DZeMIKK/cmake-build-debug/_deps/assimp-src/code/../include -IC:/Users/Tekku/Desktop/DZeMIKK/cmake-build-debug/_deps/assimp-build/code/../include -IC:/Users/Tekku/Desktop/DZeMIKK/cmake-build-debug/_deps/glm-src -IC:/Users/Tekku/Desktop/DZeMIKK/cmake-build-debug/_deps/freetype-build/include -IC:/Users/Tekku/Desktop/DZeMIKK/cmake-build-debug/_deps/freetype-src/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/imgui -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/imgui/backends -g -std=gnu++20 -finput-charset=UTF-8 -MD -MT DZeMIKK/CMakeFiles/DZeMIKK.dir/src/renderer/renderer.cpp.obj -MF DZeMIKK\CMakeFiles\DZeMIKK.dir\src\renderer\renderer.cpp.obj.d -o DZeMIKK/CMakeFiles/DZeMIKK.dir/src/renderer/renderer.cpp.obj -c C:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/src/renderer/renderer.cpp
+In file included from C:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/src/renderer/renderer.cpp:20:
+C:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/include/ecs/gameobject.h:7:10: fatal error: vcruntime_typeinfo.h: No such file or directory
+    7 | #include <vcruntime_typeinfo.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+[317/376] Building CXX object DZeMIKK/CMakeFiles/DZeMIKK.dir/src/renderer/mesh.cpp.obj
+[318/376] Building CXX object DZeMIKK/CMakeFiles/DZeMIKK.dir/src/renderer/material.cpp.obj
+[319/376] Building CXX object DZeMIKK/CMakeFiles/DZeMIKK.dir/src/input/input.cpp.obj
+[320/376] Building CXX object DZeMIKK/CMakeFiles/DZeMIKK.dir/src/core/engine.cpp.obj
+FAILED: DZeMIKK/CMakeFiles/DZeMIKK.dir/src/core/engine.cpp.obj 
+C:/Strawberry/c/bin/ccache.exe C:\Strawberry\c\bin\c++.exe -DDZEMIKK_DEV_TOOLS=1 -DDZeMIKK_VERSION_MAJOR=1 -DDZeMIKK_VERSION_MINOR=0 -DDZeMIKK_VERSION_REVISION=0 -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/glm/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/boost/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/assimp/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/freetype/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/fmod/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/glad/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/glad/include/glad -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/KHR/include -IC:/Users/Tekku/Desktop/DZeMIKK/cmake-build-debug/_deps/glfw-src/include -IC:/Users/Tekku/Desktop/DZeMIKK/cmake-build-debug/_deps/assimp-src/code/../include -IC:/Users/Tekku/Desktop/DZeMIKK/cmake-build-debug/_deps/assimp-build/code/../include -IC:/Users/Tekku/Desktop/DZeMIKK/cmake-build-debug/_deps/glm-src -IC:/Users/Tekku/Desktop/DZeMIKK/cmake-build-debug/_deps/freetype-build/include -IC:/Users/Tekku/Desktop/DZeMIKK/cmake-build-debug/_deps/freetype-src/include -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/imgui -IC:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/extern/imgui/backends -g -std=gnu++20 -finput-charset=UTF-8 -MD -MT DZeMIKK/CMakeFiles/DZeMIKK.dir/src/core/engine.cpp.obj -MF DZeMIKK\CMakeFiles\DZeMIKK.dir\src\core\engine.cpp.obj.d -o DZeMIKK/CMakeFiles/DZeMIKK.dir/src/core/engine.cpp.obj -c C:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/src/core/engine.cpp
+In file included from C:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/src/core/engine.cpp:20:
+C:/Users/Tekku/Desktop/DZeMIKK/DZeMIKK/include/ecs/gameobject.h:7:10: fatal error: vcruntime_typeinfo.h: No such file or directory
+    7 | #include <vcruntime_typeinfo.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+[321/376] Building CXX object DZeMIKK/CMakeFiles/DZeMIKK.dir/src/renderer/shader.cpp.obj
+[322/376] Building CXX object DZeMIKK/CMakeFiles/DZeMIKK.dir/src/renderer/frustum.cpp.obj
+[323/376] Building CXX object _deps/glm-build/glm/CMakeFiles/glm.dir/detail/glm.cpp.obj
+[324/376] Building CXX object DZeMIKK/CMakeFiles/DZeMIKK.dir/src/core/window.cpp.obj
+[325/376] Building CXX object _deps/assimp-build/code/CMakeFiles/assimp.dir/AssetLib/IFC/IFCReaderGen1_2x3.cpp.obj
+ninja: build stopped: subcommand failed.

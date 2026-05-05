@@ -3,19 +3,42 @@
 #include "animation/animationstate.h"
 #include "animation/transition.h"
 #include "spdlog/spdlog.h"
-#include "animation/animationclip.h"
 
 namespace dzemikk {
     void AnimationStateMachine::update(float deltaTime) {
-        if (_currentState == nullptr) return;
-        if (_currentState->getTransitions().empty()) return;
+        if (_currentState == nullptr) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::warn("[AnimationStateMachine] AnimationStateMachine has no states!");
+#endif
+            return;
+        }
 
-        for (auto element : _currentState->getTransitions()) {
-            if (element.condition) {
-                _currentState = _states.at(element.targetState).get();
+        _currentState->update(deltaTime);
+
+        if (_currentState->getTransitions().empty()) {
+            return;
+        }
+
+        for (const auto& element : _currentState->getTransitions()) {
+            if (!element.condition) {
+                continue;
+            }
+
+            if (element.condition()) {
+                auto it = _states.find(element.targetState);
+                float elapsedTime = 0.0f;
+                if (it != _states.end() && it->second != nullptr) {
+                    while (elapsedTime < element.duration) {
+                        elapsedTime += deltaTime;
+                    }
+                    _currentState = it->second.get();
+                    _currentState->resetTime();
+                }
+                break;
             }
         }
     }
+
     AnimationState* AnimationStateMachine::getCurrentState() const {
         return _currentState;
     }
@@ -47,14 +70,16 @@ AnimationState* AnimationStateMachine::addState(std::string name) {
     void AnimationStateMachine::setState(const std::string& stateName) {
         auto it = _states.at(stateName).get();
 
-        if (it == _currentState) return;
         if (it == nullptr) {
 #if DZEMIKK_DEV_TOOLS
             spdlog::error("State {} is nullptr", stateName);
 #endif
             return;
         }
+        if (it != _currentState) {
+            _currentState = it;
+        };
 
-        _currentState = it;
+        _currentState->resetTime();
     }
 }

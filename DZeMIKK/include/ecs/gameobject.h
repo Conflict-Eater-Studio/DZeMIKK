@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <vcruntime_typeinfo.h>
 
-
 #pragma once
 #include "component.h"
 #include "componentRegistry.h"
@@ -133,6 +132,7 @@ class GameObject {
         }
         result->setOwner(this);
         ComponentRegistry::get().registerComponent<T>(result);
+        component->enabled(_isEnabled);
         _components.push_back(std::move(component));
         return result;
     }
@@ -222,6 +222,11 @@ class GameObject {
      * whichever runs first)
      */
     void destroyChildren();
+    /**
+     * @brief Sets all components of this GameObject (and it's children) to enabled or disabled.
+     * @param isEnabled Whether to enable or disable the components.
+     */
+    void enabled(bool isEnabled);
 
     // --- Utility
     void addScenePending(MonoBehaviour* mono);
@@ -233,6 +238,7 @@ class GameObject {
     bool _hasStarted = false;
     GameObject* _parent = nullptr;
     std::vector<GameObject*> _children;
+    bool _isEnabled = true;
 
     Scene* _scene = nullptr;
 

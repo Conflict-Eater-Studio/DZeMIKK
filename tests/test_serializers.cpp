@@ -1,6 +1,6 @@
 #include "ecs/components/monoBehaviour.h"
+#include "ecs/components/ui/uiActionRegistry.h"
 #include "ecs/components/ui/uiButton.h"
-#include "ecs/components/ui/uiButtonActionRegistry.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/serialize/componentSerializerRegistry.h"
@@ -230,12 +230,12 @@ TEST(UIButtonSerialization, RegistrySerializeIncludesActionIdsAndColors) {
     auto* button = object->addComponent<dzemikk::UIButton>();
     ASSERT_NE(button, nullptr);
 
-    button->setNormalColor(glm::vec4(0.1F, 0.2F, 0.3F, 0.4F));
-    button->setHoverColor(glm::vec4(0.5F, 0.6F, 0.7F, 0.8F));
-    button->setPressedColor(glm::vec4(0.9F, 1.0F, 0.2F, 0.3F));
-    button->setOnClickActionId("test.ui.click.serialize");
-    button->setOnEnterActionId("test.ui.enter.serialize");
-    button->setOnExitActionId("test.ui.exit.serialize");
+    button->setStyle({.normalColor = glm::vec4(0.1F, 0.2F, 0.3F, 0.4F),
+                      .hoverColor = glm::vec4(0.5F, 0.6F, 0.7F, 0.8F),
+                      .pressedColor = glm::vec4(0.9F, 1.0F, 0.2F, 0.3F)});
+    button->addEventListener(dzemikk::UIEventType::Click, "test.ui.click.serialize");
+    button->addEventListener(dzemikk::UIEventType::Enter, "test.ui.enter.serialize");
+    button->addEventListener(dzemikk::UIEventType::Exit, "test.ui.exit.serialize");
 
     const nlohmann::json json = dzemikk::ComponentSerializerRegistry::get().serialize(*button);
 
@@ -244,13 +244,14 @@ TEST(UIButtonSerialization, RegistrySerializeIncludesActionIdsAndColors) {
     ASSERT_TRUE(json.contains("normalColor"));
     ASSERT_TRUE(json.contains("hoverColor"));
     ASSERT_TRUE(json.contains("pressedColor"));
-    ASSERT_TRUE(json.contains("onClickActionId"));
-    ASSERT_TRUE(json.contains("onEnterActionId"));
-    ASSERT_TRUE(json.contains("onExitActionId"));
+    ASSERT_TRUE(json.contains("events"));
+    ASSERT_TRUE(json["events"].contains("click"));
+    ASSERT_TRUE(json["events"].contains("enter"));
+    ASSERT_TRUE(json["events"].contains("exit"));
 
-    EXPECT_EQ(json["onClickActionId"].get<std::string>(), "test.ui.click.serialize");
-    EXPECT_EQ(json["onEnterActionId"].get<std::string>(), "test.ui.enter.serialize");
-    EXPECT_EQ(json["onExitActionId"].get<std::string>(), "test.ui.exit.serialize");
+    EXPECT_EQ(json["events"]["click"][0].get<std::string>(), "test.ui.click.serialize");
+    EXPECT_EQ(json["events"]["enter"][0].get<std::string>(), "test.ui.enter.serialize");
+    EXPECT_EQ(json["events"]["exit"][0].get<std::string>(), "test.ui.exit.serialize");
 
     EXPECT_FLOAT_EQ(json["normalColor"][0].get<float>(), 0.1F);
     EXPECT_FLOAT_EQ(json["normalColor"][1].get<float>(), 0.2F);
@@ -265,7 +266,7 @@ TEST(UIButtonSerialization, DeserializeBindsOnClickActionFromRegistry) {
 
     auto* sourceButton = source->addComponent<dzemikk::UIButton>();
     ASSERT_NE(sourceButton, nullptr);
-    sourceButton->setOnClickActionId("test.ui.click.deserialize");
+    sourceButton->addEventListener(dzemikk::UIEventType::Click, "test.ui.click.deserialize");
 
     const nlohmann::json serializedButton =
         dzemikk::ComponentSerializerRegistry::get().serialize(*sourceButton);
@@ -277,12 +278,14 @@ TEST(UIButtonSerialization, DeserializeBindsOnClickActionFromRegistry) {
 
     auto* button = target->getComponent<dzemikk::UIButton>();
     ASSERT_NE(button, nullptr);
-    EXPECT_EQ(button->getOnClickActionId(), "test.ui.click.deserialize");
+
+    auto actions = button->getEventActions();
+    ASSERT_TRUE(actions.contains(dzemikk::UIEventType::Click));
+    EXPECT_EQ(actions[dzemikk::UIEventType::Click].front(), "test.ui.click.deserialize");
 
     int clickCount = 0;
-    dzemikk::UIButtonActionRegistry::get().registerAction(
-        "test.ui.click.deserialize",
-        [&clickCount](dzemikk::UIButton&) { return [&clickCount]() { ++clickCount; }; });
+    dzemikk::UIActionRegistry::get().registerAction(
+        [&clickCount](const dzemikk::UIEvent&) { ++clickCount; }, "test.ui.click.deserialize");
 
     button->onClick();
     EXPECT_EQ(clickCount, 1);
@@ -296,7 +299,7 @@ TEST(UIButtonSerialization, UnknownOnClickActionIdIsSafeNoOp) {
     auto* button = object->addComponent<dzemikk::UIButton>();
     ASSERT_NE(button, nullptr);
 
-    button->setOnClickActionId("test.ui.missing.action");
+    button->addEventListener(dzemikk::UIEventType::Click, "test.ui.missing.action");
 
     EXPECT_NO_THROW(button->onClick());
 }

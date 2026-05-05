@@ -36,6 +36,9 @@ void ComponentSerializerRegistry::registerType(std::string typeName, SerializeFn
 nlohmann::json ComponentSerializerRegistry::serialize(const Component& component) const {
     const auto iter = _entries.find(component.typeName());
     if (iter == _entries.end()) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error("No serializer registered for component type: {}", component.typeName());
+#endif
         throw std::runtime_error("No serializer registered for component type: " +
                                  component.typeName());
     }
@@ -46,12 +49,18 @@ nlohmann::json ComponentSerializerRegistry::serialize(const Component& component
 void ComponentSerializerRegistry::deserializeIntoGameObject(GameObject& gameObject,
                                                             const nlohmann::json& json) const {
     if (!json.contains("type") || !json["type"].is_string()) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error("Serialized component is missing string field 'type'");
+#endif
         throw std::runtime_error("Serialized component is missing string field 'type'");
     }
 
     const std::string typeName = json["type"].get<std::string>();
     const auto iter = _entries.find(typeName);
     if (iter == _entries.end()) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error("No deserializer registered for component type: {}", typeName);
+#endif
         throw std::runtime_error("No deserializer registered for component type: " + typeName);
     }
 

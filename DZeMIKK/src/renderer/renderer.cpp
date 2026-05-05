@@ -1,24 +1,24 @@
 #include "renderer/renderer.h"
-#include "renderer/shader.h"
-#include "renderer/material.h"
-#include "renderer/mesh.h"
-#include "renderer/font.h"
-#include "renderer/texture.h"
-#include "renderer/model.h"
-#include "ecs/componentRegistry.h"
 
 #include "core/profiler.h"
 #include "ecs/component.h"
+#include "ecs/componentRegistry.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/skinnedMeshRenderer.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
 #include "ecs/components/transform.h"
-#include "ecs/components/ui/rectTransform.h"
 #include "ecs/components/ui/imageRenderer.h"
+#include "ecs/components/ui/rectTransform.h"
 #include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
+#include "renderer/font.h"
+#include "renderer/material.h"
+#include "renderer/mesh.h"
+#include "renderer/model.h"
+#include "renderer/shader.h"
+#include "renderer/texture.h"
 
 #include <GLFW/glfw3.h>
 #include <algorithm>
@@ -196,7 +196,7 @@ void dzemikk::Renderer::render() {
                 Batch* batch = nullptr;
 
                 for (auto& b : _batches) {
-                    if (b.mesh == mesh && b.material == material) {
+                    if (b.mesh == mesh && b.material == material && b.color == r->getColor()) {
                         batch = &b;
                         break;
                     }
@@ -208,6 +208,7 @@ void dzemikk::Renderer::render() {
 
                     batch->mesh = mesh;
                     batch->material = material;
+                    batch->color = r->getColor();
 
                     glGenBuffers(1, &batch->instanceVBO);
                 }
@@ -429,7 +430,7 @@ void dzemikk::Renderer::render() {
     }
 
     std::vector<UITextRenderer*> uiTexts;
-    ComponentRegistry::get().getComponents<UITextRenderer>(uiTexts);
+    ComponentRegistry::get().getEnabledComponents<UITextRenderer>(uiTexts);
 
     {
         DZ_PROFILE_GPU("UI Text Rendering");
