@@ -5,7 +5,11 @@
 #include <string>
 
 struct Transition {
+    using Condition = std::function<bool()>;
+
+    float duration;
+
     std::string targetState;
-    std::function<bool()> condition;
+    Condition condition;
 };
 #endif

@@ -71,17 +71,6 @@ void Engine::init() {
     _input->OnMouseScrolled.addListener(
         [&](dzemikk::MouseScrolledEvent& e) { _scrollDelta = e.GetYOffset(); });
 
-    // _modules.push_back(std::move(_assetManager));
-    // _modules.push_back(_mainWindow);
-    // _modules.push_back(_renderer);
-    // _modules.push_back(_sceneManager);
-    // _modules.push_back(_time);
-    // _modules.push_back(_animationModule);
-    //
-    // for (const auto& module : _modules) {
-    //     module->Initialize();
-    // }
-
 #if DZEMIKK_DEV_TOOLS
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -96,6 +85,12 @@ void Engine::init() {
 }
 
 void Engine::shutdown() {
+    if (!_mainWindow) return;
+
+    _input->uninitialize();
+    _animationModule->uninitialize();
+    _time->uninitialize();
+    _sceneManager->uninitialize();
 #if DZEMIKK_DEV_TOOLS
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -106,14 +101,8 @@ void Engine::shutdown() {
     _mainWindow->uninitialize();
     _assetManager->uninitialize();
     _renderer->uninitialize();
-    _sceneManager->uninitialize();
-    _time->uninitialize();
-    _animationModule->uninitialize();
-    _collisions->uninitialize();
-
-    for (const auto& module : _modules) {
-        module->uninitialize();
-    }
+    _assetManager->uninitialize();
+    _mainWindow->uninitialize();
 }
 
 void Engine::start() {
@@ -196,7 +185,7 @@ Time* Engine::getTime() const {
     return _time.get();
 }
 
-AnimationModule* Engine::getAnimationSystem() const {
+AnimationModule* Engine::getAnimationModule() const{
     return _animationModule.get();
 }
 
@@ -215,16 +204,6 @@ Collisions* Engine::getCollisions() const {
 AudioManager* Engine::getAudioManager() const {
     return _audioManager.get();
 }
-
-// template <std::derived_from<IEngineModule> T>
-// std::shared_ptr<T> Engine::getModule() const {
-//     for (const auto& module : _modules) {
-//         if (auto casted = std::dynamic_pointer_cast<T>(module)) {
-//             return casted;
-//         }
-//     }
-//     return nullptr;
-// }
 
 void Engine::updateCameraWASD(float speed) {
     auto* transform = _renderer->getActiveSceneCamera()->getOwner()->transform();

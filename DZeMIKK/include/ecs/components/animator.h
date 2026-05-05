@@ -41,7 +41,7 @@ namespace dzemikk {
          *
          * @param stateName Name of the target state.
          */
-        void play(const std::string& stateName);
+        void play(const std::string& stateName) const;
 
         /**
          * @brief Sets a float parameter.

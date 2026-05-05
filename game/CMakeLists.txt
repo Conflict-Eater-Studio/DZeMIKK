@@ -5,6 +5,7 @@ add_executable(game
                 src/map/HexChunk.cpp
                 src/map/grid.cpp
                 src/scripts/world/world.cpp
+                src/main.cpp
 )
 target_include_directories(game
         PUBLIC
