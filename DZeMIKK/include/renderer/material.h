@@ -38,10 +38,13 @@ namespace dzemikk {
          *
          * @return Shader* Pointer to shader.
          */
+
         [[nodiscard]] Shader* getShader() const {
             return _shader.get();
         }
-
+        [[nodiscard]] const AssetHandle<Shader>& getShaderHandle() const {
+            return _shader;
+        }
         #pragma endregion
 
         #pragma region Setters

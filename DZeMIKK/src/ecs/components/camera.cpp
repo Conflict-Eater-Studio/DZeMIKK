@@ -8,6 +8,33 @@ dzemikk::Camera::Camera() {
 
     setPerspective(DefaultFov, DefaultAspect, DefaultNear, DefaultFar);
 }
+dzemikk::Camera::ProjectionType dzemikk::Camera::getProjectionType() const {
+    return _projectionType;
+}
+float dzemikk::Camera::getNear() const {
+    return _near;
+}
+float dzemikk::Camera::getFar() const {
+    return _far;
+}
+float dzemikk::Camera::getFov() const {
+    return _fov;
+}
+float dzemikk::Camera::getAspect() const {
+    return _aspect;
+}
+float dzemikk::Camera::getLeft() const {
+    return _left;
+}
+float dzemikk::Camera::getBottom() const {
+    return _bottom;
+}
+float dzemikk::Camera::getRightOrtographic() const {
+    return _right;
+}
+float dzemikk::Camera::getTop() const {
+    return _top;
+}
 
 void dzemikk::Camera::setPerspective(float fov, float aspect, float nearPlane, float farPlane) {
     _projectionType = ProjectionType::Perspective;

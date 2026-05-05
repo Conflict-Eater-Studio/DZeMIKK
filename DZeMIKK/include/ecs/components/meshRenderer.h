@@ -49,7 +49,9 @@ class MeshRenderer : public Component {
     [[nodiscard]] Model* getModel() const {
         return _model.get();
     }
-
+    [[nodiscard]] AssetHandle<Model> getModelHandle() const {
+        return _model;
+    }
     
     /**
      * @brief Returns all materials assigned to this renderer.

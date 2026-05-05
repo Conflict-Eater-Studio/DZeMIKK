@@ -22,6 +22,7 @@ class UITextRenderer : public Component {
     HorizontalAlign horizontalAlign = HorizontalAlign::Left;
     VerticalAlign verticalAlign = VerticalAlign::Bottom;
 
+    AssetHandle<Font> fontAsset;
     Font* font = nullptr;
 
     [[nodiscard]] bool isValid() const {

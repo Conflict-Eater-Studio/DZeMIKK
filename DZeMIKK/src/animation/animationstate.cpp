@@ -1,8 +1,5 @@
 #include "animation/animationstate.h"
-
 #include "animation/animationclip.h"
-
-#include <utility>
 
 namespace dzemikk {
 AnimationState::AnimationState() : _name("NewState") {}
@@ -22,19 +19,10 @@ void AnimationState::setClip(AnimationClip* clip) {
 const std::vector<Transition>& AnimationState::getTransitions() const noexcept {
     return _transitions;
 }
+void AnimationState::setTransitions(const std::vector<Transition>& transitions) {
+    _transitions = transitions;
+}
 void AnimationState::addTransition(const Transition& transition) {
     _transitions.push_back(transition);
-}
-void AnimationState::resetTime() noexcept {
-    _currentTime = 0.0f;
-}
-void AnimationState::update(float deltaTime) {
-    _currentTime += deltaTime;
-
-    if (_clip == nullptr) {
-        return;
-    }
-
-    _clip->apply(_currentTime);
 }
 }

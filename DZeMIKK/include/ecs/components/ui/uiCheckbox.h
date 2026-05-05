@@ -38,6 +38,12 @@ class UICheckbox : public IUIInteractable {
 
     void onClick() override;
 
+    ImageRenderer* getBackgroundSpriteRenderer() const {
+        return _backgroundSpriteRenderer;
+    }
+    ImageRenderer* getCheckmarkSpriteRenderer() const {
+        return _checkmarkSpriteRenderer;
+    }
     void setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer);
     void setCheckmarkSpriteRenderer(ImageRenderer* spriteRenderer);
 

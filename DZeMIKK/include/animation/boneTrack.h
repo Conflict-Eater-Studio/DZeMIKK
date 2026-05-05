@@ -72,7 +72,7 @@ class BoneTrack : public IAnimationTrack {
 
   private:
     int _boneIndex = -1;
-    Skeleton* _skeleton = nullptr; 
+    Skeleton* _skeleton = nullptr;
 
     std::vector<BonePositionKey> _positionKeys;
     std::vector<BoneRotationKey> _rotationKeys;

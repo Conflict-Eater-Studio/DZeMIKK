@@ -1,8 +1,9 @@
+#pragma once
 #ifndef DZEMIKK_COMPONENTSERIALIZERREGISTRY_H
 #define DZEMIKK_COMPONENTSERIALIZERREGISTRY_H
 
-#pragma once
 
+#include "assetManager/assetmanager.h"
 #include "ecs/component.h"
 #include "ecs/components/monoBehaviour.h"
 #include "ecs/gameobject.h"
@@ -14,17 +15,19 @@
 #include <string>
 #include <unordered_map>
 
-#if DZEMIKK_DEV_TOOLS
-#include <spdlog/spdlog.h>
-#endif
-
 namespace dzemikk {
 class GameObject;
 
 class ComponentSerializerRegistry {
   public:
+    struct DeserializationContext {
+        GameObject& gameObject;
+        AssetManager* assetManager;
+        const nlohmann::json& json;
+    };
+
     using SerializeFn = std::function<nlohmann::json(const Component&)>;
-    using DeserializeIntoGameObjectFn = std::function<void(GameObject&, const nlohmann::json&)>;
+    using DeserializeIntoGameObjectFn = std::function<void(DeserializationContext context)>;
 
     struct Entry {
         SerializeFn serialize;
@@ -33,11 +36,9 @@ class ComponentSerializerRegistry {
 
     static ComponentSerializerRegistry& get();
 
-    void registerType(std::string typeName, SerializeFn serializeFn,
-                      DeserializeIntoGameObjectFn deserializeFn);
+    void registerType(std::string typeName, SerializeFn serializeFn, DeserializeIntoGameObjectFn deserializeFn);
 
-    template <typename T>
-        requires std::derived_from<T, MonoBehaviour>
+    template <typename T> requires std::derived_from<T, MonoBehaviour>
     void registerType(std::string typeName) {
         std::string resolvedTypeName = std::move(typeName);
 
@@ -50,18 +51,18 @@ class ComponentSerializerRegistry {
                 }
                 return nlohmann::json(*script);
             },
-            [](GameObject& gameObject, const nlohmann::json& componentJson) {
-                auto* script = gameObject.addComponent<T>();
-                from_json(componentJson, *script);
+            [](const DeserializationContext& context) {
+                auto* script = context.gameObject.addComponent<T>();
+                from_json(context.json, context.gameObject.getComponent<T>());
             });
     }
 
     [[nodiscard]] nlohmann::json serialize(const Component& component) const;
-    void deserializeIntoGameObject(GameObject& gameObject, const nlohmann::json& json) const;
+    void deserializeIntoGameObject(const DeserializationContext& context) const;
 
   private:
     std::unordered_map<std::string, Entry> _entries;
 };
-} // namespace dzemikk
+}
 
-#endif // DZEMIKK_COMPONENTSERIALIZERREGISTRY_H
+#endif

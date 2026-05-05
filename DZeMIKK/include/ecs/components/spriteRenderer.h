@@ -70,7 +70,9 @@ class SpriteRenderer : public Component {
     [[nodiscard]] Texture* getTexture() const {
         return _texture.get();
     }
-
+    [[nodiscard]] AssetHandle<Texture> getTextureHandle() const {
+        return _texture;
+    }
     glm::vec4 getColor() const {
         return _color;
     }

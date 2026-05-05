@@ -3,6 +3,8 @@
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/serialize/componentSerializerRegistry.h"
+#include "renderer/mesh.h"
+#include "assetManager/assetmanager.h"
 
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -39,7 +41,8 @@ nlohmann::json GameObjectSerializer::serialize(const GameObject& gameObject) {
     return json;
 }
 
-void GameObjectSerializer::deserializeInto(GameObject& gameObject, const nlohmann::json& json) {
+void GameObjectSerializer::deserializeInto(GameObject& gameObject, const nlohmann::json& json,
+                                           AssetManager* assetManager) {
     static boost::uuids::string_generator uuidGenerator;
 
     if (!json.contains("id") || !json["id"].is_string()) {
@@ -58,15 +61,20 @@ void GameObjectSerializer::deserializeInto(GameObject& gameObject, const nlohman
     if (json.contains("components") && json["components"].is_array()) {
         const auto& componentRegistry = ComponentSerializerRegistry::get();
         for (const auto& componentJson : json["components"]) {
-            componentRegistry.deserializeIntoGameObject(gameObject, componentJson);
+            ComponentSerializerRegistry::DeserializationContext context{
+                gameObject,
+                assetManager,
+                componentJson,
+            };
+            componentRegistry.deserializeIntoGameObject(context);
         }
     }
 }
 
 GameObject* GameObjectSerializer::instantiateIntoScene(Scene& scene, const nlohmann::json& json,
-                                                       GameObject* parent) {
+                                                       GameObject* parent, AssetManager* assetManager) {
     GameObject* gameObject = scene.createGameObject();
-    deserializeInto(*gameObject, json);
+    deserializeInto(*gameObject, json, assetManager);
 
     if (parent != nullptr) {
         parent->addChild(gameObject);
@@ -74,14 +82,13 @@ GameObject* GameObjectSerializer::instantiateIntoScene(Scene& scene, const nlohm
 
     if (json.contains("children") && json["children"].is_array()) {
         for (const auto& childJson : json["children"]) {
-            instantiateIntoScene(scene, childJson, gameObject);
+            instantiateIntoScene(scene, childJson, gameObject, assetManager);
         }
     }
 
     return gameObject;
 }
-
-std::unique_ptr<GameObject> GameObjectSerializer::deserialize(const nlohmann::json& json) {
+std::unique_ptr<GameObject> GameObjectSerializer::deserialize(const nlohmann::json& json, AssetManager* assetManager) {
     static boost::uuids::string_generator uuidGenerator;
 
     if (!json.contains("id") || !json["id"].is_string()) {
@@ -92,7 +99,7 @@ std::unique_ptr<GameObject> GameObjectSerializer::deserialize(const nlohmann::js
     }
 
     auto gameObject = std::make_unique<GameObject>(uuidGenerator(json["id"].get<std::string>()));
-    deserializeInto(*gameObject, json);
+    deserializeInto(*gameObject, json, assetManager);
 
     if (json.contains("children") && json["children"].is_array() && !json["children"].empty()) {
 #if DZEMIKK_DEV_TOOLS

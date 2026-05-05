@@ -33,6 +33,16 @@ class Camera : public Component {
     Camera();
     ~Camera() = default;
 
+    ProjectionType getProjectionType() const;
+    float getNear() const;
+    float getFar() const;
+    float getFov() const;
+    float getAspect() const;
+    float getLeft() const;
+    float getBottom() const;
+    float getRightOrtographic() const;
+    float getTop() const;
+
 #pragma region Disable copy and move
 
     Camera(const Camera& other) = delete;

@@ -196,7 +196,7 @@ void dzemikk::Renderer::render() {
                 Batch* batch = nullptr;
 
                 for (auto& b : _batches) {
-                    if (b.mesh == mesh && b.material == material && b.color == r->getColor()) {
+                    if (b.mesh == mesh && b.material == material) {
                         batch = &b;
                         break;
                     }
@@ -208,7 +208,6 @@ void dzemikk::Renderer::render() {
 
                     batch->mesh = mesh;
                     batch->material = material;
-                    batch->color = r->getColor();
 
                     glGenBuffers(1, &batch->instanceVBO);
                 }

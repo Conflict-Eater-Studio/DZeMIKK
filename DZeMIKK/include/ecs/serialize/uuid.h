@@ -5,7 +5,6 @@
 #include <nlohmann/json.hpp>
 
 namespace nlohmann {
-// NOLINTBEGIN
 template <> struct adl_serializer<boost::uuids::uuid> {
     static void to_json(json& j, const boost::uuids::uuid& u) {
         j = boost::uuids::to_string(u);
@@ -16,5 +15,4 @@ template <> struct adl_serializer<boost::uuids::uuid> {
         u = gen(j.get<std::string>());
     }
 };
-// NOLINTEND
-} // namespace nlohmann
+}

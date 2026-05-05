@@ -1,15 +1,24 @@
 #pragma once
 #ifndef DZEMIKK_TRANSITION_H
 #define DZEMIKK_TRANSITION_H
-#include <functional>
+#include "nlohmann/json.hpp"
 #include <string>
 
-struct Transition {
-    using Condition = std::function<bool()>;
+namespace dzemikk {
+    enum Operator {
+        Greater, Less, Equal, NotEqual
+    };
+    struct Condition {
+        std::string parameter;
+        Operator op;
+        float value;
+    };
+    struct Transition {
+        float duration;
+        std::string targetState;
+        Condition condition;
+    };
 
-    float duration;
+}
 
-    std::string targetState;
-    Condition condition;
-};
 #endif

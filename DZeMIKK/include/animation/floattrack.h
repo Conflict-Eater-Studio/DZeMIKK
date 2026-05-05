@@ -23,6 +23,9 @@ class FloatTrack : public IAnimationTrack {
         void addKey(FloatPropertyKey key) {
                 _keys.push_back(key);
         }
+        void setKeys(std::vector<FloatPropertyKey> keys) {
+            _keys = keys;
+        }
         void setProperty(const FloatProperty& property) {
             _property = property;
         }
@@ -57,6 +60,16 @@ class FloatTrack : public IAnimationTrack {
                     return i;
             }
             return _keys.size() - 2;
+        }
+
+      public:
+        std::string getType() const override {
+            return "FloatTrack";
+        }
+        nlohmann::json serialize() const override {
+            nlohmann::json j;
+            j["keys"] = _keys;
+            return j;
         }
 };
 }

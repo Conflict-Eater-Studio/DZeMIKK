@@ -2,14 +2,20 @@
 #ifndef DZEMIKK_ANIMATOR_H
 #define DZEMIKK_ANIMATOR_H
 
+#include "animation/animationstate.h"
+#include "assetManager/assetHandle.h"
 #include "ecs/component.h"
+#include "nlohmann/json.hpp"
 
 #include <memory>
 #include <string>
-#include <string_view>
-
+#include <unordered_map>
+#include <variant>
 namespace dzemikk {
-    class AnimationStateMachine;
+class AnimationState;
+class ComponentSerializerRegistry;
+struct Condition;
+class AnimationStateMachine;
     /**
      * @brief Handles animation playback and state transitions for an entity.
      *
@@ -34,14 +40,14 @@ namespace dzemikk {
          */
         void update(float deltaTime);
 
-        /**
-         * @brief Immediately switches to a specific animation state.
-         *
-         * This bypasses transition conditions and forces the state change.
-         *
-         * @param stateName Name of the target state.
-         */
-        void play(const std::string& stateName) const;
+      /**
+       * @brief Immediately switches to a specific animation state.
+       *
+       * This bypasses transition conditions and forces the state change.
+       *
+       * @param stateName Name of the target state.
+       */
+        void play(const std::string& stateName);
 
         /**
          * @brief Sets a float parameter.
@@ -51,24 +57,21 @@ namespace dzemikk {
          * @param name Parameter name.
          * @param value Float value to assign.
          */
-        void setFloat(std::string_view name, float value);
-
+        void setFloat(const std::string& name, float value);
         /**
          * @brief Sets a boolean parameter.
          *
          * @param name Parameter name.
          * @param value Boolean value to assign.
          */
-        void setBool(std::string_view name, bool value);
-
+        void setBool(const std::string& name, bool value);
         /**
          * @brief Sets an integer parameter.
          *
          * @param name Parameter name.
          * @param value Integer value to assign.
          */
-        void setInt(std::string_view name, int value);
-
+        void setInt(const std::string& name, int value);
         /**
          * @brief Assigns an animation state machine to the animator.
          *
@@ -85,12 +88,25 @@ namespace dzemikk {
          * @return Shared pointer to the state machine.
          */
         [[nodiscard]] std::shared_ptr<AnimationStateMachine> getStateMachine() const noexcept;
-        std::string typeName() const override;
-    private:
-        /// Shared animation state machine defining states and transitions.
-        std::shared_ptr<AnimationStateMachine> _stateMachine = nullptr;
+        [[nodiscard]] AnimationState* getCurrentState() const noexcept;
+        [[nodiscard]] float getFloat(const std::string& name) const;
+        [[nodiscard]] bool getBool(const std::string& name) const;
+        [[nodiscard]] int getInt(const std::string& name) const;
+        [[nodiscard]] float getCurrentTime() const;
+        [[nodiscard]] std::unordered_map<std::string, float> getFloatParams() const;
+        [[nodiscard]] std::unordered_map<std::string, bool> getBoolParams() const;
+        [[nodiscard]] std::unordered_map<std::string, int> getIntParams() const;
 
-        /// Current playback time within the active animation (in seconds).
+        bool evaluate(const Condition& c) const;
+
+        std::string typeName() const override;
+
+      private:
+        std::shared_ptr<AnimationStateMachine> _stateMachine = nullptr;
+        std::unordered_map<std::string, float> _floatParams;
+        std::unordered_map<std::string, bool>  _boolParams;
+        std::unordered_map<std::string, int>   _intParams;
+        AnimationState* _currentState = nullptr;
         float _currentTime = 0.0f;
     };
 
