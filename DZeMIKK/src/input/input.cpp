@@ -27,6 +27,11 @@ namespace dzemikk {
                 OnKeyPressed.Invoke(event);
                 return false;
             });
+
+            dispatcher.Dispatch<dzemikk::KeyReleasedEvent>([this](dzemikk::KeyReleasedEvent& event) {
+                OnKeyReleased.Invoke(event);
+                return false;
+            });
         }
     }
 

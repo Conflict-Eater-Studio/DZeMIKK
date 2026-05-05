@@ -5,6 +5,7 @@
 
 #include <glm/ext/quaternion_geometric.hpp>
 #include <glm/ext/vector_float3.hpp>
+#include <glm/ext/vector_float4.hpp>
 
 
 namespace dzemikk {
@@ -129,6 +130,24 @@ class MeshRenderer : public Component {
         _transform = transform;
     }
 
+    /**
+     * @brief Sets the color multiplier for the mesh.
+     *
+     * @param color The RGBA color vector.
+     */
+    void setColor(const glm::vec4& color) {
+        _color = color;
+    }
+
+    /**
+     * @brief Returns the color multiplier.
+     *
+     * @return const glm::vec4& The color.
+     */
+    [[nodiscard]] const glm::vec4& getColor() const {
+        return _color;
+    }
+
 #pragma endregion
 
 #pragma region Validation
@@ -174,6 +193,7 @@ class MeshRenderer : public Component {
     Model* _model = nullptr;
     std::vector<Material*> _materials;
     Transform* _transform = nullptr;
+    glm::vec4 _color = glm::vec4(1.0f);
 
     float _cullingRadius = 1.0F;
 

@@ -11,6 +11,9 @@
 #endif
 
 #include "animation/animationmodule.h"
+#include "assetManager/assetmanager.h"
+#include "audio/sound.h"
+#include "collisions/collisions.h"
 #include "core/engine.h"
 #include "core/profiler.h"
 #include "core/time.h"
@@ -19,13 +22,11 @@
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
 #include "ecs/scenemanager.h"
-#include "renderer/renderer.h"
-#include "renderer/font.h"
-#include "renderer/texture.h"
-#include "renderer/Model.h"
-#include "audio/sound.h"
-#include "assetManager/assetmanager.h"
 #include "input/input.h"
+#include "renderer/Model.h"
+#include "renderer/font.h"
+#include "renderer/renderer.h"
+#include "renderer/texture.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -48,6 +49,7 @@ void Engine::init() {
     _time = std::make_unique<Time>();
     _animationModule = std::make_unique<AnimationModule>();
     _input = std::make_unique<Input>();
+    _collisions = std::make_unique<Collisions>();
 
     _mainWindow->initialize();
     _assetManager->initialize();
@@ -59,17 +61,7 @@ void Engine::init() {
     _input->setInputWindow(_mainWindow->nativeHandle());
     _mainWindow->setEventCallback([this](Event& e) { this->OnEvent(e); });
     _input->initialize();
-
-    // _modules.push_back(std::move(_assetManager));
-    // _modules.push_back(_mainWindow);
-    // _modules.push_back(_renderer);
-    // _modules.push_back(_sceneManager);
-    // _modules.push_back(_time);
-    // _modules.push_back(_animationModule);
-    //
-    // for (const auto& module : _modules) {
-    //     module->Initialize();
-    // }
+    _collisions->initialize();
 
 #if DZEMIKK_DEV_TOOLS
     IMGUI_CHECKVERSION();
@@ -85,22 +77,20 @@ void Engine::init() {
 }
 
 void Engine::shutdown() {
+    if (!_mainWindow) return;
+
+    _input->uninitialize();
+    _animationModule->uninitialize();
+    _time->uninitialize();
+    _sceneManager->uninitialize();
 #if DZEMIKK_DEV_TOOLS
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 #endif
-
-    _mainWindow->uninitialize();
-    _assetManager->uninitialize();
     _renderer->uninitialize();
-    _sceneManager->uninitialize();
-    _time->uninitialize();
-    _animationModule->uninitialize();
-
-    for (const auto& module : _modules) {
-        module->uninitialize();
-    }
+    _assetManager->uninitialize();
+    _mainWindow->uninitialize();
 }
 
 void Engine::start() {
@@ -148,6 +138,11 @@ void Engine::start() {
         updateCameraWASD(1.f);
         updateCameraArrows(1.1f);
         updateMouseUI(deltaTime);
+
+        if (m_UserUpdateCallback) {
+            m_UserUpdateCallback();
+        }
+
         {
             DZ_PROFILE_CPU("Renderer (Total CPU)");
             _renderer->render();
@@ -178,7 +173,7 @@ Time* Engine::getTime() const {
     return _time.get();
 }
 
-AnimationModule* Engine::getAnimationSystem() const{
+AnimationModule* Engine::getAnimationModule() const{
     return _animationModule.get();
 }
 
@@ -188,6 +183,10 @@ AssetManager* Engine::getAssetManager() const {
 
 Input* Engine::getInput() const {
     return _input.get();
+}
+
+Collisions* Engine::getCollisions() const {
+    return _collisions.get();
 }
 
 // template <std::derived_from<IEngineModule> T>

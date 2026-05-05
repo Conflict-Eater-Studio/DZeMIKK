@@ -20,6 +20,7 @@ class Renderer;
 class AssetManager;
 class AnimationModule;
 class Input;
+class Collisions;
 
 /**
  * @brief The core application class managing the game loop and all subsystems.
@@ -40,9 +41,10 @@ public:
     [[nodiscard]] Window* getWindow() const;
     [[nodiscard]] SceneManager* getSceneManager() const;
     [[nodiscard]] Time* getTime() const;
-    [[nodiscard]] AnimationModule* getAnimationSystem() const;
+    [[nodiscard]] AnimationModule* getAnimationModule() const;
     [[nodiscard]] AssetManager* getAssetManager() const;
     [[nodiscard]] Input* getInput() const;
+    [[nodiscard]] Collisions* getCollisions() const;
 
     /**
      * @brief Zwraca dynamicznie zarejestrowany moduł na podstawie jego typu.
@@ -83,6 +85,7 @@ private:
     std::unique_ptr<AssetManager> _assetManager;
     std::unique_ptr<AnimationModule> _animationModule;
     std::unique_ptr<Input> _input;
+    std::unique_ptr<Collisions> _collisions;
 
     std::vector<std::unique_ptr<IEngineModule>> _modules;
 
