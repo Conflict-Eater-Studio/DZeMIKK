@@ -15,15 +15,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebIn
 endif()
 
 add_library(DZeMIKK STATIC
-        include/ecs/serialize/meshRendererSerializer.h
-        include/ecs/serialize/textRendererSerializer.h
-        include/ecs/serialize/spriteRendererSerializer.h
-        include/ecs/serialize/skinnedMeshSerializer.h
-        include/ecs/serialize/colliderSerializer.h
-        include/ecs/serialize/cameraSerializer.h
-        include/ecs/serialize/ui/canvasSerializer.h
-        include/ecs/serialize/ui/imageRendererSerializer.h
-        include/ecs/serialize/ui/UITextRenderSerializer.h
+
 )
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
@@ -179,6 +171,15 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/components/ui/colors.h"
         "${INC_DIR}/ecs/components/ui/uiCheckbox.h"
         "${INC_DIR}/ecs/components/ui/uiCheckboxActionRegistry.h"
+        "${INC_DIR}/ecs/serialize/meshRendererSerializer.h"
+        "${INC_DIR}/ecs/serialize/textRendererSerializer.h"
+        "${INC_DIR}/ecs/serialize/spriteRendererSerializer.h"
+        "${INC_DIR}/ecs/serialize/skinnedMeshSerializer.h"
+        "${INC_DIR}/ecs/serialize/colliderSerializer.h"
+        "${INC_DIR}/ecs/serialize/cameraSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/canvasSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/imageRendererSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/UITextRenderSerializer.h"
 )
 
 target_sources(DZeMIKK
