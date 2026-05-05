@@ -19,6 +19,8 @@ struct RectTransformParams {
     glm::vec2 pivot = glm::vec2(0.5F);
     glm::vec2 anchorMin = glm::vec2(0.5F);
     glm::vec2 anchorMax = glm::vec2(0.5F);
+    glm::vec2 offsetMin = glm::vec2(0.0F);
+    glm::vec2 offsetMax = glm::vec2(0.0F);
 };
 
 class RectTransform : public Component {
@@ -81,6 +83,18 @@ class RectTransform : public Component {
      * @param anchorMax New anchor maximum
      */
     void setAnchorMax(const glm::vec2& anchorMax);
+
+    /**
+     * @brief Sets the offset minimum (left, bottom)
+     * @param offsetMin New offset minimum
+     */
+    void setOffsetMin(const glm::vec2& offsetMin);
+
+    /**
+     * @brief Sets the offset maximum (right, top)
+     * @param offsetMax New offset maximum
+     */
+    void setOffsetMax(const glm::vec2& offsetMax);
 
     /**
      * @brief Sets the z-index
@@ -156,6 +170,18 @@ class RectTransform : public Component {
     [[nodiscard]] glm::vec2 getAnchorMax() const;
 
     /**
+     * @brief Gets the offset minimum (left, bottom)
+     * @return Current offset minimum
+     */
+    [[nodiscard]] glm::vec2 getOffsetMin() const;
+
+    /**
+     * @brief Gets the offset maximum (right, top)
+     * @return Current offset maximum
+     */
+    [[nodiscard]] glm::vec2 getOffsetMax() const;
+
+    /**
      * @brief Gets the z-index
      * @return Current z-index
      */
@@ -201,6 +227,8 @@ class RectTransform : public Component {
     glm::vec2 _pivot{0.5F, 0.5F};
     glm::vec2 _anchorMin{0.5F, 0.5F};
     glm::vec2 _anchorMax{0.5F, 0.5F};
+    glm::vec2 _offsetMin{0.0F, 0.0F};
+    glm::vec2 _offsetMax{0.0F, 0.0F};
     unsigned int _zIndex{0};
 
     mutable glm::mat4 _cachedLocalNoSizeMatrix = glm::mat4(1.0F);

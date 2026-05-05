@@ -264,6 +264,7 @@ void GameObject::removeSceneActive(MonoBehaviour* mono) {
 }
 
 void GameObject::enabled(bool isEnabled) {
+    _isEnabled = isEnabled;
     for (auto& component : _components) {
         if (component) {
             component->enabled(isEnabled);
