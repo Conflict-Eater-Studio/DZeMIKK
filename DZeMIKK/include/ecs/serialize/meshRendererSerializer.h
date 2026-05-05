@@ -41,7 +41,7 @@ void to_json(nlohmann::json& json, const MeshRenderer& meshRenderer) {
     json["color"] = { color.r, color.g, color.b, color.a };
 }
 
-inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, AssetManager& assetManager) {
+inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, AssetManager* assetManager) {
     static boost::uuids::string_generator uuidGenerator;
 
     if (json.contains("id") && json["id"].is_string()) {
@@ -56,7 +56,7 @@ inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, As
 
     std::string modelPath = json.value("model", "");
     if (!modelPath.empty()) {
-        meshRenderer.setModel(assetManager.get<Model>(modelPath));
+        meshRenderer.setModel(assetManager->get<Model>(modelPath));
     }
 
     if (json.contains("color") && json["color"].is_array() && json["color"].size() >= 4) {
@@ -76,7 +76,7 @@ inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, As
                 std::string shaderPath = materialsJson[i].get<std::string>();
                 if (!shaderPath.empty()) {
                     Material* material = new Material();
-                    material->setShader(assetManager.get<Shader>(shaderPath));
+                    material->setShader(assetManager->get<Shader>(shaderPath));
                     meshRenderer.setMaterial(i, material);
                 }
             }

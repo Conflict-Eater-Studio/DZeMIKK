@@ -12,7 +12,7 @@
 #include "ecs/serialize/ui/uiCheckboxSerializer.h"
 #include "ecs/serialize/uiButtonSerializer.h"
 #include "ecs/serialize/uiSliderSerializer.h"
-
+#include "ecs/serialize/animation/animatorSerializer.h"
 #include <stdexcept>
 #include <utility>
 
@@ -34,6 +34,8 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerColliderSerializer(registry);
     registerRectTransformSerializer(registry);
     registerUICheckboxSerializer(registry);
+    registerAnimatorSerializer(registry);
+
     return registry;
 }
 } // namespace

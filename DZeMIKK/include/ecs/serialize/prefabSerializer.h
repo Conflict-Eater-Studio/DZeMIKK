@@ -5,13 +5,14 @@
 #include <nlohmann/json.hpp>
 
 namespace dzemikk {
+class AssetManager;
 class GameObject;
 class Scene;
 
 class PrefabSerializer {
   public:
     static nlohmann::json serialize(const GameObject& rootGameObject);
-    static GameObject* instantiate(Scene& scene, const nlohmann::json& json,
+    static GameObject* instantiate(Scene& scene, const nlohmann::json& json, AssetManager* assetManager,
                                    GameObject* parent = nullptr);
 };
 } // namespace dzemikk

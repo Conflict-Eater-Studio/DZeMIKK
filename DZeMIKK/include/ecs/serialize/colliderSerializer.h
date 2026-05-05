@@ -70,9 +70,8 @@ inline void registerColliderSerializer(ComponentSerializerRegistry& registry) {
         },
         [](const ComponentSerializerRegistry::DeserializationContext& context) {
             auto* collider = context.gameObject.addComponent<Collider>();
-            from_json(context.json, *collider, context.assetManager);
+            // from_json(context.json, *collider, context.assetManager);
         });
 }
-
 }
 #endif

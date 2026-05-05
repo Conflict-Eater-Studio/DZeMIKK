@@ -6,6 +6,7 @@
 #include "ecs/serialize/componentSerializerRegistry.h"
 #include "animation/animationstatemachine.h"
 #include "animation/animationstate.h"
+#include "animation/animationclip.h"
 #include "ecs/gameobject.h"
 #include <nlohmann/json.hpp>
 #include <boost/uuid/uuid_io.hpp>

@@ -26,7 +26,7 @@ namespace dzemikk {
         }
     }
 
-    inline void from_json(const nlohmann::json& json, TextRenderer& textRenderer, AssetManager& assetManager) {
+    inline void from_json(const nlohmann::json& json, TextRenderer& textRenderer, AssetManager* assetManager) {
         static boost::uuids::string_generator uuidGenerator;
 
         if (json.contains("id") && json["id"].is_string()) {
@@ -53,7 +53,7 @@ namespace dzemikk {
 
         std::string fontPath = json.value("font", "");
         if (!fontPath.empty()) {
-            textRenderer.font = assetManager.get<Font>(fontPath);
+            textRenderer.font = assetManager->get<Font>(fontPath);
         }
     }
 

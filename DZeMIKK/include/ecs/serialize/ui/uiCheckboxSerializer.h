@@ -28,7 +28,7 @@ namespace dzemikk {
         json["checkmarkRenderer"] = nlohmann::json();
         dzemikk::to_json(json["checkmarkRenderer"], *button.getCheckmarkSpriteRenderer());
     }
-    inline void from_json(const nlohmann::json& j, UICheckbox& checkbox, AssetManager& assetManager) {
+    inline void from_json(const nlohmann::json& j, UICheckbox& checkbox, AssetManager* assetManager) {
         if (j.contains("id")) {
             checkbox.setId(boost::uuids::string_generator()(j["id"].get<std::string>()));
         }

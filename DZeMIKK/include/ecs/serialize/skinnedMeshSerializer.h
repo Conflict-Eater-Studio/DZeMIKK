@@ -35,7 +35,7 @@ namespace dzemikk {
         }
     }
 
-    inline void from_json(const nlohmann::json& json, SkinnedMeshRenderer& renderer, AssetManager& assetManager) {
+    inline void from_json(const nlohmann::json& json, SkinnedMeshRenderer& renderer, AssetManager* assetManager) {
         static boost::uuids::string_generator uuidGenerator;
 
         if (json.contains("id") && json["id"].is_string()) {
@@ -50,7 +50,7 @@ namespace dzemikk {
 
         std::string modelPath = json.value("model", "");
         if (!modelPath.empty()) {
-            renderer.setModel(assetManager.get<Model>(modelPath));
+            renderer.setModel(assetManager->get<Model>(modelPath));
         }
 
         if (json.contains("materials") && json["materials"].is_array()) {
@@ -61,7 +61,7 @@ namespace dzemikk {
                     if (!shaderPath.empty()) {
                         try {
                             Material* material = new Material();
-                            material->setShader(assetManager.get<Shader>(shaderPath));
+                            material->setShader(assetManager->get<Shader>(shaderPath));
                             renderer.setMaterial(i, material);
                         } catch (const std::exception& e) {
     #if DZEMIKK_DEV_TOOLS

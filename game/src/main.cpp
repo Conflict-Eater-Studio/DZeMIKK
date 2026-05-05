@@ -1,20 +1,13 @@
 #include "animation/animationclip.h"
+#include "animation/animationmodule.h"
 #include "animation/animationstate.h"
 #include "animation/animationstatemachine.h"
 #include "animation/quaterniontrack.h"
 #include "animation/vectortrack.h"
-#include "animation/animationmodule.h"
-
 #include "assetManager/assetmanager.h"
 #include "audio/sound.h"
-#include "ecs/serialize/meshRendererSerializer.h"
-#include "ecs/serialize/textRendererSerializer.h"
-#include "ecs/serialize/spriteRendererSerializer.h"
-#include "ecs/serialize/skinnedMeshSerializer.h"
-#include "ecs/serialize/cameraSerializer.h"
-#include "ecs/serialize/animation/animatorSerializer.h"
-
 #include "core/engine.h"
+#include "core/time.h"
 #include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
@@ -23,37 +16,35 @@
 #include "ecs/components/textRenderer.h"
 #include "ecs/components/ui/canvas.h"
 #include "ecs/components/ui/colors.h"
+#include "ecs/components/ui/imageRenderer.h"
 #include "ecs/components/ui/rectTransform.h"
 #include "ecs/components/ui/uiButton.h"
 #include "ecs/components/ui/uiButtonActionRegistry.h"
 #include "ecs/components/ui/uiCheckbox.h"
 #include "ecs/components/ui/uiCheckboxActionRegistry.h"
 #include "ecs/components/ui/uiSlider.h"
-#include "ecs/components/ui/imageRenderer.h"
 #include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
-
+#include "ecs/serialize/sceneSerializer.h"
+#include "events/key_event.h"
+#include "events/mouse_event.h"
+#include "input/input.h"
 #include "renderer/font.h"
 #include "renderer/material.h"
+#include "renderer/mesh.h"
+#include "renderer/model.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
 #include "renderer/texture.h"
-#include "renderer/model.h"
-#include "renderer/mesh.h"
 
-#include "input/input.h"
-#include "events/mouse_event.h"
-#include "events/key_event.h"
-#include "core/time.h"
 #include <GLFW/glfw3.h>
-
 #include <iostream>
+#include <memory>
 #include <queue>
 #include <random>
 #include <set>
-#include <memory>
 
 class TextUpdater : public dzemikk::MonoBehaviour {
   public:
@@ -220,10 +211,6 @@ int main() {
     chestMeshR->setTransform(chestGO->transform());
     chestMeshR->setMaterial(0, materialA);
 
-    nlohmann::json json;
-    dzemikk::to_json(json, *chestMeshR);
-    dzemikk::from_json(json, *playerMeshR, *engine->getAssetManager());
-
     auto enemyGO = mainScenePtr->createGameObject();
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.2f, 0.0f));
     enemyGO->transform()->setScale(glm::vec3(.01f, .01f, 0.01f));
@@ -242,45 +229,38 @@ int main() {
     enemyMeshR->setMaterial(3, materialC);
     enemyMeshR->setMaterial(4, materialC);
     enemyMeshR->setMaterial(5, materialC);
-    nlohmann::json json2;
-    dzemikk::to_json(json2, *enemyMeshR);
-    enemyMeshR->setModel(enemyMesh2);
-    dzemikk::from_json(json2, *enemyMeshR, *engine->getAssetManager());
 
-    auto animator = enemyGO->addComponent<dzemikk::Animator>();
-    engine->getAnimationModule()->registerAnimator(animator);
-
-    auto skeleton = enemyMesh.get()->getSkeleton();
-    if (!skeleton) {
-        std::cout << "Brak skeletonu!\n";
-        return -1;
-    }
-
-    std::string name = "mixamo.com";
-    dzemikk::AnimationClip* clip = nullptr;
-
-    clip = skeleton->getClip(name);
-    clip->setName(name);
-
-    if (!clip) {
-        std::cout << "Brak animacji!\n";
-        return -2;
-    }
-
-    auto sm = std::make_shared<dzemikk::AnimationStateMachine>();
-    auto state = sm->addState("test");
-
-    state->setClip(clip);
-    animator->setStateMachine(sm);
-
-    nlohmann::json astJson;
-    dzemikk::to_json(astJson, *animator);
-    state->setClip(nullptr);
-
-    dzemikk::from_json(astJson, *animator);
-    std::string t = "test";
-    animator->play(t);
-    
+    // auto animator = enemyGO->addComponent<dzemikk::Animator>();
+    // engine->getAnimationModule()->registerAnimator(animator);
+    //
+    // auto skeleton = enemyMesh.get()->getSkeleton();
+    // if (!skeleton) {
+    //     std::cout << "Brak skeletonu!\n";
+    //     return -1;
+    // }
+    //
+    // std::string name = "mixamo.com";
+    // dzemikk::AnimationClip* clip = nullptr;
+    //
+    // clip = skeleton->getClip(name);
+    // clip->setName(name);
+    //
+    // if (!clip) {
+    //     std::cout << "Brak animacji!\n";
+    //     return -2;
+    // }
+    //
+    // auto sm = std::make_shared<dzemikk::AnimationStateMachine>();
+    // auto state = sm->addState("test");
+    //
+    // state->setClip(clip);
+    // animator->setStateMachine(sm);
+    //
+    // state->setClip(nullptr);
+    //
+    // std::string t = "test";
+    // animator->play(t);
+    //
     // --- Quad GameObject
     auto quadGO = new dzemikk::GameObject();
     quadGO->transform()->setPosition(glm::vec3(100.0f, 300.0f, 0.0f));
@@ -306,10 +286,7 @@ int main() {
     auto tex2 = engine->getAssetManager()->get<dzemikk::Texture>("textures/tex.png");
 
     quadRenderer->setTexture(tex);
-    nlohmann::json texture;
-    dzemikk::to_json(texture, *quadRenderer);
     quadRenderer->setTexture(tex2);
-    dzemikk::from_json(texture, *quadRenderer, *engine->getAssetManager());
 
     auto quadGO2 = mainScenePtr->createGameObject();
     quadGO2->transform()->setPosition(glm::vec3(1500.0f, 950.0f, 0.0f));
@@ -336,8 +313,8 @@ int main() {
     quadRenderer3->setTransform(quadGO3->transform());
     quadRenderer3->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
-    auto quadSpriteUpdater = quadGO3->addComponent<SpriteUpdater>();
-    quadSpriteUpdater->transform = quadGO3->transform();
+    // auto quadSpriteUpdater = quadGO3->addComponent<SpriteUpdater>();
+    // quadSpriteUpdater->transform = quadGO3->transform();
 
     auto font = engine->getAssetManager()->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
 
@@ -590,6 +567,11 @@ int main() {
         }
     });(
     */
+    // dzemikk::SceneSerializer sceneSerializer = dzemikk::SceneSerializer();
+    // nlohmann::json sceneJson = sceneSerializer.serialize(*mainScenePtr);
+    //
+    // std::shared_ptr<dzemikk::Scene> scene = std::make_shared<dzemikk::Scene>();
+    // sceneSerializer.deserializeInto(*scene, sceneJson, engine->getAssetManager());
 
     engine->start();
 

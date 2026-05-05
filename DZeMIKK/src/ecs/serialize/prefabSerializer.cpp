@@ -20,7 +20,7 @@ nlohmann::json PrefabSerializer::serialize(const GameObject& rootGameObject) {
     return json;
 }
 
-GameObject* PrefabSerializer::instantiate(Scene& scene, const nlohmann::json& json,
+GameObject* PrefabSerializer::instantiate(Scene& scene, const nlohmann::json& json, AssetManager* assetManager,
                                           GameObject* parent) {
     if (!json.contains("root") || !json["root"].is_object()) {
         throw std::runtime_error("Prefab JSON must contain object field 'root'");
@@ -28,7 +28,7 @@ GameObject* PrefabSerializer::instantiate(Scene& scene, const nlohmann::json& js
 
     // Create the GameObject hierarchy from JSON
     // Here UUIDs will be wrong -> taken from json
-    auto* obj = GameObjectSerializer::instantiateIntoScene(scene, json["root"], parent);
+    auto* obj = GameObjectSerializer::instantiateIntoScene(scene, json["root"], parent, assetManager);
 
     // Resolve script references based on serialized UUIDs before regenerating new ones to ensure
     // correct linking

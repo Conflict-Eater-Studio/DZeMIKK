@@ -23,7 +23,7 @@ inline void to_json(nlohmann::json& j, const ImageRenderer& renderer) {
     }
 }
 
-inline void from_json(const nlohmann::json& j, ImageRenderer& renderer, AssetManager& assetManager) {
+inline void from_json(const nlohmann::json& j, ImageRenderer& renderer, AssetManager* assetManager) {
     if (j.contains("id")) {
         renderer.setId(boost::uuids::string_generator()(j["id"].get<std::string>()));
     }
@@ -33,12 +33,12 @@ inline void from_json(const nlohmann::json& j, ImageRenderer& renderer, AssetMan
     }
 
     if (j.contains("meshPath") && !j["meshPath"].is_null()) {
-        renderer.setMesh(assetManager.get<Mesh>(j["meshPath"]));
+        renderer.setMesh(assetManager->get<Mesh>(j["meshPath"]));
     }
 
     if (j.contains("materialPath") && !j["materialPath"].is_null()) {
         Material* material = nullptr;
-        material->setShader(assetManager.get<Shader>(j["materialPath"]));
+        material->setShader(assetManager->get<Shader>(j["materialPath"]));
         renderer.setMaterial(material);
     }
 }

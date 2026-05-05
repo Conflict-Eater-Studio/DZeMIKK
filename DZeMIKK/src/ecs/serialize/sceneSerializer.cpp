@@ -30,9 +30,8 @@ nlohmann::json SceneSerializer::serialize(const Scene& scene) {
 
     return json;
 }
-
-void SceneSerializer::deserializeInto(Scene& scene, const nlohmann::json& json) {
-    static boost::uuids::string_generator uuidGenerator;
+void SceneSerializer::deserializeInto(Scene& scene, const nlohmann::json& json, AssetManager* assetManager) {
+        static boost::uuids::string_generator uuidGenerator;
 
     if (json.contains("id") && json["id"].is_string()) {
         scene.setId(uuidGenerator(json["id"].get<std::string>()));
@@ -43,7 +42,7 @@ void SceneSerializer::deserializeInto(Scene& scene, const nlohmann::json& json) 
     }
 
     for (const auto& rootJson : json["roots"]) {
-        GameObjectSerializer::instantiateIntoScene(scene, rootJson, nullptr);
+        GameObjectSerializer::instantiateIntoScene(scene, rootJson, nullptr, assetManager);
     }
 
     // Resolve UUID-backed script references after all objects/components are instantiated.
@@ -86,5 +85,4 @@ void SceneSerializer::deserializeInto(Scene& scene, const nlohmann::json& json) 
             });
     }
 }
-void SceneSerializer::deserializeInto(Scene& scene, const nlohmann::json& json, AssetManager& assetManager) {}
 } // namespace dzemikk

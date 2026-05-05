@@ -31,7 +31,7 @@ namespace dzemikk {
         }
     }
 
-    inline void from_json(const nlohmann::json& json, SpriteRenderer& spriteRenderer, AssetManager& assetManager) {
+    inline void from_json(const nlohmann::json& json, SpriteRenderer& spriteRenderer, AssetManager* assetManager) {
         static boost::uuids::string_generator uuidGenerator;
 
         if (json.contains("id") && json["id"].is_string()) {
@@ -56,7 +56,7 @@ namespace dzemikk {
 
         std::string texturePath = json.value("texture", "");
         if (!texturePath.empty()) {
-            spriteRenderer.setTexture(assetManager.get<Texture>(texturePath));
+            spriteRenderer.setTexture(assetManager->get<Texture>(texturePath));
         }
     }
 

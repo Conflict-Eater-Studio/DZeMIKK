@@ -11,8 +11,8 @@ class Scene;
 class SceneSerializer {
     public:
         static nlohmann::json serialize(const Scene& scene);
-        static void deserializeInto(Scene& scene, const nlohmann::json& json);
-        static void deserializeInto(Scene& scene, const nlohmann::json& json, AssetManager& assetManager);
+        static void deserializeInto(Scene& scene, const nlohmann::json& json, AssetManager* assetManager);
+
     };
 }
 
