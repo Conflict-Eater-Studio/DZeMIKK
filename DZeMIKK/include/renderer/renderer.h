@@ -161,6 +161,19 @@ namespace dzemikk {
 
         void renderDebugUI();
 
+        void setupFrame();
+        void updateCamera();
+        void renderSkyboxPass();
+
+        void buildMeshBatches();
+        void renderMeshBatches();
+
+        void renderSkinnedPass();
+        void renderSpritePass();
+        void renderImagePass();
+        void renderTextPass();
+        void renderUITextPass();
+
         #pragma endregion
     };
 

@@ -114,32 +114,105 @@ void dzemikk::Renderer::uninitialize() {
 }
 
 void dzemikk::Renderer::render() {
+    setupFrame();
+    renderSkyboxPass();
+    updateCamera();
+    buildMeshBatches();
+    renderMeshBatches();
+    renderSkinnedPass();
+
+    if (_uiCamera)
+        _uiProjection = _uiCamera->getProjection();
+    glDisable(GL_DEPTH_TEST);
+    
+    renderSpritePass();
+    renderImagePass();
+    renderTextPass();   
+    renderUITextPass();
+
+    renderDebugUI();
+}
+
+const dzemikk::Camera* dzemikk::Renderer::getActiveSceneCamera() const {
+    return _sceneCamera;
+}
+const dzemikk::Camera* dzemikk::Renderer::getActiveUICamera() const {
+    return _uiCamera;
+}
+
+void dzemikk::Renderer::setActiveSceneCamera(dzemikk::Camera* camera) {
+    if (!camera)
+        return;
+
+    _sceneCamera = camera;
+}
+
+void dzemikk::Renderer::setActiveUICamera(dzemikk::Camera* camera) {
+    if (!camera)
+        return;
+
+    _uiCamera = camera;
+}
+
+void dzemikk::Renderer::setActiveSceneCameraById(int cameraId) {
+    for (auto& cam : _cameras) {
+        if (cam->getId() == cameraId) {
+            _sceneCamera = cam;
+            return;
+        }
+    }
+    std::cerr << "[Renderer] Warning: Scene camera with ID " << cameraId << " not found.\n";
+}
+
+void dzemikk::Renderer::setActiveUICameraById(int cameraId) {
+    for (auto& cam : _cameras) {
+        if (cam->getId() == cameraId) {
+            _uiCamera = cam;
+            return;
+        }
+    }
+    std::cerr << "[Renderer] Warning: UI camera with ID " << cameraId << " not found.\n";
+}
+
+void dzemikk::Renderer::setSkybox(AssetHandle<Skybox> skybox) {
+    if (!skybox.get()) {
+        return;
+    }
+    _skybox = skybox;
+}
+
+const dzemikk::AssetHandle<dzemikk::Skybox> dzemikk::Renderer::getSkybox() const {
+    return _skybox;
+}
+
+void dzemikk::Renderer::renderDebugUI() {
+    ImGui::Begin("Renderer Debug");
+
+    ImGui::Text("Directional Light");
+
+    ImGui::DragFloat3("Light Dir", &_debugLightDir.x, 0.01f);
+    ImGui::ColorEdit3("Light Color", &_debugLightColor.x);
+    ImGui::SliderFloat("Intensity", &_debugLightIntensity, 0.0f, 10.0f);
+
+    if (ImGui::Button("Normalize Dir")) {
+        _debugLightDir = glm::normalize(_debugLightDir);
+    }
+
+    ImGui::End();
+}
+
+void dzemikk::Renderer::setupFrame() {
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (_skybox && _sceneCamera) {
-
-        if (_skybox.get()->gpuReady) {
-            float time = glfwGetTime();
-
-            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), time * 0.1f, glm::vec3(0, 1, 0));
-            glm::mat4 viewNoTrans = _sceneCamera->getView() * rotation;
-
-            _skybox.get()->render(viewNoTrans, _sceneCamera->getProjection());
-
-            Profiler::Get().stats.drawCalls++;
-            Profiler::Get().stats.renderedObjects++;
-            Profiler::Get().stats.vertexCount += 36;
-            Profiler::Get().stats.triangleCount += 12;
-        }
-    }
-
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
+}
 
+void dzemikk::Renderer::updateCamera() {
     dzemikk::ComponentRegistry::get().getComponents<Camera>(_cameras);
 
     if (_sceneCamera) {
@@ -160,7 +233,28 @@ void dzemikk::Renderer::render() {
     for (auto& batch : _batches) {
         batch.models.clear();
     }
+}
 
+void dzemikk::Renderer::renderSkyboxPass() {
+    if (_skybox && _sceneCamera) {
+
+        if (_skybox.get()->gpuReady) {
+            float time = glfwGetTime();
+
+            glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), time * 0.1f, glm::vec3(0, 1, 0));
+            glm::mat4 viewNoTrans = _sceneCamera->getView() * rotation;
+
+            _skybox.get()->render(viewNoTrans, _sceneCamera->getProjection());
+
+            Profiler::Get().stats.drawCalls++;
+            Profiler::Get().stats.renderedObjects++;
+            Profiler::Get().stats.vertexCount += 36;
+            Profiler::Get().stats.triangleCount += 12;
+        }
+    }
+}
+
+void dzemikk::Renderer::buildMeshBatches() {
     dzemikk::ComponentRegistry::get().getComponents<MeshRenderer>(_meshRenderers);
 
     {
@@ -222,7 +316,9 @@ void dzemikk::Renderer::render() {
             }
         }
     }
+}
 
+void dzemikk::Renderer::renderMeshBatches() {
     {
         DZ_PROFILE_GPU("Opaque Rendering (Batches)");
         for (auto& batch : _batches) {
@@ -245,7 +341,9 @@ void dzemikk::Renderer::render() {
             Profiler::Get().stats.drawCalls++;
         }
     }
+}
 
+void dzemikk::Renderer::renderSkinnedPass() {
     ComponentRegistry::get().getComponents<SkinnedMeshRenderer>(_skinnedRenderers);
 
     {
@@ -300,11 +398,9 @@ void dzemikk::Renderer::render() {
             }
         }
     }
+}
 
-    if (_uiCamera)
-        _uiProjection = _uiCamera->getProjection();
-    glDisable(GL_DEPTH_TEST);
-
+void dzemikk::Renderer::renderSpritePass() {
     dzemikk::ComponentRegistry::get().getComponents<SpriteRenderer>(_spriteRenderers);
 
     {
@@ -338,7 +434,9 @@ void dzemikk::Renderer::render() {
             Profiler::Get().stats.triangleCount += r->getMesh()->getVertexCount() / 3;
         }
     }
+}
 
+void dzemikk::Renderer::renderImagePass() {
     std::vector<ImageRenderer*> uiSprites;
     ComponentRegistry::get().getEnabledComponents<ImageRenderer>(uiSprites);
 
@@ -373,7 +471,9 @@ void dzemikk::Renderer::render() {
             Profiler::Get().stats.triangleCount += r->getMesh()->getVertexCount() / 3;
         }
     }
+}
 
+void dzemikk::Renderer::renderTextPass() {
     std::vector<TextRenderer*> texts;
     ComponentRegistry::get().getComponents<TextRenderer>(texts);
 
@@ -430,7 +530,9 @@ void dzemikk::Renderer::render() {
             glBindVertexArray(0);
         }
     }
+}
 
+void dzemikk::Renderer::renderUITextPass() {
     std::vector<UITextRenderer*> uiTexts;
     ComponentRegistry::get().getEnabledComponents<UITextRenderer>(uiTexts);
 
@@ -560,74 +662,4 @@ void dzemikk::Renderer::render() {
             glBindVertexArray(0);
         }
     }
-
-    renderDebugUI();
-}
-
-const dzemikk::Camera* dzemikk::Renderer::getActiveSceneCamera() const {
-    return _sceneCamera;
-}
-const dzemikk::Camera* dzemikk::Renderer::getActiveUICamera() const {
-    return _uiCamera;
-}
-
-void dzemikk::Renderer::setActiveSceneCamera(dzemikk::Camera* camera) {
-    if (!camera)
-        return;
-
-    _sceneCamera = camera;
-}
-
-void dzemikk::Renderer::setActiveUICamera(dzemikk::Camera* camera) {
-    if (!camera)
-        return;
-
-    _uiCamera = camera;
-}
-
-void dzemikk::Renderer::setActiveSceneCameraById(int cameraId) {
-    for (auto& cam : _cameras) {
-        if (cam->getId() == cameraId) {
-            _sceneCamera = cam;
-            return;
-        }
-    }
-    std::cerr << "[Renderer] Warning: Scene camera with ID " << cameraId << " not found.\n";
-}
-
-void dzemikk::Renderer::setActiveUICameraById(int cameraId) {
-    for (auto& cam : _cameras) {
-        if (cam->getId() == cameraId) {
-            _uiCamera = cam;
-            return;
-        }
-    }
-    std::cerr << "[Renderer] Warning: UI camera with ID " << cameraId << " not found.\n";
-}
-
-void dzemikk::Renderer::setSkybox(AssetHandle<Skybox> skybox) {
-    if (!skybox.get()) {
-        return;
-    }
-    _skybox = skybox;
-}
-
-const dzemikk::AssetHandle<dzemikk::Skybox> dzemikk::Renderer::getSkybox() const {
-    return _skybox;
-}
-
-void dzemikk::Renderer::renderDebugUI() {
-    ImGui::Begin("Renderer Debug");
-
-    ImGui::Text("Directional Light");
-
-    ImGui::DragFloat3("Light Dir", &_debugLightDir.x, 0.01f);
-    ImGui::ColorEdit3("Light Color", &_debugLightColor.x);
-    ImGui::SliderFloat("Intensity", &_debugLightIntensity, 0.0f, 10.0f);
-
-    if (ImGui::Button("Normalize Dir")) {
-        _debugLightDir = glm::normalize(_debugLightDir);
-    }
-
-    ImGui::End();
 }

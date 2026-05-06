@@ -129,6 +129,8 @@ class AssetManager : public IEngineModule {
      */
     Mesh* getPrimitive(PrimitiveMeshLibrary::PrimitiveMesh type);
 
+    AssetHandle<Mesh> getPrimitiveMesh(PrimitiveMeshLibrary::PrimitiveMesh type);
+
     // FOR TEST ONLY
     /**
      * @brief Sets FMOD system (temporary / testing).

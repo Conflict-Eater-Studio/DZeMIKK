@@ -19,7 +19,7 @@ class UIDropdown : public IUIInteractable {
     struct OptionRender {
         float height{30.0F};
         AssetHandle<Mesh> mesh;
-        Material* material{nullptr};
+        std::shared_ptr<dzemikk::Material> material{nullptr};
         AssetHandle<Font> font;
         UITextRenderer::VerticalAlign textVAlign{UITextRenderer::VerticalAlign::Middle};
         UITextRenderer::HorizontalAlign textHAlign{UITextRenderer::HorizontalAlign::Center};

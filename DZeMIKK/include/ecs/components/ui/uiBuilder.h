@@ -34,7 +34,7 @@ class UIBuilder {
         glm::vec4 pressedColor = {0.6F, 0.6F, 0.6F, 1.0F};
         glm::vec4 textColor = {0.0F, 0.0F, 0.0F, 1.0F};
         AssetHandle<Mesh> mesh;
-        Material* material = nullptr;
+        std::shared_ptr<dzemikk::Material> material = nullptr;
     };
 
     struct UISliderParams {
@@ -55,9 +55,9 @@ class UIBuilder {
         AssetHandle<Mesh> bgMesh;
         AssetHandle<Mesh> fillMesh;
         AssetHandle<Mesh> handleMesh;
-        Material* bgMat = nullptr;
-        Material* fillMat = nullptr;
-        Material* handleMat = nullptr;
+        std::shared_ptr<dzemikk::Material> bgMat = nullptr;
+        std::shared_ptr<dzemikk::Material> fillMat = nullptr;
+        std::shared_ptr<dzemikk::Material> handleMat = nullptr;
     };
 
     struct UICheckboxParams {
@@ -75,8 +75,8 @@ class UIBuilder {
         float rotation = 0.0F;
         AssetHandle<Mesh> bgMesh;
         AssetHandle<Mesh> checkmarkMesh;
-        Material* bgMat = nullptr;
-        Material* checkmarkMat = nullptr;
+        std::shared_ptr<dzemikk::Material> bgMat = nullptr;
+        std::shared_ptr<dzemikk::Material> checkmarkMat = nullptr;
     };
 
     struct UIDropdownParams {
@@ -107,11 +107,11 @@ class UIBuilder {
         AssetHandle<Mesh>optionMesh;
         AssetHandle<Mesh> optionsBgMesh;
         AssetHandle<Mesh> scrollbarMesh;
-        Material* bgMat = nullptr;
-        Material* arrowMat = nullptr;
-        Material* optionMat = nullptr;
-        Material* optionsBgMat = nullptr;
-        Material* scrollBarMat = nullptr;
+        std::shared_ptr<dzemikk::Material> bgMat = nullptr;
+        std::shared_ptr<dzemikk::Material> arrowMat = nullptr;
+        std::shared_ptr<dzemikk::Material> optionMat = nullptr;
+        std::shared_ptr<dzemikk::Material> optionsBgMat = nullptr;
+        std::shared_ptr<dzemikk::Material> scrollBarMat = nullptr;
     };
 
     static GameObject* createButton(GameObject* parent, const UIButtonParams& params) {

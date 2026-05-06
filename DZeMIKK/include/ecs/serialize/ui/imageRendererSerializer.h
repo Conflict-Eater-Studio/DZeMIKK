@@ -37,7 +37,7 @@ inline void from_json(const nlohmann::json& json, ImageRenderer& renderer, Asset
     renderer.setMesh(assetManager->get<Mesh>(meshPath));
 
     std::string shaderPath = json.value("materialPath", "");
-    Material* material = nullptr;
+    std::shared_ptr<dzemikk::Material> material = nullptr;
     material->setShader(assetManager->get<Shader>(shaderPath));
     renderer.setMaterial(material);
 }

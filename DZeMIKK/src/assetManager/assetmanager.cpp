@@ -147,3 +147,24 @@ void dzemikk::AssetManager::registerHandlers() {
 void dzemikk::AssetManager::update() {
     processGpuUploads();
 }
+
+dzemikk::AssetHandle<dzemikk::Mesh> dzemikk::AssetManager::getPrimitiveMesh(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh type) {
+    const std::string key = "primitive_mesh/" + std::to_string(static_cast<int>(type));
+
+    if (auto cached = _database.get<Mesh>(key)) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[AssetManager] Primitive mesh from cache: {}", key);
+#endif
+        return AssetHandle<Mesh>(cached, key);
+    }
+
+    auto mesh = _primitiveMeshLibrary.get(type);
+
+    if (!mesh) {
+        return {};
+    }
+
+    _database.store<Mesh>(key, mesh);
+
+    return AssetHandle<Mesh>(mesh, key);
+}
