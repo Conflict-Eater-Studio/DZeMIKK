@@ -14,5 +14,6 @@ namespace dzemikk {
 
         virtual void initialize() = 0;
         virtual void uninitialize() = 0;
+        virtual void Update() {};
     };
-} 
+}

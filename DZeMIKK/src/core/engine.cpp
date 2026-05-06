@@ -116,6 +116,9 @@ void Engine::start() {
     float fixedDeltaTime = _time->getFixedDeltaTime();
     while (!_mainWindow->shouldClose()) {
         _time->update();
+        if (_input) {
+            _input->Update();
+        }
 
         float deltaTime = _time->getDeltaTime();
         Profiler::Get().BeginFrame(deltaTime);

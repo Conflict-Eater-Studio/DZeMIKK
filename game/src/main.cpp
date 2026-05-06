@@ -460,20 +460,46 @@ int main() {
         moveDirection.x += scrollOffset;
     });
 
-    engine->getInput()->OnKeyReleased.addListener([&](dzemikk::KeyReleasedEvent& event) {
-        if (event.GetKeyCode() == GLFW_KEY_H) moveDirection.z += 1.0f;
-        if (event.GetKeyCode() == GLFW_KEY_N) moveDirection.z -= 1.0f;
-        if (event.GetKeyCode() == GLFW_KEY_B) moveDirection.x += 1.0f;
-        if (event.GetKeyCode() == GLFW_KEY_M) moveDirection.x -= 1.0f;
+    engine->getInput()->BindKeyPressed(GLFW_KEY_H, [&]() { moveDirection.z -= 1.0f; });
+    engine->getInput()->BindKeyReleased(GLFW_KEY_H, [&]() { moveDirection.z += 1.0f; });
+
+    engine->getInput()->BindKeyPressed(GLFW_KEY_N, [&]() { moveDirection.z += 1.0f; });
+    engine->getInput()->BindKeyReleased(GLFW_KEY_N, [&]() { moveDirection.z -= 1.0f; });
+
+    engine->getInput()->BindKeyPressed(GLFW_KEY_B, [&]() { moveDirection.x -= 1.0f; });
+    engine->getInput()->BindKeyReleased(GLFW_KEY_B, [&]() { moveDirection.x += 1.0f; });
+
+    engine->getInput()->BindKeyPressed(GLFW_KEY_M, [&]() { moveDirection.x += 1.0f; });
+    engine->getInput()->BindKeyReleased(GLFW_KEY_M, [&]() { moveDirection.x -= 1.0f; });
+
+    engine->getInput()->BindKeyPressed(GLFW_KEY_SPACE, [&]() {
+        glm::vec3 pos = playerGO->transform()->getPosition();
+        pos.y += 1.0f;
+        playerGO->transform()->setPosition(pos);
+    });
+    engine->getInput()->BindGamepadButtonPressed(GLFW_GAMEPAD_BUTTON_A, [playerGO]() {
+        glm::vec3 pos = playerGO->transform()->getPosition();
+        pos.y += 1.0f;
+        playerGO->transform()->setPosition(pos);
     });
 
     engine->SetUserUpdateCallback([&engine, playerGO]() {
-        if (glm::length(moveDirection) > 0.01f) {
-            glm::vec3 pos = playerGO->transform()->getPosition();
-            float speed = 5.0f * engine->getTime()->getDeltaTime();
-            pos += glm::normalize(moveDirection) * speed;
-            playerGO->transform()->setPosition(pos);
+        glm::vec3 pos = playerGO->transform()->getPosition();
+        float speed = 5.0f * engine->getTime()->getDeltaTime();
+
+        if (engine->getInput()->IsGamepadConnected(GLFW_JOYSTICK_1)) {
+            float axisX = engine->getInput()->GetGamepadAxis(GLFW_JOYSTICK_1, GLFW_GAMEPAD_AXIS_LEFT_X);
+            float axisY = engine->getInput()->GetGamepadAxis(GLFW_JOYSTICK_1, GLFW_GAMEPAD_AXIS_LEFT_Y);
+            
+            if (abs(axisX) > 0.1f) pos.x += axisX * speed;
+            if (abs(axisY) > 0.1f) pos.z += axisY * speed;
         }
+
+        if (glm::length(moveDirection) > 0.01f) {
+            pos += glm::normalize(moveDirection) * speed;
+        }
+
+        playerGO->transform()->setPosition(pos);
 
         static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
 
