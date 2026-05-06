@@ -124,7 +124,8 @@ namespace dzemikk {
             Mesh* mesh = nullptr;
             Material* material = nullptr;
             std::vector<glm::mat4> models; 
-            GLuint instanceVBO = 0;          
+            GLuint instanceVBO = 0; 
+            glm::vec3 color;
         };
 
         #pragma endregion
