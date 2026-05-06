@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "game.h"
 
 #include "ecs/components/animator.h"
@@ -31,6 +33,9 @@
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
 
+#include "utils/perlin.h"
+#include "scripts/world/world.h"
+
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <memory>
@@ -39,9 +44,65 @@
 Game::Game(dzemikk::Engine* engine) : engine(engine) {}
 
 void Game::start() {
-    setupScene();
-    setupMainCamera();
-    setupUICamera();
+
+    game::Perlin perlin(1);
+
+    auto* assetManager = engine->getAssetManager();
+    auto* sceneManager = engine->getSceneManager();
+
+    auto scene = std::make_shared<dzemikk::Scene>();
+    sceneManager->loadScene(scene);
+    sceneManager->setActiveScene(scene);
+
+    auto* cameraGO = scene->createGameObject("Camera");
+    cameraGO->transform()->setPosition({0.0F, 100.0F, 100.0F});
+    auto* camera = cameraGO->addComponent<dzemikk::Camera>();
+    camera->lookAt({0.0F, 0.0F, 0.0F});
+    engine->getRenderer()->setActiveSceneCamera(camera);
+
+    auto* uiCameraGO = scene->createGameObject("UICamera");
+    uiCameraGO->transform()->setPosition({0.0F, 0.0F, 1.0F});
+    auto* uiCamera = uiCameraGO->addComponent<dzemikk::Camera>();
+    uiCamera->setOrthographic(0.0F, 1920.0F, 0.0F, 1080.0F, -1.0F, 1.0F);
+    engine->getRenderer()->setActiveUICamera(uiCamera);
+
+    auto shader = assetManager->get<dzemikk::Shader>("shaders/tile1");
+    auto shader2 = assetManager->get<dzemikk::Shader>("shaders/tile2");
+
+    auto material = std::make_shared<dzemikk::Material>();
+    material->setShader(shader);
+    auto material2 = std::make_shared<dzemikk::Material>();
+    material2->setShader(shader2);
+
+    auto model = assetManager->get<dzemikk::Model>("models/pole.fbx");
+
+    dzemikk::AssetHandle<dzemikk::Model> enemyModel =
+        assetManager->getPrimitiveModel(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Capsule);
+
+    dzemikk::AssetHandle<dzemikk::Model> resourceModel =
+        assetManager->getPrimitiveModel(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Sphere);
+
+    auto* rootGO = scene->createGameObject("Root");
+    auto* worldGO = scene->createGameObject("World", rootGO);
+    auto* world = worldGO->addComponent<game::World>(
+        1, std::vector<std::tuple<int, int, std::vector<game::HexCoord::Direction>>>{
+               {4, 6, {}},
+               {6, 8, {}},
+               {8, 10, {}},
+               {10, 12, {game::HexCoord::Direction::R60}},
+               {12, 14, {game::HexCoord::Direction::R300}},
+               {14, 16, {}},
+               {16, 18, {game::HexCoord::Direction::R60, game::HexCoord::Direction::R300}},
+           });
+    world->setModel(model);
+    world->setMaterial(material.get());
+    world->setMaterial2(material2.get());
+    world->setEnemyModel(enemyModel);
+    world->setResourceModel(resourceModel);
+
+    //setupScene();
+    //setupMainCamera();
+    //setupUICamera();
     // auto m1 = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
     // auto skybox = engine->getAssetManager()->get<dzemikk::Skybox>("textures/Daylight Box_Pieces");
     // skybox.get()->setShader(engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox").get());

@@ -1,3 +1,6 @@
+#ifndef PERLIN_HPP
+#define PERLIN_HPP
+
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -62,3 +65,4 @@ class Perlin {
     }
 };
 } // namespace game
+#endif
