@@ -24,10 +24,6 @@ class ImageRenderer : public Component {
     ImageRenderer& operator=(ImageRenderer&& other) noexcept = delete;
 
     [[nodiscard]] Mesh* getMesh() const {
-        return _mesh.get();
-    }
-
-    [[nodiscard]] AssetHandle<Mesh> getMeshHandle() const {
         return _mesh;
     }
 
@@ -47,7 +43,7 @@ class ImageRenderer : public Component {
         return _color;
     }
 
-    void setMesh(const AssetHandle<Mesh>& mesh) {
+    void setMesh(Mesh* mesh) {
         _mesh = mesh;
     }
 
@@ -76,7 +72,7 @@ class ImageRenderer : public Component {
     };
 
   private:
-    AssetHandle<Mesh> _mesh;
+    Mesh* _mesh;
 
     Material* _material = nullptr;
 

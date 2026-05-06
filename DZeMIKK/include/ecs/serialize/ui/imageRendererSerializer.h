@@ -15,9 +15,6 @@ inline void to_json(nlohmann::json& j, const ImageRenderer& renderer) {
     j["id"] = boost::uuids::to_string(renderer.getId());
     j["color"] = {renderer.getColor().r, renderer.getColor().g, renderer.getColor().b, renderer.getColor().a};
 
-    if (renderer.getMesh()) {
-        j["meshPath"] = renderer.getMeshHandle().getAssetPath();
-    }
     if (renderer.getMaterial()) {
         j["materialPath"] = renderer.getMaterial()->getShaderHandle().getAssetPath();
     }
@@ -33,8 +30,7 @@ inline void from_json(const nlohmann::json& json, ImageRenderer& renderer, Asset
     renderer.setId(boost::uuids::string_generator()(json["id"].get<std::string>()));
     renderer.setColor(glm::vec4(json["color"][0], json["color"][1], json["color"][2], json["color"][3]));
 
-    std::string meshPath = json.value("meshPath", "");
-    renderer.setMesh(assetManager->get<Mesh>(meshPath));
+    renderer.setMesh(assetManager->getPrimitive(PrimitiveMeshLibrary::PrimitiveMesh::Quad));
 
     std::string shaderPath = json.value("materialPath", "");
     Material* material = nullptr;
