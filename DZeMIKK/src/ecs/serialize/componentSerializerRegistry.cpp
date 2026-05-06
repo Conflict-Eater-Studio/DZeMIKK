@@ -1,5 +1,7 @@
 #include "ecs/serialize/componentSerializerRegistry.h"
 
+#include "ecs/serialize/ui/uiButtonSerializer.h"
+#include "ecs/serialize/ui/uiSliderSerializer.h"
 #include "ecs/serialize/animation/animatorSerializer.h"
 #include "ecs/serialize/cameraSerializer.h"
 #include "ecs/serialize/colliderSerializer.h"
@@ -11,8 +13,6 @@
 #include "ecs/serialize/transformSerializer.h"
 #include "ecs/serialize/ui/canvasSerializer.h"
 #include "ecs/serialize/ui/uiCheckboxSerializer.h"
-#include "ecs/serialize/uiButtonSerializer.h"
-#include "ecs/serialize/uiSliderSerializer.h"
 
 #include <stdexcept>
 #include <utility>
