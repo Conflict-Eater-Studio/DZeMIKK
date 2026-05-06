@@ -8,6 +8,8 @@
 #include <memory>
 #include <random>
 #include <vector>
+#include "renderer/material.h"
+#include "renderer/shader.h"
 
 namespace game {
 using dzemikk::Model;
@@ -53,30 +55,38 @@ void World::start() {
                                     static_cast<float>(cell.coord.r()) * 0.1F) *
                       2.0F;
         cell.coord.setHeight(height);
-        auto worldPos = cell.coord.toWorldPosition(std::numbers::sqrt3_v<float> / 2.0F, 0.0F);
+        auto worldPos = cell.coord.toWorldPosition(.65F, 0.0F);
         obj->transform()->setPosition(worldPos);
         obj->transform()->setScale({1.0F, 1.0F, 1.0F});
         obj->transform()->setRotation(
             glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
         auto* meshRenderer = obj->addComponent<dzemikk::MeshRenderer>();
         meshRenderer->setModel(_model);
-        meshRenderer->setMaterial(0, _material);
+        meshRenderer->setMaterial(0, _material.get());
         meshRenderer->setTransform(obj->transform());
-
-        auto* entityGO = scene->createGameObject(_owner);
-        auto* entityRenderer = entityGO->addComponent<dzemikk::MeshRenderer>();
+        meshRenderer->setColor(glm::vec4(1.0F, 0.5F, 0.2F, 1.0F));
 
         if (cell.onHex.second == GridCell::OnHex::Enemy) {
+            auto* entityGO = scene->createGameObject(_owner);
+            auto* entityRenderer = entityGO->addComponent<dzemikk::MeshRenderer>();
             entityRenderer->setModel(_enemyModel);
+            entityRenderer->setMaterial(0, _material2.get());
+            spdlog::info("{}", _material2->getShader()->getProgramID());
+            entityRenderer->setTransform(entityGO->transform());
+            entityRenderer->setColor(glm::vec4(0.0F, 0.5F, 1.0F, 1.0F));
+            entityGO->transform()->setPosition(worldPos + glm::vec3{0.0F, 2.0F, 0.0F});
         } else if (cell.onHex.second == GridCell::OnHex::Resource) {
+            auto* entityGO = scene->createGameObject(_owner);
+            auto* entityRenderer = entityGO->addComponent<dzemikk::MeshRenderer>();
             entityRenderer->setModel(_resourceModel);
+            entityRenderer->setMaterial(0, _material2.get());
+            entityRenderer->setTransform(entityGO->transform());
+            entityRenderer->setColor(glm::vec4(1.0F, 0.0F, 0.0F, 1.0F));
+            entityGO->transform()->setPosition(worldPos + glm::vec3{0.0F, 2.0F, 0.0F});
         } else {
             continue;
         }
 
-        entityRenderer->setMaterial(0, _material2);
-        entityRenderer->setTransform(entityGO->transform());
-        entityGO->transform()->setPosition(worldPos + glm::vec3{0.0F, 2.0F, 0.0F});
     }
 }
 } // namespace game

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "renderer/renderer.h"
 
 #include "core/profiler.h"
@@ -208,6 +210,7 @@ void dzemikk::Renderer::render() {
 
                     batch->mesh = mesh;
                     batch->material = material;
+                    batch->color = glm::vec3(r->getColor().x, r->getColor().y, r->getColor().z);
 
                     glGenBuffers(1, &batch->instanceVBO);
                 }
@@ -235,7 +238,7 @@ void dzemikk::Renderer::render() {
             shader->setVec3("lightDir", _debugLightDir);
             shader->setVec3("lightColor", _debugLightColor);
             shader->setFloat("lightIntensity", _debugLightIntensity);
-            shader->setVec3("objectColor", glm::vec3(1.0f, 0.5f, 0.2f));
+            shader->setVec3("objectColor", batch.color);
             shader->setVec3("viewPos", _sceneCamera->getOwner()->transform()->getPosition());
 
             mesh->drawInstanced(batch.models, batch.instanceVBO);

@@ -36,10 +36,10 @@ class World : public dzemikk::MonoBehaviour {
     void setResourceModel(const dzemikk::AssetHandle<dzemikk::Model>& model) {
         _resourceModel = model;
     }
-    void setMaterial(dzemikk::Material* material) {
+    void setMaterial(std::shared_ptr<dzemikk::Material> material) {
         _material = material;
     }
-    void setMaterial2(dzemikk::Material* material) {
+    void setMaterial2(std::shared_ptr<dzemikk::Material> material) {
         _material2 = material;
     }
 
@@ -52,8 +52,8 @@ class World : public dzemikk::MonoBehaviour {
     dzemikk::AssetHandle<dzemikk::Model> _model;
     dzemikk::AssetHandle<dzemikk::Model>  _enemyModel;
     dzemikk::AssetHandle<dzemikk::Model>  _resourceModel;
-    dzemikk::Material* _material{nullptr};
-    dzemikk::Material* _material2{nullptr};
+    std::shared_ptr<dzemikk::Material> _material;
+    std::shared_ptr<dzemikk::Material> _material2;
 };
 } // namespace game
 
