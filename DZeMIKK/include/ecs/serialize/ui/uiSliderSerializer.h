@@ -17,7 +17,7 @@ namespace dzemikk {
 inline void to_json(nlohmann::json& json, const UISlider& slider) {
     const auto style = slider.getStyle();
 
-    json["type"] = "UISlider";
+    json["type"] = slider.typeName();
     json["id"] = boost::uuids::to_string(slider.getId());
     json["value"] = slider.getValue();
     json["fillColor"] = {style.fillColor[0], style.fillColor[1], style.fillColor[2],

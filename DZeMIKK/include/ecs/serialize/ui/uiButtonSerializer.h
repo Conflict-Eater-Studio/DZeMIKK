@@ -19,7 +19,7 @@ inline void to_json(nlohmann::json& json, const UIButton& button) {
     const auto hoverColor = button.getStyle().hoverColor;
     const auto pressedColor = button.getStyle().pressedColor;
 
-    json["type"] = "UIButton";
+    json["type"] = button.typeName();
     json["id"] = boost::uuids::to_string(button.getId());
     json["normalColor"] = {normalColor[0], normalColor[1], normalColor[2], normalColor[3]};
     json["hoverColor"] = {hoverColor[0], hoverColor[1], hoverColor[2], hoverColor[3]};
