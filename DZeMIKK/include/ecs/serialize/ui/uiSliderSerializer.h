@@ -20,6 +20,9 @@ inline void to_json(nlohmann::json& json, const UISlider& slider) {
     json["type"] = slider.typeName();
     json["id"] = boost::uuids::to_string(slider.getId());
     json["value"] = slider.getValue();
+    json["minValue"] = slider.getMinValue();
+    json["maxValue"] = slider.getMaxValue();
+    json["step"] = slider.getStep();
     json["fillColor"] = {style.fillColor[0], style.fillColor[1], style.fillColor[2],
                          style.fillColor[3]};
     json["backgroundColor"] = {style.backgroundColor[0], style.backgroundColor[1],
@@ -68,20 +71,18 @@ inline void from_json(const nlohmann::json& json, UISlider& slider) {
     }
 
     slider.setId(uuidGenerator(json["id"].get<std::string>()));
-    slider.onValueChanged(json["value"].get<float>());
+    slider.setMinValue(json["minValue"]);
+    slider.setMaxValue(json["maxValue"]);
+    slider.setStep(json["step"]);
+    slider.onValueChanged(json["value"]);
 
     UISlider::Style style;
-    style.fillColor = {json["fillColor"][0].get<float>(), json["fillColor"][1].get<float>(),
-                       json["fillColor"][2].get<float>(), json["fillColor"][3].get<float>()};
-    style.backgroundColor = {
-        json["backgroundColor"][0].get<float>(), json["backgroundColor"][1].get<float>(),
-        json["backgroundColor"][2].get<float>(), json["backgroundColor"][3].get<float>()};
-    style.handleColor = {json["handleColor"][0].get<float>(), json["handleColor"][1].get<float>(),
-                         json["handleColor"][2].get<float>(), json["handleColor"][3].get<float>()};
-    style.handleHoverColor = {
-        json["handleHoverColor"][0].get<float>(), json["handleHoverColor"][1].get<float>(),
-        json["handleHoverColor"][2].get<float>(), json["handleHoverColor"][3].get<float>()};
+    style.fillColor = {json["fillColor"][0], json["fillColor"][1],json["fillColor"][2], json["fillColor"][3]};
+    style.backgroundColor = {json["backgroundColor"][0], json["backgroundColor"][1],json["backgroundColor"][2], json["backgroundColor"][3]};
+    style.handleColor = {json["handleColor"][0], json["handleColor"][1],json["handleColor"][2], json["handleColor"][3]};
+    style.handleHoverColor = {json["handleHoverColor"][0], json["handleHoverColor"][1], json["handleHoverColor"][2], json["handleHoverColor"][3]};
 
+    slider.setStyle(style);
     for (const auto& [eventKey, actionIdsJson] : json["events"].items()) {
         UIEventType eventType = UIEventType::Click;
         if (eventKey == "clickActions") {
