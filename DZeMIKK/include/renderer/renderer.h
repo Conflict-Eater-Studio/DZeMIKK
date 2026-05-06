@@ -4,178 +4,201 @@
 #include "core/iEngineModule.h"
 #include "frustum.h"
 #include "skybox.h"
-#include "assetManager/assetHandle.h"
 #include <memory>   
 
-namespace dzemikk {
+#include "renderer/renderPasses/IRenderPass.h"
+#include "renderer/cameraSystem.h"
 
-    class MeshRenderer;
-    class SkinnedMeshRenderer;
-    class SpriteRenderer;
-    class Mesh;
-    class Material;
+namespace dzemikk {
     class Camera;
     
     /**
      * @brief The main rendering module.
      *
-     * Handles rendering of 3D meshes and 2D sprites. Supports frustum culling,
-     * batching, instanced rendering, and UI overlay rendering.
+     * Central entry point for the rendering pipeline. Responsible for:
+     * - managing render passes
+     * - maintaining frame context (matrices, cameras, frustum)
+     *
+     * Does NOT directly render geometry — delegates work to IRenderPass instances.
      */
     class Renderer : public IEngineModule {
     public:
         Renderer() = default;
         ~Renderer() = default;
 
-        #pragma region Disable copy/move
+#pragma region Disable copy/move
         
         Renderer(const Renderer&) = delete;
         Renderer(Renderer&&) noexcept = delete;
         Renderer& operator=(const Renderer&) = delete;
         Renderer& operator=(Renderer&&) noexcept = delete;
         
-        #pragma endregion
+#pragma endregion
 
-
-        #pragma region Initialization / Uninitialization
+#pragma region Initialization / Uninitialization
 
         /**
-         * @brief Initializes renderer resources (UBO, OpenGL states).
+         * @brief Initializes renderer resources.
+         *
+         * Creates GPU buffers (UBO), initializes render passes,
+         * and sets up default OpenGL state.
          */
         void initialize() override;
 
         /**
-         * @brief Releases GPU resources and clears batches.
+         * @brief Releases GPU resources.
+         *
+         * Cleans up buffers and any persistent rendering data.
          */
         void uninitialize() override;
 
-        #pragma endregion
+#pragma endregion
 
-        #pragma region Camera Management
-
-        /**
-         * @brief Sets the active scene camera for 3D rendering.
-         */
-        void setActiveSceneCamera(Camera* camera);
+#pragma region Rendering
 
         /**
-         * @brief Sets the active UI camera for overlay rendering.
-         */
-        void setActiveUICamera(Camera* camera);
-
-        /**
-         * @brief Finds and sets the active scene camera by ID.
-         */
-        void setActiveSceneCameraById(int cameraId);
-
-        /**
-         * @brief Finds and sets the active UI camera by ID.
-         */
-        void setActiveUICameraById(int cameraId);
-
-        /**
-         * @brief Returns the currently active scene camera.
-         */
-        [[nodiscard]] const Camera* getActiveSceneCamera() const;
-
-        /**
-         * @brief Returns the currently active UI camera.
-         */
-        [[nodiscard]] const Camera* getActiveUICamera() const;
-
-        #pragma endregion
-
-        
-        #pragma region Rendering
-
-        /**
-         * @brief Renders all 3D meshes and 2D sprites.
+         * @brief Executes full rendering pipeline.
          *
-         * Performs frustum culling, batching, instanced rendering, and
-         * UI overlay rendering using the UI camera.
+         * Steps:
+         * 1. Prepare frame (clear buffers, setup GL state)
+         * 2. Update camera system
+         * 3. Execute all registered render passes in order
          */
         void render();
         
-        #pragma endregion
+#pragma endregion
 
-        #pragma region Skybox Management
+#pragma region Skybox Management
 
         /**
          * @brief Sets a custom skybox using a cubemap texture.
+         *
+         * Delegates to SkyboxRenderPass if available.
          */
         void setSkybox(AssetHandle<Skybox> skybox);
 
         /**
          * @brief Returns the currently active skybox.
+         *
+         * Returns empty handle if no skybox pass exists.
          */
         [[nodiscard]] const AssetHandle<Skybox> getSkybox() const;
 
-        #pragma endregion
-
-    private:
-        #pragma region Batch structure
+#pragma endregion
 
         /**
-         * @brief Represents a batch of meshes sharing the same material.
+         * @brief Access to camera system.
          *
-         * Used for instanced rendering to minimize draw calls.
+         * Used to control active cameras externally.
          */
-        struct Batch {
-            Mesh* mesh = nullptr;
-            Material* material = nullptr;
-            std::vector<glm::mat4> models; 
-            GLuint instanceVBO = 0; 
-            glm::vec3 color;
-        };
+        CameraSystem& getCameraSystem() {
+            return _cameraSystem;
+        }
 
-        #pragma endregion
+        const CameraSystem& getCameraSystem() const {
+            return _cameraSystem;
+        }
 
-        #pragma region Internal Data
-        std::vector<Batch> _batches;
+    private:
+#pragma region Internal Data
+      /**
+       * @brief Per-frame rendering context shared across all passes.
+       *
+       * Contains camera data, matrices, frustum, and GPU bindings.
+       * Updated every frame before executing render passes.
+       */
+        RenderContext _context;
 
-        std::vector<MeshRenderer*> _meshRenderers;
-        std::vector<SpriteRenderer*> _spriteRenderers;
-        std::vector<SkinnedMeshRenderer*> _skinnedRenderers;
+        
+        /**
+         * @brief Ordered list of render passes.
+         *
+         * Execution order defines the rendering pipeline.
+         * Ownership is maintained via unique_ptr.
+         */
+        std::vector<std::unique_ptr<IRenderPass>> _passes;
 
-        glm::mat4 _view = glm::mat4(1.0f);
-        glm::mat4 _projection = glm::mat4(1.0f);
-        glm::mat4 _uiProjection = glm::mat4(1.0f);
+        /**
+         * @brief Fast lookup map for render passes by type.
+         *
+         * Allows O(1) access to specific pass (e.g. SkyboxRenderPass).
+         */
+        std::unordered_map<std::type_index, IRenderPass*> _passMap;
 
-        std::vector<Camera*> _cameras; 
-        Camera* _sceneCamera;        
-        Camera* _uiCamera;   
+        /**
+         * @brief Uniform Buffer Object storing view/projection matrices.
+         */
+        unsigned int _uboMatrices = 0;
 
-        unsigned int _uboMatrices;
+        /**
+         * @brief View frustum used for culling.
+         */
         Frustum _frustum;
 
-        AssetHandle<Skybox> _skybox;
+        /**
+         * @brief Manages active scene/UI cameras.
+         */
+        CameraSystem _cameraSystem;
 
-        Shader* _textShader = nullptr;
-        GLuint textVAO = 0;
-        GLuint textVBO = 0;
-
-        //FOR TEST ONLY - DELETE THIS
-        glm::vec3 _debugLightDir = glm::vec3(1.0f, 10.0f, -15.0f);
-        glm::vec3 _debugLightColor = glm::vec3(1.0f);
-        float _debugLightIntensity = 1.0f;
-
-        void renderDebugUI();
-
+        /**
+         * @brief Prepares frame before rendering.
+         *
+         * Clears buffers and sets default OpenGL state.
+         */
         void setupFrame();
-        void updateCamera();
-        void renderSkyboxPass();
 
-        void buildMeshBatches();
-        void renderMeshBatches();
+        /**
+         * @brief Retrieves a render pass by type.
+         *
+         * @tparam T Render pass type
+         * @return Pointer to pass or nullptr if not found
+         */
+        template <typename T> T* getPass();
 
-        void renderSkinnedPass();
-        void renderSpritePass();
-        void renderImagePass();
-        void renderTextPass();
-        void renderUITextPass();
+        /**
+         * @brief Const version of getPass.
+         */
+        template <typename T> const T* getPass() const;
 
-        #pragma endregion
-    };
+        /**
+         * @brief Adds a new render pass to the pipeline.
+         *
+         * @tparam T Render pass type
+         * @param args Constructor arguments for the pass
+         * @return Raw pointer to the created pass
+         *
+         * @note Ownership is kept internally (unique_ptr).
+         * @warning Adding multiple passes of the same type will overwrite lookup map entry.
+         */
+        template <typename T, typename... Args> T* addPass(Args&&... args);
+
+#pragma endregion
+};
+
+// ================================== IMPLEMENTATION ==================================
+template <typename T> T* Renderer::getPass() {
+    auto it = _passMap.find(typeid(T));
+    if (it != _passMap.end())
+        return static_cast<T*>(it->second);
+    return nullptr;
+}
+
+template <typename T> const T* Renderer::getPass() const {
+    auto it = _passMap.find(typeid(T));
+    if (it != _passMap.end())
+        return static_cast<T*>(it->second);
+    return nullptr;
+}
+
+template <typename T, typename... Args> T* Renderer::addPass(Args&&... args) {
+    auto pass = std::make_unique<T>(std::forward<Args>(args)...);
+    T* ptr = pass.get();
+
+    _passMap[typeid(T)] = ptr;
+    _passes.push_back(std::move(pass));
+
+    return ptr;
+}
 
 }  // namespace dzemikk
 #endif // DZEMIKK_RENDERER_H

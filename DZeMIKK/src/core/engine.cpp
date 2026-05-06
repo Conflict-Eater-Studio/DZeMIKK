@@ -209,7 +209,7 @@ AudioManager* Engine::getAudioManager() const {
 }
 
 void Engine::updateCameraWASD(float speed) {
-    auto* transform = _renderer->getActiveSceneCamera()->getOwner()->transform();
+    auto* transform = _renderer->getCameraSystem().getActiveSceneCamera()->getOwner()->transform();
 
     glm::vec3 move(0.0f);
 
@@ -238,7 +238,7 @@ void Engine::updateCameraWASD(float speed) {
 }
 
 void Engine::updateCameraArrows(float speed) {
-    auto* camera = _renderer->getActiveSceneCamera();
+    auto* camera = _renderer->getCameraSystem().getActiveSceneCamera();
     if (!camera)
         return;
     auto* transform = camera->getOwner()->transform();
@@ -284,7 +284,7 @@ void Engine::updateCameraArrows(float speed) {
 void Engine::updateMouseUI(float deltaTime) {
     (void)deltaTime;
 
-    auto* camera = _renderer->getActiveUICamera();
+    auto* camera = _renderer->getCameraSystem().getActiveUICamera();
     if (!camera) {
         return;
     }

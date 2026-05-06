@@ -41,6 +41,7 @@
 #include "renderer/model.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
+#include "renderer/cameraSystem.h"
 
 #include "utils/perlin.h"
 #include "scripts/world/world.h"
@@ -97,6 +98,10 @@ void Game::start() {
     auto materialC = new dzemikk::Material();
     materialC->setShader(shaderC);
 
+    auto shaderD = engine->getAssetManager()->get<dzemikk::Shader>("shaders/skinned2");
+    auto materialD = new dzemikk::Material();
+    materialD->setShader(shaderD);
+
     auto skyboxShader = engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox");
 
     SkyboxInitContext sCtx(skyboxShader, engine->getRenderer(), engine);
@@ -110,16 +115,16 @@ void Game::start() {
     sceneManager->setActiveScene(scene);
 
     auto* cameraGO = scene->createGameObject("Camera");
-    cameraGO->transform()->setPosition({0.0F, 10.0F, 10.0F});
+    cameraGO->transform()->setPosition({0.0F, 7.0F, 10.0F});
     auto* camera = cameraGO->addComponent<dzemikk::Camera>();
     camera->lookAt({0.0F, 2.0F, 0.0F});
-    engine->getRenderer()->setActiveSceneCamera(camera);
+    engine->getRenderer()->getCameraSystem().setActiveSceneCamera(camera);
 
     auto* uiCameraGO = scene->createGameObject("UICamera");
     uiCameraGO->transform()->setPosition({0.0F, 0.0F, 1.0F});
     auto* uiCamera = uiCameraGO->addComponent<dzemikk::Camera>();
     uiCamera->setOrthographic(0.0F, 1920.0F, 0.0F, 1080.0F, -1.0F, 1.0F);
-    engine->getRenderer()->setActiveUICamera(uiCamera);
+    engine->getRenderer()->getCameraSystem().setActiveUICamera(uiCamera);
 
     auto shader = assetManager->get<dzemikk::Shader>("shaders/tile1");
     auto shader2 = assetManager->get<dzemikk::Shader>("shaders/tile2");
@@ -138,6 +143,7 @@ void Game::start() {
 
     auto* rootGO = scene->createGameObject("Root");
     auto* worldGO = scene->createGameObject("World", rootGO);
+
     auto* world = worldGO->addComponent<game::World>(
         1, std::vector<std::tuple<int, int, std::vector<game::HexCoord::Direction>>>{
                {4, 6, {}},
@@ -148,6 +154,36 @@ void Game::start() {
                {14, 16, {}},
                {16, 18, {game::HexCoord::Direction::R60, game::HexCoord::Direction::R300}},
            });
+
+    /*
+    auto* world = worldGO->addComponent<game::World>(
+        1, std::vector<std::tuple<int, int, std::vector<game::HexCoord::Direction>>>{
+               {4, 6, {}},
+               {6, 8, {}},
+               {8, 10, {}},
+               {10, 12, {game::HexCoord::Direction::R60}},
+               {12, 14, {game::HexCoord::Direction::R300}},
+               {14, 16, {}},
+               {16, 18, {game::HexCoord::Direction::R60, game::HexCoord::Direction::R300}},
+
+               {18, 20, {}},
+               {20, 22, {game::HexCoord::Direction::R0}},
+               {22, 24, {game::HexCoord::Direction::R60}},
+               {24, 26, {game::HexCoord::Direction::R120}},
+               {26, 28, {game::HexCoord::Direction::R300}},
+               {28, 30, {}},
+
+               {30, 34, {game::HexCoord::Direction::R60, game::HexCoord::Direction::R300}},
+               {34, 38, {}},
+               {38, 42, {game::HexCoord::Direction::R0, game::HexCoord::Direction::R120}},
+
+               {42, 46, {game::HexCoord::Direction::R60}},
+               {46, 50, {}},
+
+               {50, 55, {game::HexCoord::Direction::R300}},
+               {55, 60, {game::HexCoord::Direction::R60, game::HexCoord::Direction::R0}},
+           });
+        */
     world->setModel(model);
     world->setMaterial(material);
     world->setMaterial2(material2);
@@ -269,11 +305,7 @@ void Game::start() {
     //  auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/cooper.fbx");
     enemyMeshR->setTransform(enemyGO->transform());
     enemyMeshR->setMaterial(0, materialC);
-    enemyMeshR->setMaterial(1, materialC);
-    enemyMeshR->setMaterial(2, materialC);
-    enemyMeshR->setMaterial(3, materialC);
-    enemyMeshR->setMaterial(4, materialC);
-    enemyMeshR->setMaterial(5, materialC);
+    enemyMeshR->setMaterial(1, materialD);
     auto sm = std::make_shared<dzemikk::AnimationStateMachine>();
     auto animator = enemyGO->addComponent<dzemikk::Animator>();
     engine->getAnimationModule()->registerAnimator(animator);
@@ -305,7 +337,7 @@ void Game::setupMainCamera() {
     auto camera = cameraGO->addComponent<dzemikk::Camera>();
     camera->lookAt(glm::vec3(0.0f, 0.0f, 0.0f));
 
-    engine->getRenderer()->setActiveSceneCamera(camera);
+    engine->getRenderer()->getCameraSystem().setActiveSceneCamera(camera);
 }
 
 void Game::setupMaterials() {
@@ -360,7 +392,7 @@ void Game::setupUICamera() {
     auto cameraUI = cameraUIGO->addComponent<dzemikk::Camera>();
     cameraUI->setOrthographic(0.0f, 1920.0f, 0.0f, 1080.0f, -1.0f, 1.0f);
 
-    engine->getRenderer()->setActiveUICamera(cameraUI);
+    engine->getRenderer()->getCameraSystem().setActiveUICamera(cameraUI);
 }
 
 void Game::setupUI() {
@@ -409,8 +441,8 @@ void Game::setupInputCallbacks() {
 
             glfwGetWindowSize(engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
 
-            dzemikk::Collider* collider =
-                engine->getCollisions()->raycast(engine->getRenderer()->getActiveSceneCamera(),
+            dzemikk::Collider* collider = engine->getCollisions()->raycast(
+                engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
                                                  engine->getInput()->GetMousePosition(),
                                                  windowWidth,
                                                  windowHeight);
