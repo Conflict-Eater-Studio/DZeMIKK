@@ -92,6 +92,8 @@ namespace dzemikk {
         auto* checkmark = checkbox.getOwner()->addComponent<ImageRenderer>();
         dzemikk::from_json(json["backgroundRenderer"], *background, assetManager);
         dzemikk::from_json(json["checkmarkRenderer"], *checkmark, assetManager);
+        checkbox.setBackgroundSpriteRenderer(background);
+        checkbox.setCheckmarkSpriteRenderer(checkmark);
     }
 
     inline void registerUICheckboxSerializer(ComponentSerializerRegistry& registry) {
