@@ -1,3 +1,5 @@
+#pragma once
+
 #include "renderer/renderer.h"
 
 #include "core/profiler.h"
