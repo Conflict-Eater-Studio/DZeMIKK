@@ -72,16 +72,6 @@ class VectorTrack : public IAnimationTrack {
             }
             return _keys.size() - 2;
         }
-
-      public:
-        std::string getType() const override {
-            return "VectorTrack";
-        }
-        nlohmann::json serialize() const override {
-            nlohmann::json j;
-            j["keys"] = _keys;
-            return j;
-        }
 };
 }
 #endif

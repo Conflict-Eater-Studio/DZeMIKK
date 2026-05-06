@@ -1,6 +1,7 @@
 #ifndef DZEMIKK_UITEXT_RENDERER_H
 #define DZEMIKK_UITEXT_RENDERER_H
 
+#include "assetManager/assetHandle.h"
 #include "ecs/component.h"
 #include "ecs/components/ui/rectTransform.h"
 

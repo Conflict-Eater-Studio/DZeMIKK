@@ -62,15 +62,6 @@ class FloatTrack : public IAnimationTrack {
             return _keys.size() - 2;
         }
 
-      public:
-        std::string getType() const override {
-            return "FloatTrack";
-        }
-        nlohmann::json serialize() const override {
-            nlohmann::json j;
-            j["keys"] = _keys;
-            return j;
-        }
 };
 }
 #endif

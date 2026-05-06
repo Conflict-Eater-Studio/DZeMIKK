@@ -187,7 +187,6 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/components/ui/uiSlider.h"
         "${INC_DIR}/ecs/components/ui/colors.h"
         "${INC_DIR}/ecs/components/ui/uiCheckbox.h"
-        "${INC_DIR}/ecs/components/ui/uiCheckboxActionRegistry.h"
         "${INC_DIR}/ecs/serialize/meshRendererSerializer.h"
         "${INC_DIR}/ecs/serialize/textRendererSerializer.h"
         "${INC_DIR}/ecs/serialize/spriteRendererSerializer.h"
@@ -196,7 +195,6 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/cameraSerializer.h"
         "${INC_DIR}/ecs/serialize/ui/canvasSerializer.h"
         "${INC_DIR}/ecs/serialize/ui/imageRendererSerializer.h"
-        "${INC_DIR}/ecs/serialize/ui/UITextRenderSerializer.h"
         "${INC_DIR}/ecs/components/ui/uiDropdown.h"
         "${INC_DIR}/audio/audioManager.h"
 )

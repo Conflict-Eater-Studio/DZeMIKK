@@ -9,7 +9,6 @@
 #include "ecs/serialize/spriteRendererSerializer.h"
 #include "ecs/serialize/textRendererSerializer.h"
 #include "ecs/serialize/transformSerializer.h"
-#include "ecs/serialize/ui/UITextRenderSerializer.h"
 #include "ecs/serialize/ui/canvasSerializer.h"
 #include "ecs/serialize/ui/uiCheckboxSerializer.h"
 #include "ecs/serialize/uiButtonSerializer.h"
@@ -37,7 +36,6 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerRectTransformSerializer(registry);
     registerUICheckboxSerializer(registry);
     registerAnimatorSerializer(registry);
-    registerUITextRendererSerializer(registry);
 
     return registry;
 }

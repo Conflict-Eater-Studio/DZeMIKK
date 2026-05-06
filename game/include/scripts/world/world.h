@@ -27,13 +27,13 @@ class World : public dzemikk::MonoBehaviour {
         return "World";
     }
 
-    void setModel(dzemikk::Model* model) {
+    void setModel(const dzemikk::AssetHandle<dzemikk::Model>& model) {
         _model = model;
     }
-    void setEnemyModel(dzemikk::Model* model) {
+    void setEnemyModel(const dzemikk::AssetHandle<dzemikk::Model>& model) {
         _enemyModel = model;
     }
-    void setResourceModel(dzemikk::Model* model) {
+    void setResourceModel(const dzemikk::AssetHandle<dzemikk::Model>& model) {
         _resourceModel = model;
     }
     void setMaterial(dzemikk::Material* material) {
@@ -49,9 +49,9 @@ class World : public dzemikk::MonoBehaviour {
     std::mt19937 _rng;
     std::uniform_int_distribution<int> _randSteps;
     std::vector<std::tuple<int, int, std::vector<HexCoord::Direction>>> _chunkConfigs;
-    dzemikk::Model* _model{nullptr};
-    dzemikk::Model* _enemyModel{nullptr};
-    dzemikk::Model* _resourceModel{nullptr};
+    dzemikk::AssetHandle<dzemikk::Model> _model;
+    dzemikk::AssetHandle<dzemikk::Model>  _enemyModel;
+    dzemikk::AssetHandle<dzemikk::Model>  _resourceModel;
     dzemikk::Material* _material{nullptr};
     dzemikk::Material* _material2{nullptr};
 };

@@ -26,14 +26,14 @@ class UIBuilder {
         glm::vec2 scale = {1.0F, 1.0F};
         float rotation = 0.0F;
         std::string text;
-        Font* textFont = nullptr;
+        AssetHandle<Font> textFont;
         UITextRenderer::VerticalAlign textVAlign = UITextRenderer::VerticalAlign::Middle;
         UITextRenderer::HorizontalAlign textHAlign = UITextRenderer::HorizontalAlign::Center;
         glm::vec4 normalColor = {1.0F, 1.0F, 1.0F, 1.0F};
         glm::vec4 hoverColor = {0.8F, 0.8F, 0.8F, 1.0F};
         glm::vec4 pressedColor = {0.6F, 0.6F, 0.6F, 1.0F};
         glm::vec4 textColor = {0.0F, 0.0F, 0.0F, 1.0F};
-        Mesh* mesh = nullptr;
+        AssetHandle<Mesh> mesh;
         Material* material = nullptr;
     };
 
@@ -52,9 +52,9 @@ class UIBuilder {
         glm::vec4 handleColor = {1.0F, 1.0F, 1.0F, 1.0F};
         glm::vec4 handleHoverColor = {0.8F, 0.8F, 0.8F, 1.0F};
         glm::vec4 hadnlePressedColor = {0.6F, 0.6F, 0.6F, 1.0F};
-        Mesh* bgMesh = nullptr;
-        Mesh* fillMesh = nullptr;
-        Mesh* handleMesh = nullptr;
+        AssetHandle<Mesh> bgMesh;
+        AssetHandle<Mesh> fillMesh;
+        AssetHandle<Mesh> handleMesh;
         Material* bgMat = nullptr;
         Material* fillMat = nullptr;
         Material* handleMat = nullptr;
@@ -73,8 +73,8 @@ class UIBuilder {
         glm::vec4 pressedColor = {0.6F, 0.6F, 0.6F, 1.0F};
         glm::vec4 checkmarkColor = {0.2F, 0.6F, 1.0F, 1.0F};
         float rotation = 0.0F;
-        Mesh* bgMesh = nullptr;
-        Mesh* checkmarkMesh = nullptr;
+        AssetHandle<Mesh> bgMesh;
+        AssetHandle<Mesh> checkmarkMesh;
         Material* bgMat = nullptr;
         Material* checkmarkMat = nullptr;
     };
@@ -93,7 +93,7 @@ class UIBuilder {
         float optionHeight = 30.0F;
         std::size_t maxVisibleOptions = 5;
         std::string text;
-        Font* textFont = nullptr;
+        AssetHandle<Font> textFont;
         glm::vec4 textColor = {0.0F, 0.0F, 0.0F, 1.0F};
         UITextRenderer::VerticalAlign textVAlign = UITextRenderer::VerticalAlign::Middle;
         UITextRenderer::HorizontalAlign textHAlign = UITextRenderer::HorizontalAlign::Center;
@@ -102,11 +102,11 @@ class UIBuilder {
         glm::vec4 pressedColor = {0.6F, 0.6F, 0.6F, 1.0F};
         glm::vec4 highlightColor = {0.2F, 0.6F, 1.0F, 1.0F};
         glm::vec4 arrowColor = {1.0F, 1.0F, 1.0F, 1.0F};
-        Mesh* bgMesh = nullptr;
-        Mesh* arrowMesh = nullptr;
-        Mesh* optionMesh = nullptr;
-        Mesh* optionsBgMesh = nullptr;
-        Mesh* scrollbarMesh = nullptr;
+        AssetHandle<Mesh> bgMesh;
+        AssetHandle<Mesh> arrowMesh;
+        AssetHandle<Mesh>optionMesh;
+        AssetHandle<Mesh> optionsBgMesh;
+        AssetHandle<Mesh> scrollbarMesh;
         Material* bgMat = nullptr;
         Material* arrowMat = nullptr;
         Material* optionMat = nullptr;
@@ -156,7 +156,8 @@ class UIBuilder {
         auto* text = textGO->addComponent<UITextRenderer>();
         text->color = params.textColor;
         text->text = params.text;
-        text->font = params.textFont;
+        text->fontAsset = params.textFont;
+        text->font = params.textFont.get();
         text->verticalAlign = params.textVAlign;
         text->horizontalAlign = params.textHAlign;
 

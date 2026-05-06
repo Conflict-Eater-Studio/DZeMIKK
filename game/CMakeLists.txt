@@ -6,6 +6,7 @@ add_executable(game
                 src/map/grid.cpp
                 src/scripts/world/world.cpp
                 src/main.cpp
+                src/game.cpp
 )
 target_include_directories(game
         PUBLIC
