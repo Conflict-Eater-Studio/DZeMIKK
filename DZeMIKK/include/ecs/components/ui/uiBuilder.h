@@ -33,7 +33,7 @@ class UIBuilder {
         glm::vec4 hoverColor = {0.8F, 0.8F, 0.8F, 1.0F};
         glm::vec4 pressedColor = {0.6F, 0.6F, 0.6F, 1.0F};
         glm::vec4 textColor = {0.0F, 0.0F, 0.0F, 1.0F};
-        AssetHandle<Mesh> mesh;
+        Mesh* mesh;
         Material* material = nullptr;
     };
 
@@ -52,9 +52,9 @@ class UIBuilder {
         glm::vec4 handleColor = {1.0F, 1.0F, 1.0F, 1.0F};
         glm::vec4 handleHoverColor = {0.8F, 0.8F, 0.8F, 1.0F};
         glm::vec4 hadnlePressedColor = {0.6F, 0.6F, 0.6F, 1.0F};
-        AssetHandle<Mesh> bgMesh;
-        AssetHandle<Mesh> fillMesh;
-        AssetHandle<Mesh> handleMesh;
+        Mesh* bgMesh;
+        Mesh* fillMesh;
+        Mesh* handleMesh;
         Material* bgMat = nullptr;
         Material* fillMat = nullptr;
         Material* handleMat = nullptr;
@@ -73,8 +73,8 @@ class UIBuilder {
         glm::vec4 pressedColor = {0.6F, 0.6F, 0.6F, 1.0F};
         glm::vec4 checkmarkColor = {0.2F, 0.6F, 1.0F, 1.0F};
         float rotation = 0.0F;
-        AssetHandle<Mesh> bgMesh;
-        AssetHandle<Mesh> checkmarkMesh;
+        Mesh* bgMesh;
+        Mesh* checkmarkMesh;
         Material* bgMat = nullptr;
         Material* checkmarkMat = nullptr;
     };
@@ -102,11 +102,11 @@ class UIBuilder {
         glm::vec4 pressedColor = {0.6F, 0.6F, 0.6F, 1.0F};
         glm::vec4 highlightColor = {0.2F, 0.6F, 1.0F, 1.0F};
         glm::vec4 arrowColor = {1.0F, 1.0F, 1.0F, 1.0F};
-        AssetHandle<Mesh> bgMesh;
-        AssetHandle<Mesh> arrowMesh;
-        AssetHandle<Mesh>optionMesh;
-        AssetHandle<Mesh> optionsBgMesh;
-        AssetHandle<Mesh> scrollbarMesh;
+        Mesh* bgMesh;
+        Mesh* arrowMesh;
+        Mesh* optionMesh;
+        Mesh* optionsBgMesh;
+        Mesh* scrollbarMesh;
         Material* bgMat = nullptr;
         Material* arrowMat = nullptr;
         Material* optionMat = nullptr;
