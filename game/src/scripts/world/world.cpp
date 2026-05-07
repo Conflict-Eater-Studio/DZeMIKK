@@ -67,6 +67,10 @@ void World::start() {
         meshRenderer->setTransform(obj->transform());
         meshRenderer->setColor(glm::vec4(1.0F, 0.5F, 0.2F, 1.0F));
 
+        auto* collider = obj->addComponent<dzemikk::Collider>();
+        collider->setModel(_model);
+        collider->setTransform(obj->transform());
+
         if (cell.onHex.second == GridCell::OnHex::Enemy) {
             auto* entityGO = scene->createGameObject(_owner);
             auto* entityRenderer = entityGO->addComponent<dzemikk::MeshRenderer>();

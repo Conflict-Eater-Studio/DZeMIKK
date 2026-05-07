@@ -292,41 +292,13 @@ void Game::start() {
                {16, 18, {game::HexCoord::Direction::R60, game::HexCoord::Direction::R300}},
            });
 
-    /*
-    auto* world = worldGO->addComponent<game::World>(
-        1, std::vector<std::tuple<int, int, std::vector<game::HexCoord::Direction>>>{
-               {4, 6, {}},
-               {6, 8, {}},
-               {8, 10, {}},
-               {10, 12, {game::HexCoord::Direction::R60}},
-               {12, 14, {game::HexCoord::Direction::R300}},
-               {14, 16, {}},
-               {16, 18, {game::HexCoord::Direction::R60, game::HexCoord::Direction::R300}},
-
-               {18, 20, {}},
-               {20, 22, {game::HexCoord::Direction::R0}},
-               {22, 24, {game::HexCoord::Direction::R60}},
-               {24, 26, {game::HexCoord::Direction::R120}},
-               {26, 28, {game::HexCoord::Direction::R300}},
-               {28, 30, {}},
-
-               {30, 34, {game::HexCoord::Direction::R60, game::HexCoord::Direction::R300}},
-               {34, 38, {}},
-               {38, 42, {game::HexCoord::Direction::R0, game::HexCoord::Direction::R120}},
-
-               {42, 46, {game::HexCoord::Direction::R60}},
-               {46, 50, {}},
-
-               {50, 55, {game::HexCoord::Direction::R300}},
-               {55, 60, {game::HexCoord::Direction::R60, game::HexCoord::Direction::R0}},
-           });
-        */
     world->setModel(model);
     world->setMaterial(material);
     world->setMaterial2(material);
     world->setEnemyModel(enemyModel);
     world->setResourceModel(resourceModel);
 
+    /*
     auto* uiRootGO = scene->createGameObject("UI Root");
     auto* canvas = uiRootGO->addComponent<dzemikk::Canvas>();
     uiRootGO->rectTransform()->setSize({1920.0F, 1080.0F});
@@ -428,6 +400,7 @@ void Game::start() {
     horiGO->enabled(false);
     vertGO->enabled(false);
     gridGO->enabled(false);
+    */
 
     auto enemyGO = scene->createGameObject();
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 2.5f, 5.0f));
@@ -570,30 +543,49 @@ void Game::setupAudio() {
 }
 
 void Game::setupInputCallbacks() {
+
+    static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
+
     engine->SetUserUpdateCallback([this]() {
-        if (!engine || !engine->getInput() || !playerGO) {
+        if (!engine || !engine->getInput()) {
             return;
         }
 
-        if (engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-            int windowWidth = 0;
-            int windowHeight = 0;
+        int windowWidth = 0;
+        int windowHeight = 0;
 
-            glfwGetWindowSize(engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
+        glfwGetWindowSize(engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
 
-            dzemikk::Collider* collider = engine->getCollisions()->raycast(
-                engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
-                                                 engine->getInput()->GetMousePosition(),
-                                                 windowWidth,
-                                                 windowHeight);
+        dzemikk::Collider* collider = engine->getCollisions()->raycast(
+            engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
+            engine->getInput()->GetMousePosition(), windowWidth, windowHeight);
 
-            if (collider) {
-                auto hit = collider->getOwner()->getComponent<dzemikk::Transform>();
-                collider->getOwner()
-                    ->getComponent<dzemikk::MeshRenderer>()
-                    ->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+        dzemikk::MeshRenderer* currentRenderer = nullptr;
 
-                glm::vec3 position = hit->getPosition();
+        if (collider) {
+            currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
+        }
+
+        if (currentRenderer != lastHitRenderer) {
+
+            if (lastHitRenderer && lastHitRenderer->isValid()) {
+                lastHitRenderer->setColor(glm::vec4(1.0F, 0.5F, 0.2F, 1.0F));
+            }
+
+            if (currentRenderer) {
+                currentRenderer->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+            }
+
+            lastHitRenderer = currentRenderer;
+        }
+
+        if (collider && engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+
+            auto hitTransform = collider->getOwner()->getComponent<dzemikk::Transform>();
+
+            if (hitTransform && playerGO) {
+
+                glm::vec3 position = hitTransform->getPosition();
                 position.y += 1.5f;
 
                 playerGO->transform()->setPosition(position);

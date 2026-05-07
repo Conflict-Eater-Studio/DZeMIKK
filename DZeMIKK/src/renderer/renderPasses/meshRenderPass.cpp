@@ -67,7 +67,7 @@ void dzemikk::MeshRenderPass::buildMeshBatches(RenderContext& ctx) {
                 Batch* batch = nullptr;
 
                 for (auto& b : _batches) {
-                    if (b.mesh == mesh && b.material == material) {
+                    if (b.mesh == mesh && b.material == material && b.color == glm::vec3(r->getColor().x, r->getColor().y, r->getColor().z) ){
                         batch = &b;
                         break;
                     }
