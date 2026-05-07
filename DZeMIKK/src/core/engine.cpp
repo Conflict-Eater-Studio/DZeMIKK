@@ -148,8 +148,8 @@ void Engine::start() {
 #else
         _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
-        updateCameraWASD(1.f);
-        updateCameraArrows(1.1f);
+        updateCameraWASD(.3f);
+        updateCameraArrows(0.3f);
         updateMouseUI(deltaTime);
 
         if (m_UserUpdateCallback) {

@@ -63,7 +63,7 @@ void World::start() {
             glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
         auto* meshRenderer = obj->addComponent<dzemikk::MeshRenderer>();
         meshRenderer->setModel(_model);
-        meshRenderer->setMaterial(0, _material.get());
+        meshRenderer->setMaterial(0, _material);
         meshRenderer->setTransform(obj->transform());
         meshRenderer->setColor(glm::vec4(1.0F, 0.5F, 0.2F, 1.0F));
 
@@ -71,7 +71,7 @@ void World::start() {
             auto* entityGO = scene->createGameObject(_owner);
             auto* entityRenderer = entityGO->addComponent<dzemikk::MeshRenderer>();
             entityRenderer->setModel(_enemyModel);
-            entityRenderer->setMaterial(0, _material2.get());
+            entityRenderer->setMaterial(0, _material2);
             spdlog::info("{}", _material2->getShader()->getProgramID());
             entityRenderer->setTransform(entityGO->transform());
             entityRenderer->setColor(glm::vec4(0.0F, 0.5F, 1.0F, 1.0F));
@@ -80,7 +80,7 @@ void World::start() {
             auto* entityGO = scene->createGameObject(_owner);
             auto* entityRenderer = entityGO->addComponent<dzemikk::MeshRenderer>();
             entityRenderer->setModel(_resourceModel);
-            entityRenderer->setMaterial(0, _material2.get());
+            entityRenderer->setMaterial(0, _material2);
             entityRenderer->setTransform(entityGO->transform());
             entityRenderer->setColor(glm::vec4(1.0F, 0.0F, 0.0F, 1.0F));
             entityGO->transform()->setPosition(worldPos + glm::vec3{0.0F, 2.0F, 0.0F});

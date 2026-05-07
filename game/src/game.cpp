@@ -97,6 +97,102 @@ dzemikk::DirectionalLight* sunLight = nullptr;
 dzemikk::PointLight* pointLight = nullptr;
 dzemikk::SpotLight* spotLight = nullptr;
 
+
+struct ModelInitContext {
+    dzemikk::MeshRenderer* renderer;
+};
+
+void onModelLoaded(dzemikk::AssetHandle<dzemikk::Model> model, ModelInitContext& ctx) {
+    ctx.renderer->setModel(model);
+}
+
+void Game::spawnModel(dzemikk::Scene* scene, std::shared_ptr<dzemikk::Material> material,
+                      const std::string& modelPath, const glm::vec3& position,
+                      const glm::vec3& scale,
+                      const glm::quat& rotation) {
+    auto go = scene->createGameObject();
+
+    go->transform()->setPosition(position);
+    go->transform()->setScale(scale);
+    go->transform()->setRotation(rotation);
+
+    auto meshR = go->addComponent<dzemikk::MeshRenderer>();
+    meshR->setTransform(go->transform());
+    meshR->setMaterial(0, material);
+
+    ModelInitContext ctx(meshR);
+
+    dzemikk::AssetManager::AssetTask<dzemikk::Model, ModelInitContext> task;
+    task.context = ctx;
+    task.onLoad = onModelLoaded;
+
+    engine->getAssetManager()->getAsync<dzemikk::Model>(modelPath, task);
+}
+
+void Game::newModels(std::shared_ptr<dzemikk::Material> m, dzemikk::Scene* scene) {
+    spawnModel(scene, m, "models/czaszka.fbx", glm::vec3(-4.0f, 5.5f, 5.0f), glm::vec3(4.01f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/drezwo_niskie.fbx", glm::vec3(-5.0f, 5.5f, 5.0f), glm::vec3(1.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/drezwo_wysokie.fbx", glm::vec3(-6.5f, 5.5f, 5.0f), glm::vec3(1.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/kamyk_v1.fbx", glm::vec3(-7.5f, 5.5f, 5.0f), glm::vec3(4.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/kamyk_v2.fbx", glm::vec3(-8.5f, 5.5f, 5.0f), glm::vec3(4.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    
+    spawnModel(scene, m, "models/krysztal_v1.fbx", glm::vec3(-9.5f, 5.5f, 5.0f), glm::vec3(4.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/krysztal_v2.fbx", glm::vec3(-10.5f, 5.5f, 5.0f), glm::vec3(4.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/krysztal_v3.fbx", glm::vec3(-11.5f, 5.5f, 5.0f), glm::vec3(4.0f),
+                   glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/krzak.fbx", glm::vec3(-13.f, 5.5f, 5.0f), glm::vec3(1.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/lisc.fbx", glm::vec3(-14.f, 5.5f, 5.0f), glm::vec3(4.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/muszla.fbx", glm::vec3(-15.f, 5.5f, 5.0f), glm::vec3(4.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/ognisko.fbx", glm::vec3(-17.f, 5.5f, 5.0f), glm::vec3(4.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/podest_kamien.fbx", glm::vec3(-19.f, 5.5f, 5.0f), glm::vec3(1.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/podest_modulo.fbx", glm::vec3(-21.f, 5.5f, 5.0f), glm::vec3(1.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/szkrzynka.fbx", glm::vec3(-23.f, 5.5f, 5.0f), glm::vec3(1.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/tipi.fbx", glm::vec3(-25.f, 5.5f, 5.0f), glm::vec3(1.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/tipi_z_galezami.fbx", glm::vec3(-27.f, 5.5f, 5.0f), glm::vec3(1.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/znak.fbx", glm::vec3(-29.f, 5.5f, 5.0f),
+               glm::vec3(1.0f), glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    //spawnModel(scene, m, "models/Baba.fbx", glm::vec3(-32.f, 5.5f, 5.0f), glm::vec3(1.0f),
+      //         glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    //spawnModel(scene, m, "models/MainC(2).fbx", glm::vec3(-35.f, 5.5f, 5.0f), glm::vec3(1.0f),
+      //         glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+}
+
+
 Game::Game(dzemikk::Engine* engine) : engine(engine) {}
 
 void Game::start() {
@@ -360,6 +456,7 @@ void Game::start() {
     engine->getAssetManager()->getAsync("models/Dancing Twerk.fbx", task);
 
     setupInputCallbacks();
+    newModels(material, scene.get());
 }
 void Game::setupScene() {
     mainScene = std::make_shared<dzemikk::Scene>();
@@ -411,7 +508,7 @@ void Game::setupChest() {
 
     chestMeshR->setModel(chestMesh);
     chestMeshR->setTransform(chestGO->transform());
-    chestMeshR->setMaterial(0, materialA);
+    //chestMeshR->setMaterial(0, materialA);
 }
 
 void Game::setupEnemy() {
@@ -424,8 +521,8 @@ void Game::setupEnemy() {
 
     enemyMeshR->setModel(enemyMesh);
     enemyMeshR->setTransform(enemyGO->transform());
-    enemyMeshR->setMaterial(0, materialA);
-    enemyMeshR->setMaterial(1, materialB);
+    //enemyMeshR->setMaterial(0, materialA);
+    //enemyMeshR->setMaterial(1, materialB);
 }
 
 void Game::setupUICamera() {

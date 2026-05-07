@@ -24,7 +24,7 @@ void to_json(nlohmann::json& json, const MeshRenderer& meshRenderer) {
     json["materials"] = nlohmann::json::array();
     const auto& materials = meshRenderer.getMaterials();
 
-    for (const Material* material : materials) {
+    for (const std::shared_ptr<Material> material : materials) {
         if (material != nullptr) {
             const auto& shader = material->getShaderHandle();
             if (shader.get() != nullptr) {
@@ -75,7 +75,7 @@ inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, As
             if (materialsJson[i].is_string()) {
                 std::string shaderPath = materialsJson[i].get<std::string>();
                 if (!shaderPath.empty()) {
-                    Material* material = new Material();
+                    std::shared_ptr<Material> material = std::shared_ptr<Material>();
                     material->setShader(assetManager->get<Shader>(shaderPath));
                     meshRenderer.setMaterial(i, material);
                 }
