@@ -14,7 +14,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebIn
   set(DZEMIKK_DEV_TOOLS ON)
 endif()
 
-add_library(DZeMIKK STATIC)
+add_library(DZeMIKK STATIC
+        include/ecs/serialize/ui/gridLayoutSerializer.h
+        include/ecs/serialize/ui/horizontalLayoutSerializer.h
+        include/ecs/serialize/ui/verticalLayoutSerializer.h
+        include/ecs/serialize/ui/uiDropdownSerializer.h)
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"
@@ -170,8 +174,8 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/serializedRef.h"
         "${INC_DIR}/ecs/serialize/monoBehaviourSerializer.h"
         "${INC_DIR}/ecs/serialize/transformSerializer.h"
-        "${INC_DIR}/ecs/serialize/uiButtonSerializer.h"
-        "${INC_DIR}/ecs/serialize/uiSliderSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/uiButtonSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/uiSliderSerializer.h"
         "${INC_DIR}/ecs/serialize/uuid.h"
         "${INC_DIR}/assetManager/assetManager.h"
         "${INC_DIR}/assetManager/assetError.h"
