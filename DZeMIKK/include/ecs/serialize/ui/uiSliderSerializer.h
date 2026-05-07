@@ -23,16 +23,11 @@ inline void to_json(nlohmann::json& json, const UISlider& slider) {
     json["minValue"] = slider.getMinValue();
     json["maxValue"] = slider.getMaxValue();
     json["step"] = slider.getStep();
-    json["fillColor"] = {style.fillColor[0], style.fillColor[1], style.fillColor[2],
-                         style.fillColor[3]};
-    json["backgroundColor"] = {style.backgroundColor[0], style.backgroundColor[1],
-                               style.backgroundColor[2], style.backgroundColor[3]};
-    json["handleColor"] = {style.handleColor[0], style.handleColor[1], style.handleColor[2],
-                           style.handleColor[3]};
-    json["handleHoverColor"] = {style.handleHoverColor[0], style.handleHoverColor[1],
-                                style.handleHoverColor[2], style.handleHoverColor[3]};
-    json["handlePressedColor"] = {style.handlePressedColor[0], style.handlePressedColor[1],
-                                  style.handlePressedColor[2], style.handlePressedColor[3]};
+    json["fillColor"] = {style.fillColor[0], style.fillColor[1], style.fillColor[2], style.fillColor[3]};
+    json["backgroundColor"] = {style.backgroundColor[0], style.backgroundColor[1], style.backgroundColor[2], style.backgroundColor[3]};
+    json["handleColor"] = {style.handleColor[0], style.handleColor[1], style.handleColor[2], style.handleColor[3]};
+    json["handleHoverColor"] = {style.handleHoverColor[0], style.handleHoverColor[1], style.handleHoverColor[2], style.handleHoverColor[3]};
+    json["handlePressedColor"] = {style.handlePressedColor[0], style.handlePressedColor[1], style.handlePressedColor[2], style.handlePressedColor[3]};
 
     for (const auto& [eventType, actionIds] : slider.getEventActions()) {
         const char* eventTypeStr = nullptr;
@@ -81,6 +76,7 @@ inline void from_json(const nlohmann::json& json, UISlider& slider) {
     style.backgroundColor = {json["backgroundColor"][0], json["backgroundColor"][1],json["backgroundColor"][2], json["backgroundColor"][3]};
     style.handleColor = {json["handleColor"][0], json["handleColor"][1],json["handleColor"][2], json["handleColor"][3]};
     style.handleHoverColor = {json["handleHoverColor"][0], json["handleHoverColor"][1], json["handleHoverColor"][2], json["handleHoverColor"][3]};
+    style.handlePressedColor = {json["handlePressedColor"][0], json["handlePressedColor"][1], json["handlePressedColor"][2], json["handlePressedColor"][3]};
 
     slider.setStyle(style);
     for (const auto& [eventKey, actionIdsJson] : json["events"].items()) {

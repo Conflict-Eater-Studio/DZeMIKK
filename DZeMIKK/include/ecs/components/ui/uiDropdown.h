@@ -18,7 +18,7 @@ class UIDropdown : public IUIInteractable {
 
     struct OptionRender {
         float height{30.0F};
-        AssetHandle<Mesh> mesh;
+        Mesh* mesh{nullptr};
         Material* material{nullptr};
         AssetHandle<Font> font;
         UITextRenderer::VerticalAlign textVAlign{UITextRenderer::VerticalAlign::Middle};
@@ -106,7 +106,24 @@ class UIDropdown : public IUIInteractable {
     void setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer);
     void setArrowSpriteRenderer(ImageRenderer* spriteRenderer);
     void setOptionsBackgroundRenderer(ImageRenderer* spriteRenderer);
+    void setScrollbarSpriteRenderer(ImageRenderer* spriteRenderer);
+    void setScrollbarHandleSpriteRenderer(ImageRenderer* spriteRenderer);
 
+    [[nodiscard]] ImageRenderer* getBackgroundSpriteRenderer() const {
+        return _backgroundSpriteRenderer;
+    }
+    [[nodiscard]] ImageRenderer* getArrowSpriteRenderer() const {
+        return _arrowSpriteRenderer;
+    }
+    [[nodiscard]] ImageRenderer* getOptionsBackgroundRenderer() const {
+        return _optionsBackgroundRenderer;
+    }
+    [[nodiscard]] ImageRenderer* getScrollbarSpriteRenderer() const {
+        return _scrollbarSpriteRenderer;
+    }
+    [[nodiscard]] ImageRenderer* getScrollbarHandleSpriteRenderer() const {
+        return _scrollbarHandleSpriteRenderer;
+    }
     void updateOptionVisuals();
     void applyVisualState();
 
