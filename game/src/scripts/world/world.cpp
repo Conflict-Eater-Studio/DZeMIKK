@@ -1,6 +1,7 @@
 #include "scripts/world/world.h"
 
 #include "ecs/components/meshRenderer.h"
+#include "ecs/components/collider.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 
