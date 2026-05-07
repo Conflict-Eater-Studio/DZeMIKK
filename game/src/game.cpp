@@ -189,10 +189,13 @@ void Game::newModels(std::shared_ptr<dzemikk::Material> m, dzemikk::Scene* scene
     spawnModel(scene, m, "models/znak.fbx", glm::vec3(-29.f, 5.5f, 5.0f),
                glm::vec3(1.0f), glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
-    spawnModel(scene, m, "models/Baba.fbx", glm::vec3(-32.f, 5.5f, 5.0f), glm::vec3(1.0f),
+    spawnModel(scene, m, "models/totem.fbx", glm::vec3(-32.f, 5.5f, 5.0f), glm::vec3(.2f),
                glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
-    //spawnModel(scene, m, "models/MainC(2).fbx", glm::vec3(-35.f, 5.5f, 5.0f), glm::vec3(1.0f),
+    spawnModel(scene, m, "models/Baba.fbx", glm::vec3(-35.f, 5.5f, 5.0f), glm::vec3(1.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    //spawnModel(scene, m, "models/MainC(2).fbx", glm::vec3(-37.f, 5.5f, 5.0f), glm::vec3(1.0f),
       //         glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 }
 
