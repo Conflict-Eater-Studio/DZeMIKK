@@ -42,6 +42,7 @@ private:
     dzemikk::Engine* engine;
     std::shared_ptr<dzemikk::Scene> mainScene;
     dzemikk::GameObject* playerGO = nullptr;
+    dzemikk::GameObject* enemyGO = nullptr;
     dzemikk::Material* materialA = nullptr;
     dzemikk::Material* materialB = nullptr;
     dzemikk::Material* quadMaterial = nullptr;

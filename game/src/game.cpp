@@ -13,6 +13,7 @@
 #include "collisions/collisions.h"
 #include "core/engine.h"
 #include "core/window.h"
+#include "core/time.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/collider.h"
 #include "ecs/components/meshRenderer.h"
@@ -437,7 +438,7 @@ void Game::start() {
      auto* dropdown = dropdownGO->getComponent<dzemikk::UIDropdown>();
 
 
-    auto enemyGO = scene->createGameObject();
+    enemyGO = scene->createGameObject();
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 2.5f, 5.0f));
     enemyGO->transform()->setScale(glm::vec3(0.01f, 0.01f, .01f));
     auto enemyMeshR = enemyGO->addComponent<dzemikk::SkinnedMeshRenderer>();
@@ -603,6 +604,31 @@ void Game::setupInputCallbacks() {
             return;
         }
 
+        // ================= GAMEPAD =================
+
+        glm::vec3 pos = enemyGO->transform()->getPosition();
+
+        float speed = 5.0f * engine->getTime()->getDeltaTime();
+
+        if (engine->getInput()->IsGamepadConnected(GLFW_JOYSTICK_1)) {
+
+            float axisX =
+                engine->getInput()->GetGamepadAxis(GLFW_JOYSTICK_1, GLFW_GAMEPAD_AXIS_LEFT_X);
+
+            float axisY =
+                engine->getInput()->GetGamepadAxis(GLFW_JOYSTICK_1, GLFW_GAMEPAD_AXIS_LEFT_Y);
+
+            if (std::abs(axisX) > 0.1f)
+                pos.x += axisX * speed;
+
+            if (std::abs(axisY) > 0.1f)
+                pos.z += axisY * speed;
+        }
+
+        enemyGO->transform()->setPosition(pos);
+
+        // ================= RAYCAST =================
+
         int windowWidth = 0;
         int windowHeight = 0;
 
@@ -629,19 +655,6 @@ void Game::setupInputCallbacks() {
             }
 
             lastHitRenderer = currentRenderer;
-        }
-
-        if (collider && engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-
-            auto hitTransform = collider->getOwner()->getComponent<dzemikk::Transform>();
-
-            if (hitTransform && playerGO) {
-
-                glm::vec3 position = hitTransform->getPosition();
-                position.y += 1.5f;
-
-                playerGO->transform()->setPosition(position);
-            }
         }
     });
 }
