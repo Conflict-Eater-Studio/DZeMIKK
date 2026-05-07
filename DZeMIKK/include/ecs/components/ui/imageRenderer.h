@@ -24,7 +24,7 @@ class ImageRenderer : public Component {
     ImageRenderer& operator=(ImageRenderer&& other) noexcept = delete;
 
     [[nodiscard]] Mesh* getMesh() const {
-        return _mesh;
+        return _mesh.get();
     }
 
     [[nodiscard]] std::shared_ptr<dzemikk::Material> getMaterial() const {
@@ -43,7 +43,7 @@ class ImageRenderer : public Component {
         return _color;
     }
 
-    void setMesh(Mesh* mesh) {
+    void setMesh(AssetHandle<Mesh> mesh) {
         _mesh = mesh;
     }
 
@@ -72,7 +72,7 @@ class ImageRenderer : public Component {
     };
 
   private:
-    Mesh* _mesh;
+    AssetHandle<Mesh> _mesh;
 
     std::shared_ptr<dzemikk::Material> _material = nullptr;
 

@@ -30,7 +30,7 @@ inline void from_json(const nlohmann::json& json, ImageRenderer& renderer, Asset
     renderer.setId(boost::uuids::string_generator()(json["id"].get<std::string>()));
     renderer.setColor(glm::vec4(json["color"][0], json["color"][1], json["color"][2], json["color"][3]));
 
-    renderer.setMesh(assetManager->getPrimitive(PrimitiveMeshLibrary::PrimitiveMesh::Quad));
+    renderer.setMesh(assetManager->getPrimitiveMesh(PrimitiveMeshLibrary::PrimitiveMesh::Quad));
 
     std::string shaderPath = json.value("materialPath", "");
     std::shared_ptr<dzemikk::Material> material = nullptr;
