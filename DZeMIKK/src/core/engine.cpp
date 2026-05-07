@@ -116,6 +116,10 @@ void Engine::start() {
         _time->update();
         _audioManager->update(_time->getDeltaTime());
 
+        if (_input) {
+            _input->Update();
+        }
+
         float deltaTime = _time->getDeltaTime();
         Profiler::Get().BeginFrame(deltaTime);
 
