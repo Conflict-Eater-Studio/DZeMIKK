@@ -3,6 +3,7 @@
 
 #include "ecs/components/camera.h"
 #include "renderer/frustum.h"
+#include "renderer/lightUtils.h"
 
 namespace dzemikk {
 
@@ -54,20 +55,13 @@ struct RenderContext {
      */
     Frustum* frustum = nullptr;
 
-    /**
-     * @brief Temporary directional light direction used for debugging.
-     */
-    glm::vec3 debugLightDir = glm::vec3(1.0f, 10.0f, -15.0f);
+    const GPUDirectionalLight* directionalLights = nullptr;
+    const GPUPointLight* pointLights = nullptr;
+    const GPUSpotLight* spotLights = nullptr;
 
-    /**
-     * @brief Temporary directional light color used for debugging.
-     */
-    glm::vec3 debugLightColor = glm::vec3(1.0f);
-
-    /**
-     * @brief Temporary directional light intensity.
-     */
-    float debugLightIntensity = 1.0f;
+    int directionalCount = 0;
+    int pointCount = 0;
+    int spotCount = 0;
 };
 
 /**

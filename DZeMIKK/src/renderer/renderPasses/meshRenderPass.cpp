@@ -111,11 +111,61 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
 
             shader->bind();
 
-            shader->setVec3("lightDir", ctx.debugLightDir);
-            shader->setVec3("lightColor", ctx.debugLightColor);
-            shader->setFloat("lightIntensity", ctx.debugLightIntensity);
+            shader->setFloat("shininess", 6.0f);
+            shader->setFloat("specularStrength", .5f);
+            shader->setInt("dirLightCount", ctx.directionalCount);
+            shader->setInt("pointLightCount", ctx.pointCount);
+            shader->setInt("spotLightCount", ctx.spotCount);
             shader->setVec3("objectColor", batch.color);
             shader->setVec3("viewPos", ctx.sceneCamera->getOwner()->transform()->getPosition());
+
+            for (int i = 0; i < ctx.directionalCount; i++) {
+                std::string dirName = "dirDirection[" + std::to_string(i) + "]";
+                std::string colName = "dirColor[" + std::to_string(i) + "]";
+                std::string intName = "dirIntensity[" + std::to_string(i) + "]";
+
+                shader->setVec3(dirName.c_str(), ctx.directionalLights[i].direction);
+
+                shader->setVec3(colName.c_str(), ctx.directionalLights[i].color);
+
+                shader->setFloat(intName.c_str(), ctx.directionalLights[i].color.a);
+            }
+
+            for (int i = 0; i < ctx.pointCount; i++) {
+                std::string posName = "pointPos[" + std::to_string(i) + "]";
+                std::string colName = "pointColor[" + std::to_string(i) + "]";
+                std::string intName = "pointIntensity[" + std::to_string(i) + "]";
+                std::string rangeName = "pointRange[" + std::to_string(i) + "]";
+
+                shader->setVec3(posName.c_str(), glm::vec3(ctx.pointLights[i].position));
+
+                shader->setVec3(colName.c_str(), glm::vec3(ctx.pointLights[i].color));
+
+                shader->setFloat(intName.c_str(), ctx.pointLights[i].color.a);
+
+                shader->setFloat(rangeName.c_str(), ctx.pointLights[i].params.x);
+            }
+
+            for (int i = 0; i < ctx.spotCount; i++) {
+                std::string posName = "spotPos[" + std::to_string(i) + "]";
+                std::string dirName = "spotDir[" + std::to_string(i) + "]";
+                std::string colName = "spotColor[" + std::to_string(i) + "]";
+                std::string intName = "spotIntensity[" + std::to_string(i) + "]";
+                std::string innerName = "spotInner[" + std::to_string(i) + "]";
+                std::string outerName = "spotOuter[" + std::to_string(i) + "]";
+
+                shader->setVec3(posName.c_str(), glm::vec3(ctx.spotLights[i].position));
+
+                shader->setVec3(dirName.c_str(), glm::vec3(ctx.spotLights[i].direction));
+
+                shader->setVec3(colName.c_str(), glm::vec3(ctx.spotLights[i].color));
+
+                shader->setFloat(intName.c_str(), ctx.spotLights[i].color.a);
+
+                shader->setFloat(innerName.c_str(), ctx.spotLights[i].params.y);
+
+                shader->setFloat(outerName.c_str(), ctx.spotLights[i].params.z);
+            }
 
             mesh->drawInstanced(batch.models, batch.instanceVBO);
             Profiler::Get().stats.drawCalls++;

@@ -8,6 +8,7 @@
 
 #include "renderer/renderPasses/IRenderPass.h"
 #include "renderer/cameraSystem.h"
+#include "renderer/lightSystem.h"
 
 namespace dzemikk {
     class Camera;
@@ -140,6 +141,8 @@ namespace dzemikk {
          */
         CameraSystem _cameraSystem;
 
+        LightSystem _lightSystem;
+
         /**
          * @brief Prepares frame before rendering.
          *
@@ -173,7 +176,10 @@ namespace dzemikk {
         template <typename T, typename... Args> T* addPass(Args&&... args);
 
 #pragma endregion
-};
+
+
+        void drawDebugUI();
+    };
 
 // ================================== IMPLEMENTATION ==================================
 template <typename T> T* Renderer::getPass() {

@@ -50,6 +50,14 @@
 #include <iostream>
 #include <memory>
 
+#include "ecs/components/light/directionalLight.h"
+#include "ecs/components/light/pointLight.h"
+#include "ecs/components/light/spotLight.h"
+
+#if DZEMIKK_DEV_TOOLS
+#include <imgui.h>
+#endif
+
 struct SkyboxInitContext {
     dzemikk::AssetHandle<dzemikk::Shader> shader;
     dzemikk::Renderer* renderer;
@@ -84,6 +92,10 @@ void onEnemyModelLoaded(dzemikk::AssetHandle<dzemikk::Model> model, EnemyInitCon
 
     ctx.animator->play("idle");
 }
+
+dzemikk::DirectionalLight* sunLight = nullptr;
+dzemikk::PointLight* pointLight = nullptr;
+dzemikk::SpotLight* spotLight = nullptr;
 
 Game::Game(dzemikk::Engine* engine) : engine(engine) {}
 
@@ -125,6 +137,35 @@ void Game::start() {
     auto* uiCamera = uiCameraGO->addComponent<dzemikk::Camera>();
     uiCamera->setOrthographic(0.0F, 1920.0F, 0.0F, 1080.0F, -1.0F, 1.0F);
     engine->getRenderer()->getCameraSystem().setActiveUICamera(uiCamera);
+
+    auto* sunGO = scene->createGameObject("Sun");
+    sunLight = sunGO->addComponent<dzemikk::DirectionalLight>();
+
+    sunLight->direction = glm::normalize(glm::vec3(-0.5f, -1.0f, -0.3f));
+    sunLight->color = glm::vec3(1.0f, 0.95f, 0.8f);
+    sunLight->intensity = .9f;
+
+
+    auto* pointGO = scene->createGameObject("Point Light");
+    pointGO->transform()->setPosition({3.0f, 4.0f, 2.0f});
+
+    pointLight = pointGO->addComponent<dzemikk::PointLight>();
+    pointLight->color = glm::vec3(1.0f, 0.2f, 0.2f);
+    pointLight->intensity = 4.0f;
+    pointLight->range = 15.0f;
+
+
+    auto* spotGO = scene->createGameObject("Spot Light");
+    spotGO->transform()->setPosition({0.0f, 6.0f, 0.0f});
+
+    spotLight = spotGO->addComponent<dzemikk::SpotLight>();
+
+    spotLight->direction = glm::normalize(glm::vec3(0.0f, -1.0f, 0.0f));
+    spotLight->color = glm::vec3(0.2f, 0.4f, 1.0f);
+
+    spotLight->intensity = 2.6f;
+    spotLight->innerCutoff = glm::cos(glm::radians(15.0f));
+    spotLight->outerCutoff = glm::cos(glm::radians(25.0f));
 
     auto shader = assetManager->get<dzemikk::Shader>("shaders/tile1");
     auto shader2 = assetManager->get<dzemikk::Shader>("shaders/tile2");
@@ -186,7 +227,7 @@ void Game::start() {
         */
     world->setModel(model);
     world->setMaterial(material);
-    world->setMaterial2(material2);
+    world->setMaterial2(material);
     world->setEnemyModel(enemyModel);
     world->setResourceModel(resourceModel);
 
@@ -317,6 +358,8 @@ void Game::start() {
     task.context = ctx;
     task.onLoad = onEnemyModelLoaded;
     engine->getAssetManager()->getAsync("models/Dancing Twerk.fbx", task);
+
+    setupInputCallbacks();
 }
 void Game::setupScene() {
     mainScene = std::make_shared<dzemikk::Scene>();

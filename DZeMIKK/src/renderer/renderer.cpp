@@ -18,6 +18,10 @@
 #include <limits>
 #include <map>
 
+#if DZEMIKK_DEV_TOOLS
+#include <imgui.h>
+#endif
+
 void dzemikk::Renderer::initialize() {
     _context = RenderContext(_cameraSystem.getActiveSceneCamera(),
                              _cameraSystem.getActiveUICamera(), glm::mat4(1.0f),
@@ -56,6 +60,8 @@ void dzemikk::Renderer::uninitialize() {
 }
 
 void dzemikk::Renderer::render() {
+    _lightSystem.update(_context);
+
     setupFrame();
     _cameraSystem.update(_context);
     _context.sceneCamera = _cameraSystem.getActiveSceneCamera();
@@ -63,6 +69,10 @@ void dzemikk::Renderer::render() {
 
     for (auto& pass : _passes)
         pass->execute(_context);
+
+#if DZEMIKK_DEV_TOOLS
+    drawDebugUI();
+#endif
 }
 
 void dzemikk::Renderer::setSkybox(AssetHandle<Skybox> skybox) {
@@ -94,3 +104,132 @@ void dzemikk::Renderer::setupFrame() {
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 }
+
+#if DZEMIKK_DEV_TOOLS
+
+void dzemikk::Renderer::drawDebugUI() {
+
+    ImGui::Begin("Renderer Debug");
+
+    // =========================================================
+    // LIGHTING
+    // =========================================================
+
+    ImGui::SeparatorText("Lighting");
+
+    auto& dirLights = _lightSystem.dirComponents();
+    auto& pointLights = _lightSystem.pointComponents();
+    auto& spotLights = _lightSystem.spotComponents();
+
+    ImGui::Text("Directional Lights: %d", (int)dirLights.size());
+    ImGui::Text("Point Lights: %d", (int)pointLights.size());
+    ImGui::Text("Spot Lights: %d", (int)spotLights.size());
+
+    // =========================================================
+    // DIRECTIONAL LIGHTS
+    // =========================================================
+
+    if (ImGui::CollapsingHeader("Directional Lights", ImGuiTreeNodeFlags_DefaultOpen)) {
+
+        for (size_t i = 0; i < dirLights.size(); i++) {
+
+            auto* light = dirLights[i];
+
+            ImGui::PushID((int)i);
+
+            ImGui::SeparatorText(("Directional " + std::to_string(i)).c_str());
+
+            ImGui::DragFloat3("Direction", &light->direction.x, 0.01f, -1.0f, 1.0f);
+
+            light->direction = glm::normalize(light->direction);
+
+            ImGui::ColorEdit3("Color", &light->color.x);
+
+            ImGui::DragFloat("Intensity", &light->intensity, 0.01f, 0.0f, 20.0f);
+
+            ImGui::PopID();
+        }
+    }
+
+    // =========================================================
+    // POINT LIGHTS
+    // =========================================================
+
+    if (ImGui::CollapsingHeader("Point Lights", ImGuiTreeNodeFlags_DefaultOpen)) {
+
+        for (size_t i = 0; i < pointLights.size(); i++) {
+
+            auto* light = pointLights[i];
+
+            ImGui::PushID(1000 + (int)i);
+
+            ImGui::SeparatorText(("Point " + std::to_string(i)).c_str());
+
+            auto position = light->getOwner()->transform()->getPosition();
+
+            if (ImGui::DragFloat3("Position", &position.x, 0.05f)) {
+
+                light->getOwner()->transform()->setPosition(position);
+            }
+
+            ImGui::ColorEdit3("Color", &light->color.x);
+
+            ImGui::DragFloat("Intensity", &light->intensity, 0.05f, 0.0f, 100.0f);
+
+            ImGui::DragFloat("Radius", &light->range, 0.1f, 0.1f, 500.0f);
+
+            ImGui::PopID();
+        }
+    }
+
+    // =========================================================
+    // SPOT LIGHTS
+    // =========================================================
+
+    if (ImGui::CollapsingHeader("Spot Lights", ImGuiTreeNodeFlags_DefaultOpen)) {
+
+        for (size_t i = 0; i < spotLights.size(); i++) {
+
+            auto* light = spotLights[i];
+
+            ImGui::PushID(2000 + (int)i);
+
+            ImGui::SeparatorText(("Spot " + std::to_string(i)).c_str());
+
+            auto position = light->getOwner()->transform()->getPosition();
+
+            if (ImGui::DragFloat3("Position", &position.x, 0.05f)) {
+
+                light->getOwner()->transform()->setPosition(position);
+            }
+
+            ImGui::DragFloat3("Direction", &light->direction.x, 0.01f, -1.0f, 1.0f);
+
+            light->direction = glm::normalize(light->direction);
+
+            ImGui::ColorEdit3("Color", &light->color.x);
+
+            ImGui::DragFloat("Intensity", &light->intensity, 0.05f, 0.0f, 100.0f);
+
+            float innerAngle = glm::degrees(glm::acos(light->innerCutoff));
+
+            float outerAngle = glm::degrees(glm::acos(light->outerCutoff));
+
+            if (ImGui::DragFloat("Inner Cutoff", &innerAngle, 0.1f, 1.0f, 89.0f)) {
+
+                light->innerCutoff = glm::cos(glm::radians(innerAngle));
+            }
+
+            if (ImGui::DragFloat("Outer Cutoff", &outerAngle, 0.1f, 1.0f, 89.0f)) {
+
+                light->outerCutoff = glm::cos(glm::radians(outerAngle));
+            }
+
+            ImGui::PopID();
+        }
+    }
+
+    ImGui::End();
+}
+
+#endif

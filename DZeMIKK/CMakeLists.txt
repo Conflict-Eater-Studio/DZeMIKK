@@ -96,6 +96,9 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/components/ui/uiSlider.cpp"
         "${SRC_DIR}/ecs/components/ui/uiCheckbox.cpp"
         "${SRC_DIR}/ecs/components/ui/uiDropdown.cpp"
+        "${SRC_DIR}/ecs/components/light/directionalLight.cpp"
+        "${SRC_DIR}/ecs/components/light/pointLight.cpp"
+        "${SRC_DIR}/ecs/components/light/spotLight.cpp"
         "${SRC_DIR}/audio/audioManager.cpp"
 )
 
@@ -130,6 +133,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/renderer/renderPasses/spriteRenderPass.h"
         "${INC_DIR}/renderer/renderPasses/textRenderPass.h"
         "${INC_DIR}/renderer/renderPasses/uITextRenderPass.h"
+        "${INC_DIR}/renderer/lightUtils.h"
         "${INC_DIR}/ecs/components/monobehaviour.h"
         "${INC_DIR}/ecs/components/transform.h"
 	    "${INC_DIR}/ecs/components/meshRenderer.h"
@@ -214,6 +218,9 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/ui/canvasSerializer.h"
         "${INC_DIR}/ecs/serialize/ui/imageRendererSerializer.h"
         "${INC_DIR}/ecs/components/ui/uiDropdown.h"
+        "${INC_DIR}/ecs/components/light/directionalLight.h"
+        "${INC_DIR}/ecs/components/light/pointLight.h"
+        "${INC_DIR}/ecs/components/light/spotLight.h"
         "${INC_DIR}/audio/audioManager.h"
 )
 
