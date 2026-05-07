@@ -3,12 +3,19 @@
 #include <memory>
 #include <tuple>
 
+#include "audio/audioManager.h"
+#include "audio/sound.h"
+
+#include "assetManager/assetmanager.h"
+
 int main() {
     auto engine = std::make_unique<dzemikk::Engine>();
     
-    auto game = Game(engine.get());
-    game.start();
-    engine->start();
+    auto game = new Game(engine.get());
+    game->start();
+
+    //engine->start();
+    delete (game);
     return 0;
 }
 

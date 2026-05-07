@@ -43,6 +43,9 @@
 #include "renderer/shader.h"
 #include "renderer/cameraSystem.h"
 
+#include "audio/audioManager.h"
+#include "audio/sound.h"
+
 #include "utils/perlin.h"
 #include "scripts/world/world.h"
 
@@ -185,8 +188,8 @@ void Game::newModels(std::shared_ptr<dzemikk::Material> m, dzemikk::Scene* scene
     spawnModel(scene, m, "models/znak.fbx", glm::vec3(-29.f, 5.5f, 5.0f),
                glm::vec3(1.0f), glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
-    //spawnModel(scene, m, "models/Baba.fbx", glm::vec3(-32.f, 5.5f, 5.0f), glm::vec3(1.0f),
-      //         glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+    spawnModel(scene, m, "models/Baba.fbx", glm::vec3(-32.f, 5.5f, 5.0f), glm::vec3(1.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
     //spawnModel(scene, m, "models/MainC(2).fbx", glm::vec3(-35.f, 5.5f, 5.0f), glm::vec3(1.0f),
       //         glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
@@ -270,7 +273,7 @@ void Game::start() {
     auto material2 = std::make_shared<dzemikk::Material>();
     material2->setShader(shader2);
 
-    auto model = assetManager->get<dzemikk::Model>("models/pole.fbx");
+    auto model = assetManager->get<dzemikk::Model>("models/hex_wypukly.fbx");
 
     dzemikk::AssetHandle<dzemikk::Model> enemyModel =
         assetManager->getPrimitiveModel(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Capsule);
@@ -430,7 +433,24 @@ void Game::start() {
 
     setupInputCallbacks();
     newModels(material, scene.get());
+
+        // --- Sound test ---
+    auto audio = engine->getAudioManager();
+
+    auto sound = engine->getAssetManager()->get<dzemikk::Sound>("audio/prime_przygodowka (loop, ale przyjemny).wav");
+    engine->getInput()->OnKeyPressed.addListener([audio, &sound](dzemikk::KeyPressedEvent& event) {
+        if (event.GetKeyCode() == GLFW_KEY_SPACE) {
+            spdlog::info("Playing sound");
+            audio->play(*sound.get(), dzemikk::AudioManager::SoundType::Music);
+        }
+    });
+
+    // --- To save your ears :)
+    audio->getMasterGroup()->setVolume(0.5F);
+
+    engine->start();
 }
+
 void Game::setupScene() {
     mainScene = std::make_shared<dzemikk::Scene>();
     engine->getSceneManager()->loadScene(mainScene);
