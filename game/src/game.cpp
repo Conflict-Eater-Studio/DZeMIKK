@@ -301,16 +301,18 @@ void Game::start() {
     world->setEnemyModel(enemyModel);
     world->setResourceModel(resourceModel);
 
-    /*
     auto* uiRootGO = scene->createGameObject("UI Root");
     auto* canvas = uiRootGO->addComponent<dzemikk::Canvas>();
     uiRootGO->rectTransform()->setSize({1920.0F, 1080.0F});
-    auto quadMesh = assetManager->getPrimitiveMesh(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
+    auto quadMesh =
+        assetManager->getPrimitiveMesh(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
     auto quadShader = assetManager->get<dzemikk::Shader>("shaders/quad");
     auto quadMat = std::make_shared<dzemikk::Material>();
     quadMat->setShader(quadShader);
 
     auto font = assetManager->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
+
+    /*
 
     // ====================== LAYOUT TEST UI ======================
     // Horizontal Layout (6 buttons)
@@ -404,6 +406,36 @@ void Game::start() {
     vertGO->enabled(false);
     gridGO->enabled(false);
     */
+
+         auto* dropdownGO = dzemikk::UIBuilder::createDropdown(
+         uiRootGO, {
+                       .name = "Test Dropdown",
+                       .position = {(1920.0F / 4.0F) - 100.0F, 1080.0F - 150.0F},
+                       .size = {400.0F, 70.0F},
+                       .options =
+                           {
+                               {.text = "Option 1", .value = "opt1"},
+                               {.text = "Option 2", .value = "opt2"},
+                               {.text = "Option 3", .value = "opt3"},
+                               {.text = "Option 4", .value = "opt4"},
+                               {.text = "Option 5", .value = "opt5"},
+                               {.text = "Option 6", .value = "opt6"},
+                           },
+                       .optionHeight = 70.0F,
+                       .maxVisibleOptions = 3,
+                       .textFont = font,
+                       .bgMesh = quadMesh,
+                       .arrowMesh = quadMesh,
+                       .optionMesh = quadMesh,
+                       .optionsBgMesh = quadMesh,
+                       .bgMat = quadMat,
+                       .arrowMat = quadMat,
+                       .optionMat = quadMat,
+                       .optionsBgMat = quadMat,
+                   });
+    
+     auto* dropdown = dropdownGO->getComponent<dzemikk::UIDropdown>();
+
 
     auto enemyGO = scene->createGameObject();
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 2.5f, 5.0f));
