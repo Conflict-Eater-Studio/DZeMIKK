@@ -2,6 +2,11 @@ project(Editor LANGUAGES CXX)
 
 add_executable(editor
     src/main.cpp
+    src/editor.cpp
+)
+
+target_sources(editor PRIVATE
+    include/editor.h
 )
 
 target_include_directories(editor
@@ -20,3 +25,18 @@ else()
   target_compile_options(editor PRIVATE -finput-charset=UTF-8)
 endif()
 
+add_custom_command(TARGET editor POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${FMOD_LIBS_PATH}/fmod.dll"
+    $<TARGET_FILE_DIR:editor>
+
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${FMOD_LIBS_PATH}/fmodL.dll"
+    $<TARGET_FILE_DIR:editor>
+)
+
+add_custom_command(TARGET editor POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/res"
+    "$<TARGET_FILE_DIR:editor>/res"
+)
