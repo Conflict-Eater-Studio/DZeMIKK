@@ -134,6 +134,21 @@ void Game::spawnModel(dzemikk::Scene* scene, std::shared_ptr<dzemikk::Material> 
 }
 
 void Game::newModels(std::shared_ptr<dzemikk::Material> m, dzemikk::Scene* scene) {
+    auto enemyGO = scene->createGameObject();
+    enemyGO->transform()->setPosition(glm::vec3(-40.f, 5.5f, 5.0f));
+    enemyGO->transform()->setScale(glm::vec3(1.01f, 1.01f, 1.01f));
+    auto enemyMeshR = enemyGO->addComponent<dzemikk::SkinnedMeshRenderer>();
+    auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Babakosci.fbx");
+    //  enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Rumba Dancing.fbx");
+    // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Flair(1).fbx");
+    // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Dancing Twerk.fbx");
+    // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/szamankaanim.fbx");
+    //  auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/MainC.fbx");
+    //  auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/cooper.fbx");
+    enemyMeshR->setTransform(enemyGO->transform());
+    enemyMeshR->setMaterial(0, m.get());
+    enemyMeshR->setModel(enemyMesh);
+
     spawnModel(scene, m, "models/czaszka.fbx", glm::vec3(-4.0f, 5.5f, 5.0f), glm::vec3(4.01f),
                glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
@@ -195,8 +210,13 @@ void Game::newModels(std::shared_ptr<dzemikk::Material> m, dzemikk::Scene* scene
     spawnModel(scene, m, "models/Baba.fbx", glm::vec3(-35.f, 5.5f, 5.0f), glm::vec3(1.0f),
                glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
-    //spawnModel(scene, m, "models/MainC(2).fbx", glm::vec3(-37.f, 5.5f, 5.0f), glm::vec3(1.0f),
-      //         glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/Test(2).fbx", glm::vec3(-38.f, 5.5f, 5.0f), glm::vec3(1.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/chonker.fbx", glm::vec3(-42.f, 5.5f, 5.0f), glm::vec3(1.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
 }
 
 
@@ -316,7 +336,6 @@ void Game::start() {
 
     auto font = assetManager->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
 
-    /*
 
     // ====================== LAYOUT TEST UI ======================
     // Horizontal Layout (6 buttons)
@@ -405,11 +424,10 @@ void Game::start() {
         });
 
     // Set initial layout visibility
-    //horiGO->enabled(true);
-    horiGO->enabled(false);
+    horiGO->enabled(true);
+    //horiGO->enabled(false);
     vertGO->enabled(false);
     gridGO->enabled(false);
-    */
 
          auto* dropdownGO = dzemikk::UIBuilder::createDropdown(
          uiRootGO, {
@@ -442,7 +460,7 @@ void Game::start() {
 
 
     enemyGO = scene->createGameObject();
-    enemyGO->transform()->setPosition(glm::vec3(2.0f, 2.5f, 5.0f));
+    enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 5.0f));
     enemyGO->transform()->setScale(glm::vec3(0.01f, 0.01f, .01f));
     auto enemyMeshR = enemyGO->addComponent<dzemikk::SkinnedMeshRenderer>();
     // auto enemyMesh = engine->getAssetManager()->get<dzemikk::Model>("models/Body Block.fbx");
@@ -610,6 +628,7 @@ void Game::setupInputCallbacks() {
         // ================= GAMEPAD =================
 
         glm::vec3 pos = enemyGO->transform()->getPosition();
+        auto* trs = enemyGO->transform();
 
         float speed = 5.0f * engine->getTime()->getDeltaTime();
 
@@ -626,6 +645,17 @@ void Game::setupInputCallbacks() {
 
             if (std::abs(axisY) > 0.1f)
                 pos.z += axisY * speed;
+
+            
+            if (engine->getInput()->IsGamepadButtonPressed(GLFW_JOYSTICK_1,
+                                                           GLFW_GAMEPAD_BUTTON_LEFT_BUMPER)) {
+                trs->setScale(trs->getScale() * 1.1F);
+            }
+            if (engine->getInput()->IsGamepadButtonPressed(GLFW_JOYSTICK_1,
+                                                           GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER)) {
+                trs->setScale(trs->getScale() * 0.9F);
+            }
+
         }
 
         enemyGO->transform()->setPosition(pos);
