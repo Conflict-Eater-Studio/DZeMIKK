@@ -2,48 +2,50 @@
 #define GAME_HEXCHUNK_H
 
 #include "boost/uuid/detail/nil_uuid.hpp"
-#include "map/gridcell.h"
+#include "map/HexCell.h"
 
 #include <functional>
 #include <optional>
 #include <random>
-#include <set>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 namespace game {
+class Entity;
 class HexChunk {
   public:
     struct Config {
         int steps{0};
         float holeChance{0.1F};
         std::function<float(int)> generator;
-        std::function<bool(const HexCoord&)> canPlace;
     };
 
-    HexChunk() = default;
-    HexChunk(HexCoord center, Config config);
+    HexChunk(Config config, HexCoord origin);
 
     void setDirToParent(HexCoord::Direction dir);
 
-    [[nodiscard]] const std::unordered_set<GridCell>& getHexes() const;
-    [[nodiscard]] HexCoord getCenter() const;
+    [[nodiscard]] const std::unordered_map<HexCoord, HexCell>& getHexes() const;
+    std::unordered_map<HexCoord, HexCell>& getHexes();
     [[nodiscard]] const Config& getConfig() const;
+    [[nodiscard]] const boost::uuids::uuid& getId() const;
+    [[nodiscard]] HexCoord getOrigin() const;
+
+    HexCell* updateAt(const HexCoord& coord);
 
     void remove(const std::vector<HexCoord>& hexes);
-    [[nodiscard]] std::vector<GridCell> intersection(const HexChunk& other,
-                                                     bool withBlocked = false) const;
-    void shift(HexCoord::Direction dir);
-    void markChunk();
-    void assignCell(GridCell cell);
-    bool setOnHex(const HexCoord& coord, GridCell::OnHex onHex,
-                  const boost::uuids::uuid& entityId = boost::uuids::nil_uuid());
+    [[nodiscard]] std::vector<HexCell> intersection(const HexChunk& other,
+                                                    bool withBlocked = false) const;
+    void shift(HexCoord::Direction dir, int times = 1);
+    void assignCell(HexCell cell);
+    bool setEntity(const HexCoord& coord, HexCell::Type entityType, Entity* entity = nullptr);
 
   private:
-    std::unordered_set<GridCell> generateHexes();
+    boost::uuids::uuid _id{boost::uuids::nil_uuid()};
+    std::unordered_map<HexCoord, HexCell> generateHexes();
 
-    std::unordered_set<GridCell> _hexes;
-    HexCoord _center{0, 0};
+    std::unordered_map<HexCoord, HexCell> _hexes;
+    HexCoord _origin;
     Config _config{};
     std::optional<HexCoord::Direction> _dirToParent{std::nullopt};
 

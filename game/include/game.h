@@ -2,22 +2,28 @@
 #define DZEMIKK_GAME_H
 #include "core/engine.h"
 #include "glad/glad.h"
-#include <GLFW/glfw3.h>
+#include "map/PlayerEntity.h"
 
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
 namespace dzemikk {
 class Material;
 class GameObject;
-}
+} // namespace dzemikk
 class Game {
-public:
+  public:
+    Game(const Game&) = default;
+    Game(Game&&) = delete;
+    Game& operator=(const Game&) = default;
+    Game& operator=(Game&&) = delete;
     explicit Game(dzemikk::Engine* engine);
     ~Game() = default;
 
     void start();
-private:
+
+  private:
     void setupScene();
     void setupSkybox();
     void setupMainCamera();
@@ -33,19 +39,20 @@ private:
     void setupCheckbox(dzemikk::GameObject* canvasGo);
     void setupAudio();
     void setupInputCallbacks();
-    void newModels(std::shared_ptr<dzemikk::Material> m, dzemikk::Scene* scene);
+    void newModels(const std::shared_ptr<dzemikk::Material>& m, dzemikk::Scene* scene);
     void spawnModel(dzemikk::Scene* scene, std::shared_ptr<dzemikk::Material> material,
                     const std::string& modelPath, const glm::vec3& position,
-                    const glm::vec3& scale = glm::vec3(1.0f),
-                    const glm::quat& rotation = glm::quat(glm::vec3(0.0f)));
+                    const glm::vec3& scale = glm::vec3(1.0F),
+                    const glm::quat& rotation = glm::quat(glm::vec3(0.0F)));
 
-    dzemikk::Engine* engine;
-    std::shared_ptr<dzemikk::Scene> mainScene;
-    dzemikk::GameObject* playerGO = nullptr;
-    dzemikk::GameObject* enemyGO = nullptr;
-    dzemikk::Material* materialA = nullptr;
-    dzemikk::Material* materialB = nullptr;
-    dzemikk::Material* quadMaterial = nullptr;
+    dzemikk::Engine* _engine;
+    std::shared_ptr<dzemikk::Scene> _mainScene;
+    dzemikk::GameObject* _playerGO = nullptr;
+    dzemikk::GameObject* _enemyGO = nullptr;
+    dzemikk::Material* _materialA = nullptr;
+    dzemikk::Material* _materialB = nullptr;
+    dzemikk::Material* _quadMaterial = nullptr;
+    game::PlayerEntity* _playerEntity = nullptr;
 };
 
 #endif

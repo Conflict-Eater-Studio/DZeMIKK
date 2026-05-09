@@ -1,11 +1,15 @@
 #include "map/HexChunk.h"
 
-#include <algorithm>
+#include "boost/uuid/random_generator.hpp"
+#include "map/Entity.h"
+
 #include <random>
 #include <unordered_set>
+#include <utility>
 
 namespace game {
-HexChunk::HexChunk(HexCoord center, Config config) : _center(center), _config(std::move(config)) {
+HexChunk::HexChunk(Config config, HexCoord origin)
+    : _config(std::move(config)), _id(boost::uuids::random_generator_mt19937()()), _origin(origin) {
     if (!_config.generator) {
         _config.generator = [steps = _config.steps](int x) {
             if (steps <= 0) {
@@ -15,33 +19,27 @@ HexChunk::HexChunk(HexCoord center, Config config) : _center(center), _config(st
         };
     }
     _hexes = generateHexes();
-    markChunk();
 }
 
 void HexChunk::setDirToParent(HexCoord::Direction dir) {
     _dirToParent = dir;
 }
 
-std::unordered_set<GridCell> HexChunk::generateHexes() {
+std::unordered_map<HexCoord, HexCell> HexChunk::generateHexes() {
     const int cap = 1 + (3 * _config.steps * (_config.steps + 1));
 
     std::unordered_set<HexCoord> visited;
     visited.reserve(cap);
 
-    std::unordered_set<GridCell> hexes;
+    std::unordered_map<HexCoord, HexCell> hexes;
     hexes.reserve(cap);
 
-    auto canPlace = _config.canPlace ? _config.canPlace : [](const HexCoord&) { return true; };
     auto generator = _config.generator;
 
-    if (!canPlace(_center)) {
-        return hexes;
-    }
+    visited.insert(_origin);
+    hexes.insert({_origin, {_origin, HexCell::State::Empty, HexCell::Type::Normal}});
 
-    visited.insert(_center);
-    hexes.insert({.coord = _center, .state = GridCell::State::Occupied});
-
-    std::vector<HexCoord> currentGen{_center};
+    std::vector<HexCoord> currentGen{_origin};
     currentGen.reserve(32);
 
     for (int step = 0; step < _config.steps && !currentGen.empty(); ++step) {
@@ -68,16 +66,17 @@ std::unordered_set<GridCell> HexChunk::generateHexes() {
 
         // evaluate each candidate once
         for (const auto& n : candidates) {
-            if (!canPlace(n)) {
-                continue;
+            if (_hexes.contains(n)) {
+                continue; // already added by another path
             }
+
             if (_chanceDist(_rng) >= chance) {
                 continue;
             }
 
             visited.insert(n);
             nextGen.push_back(n);
-            hexes.insert({.coord = n, .state = GridCell::State::Occupied});
+            hexes.insert({n, {n, HexCell::State::Empty, HexCell::Type::Normal}});
         }
 
         currentGen = std::move(nextGen);
@@ -86,43 +85,12 @@ std::unordered_set<GridCell> HexChunk::generateHexes() {
     return hexes;
 }
 
-void HexChunk::markChunk() {
-    std::unordered_set<HexCoord> occupiedCoords;
-    occupiedCoords.reserve(_hexes.size());
-
-    for (const auto& cell : _hexes) {
-        occupiedCoords.insert(cell.coord);
-    }
-
-    std::unordered_set<HexCoord> borderCoords;
-    borderCoords.reserve(_hexes.size());
-
-    for (const auto& cell : _hexes) {
-        if (cell.state == GridCell::State::Blocked) {
-            continue;
-        }
-
-        for (const auto& neighbor : HexCoord::getNeighbors(cell.coord)) {
-            if (occupiedCoords.contains(neighbor)) {
-                continue;
-            }
-
-            borderCoords.insert(neighbor);
-            occupiedCoords.insert(neighbor);
-        }
-    }
-
-    for (const auto& coord : borderCoords) {
-        _hexes.insert({.coord = coord, .state = GridCell::State::Blocked});
-    }
-}
-
-const std::unordered_set<GridCell>& HexChunk::getHexes() const {
+const std::unordered_map<HexCoord, HexCell>& HexChunk::getHexes() const {
     return _hexes;
 }
 
-HexCoord HexChunk::getCenter() const {
-    return _center;
+std::unordered_map<HexCoord, HexCell>& HexChunk::getHexes() {
+    return _hexes;
 }
 
 const HexChunk::Config& HexChunk::getConfig() const {
@@ -131,27 +99,29 @@ const HexChunk::Config& HexChunk::getConfig() const {
 
 void HexChunk::remove(const std::vector<HexCoord>& hexes) {
     std::unordered_set<HexCoord> removeSet(hexes.begin(), hexes.end());
-    std::erase_if(_hexes, [&removeSet](const GridCell& h) { return removeSet.contains(h.coord); });
+    std::erase_if(_hexes, [&removeSet](const auto& entry) {
+        return removeSet.contains(entry.second.getCoord());
+    });
 }
 
-std::vector<GridCell> HexChunk::intersection(const HexChunk& other, bool withBlocked) const {
+std::vector<HexCell> HexChunk::intersection(const HexChunk& other, bool withBlocked) const {
     std::unordered_set<HexCoord> otherCoords;
     otherCoords.reserve(other._hexes.size());
 
-    for (const auto& cell : other._hexes) {
-        if (!withBlocked && cell.state == GridCell::State::Blocked) {
+    for (const auto& [key, cell] : other._hexes) {
+        if (!withBlocked && cell.getType() == HexCell::Type::Blocked) {
             continue;
         }
-        otherCoords.insert(cell.coord);
+        otherCoords.insert(cell.getCoord());
     }
 
-    std::vector<GridCell> result;
-    for (const auto& cell : _hexes) {
-        if (!withBlocked && cell.state == GridCell::State::Blocked) {
+    std::vector<HexCell> result;
+    for (const auto& [key, cell] : _hexes) {
+        if (!withBlocked && cell.getType() == HexCell::Type::Blocked) {
             continue;
         }
 
-        if (otherCoords.contains(cell.coord)) {
+        if (otherCoords.contains(cell.getCoord())) {
             result.push_back(cell);
         }
     }
@@ -159,36 +129,48 @@ std::vector<GridCell> HexChunk::intersection(const HexChunk& other, bool withBlo
     return result;
 }
 
-void HexChunk::shift(HexCoord::Direction dir) {
+void HexChunk::shift(HexCoord::Direction dir, int times) {
     auto offset = HexCoord::dir(dir);
-    std::vector<GridCell> shifted;
+    std::vector<HexCell> shifted;
     shifted.reserve(_hexes.size());
-    for (auto cell : _hexes) {
-        cell.coord += offset;
+    for (auto [key, cell] : _hexes) {
+        cell.setCoord(cell.getCoord() + offset * times);
         shifted.push_back(cell);
     }
-    _center += offset;
+    _origin += offset * times;
     _hexes.clear();
-    _hexes.insert(shifted.begin(), shifted.end());
+    for (const auto& cell : shifted) {
+        _hexes.emplace(cell.getCoord(), cell);
+    }
 }
 
-void HexChunk::assignCell(GridCell cell) {
-    _hexes.insert(cell);
+void HexChunk::assignCell(HexCell cell) {
+    _hexes[cell.getCoord()] = cell;
 }
 
-bool HexChunk::setOnHex(const HexCoord& coord, GridCell::OnHex onHex,
-                        const boost::uuids::uuid& entityId) {
-    auto it = std::ranges::find_if(_hexes,
-                                   [&coord](const GridCell& cell) { return cell.coord == coord; });
-    if (it == _hexes.end()) {
+bool HexChunk::setEntity(const HexCoord& coord, HexCell::Type entityType, Entity* entity) {
+    if (!_hexes.contains(coord)) {
         return false;
     }
 
-    GridCell updated = *it;
-    updated.onHex = {entityId, onHex};
+    _hexes[coord].setType(entityType);
+    _hexes[coord].setEntity(entity);
 
-    _hexes.erase(it);
-    _hexes.insert(updated);
     return true;
+}
+
+const boost::uuids::uuid& HexChunk::getId() const {
+    return _id;
+}
+
+HexCoord HexChunk::getOrigin() const {
+    return _origin;
+}
+
+HexCell* HexChunk::updateAt(const HexCoord& coord) {
+    if (!_hexes.contains(coord)) {
+        return nullptr;
+    }
+    return &_hexes[coord];
 }
 } // namespace game
