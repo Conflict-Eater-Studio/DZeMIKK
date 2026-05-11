@@ -6,7 +6,7 @@ namespace game {
 void PlayerEntity::onEnter(HexCell* cell) {
     cell->setEntity(this);
     cell->setState(HexCell::State::Player);
-    getOwner()->transform()->setPosition(cell->getCoord().toWorldPosition(0.65F, 0.0F) +
+    getOwner()->transform()->setPosition(cell->getCoord().toWorldPosition(1.0F, 0.0F) +
                                          glm::vec3(0.0F, 1.5F, 0.0F));
 }
 

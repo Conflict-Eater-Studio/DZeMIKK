@@ -135,7 +135,7 @@ class HexCoord {
         float z =
             s * ((std::numbers::sqrt3_v<float> / 2.0F * qF) + (std::numbers::sqrt3_v<float> * rF));
 
-        return {x, _height, z};
+        return {z, _height, x};
     }
 
     [[nodiscard]] HexCoord opposite() const {

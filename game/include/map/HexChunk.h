@@ -42,7 +42,7 @@ class HexChunk {
 
   private:
     boost::uuids::uuid _id{boost::uuids::nil_uuid()};
-    std::unordered_map<HexCoord, HexCell> generateHexes();
+    void generateHexes();
 
     std::unordered_map<HexCoord, HexCell> _hexes;
     HexCoord _origin;

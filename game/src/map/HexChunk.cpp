@@ -18,71 +18,24 @@ HexChunk::HexChunk(Config config, HexCoord origin)
             return 1.0F - (static_cast<float>(x) / static_cast<float>(steps));
         };
     }
-    _hexes = generateHexes();
+    generateHexes();
 }
 
 void HexChunk::setDirToParent(HexCoord::Direction dir) {
     _dirToParent = dir;
 }
 
-std::unordered_map<HexCoord, HexCell> HexChunk::generateHexes() {
-    const int cap = 1 + (3 * _config.steps * (_config.steps + 1));
+void HexChunk::generateHexes() {
+    for (int q = -_config.steps; q <= _config.steps; q++) {
+        int rStart = std::max(-_config.steps, -q - _config.steps);
+        int rEnd = std::min(_config.steps, -q + _config.steps);
 
-    std::unordered_set<HexCoord> visited;
-    visited.reserve(cap);
-
-    std::unordered_map<HexCoord, HexCell> hexes;
-    hexes.reserve(cap);
-
-    auto generator = _config.generator;
-
-    visited.insert(_origin);
-    hexes.insert({_origin, {_origin, HexCell::State::Empty, HexCell::Type::Normal}});
-
-    std::vector<HexCoord> currentGen{_origin};
-    currentGen.reserve(32);
-
-    for (int step = 0; step < _config.steps && !currentGen.empty(); ++step) {
-        const float chance = generator(step);
-
-        std::unordered_set<HexCoord> candidates;
-        candidates.reserve(currentGen.size() * 3); // rough estimate
-
-        // collect unique unvisited neighbors once
-        for (const auto& coord : currentGen) {
-            for (int i = 0; i < 6; ++i) {
-                const HexCoord n = coord + HexCoord::dir(static_cast<HexCoord::Direction>(i * 2));
-                if (visited.contains(n)) {
-                    continue;
-                }
-                if (!candidates.insert(n).second) {
-                    continue; // already queued this generation
-                }
-            }
+        for (int r = rStart; r <= rEnd; r++) {
+            HexCoord coord{q, r};
+            coord += _origin;
+            _hexes.emplace(coord, HexCell{coord, HexCell::State::Empty, HexCell::Type::Normal});
         }
-
-        std::vector<HexCoord> nextGen;
-        nextGen.reserve(candidates.size());
-
-        // evaluate each candidate once
-        for (const auto& n : candidates) {
-            if (_hexes.contains(n)) {
-                continue; // already added by another path
-            }
-
-            if (_chanceDist(_rng) >= chance) {
-                continue;
-            }
-
-            visited.insert(n);
-            nextGen.push_back(n);
-            hexes.insert({n, {n, HexCell::State::Empty, HexCell::Type::Normal}});
-        }
-
-        currentGen = std::move(nextGen);
     }
-
-    return hexes;
 }
 
 const std::unordered_map<HexCoord, HexCell>& HexChunk::getHexes() const {

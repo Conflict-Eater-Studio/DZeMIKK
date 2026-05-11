@@ -5,6 +5,7 @@
 #include "utils/perlin.h"
 
 #include <algorithm>
+#include <math.h>
 #include <ranges>
 #include <spdlog/spdlog.h>
 #include <unordered_set>
@@ -42,16 +43,16 @@ boost::uuids::uuid HexGrid::makeChunk(const HexChunk::Config& config) {
         return boost::uuids::nil_uuid();
     }
 
-    Perlin perlinHoles(2);
-    std::vector<HexCoord> coordsToRemove;
-    for (const auto& [coord, cell] : chunk.getHexes()) {
-        float noiseVal = perlinHoles.noise(static_cast<float>(coord.q()) * 0.1F,
-                                           static_cast<float>(coord.r()) * 0.1F);
-        if (noiseVal < config.holeChance && cell.getType() == HexCell::Type::Normal) {
-            coordsToRemove.push_back(coord);
-        }
-    }
-    chunk.remove(coordsToRemove);
+    // Perlin perlinHoles(2);
+    // std::vector<HexCoord> coordsToRemove;
+    // for (const auto& [coord, cell] : chunk.getHexes()) {
+    //     float noiseVal = perlinHoles.noise(static_cast<float>(coord.q()) * 0.1F,
+    //                                        static_cast<float>(coord.r()) * 0.1F);
+    //     if (noiseVal < config.holeChance && cell.getType() == HexCell::Type::Normal) {
+    //         coordsToRemove.push_back(coord);
+    //     }
+    // }
+    // chunk.remove(coordsToRemove);
 
     if (chunk.getHexes().empty()) {
         return boost::uuids::nil_uuid();
@@ -72,24 +73,27 @@ boost::uuids::uuid HexGrid::makeChunk(boost::uuids::uuid parentChunkId, HexCoord
             return chunk.getId() == parentChunkId;
         });
 
-    HexChunk chunk(config, parentChunk->getOrigin());
+    HexChunk chunk(config, parentChunk->getOrigin() +
+                               HexCoord::dir(dir) *
+                                   static_cast<int>(std::round(
+                                       (parentChunk->getConfig().steps + config.steps + 3) / 2)));
     const auto* chunkHexes = &chunk.getHexes();
 
     if (chunkHexes->empty()) {
         return boost::uuids::nil_uuid();
     }
 
-    Perlin perlinHoles(2);
-    std::vector<HexCoord> coordsToRemove;
-    for (const auto& [coord, cell] : *chunkHexes) {
-        float noiseVal = perlinHoles.noise(static_cast<float>(coord.q()) * 0.1F,
-                                           static_cast<float>(coord.r()) * 0.1F);
-        if (noiseVal < config.holeChance && cell.getType() == HexCell::Type::Normal) {
-            coordsToRemove.push_back(coord);
-        }
-    }
-    chunk.remove(coordsToRemove);
-
+    // Perlin perlinHoles(2);
+    // std::vector<HexCoord> coordsToRemove;
+    // for (const auto& [coord, cell] : *chunkHexes) {
+    //     float noiseVal = perlinHoles.noise(static_cast<float>(coord.q()) * 0.1F,
+    //                                        static_cast<float>(coord.r()) * 0.1F);
+    //     if (noiseVal < config.holeChance && cell.getType() == HexCell::Type::Normal) {
+    //         coordsToRemove.push_back(coord);
+    //     }
+    // }
+    // chunk.remove(coordsToRemove);
+    //
     if (chunkHexes->empty()) {
         return boost::uuids::nil_uuid();
     }
@@ -97,30 +101,32 @@ boost::uuids::uuid HexGrid::makeChunk(boost::uuids::uuid parentChunkId, HexCoord
     // Post-porcessing -> Move new chunk towards parent chunk until they are 1 hex apart
     // Connect the chunks with a single-hex bridge
 
-    auto dirToParent = HexCoord::dir(HexCoord::dir(dir).opposite());
-    if (dirToParent.has_value()) {
-        chunk.setDirToParent(dirToParent.value());
-    }
+    // auto dirToParent = HexCoord::dir(HexCoord::dir(dir).opposite());
+    // if (dirToParent.has_value()) {
+    //     chunk.setDirToParent(dirToParent.value());
+    // }
+    //
+    // while (parentChunk->intersection(chunk, true).empty()) {
+    //     chunk.shift(dirToParent.value());
+    // }
+    //
+    // chunk.shift(dir, 2);
+    //
+    _chunks.emplace_back(std::move(chunk));
 
-    // Initial shift to avoid immediate intersection
-    chunk.shift(dir, parentChunk->getConfig().steps + config.steps + 2);
-
-    while (parentChunk->intersection(chunk, true).empty()) {
-        chunk.shift(dirToParent.value());
-    }
-
-    chunk.shift(dir, 2);
-
-    _chunks.push_back(std::move(chunk));
-
-    auto closest = closestPair(parentChunkId, _chunks.back().getId());
-    auto bridgeCoord = HexCoord::hexesOnLine(closest.first, closest.second);
-
-    if (!bridgeCoord.empty()) {
-        for (const auto& coord : bridgeCoord) {
-            _chunks.back().assignCell({coord, HexCell::State::Empty, HexCell::Type::Normal});
-        }
-    }
+    // auto closest = closestPair(parentChunkId, _chunks.back().getId());
+    // auto bridgeCoord = HexCoord::hexesOnLine(closest.first, closest.second);
+    //
+    // auto it = std::ranges::find_if(_chunks, [&parentChunkId](const HexChunk& chunk) {
+    //     return chunk.getId() == parentChunkId;
+    // });
+    //
+    // if (!bridgeCoord.empty()) {
+    //     for (const auto& coord : bridgeCoord) {
+    //         _chunks.back().assignCell({coord, HexCell::State::Empty, HexCell::Type::Normal});
+    //         it->assignCell({coord, HexCell::State::Empty, HexCell::Type::Normal});
+    //     }
+    // }
 
     return _chunks.back().getId();
 }

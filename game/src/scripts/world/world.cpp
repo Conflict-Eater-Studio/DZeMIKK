@@ -34,20 +34,20 @@ void World::start() {
                                                        std::get<1>(_chunkConfigs.at(0)))),
                          .holeChance = 0.25F});
 
-    for (auto& chunkConfig : _chunkConfigs) {
-        idx = _grid.makeChunk(
-            idx, HexCoord::Direction::R0,
-            {.steps = _randSteps(_rng, std::uniform_int_distribution<int>::param_type(
-                                           std::get<0>(chunkConfig), std::get<1>(chunkConfig))),
-             .holeChance = 0.25F});
-
-        for (const auto& dir : std::get<2>(chunkConfig)) {
-            _grid.makeChunk(
-                idx, dir,
-                {.steps = _randSteps(_rng, std::uniform_int_distribution<int>::param_type(4, 8)),
-                 .holeChance = 0.25F});
-        }
-    }
+    // for (auto& chunkConfig : _chunkConfigs) {
+    //     idx = _grid.makeChunk(
+    //         idx, HexCoord::Direction::R0,
+    //         {.steps = _randSteps(_rng, std::uniform_int_distribution<int>::param_type(
+    //                                        std::get<0>(chunkConfig), std::get<1>(chunkConfig))),
+    //          .holeChance = 0.25F});
+    //
+    //     for (const auto& dir : std::get<2>(chunkConfig)) {
+    //         _grid.makeChunk(
+    //             idx, dir,
+    //             {.steps = _randSteps(_rng, std::uniform_int_distribution<int>::param_type(4, 8)),
+    //              .holeChance = 0.25F});
+    //     }
+    // }
 
     auto* scene = _owner->getScene();
     for (auto* cell : _grid.getHexes()) {
@@ -57,7 +57,7 @@ void World::start() {
                                     static_cast<float>(cell->getCoord().r()) * 0.1F) *
                       2.0F;
         cell->getCoord().setHeight(height);
-        auto worldPos = cell->getCoord().toWorldPosition(.65F, 0.0F);
+        auto worldPos = cell->getCoord().toWorldPosition(1.0F, 0.0F);
         obj->transform()->setPosition(worldPos);
         obj->transform()->setScale({1.0F, 1.0F, 1.0F});
         obj->transform()->setRotation(
