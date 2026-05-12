@@ -23,12 +23,14 @@ class Input;
 class Collisions;
 class AudioManager;
 
+enum class EngineMode { Game, Editor };
+
 /**
  * @brief The core application class managing the game loop and all subsystems.
  */
 class Engine {
 public:
-    Engine();
+    Engine(EngineMode mode = EngineMode::Game);
     ~Engine();
 
     Engine(const Engine&) = delete;
@@ -47,6 +49,14 @@ public:
     [[nodiscard]] Input* getInput() const;
     [[nodiscard]] Collisions* getCollisions() const;
     [[nodiscard]] AudioManager* getAudioManager() const;
+
+    
+    [[nodiscard]] EngineMode getMode() const {
+        return _mode;
+    }
+    [[nodiscard]] bool isEditorMode() const {
+        return _mode == EngineMode::Editor;
+    }
 
 
     void SetUserUpdateCallback(const std::function<void()>& callback) {
@@ -80,6 +90,8 @@ private:
     float _accumulator = 0.0F;
     bool _wasLeftMouseDown = false;
     double _scrollDelta = 0.0F;
+
+    EngineMode _mode;
 };
 } // namespace dzemikk
 

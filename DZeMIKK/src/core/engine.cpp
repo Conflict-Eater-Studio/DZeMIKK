@@ -34,7 +34,7 @@
 
 namespace dzemikk {
 
-Engine::Engine() {
+Engine::Engine(EngineMode mode) : _mode(mode) {
     init();
 }
 
@@ -152,9 +152,11 @@ void Engine::start() {
 #else
         _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
-        updateCameraWASD(.3f);
-        updateCameraArrows(0.3f);
-        updateMouseUI(deltaTime);
+        if (_mode == EngineMode::Game) {
+            updateCameraWASD(.3f);
+            updateCameraArrows(0.3f);
+            updateMouseUI(deltaTime);
+        }
 
         if (m_UserUpdateCallback) {
             m_UserUpdateCallback();

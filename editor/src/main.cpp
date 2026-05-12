@@ -5,7 +5,7 @@
 #include <tuple>
 
 int main() {
-    auto engine = std::make_unique<dzemikk::Engine>();
+    auto engine = std::make_unique<dzemikk::Engine>(dzemikk::EngineMode::Editor);
 
     auto editor = new editor::Editor(engine.get());
     editor->start();
