@@ -3,97 +3,14 @@
 #include "boost/uuid/random_generator.hpp"
 #include "map/Entity.h"
 
+#include <algorithm>
 #include <limits>
 #include <queue>
-#include <ranges>
-#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
 namespace game {
-int axisValue(HexCoord::Direction dir, const HexCoord& coord) {
-    switch (dir) {
-    case HexCoord::Direction::R0:
-    case HexCoord::Direction::R180:
-        return coord.q();
-    case HexCoord::Direction::R120:
-    case HexCoord::Direction::R300:
-        return coord.r();
-    case HexCoord::Direction::R60:
-    case HexCoord::Direction::R240:
-        return coord.s();
-    default:
-        return 0;
-    }
-}
-
-void updateFurthestEdgeHex(
-    const HexCoord& coord, const HexChunk::HexCellPtr& cell, int& minQ, int& maxQ, int& minR,
-    int& maxR, int& minS, int& maxS,
-    std::unordered_map<HexCoord::Direction, HexChunk::HexCellPtr>& furthestEdgeHexes) {
-    int q = coord.q();
-    int r = coord.r();
-    int s = coord.s();
-
-    if (q > maxQ) {
-        maxQ = q;
-        furthestEdgeHexes.at(HexCoord::Direction::R0) = cell;
-    }
-    if (q < minQ) {
-        minQ = q;
-        furthestEdgeHexes.at(HexCoord::Direction::R180) = cell;
-    }
-    if (r > maxR) {
-        maxR = r;
-        furthestEdgeHexes.at(HexCoord::Direction::R120) = cell;
-    }
-    if (r < minR) {
-        minR = r;
-        furthestEdgeHexes.at(HexCoord::Direction::R300) = cell;
-    }
-    if (s > maxS) {
-        maxS = s;
-        furthestEdgeHexes.at(HexCoord::Direction::R60) = cell;
-    }
-    if (s < minS) {
-        minS = s;
-        furthestEdgeHexes.at(HexCoord::Direction::R240) = cell;
-    }
-}
-
-void alignEdgeTowardParent(
-    HexChunk* parent, HexCoord::Direction dirToParent,
-    const std::unordered_map<HexCoord, HexChunk::HexCellPtr>& hexes,
-    std::unordered_map<HexCoord::Direction, HexChunk::HexCellPtr>& furthestEdgeHexes) {
-    HexCoord::Direction oppositeDir = HexCoord::opposite(dirToParent);
-    const auto& parentEdges = parent->getFurthestEdgeHexes();
-    auto parentIt = parentEdges.find(oppositeDir);
-    if (parentIt == parentEdges.end()) {
-        return;
-    }
-
-    HexCoord parentTarget = parentIt->second->getCoord();
-    int extremalValue = axisValue(dirToParent, furthestEdgeHexes.at(dirToParent)->getCoord());
-
-    int bestDist = std::numeric_limits<int>::max();
-    HexChunk::HexCellPtr best = nullptr;
-    for (const auto& [coord, cell] : hexes) {
-        if (axisValue(dirToParent, coord) != extremalValue) {
-            continue;
-        }
-        int dist = HexCoord::distance(coord, parentTarget);
-        if (dist < bestDist) {
-            bestDist = dist;
-            best = cell;
-        }
-    }
-
-    if (best) {
-        furthestEdgeHexes.at(dirToParent) = best;
-    }
-}
-
 HexChunk::HexChunk(HexChunk::Config config, HexChunk* parent)
     : _parent(parent), _config(std::move(config)), _id(boost::uuids::random_generator_mt19937()()) {
 
@@ -105,7 +22,8 @@ HexChunk::HexChunk(HexChunk::Config config, HexChunk* parent)
             if (steps <= 0) {
                 return 0.0F;
             }
-            return 1.0F - (static_cast<float>(x) / static_cast<float>(steps * 3));
+            return x % 2 == 0 ? 1.0F : 1.0F - (static_cast<float>(x) / static_cast<float>(steps));
+            // return 1.0F;
         };
     }
     generateHexes();
@@ -118,36 +36,42 @@ HexChunk::HexChunk(HexChunk::Config config)
             if (steps <= 0) {
                 return 0.0F;
             }
-            return 1.0F - (static_cast<float>(x) / static_cast<float>(steps * 2));
+            return x % 2 == 0 ? 1.0F : 1.0F - (static_cast<float>(x) / static_cast<float>(steps));
+            // return 1.0F;
         };
     }
     generateHexes();
 }
 
-void HexChunk::setDirToParent(HexCoord::Direction dir) {
-    _dirToParent = dir;
-}
-
 void HexChunk::generateHexes() {
     generateHexCells();
 
+    int maxQ = std::numeric_limits<int>::min();
+    int minQ = std::numeric_limits<int>::max();
+    int maxR = std::numeric_limits<int>::min();
+    int minR = std::numeric_limits<int>::max();
+    int maxS = std::numeric_limits<int>::min();
+    int minS = std::numeric_limits<int>::max();
+
+    for (const auto& entry : _hexes) {
+        const auto& coord = entry.first;
+        maxQ = std::max(maxQ, coord.q());
+        minQ = std::min(minQ, coord.q());
+        maxR = std::max(maxR, coord.r());
+        minR = std::min(minR, coord.r());
+        maxS = std::max(maxS, coord.s());
+        minS = std::min(minS, coord.s());
+    }
+
+    fillBlockedHexes(minQ - 1, maxQ + 1, minR - 1, maxR + 1, minS - 1, maxS + 1);
+
     if (_parent != nullptr) {
-        while (_parent->intersection(*this, true).empty()) {
+        while (_parent->intersection(*this).empty()) {
             shift(HexCoord::opposite(_config.dirFromParent), 1);
         }
         shift(_config.dirFromParent, 2);
     }
-
-    int minQ = 0;
-    int maxQ = 0;
-    int minR = 0;
-    int maxR = 0;
-    int minS = 0;
-    int maxS = 0;
-    findFurthestEdgeHexes(minQ, maxQ, minR, maxR, minS, maxS);
-    auto parent = computeParentMap();
-    protectPathsToOrigin(parent);
-    fillBlockedHexes(minQ, maxQ, minR, maxR, minS, maxS);
+    blockHexesWithMaxNeighbours(1);
     unblockIsolatedHexes();
 }
 
@@ -178,68 +102,56 @@ void HexChunk::generateHexCells() {
     }
 }
 
-void HexChunk::findFurthestEdgeHexes(int& minQ, int& maxQ, int& minR, int& maxR, int& minS,
-                                     int& maxS) {
-    _furthestEdgeHexes = {
-        {HexCoord::Direction::R0, _hexes.at(_origin)},
-        {HexCoord::Direction::R60, _hexes.at(_origin)},
-        {HexCoord::Direction::R120, _hexes.at(_origin)},
-        {HexCoord::Direction::R180, _hexes.at(_origin)},
-        {HexCoord::Direction::R240, _hexes.at(_origin)},
-        {HexCoord::Direction::R300, _hexes.at(_origin)},
-    };
-    maxQ = std::numeric_limits<int>::min();
-    minQ = std::numeric_limits<int>::max();
-    maxR = std::numeric_limits<int>::min();
-    minR = std::numeric_limits<int>::max();
-    maxS = std::numeric_limits<int>::min();
-    minS = std::numeric_limits<int>::max();
-
-    for (const auto& [coord, cell] : _hexes) {
-        updateFurthestEdgeHex(coord, cell, minQ, maxQ, minR, maxR, minS, maxS, _furthestEdgeHexes);
+void HexChunk::protectPathToOrigin(const HexCoord& start) {
+    if (!_hexes.contains(start)) {
+        return;
     }
 
-    if (_parent) {
-        alignEdgeTowardParent(_parent, HexCoord::opposite(_config.dirFromParent), _hexes,
-                              _furthestEdgeHexes);
-    }
-}
-
-std::unordered_map<HexCoord, HexCoord> HexChunk::computeParentMap() {
     std::unordered_map<HexCoord, HexCoord> parent;
-    std::unordered_set<HexCoord> bfsVisited{_origin};
+    std::unordered_set<HexCoord> visited{start};
     std::queue<HexCoord> bfsQueue;
-    bfsQueue.push(_origin);
+    bfsQueue.push(start);
+
+    bool reachedOrigin = false;
     while (!bfsQueue.empty()) {
         HexCoord current = bfsQueue.front();
         bfsQueue.pop();
+
+        if (current == _origin) {
+            reachedOrigin = true;
+            break;
+        }
+
         for (const auto& neighbor : HexCoord::getNeighbors(current)) {
-            if (!_hexes.contains(neighbor) || bfsVisited.contains(neighbor)) {
+            if (!_hexes.contains(neighbor) || visited.contains(neighbor)) {
                 continue;
             }
-            bfsVisited.insert(neighbor);
+            visited.insert(neighbor);
             parent.emplace(neighbor, current);
             bfsQueue.push(neighbor);
         }
     }
-    return parent;
-}
 
-void HexChunk::protectPathsToOrigin(const std::unordered_map<HexCoord, HexCoord>& parent) {
-    for (const auto& [dir, hex] : _furthestEdgeHexes) {
-        HexCoord current = hex->getCoord();
-        while (current != _origin) {
-            auto hexIt = _hexes.find(current);
-            if (hexIt != _hexes.end() &&
-                hexIt->second->getGenState() != HexCell::GenState::Protected) {
-                hexIt->second->setGenState(HexCell::GenState::Protected);
-            }
-            auto it = parent.find(current);
-            if (it == parent.end()) {
-                break;
-            }
-            current = it->second;
+    if (!reachedOrigin) {
+        return;
+    }
+
+    HexCoord current = _origin;
+    while (true) {
+        auto it = _hexes.find(current);
+        if (it != _hexes.end()) {
+            it->second->setGenState(HexCell::GenState::Protected);
         }
+
+        if (current == start) {
+            break;
+        }
+
+        auto parentIt = parent.find(current);
+        if (parentIt == parent.end()) {
+            break;
+        }
+        current = parentIt->second;
     }
 }
 
@@ -256,6 +168,26 @@ void HexChunk::fillBlockedHexes(int minQ, int maxQ, int minR, int maxR, int minS
                                                                 HexCell::Type::Normal,
                                                                 HexCell::GenState::Blocked)});
             }
+        }
+    }
+}
+
+void HexChunk::blockHexesWithMaxNeighbours(int maxNeighbours) {
+    for (const auto& [coord, cell] : _hexes) {
+        if (cell->getGenState() != HexCell::GenState::Normal) {
+            continue;
+        }
+
+        int normalNeighbourCount = 0;
+        for (const auto& neighbor : HexCoord::getNeighbors(coord)) {
+            auto it = _hexes.find(neighbor);
+            if (it != _hexes.end() && it->second->getGenState() == HexCell::GenState::Normal) {
+                normalNeighbourCount++;
+            }
+        }
+
+        if (normalNeighbourCount <= maxNeighbours) {
+            cell->setGenState(HexCell::GenState::Blocked);
         }
     }
 }
@@ -394,10 +326,5 @@ const boost::uuids::uuid& HexChunk::getId() const {
 
 HexCoord HexChunk::getOrigin() const {
     return _origin;
-}
-
-const std::unordered_map<HexCoord::Direction, HexChunk::HexCellPtr>&
-HexChunk::getFurthestEdgeHexes() const {
-    return _furthestEdgeHexes;
 }
 } // namespace game

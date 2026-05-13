@@ -204,9 +204,48 @@ class HexCoord {
         int n = distance(a, b);
         std::vector<HexCoord> results;
         results.reserve(n + 1);
+
+        if (n == 0) {
+            results.emplace_back(a);
+            return results;
+        }
+
+        constexpr double kEpsilonQ = 1e-6;
+        constexpr double kEpsilonR = 2e-6;
+        constexpr double kEpsilonS = -3e-6;
+
+        const double aQ = static_cast<double>(a.q()) + kEpsilonQ;
+        const double aR = static_cast<double>(a.r()) + kEpsilonR;
+        const double aS = static_cast<double>(a.s()) + kEpsilonS;
+
+        const double bQ = static_cast<double>(b.q()) + kEpsilonQ;
+        const double bR = static_cast<double>(b.r()) + kEpsilonR;
+        const double bS = static_cast<double>(b.s()) + kEpsilonS;
+
         for (int i = 0; i <= n; i++) {
-            results.emplace_back(
-                getLinePoint(a, b, 1.0F / static_cast<float>(n) * static_cast<float>(i)));
+            const double t = static_cast<double>(i) / static_cast<double>(n);
+
+            const double fQ = aQ + ((bQ - aQ) * t);
+            const double fR = aR + ((bR - aR) * t);
+            const double fS = aS + ((bS - aS) * t);
+
+            double q = std::round(fQ);
+            double r = std::round(fR);
+            double s = std::round(fS);
+
+            const double qDiff = std::abs(q - fQ);
+            const double rDiff = std::abs(r - fR);
+            const double sDiff = std::abs(s - fS);
+
+            if (qDiff > rDiff && qDiff > sDiff) {
+                q = -r - s;
+            } else if (rDiff > sDiff) {
+                r = -q - s;
+            } else {
+                s = -q - r;
+            }
+
+            results.emplace_back(static_cast<int>(q), static_cast<int>(r));
         }
 
         return results;

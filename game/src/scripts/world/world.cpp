@@ -11,7 +11,6 @@
 #include <format>
 #include <memory>
 #include <random>
-#include <vector>
 
 namespace game {
 using dzemikk::Model;
@@ -23,6 +22,16 @@ void World::start() {
 }
 
 void World::update(double dt) {
+    for (const auto& chunk : _grid.getChunks()) {
+        for (const auto& [coord, cell] : chunk.second->getHexes()) {
+            if (cell->getGenState() == HexCell::GenState::Blocked ||
+                _spawnedHexes.contains(coord)) {
+                continue;
+            }
+            spawnHexVisual(cell);
+        }
+    }
+
     for (auto* trs : _hexTransforms) {
         auto* cell = trs->getOwner()->getComponent<game::WorldHex>();
         if (cell->getHexCell()->isDirty()) {
@@ -40,54 +49,64 @@ void World::update(double dt) {
     }
 }
 
-boost::uuids::uuid World::addChunk(const HexChunk::Config& config) {
-    auto* scene = _owner->getScene();
-    auto chunkId = _grid.makeChunk(config);
-    for (const auto& hex : _grid.getChunks().at(chunkId)->getHexes()) {
+void World::renderChunk(boost::uuids::uuid id) {
+    for (const auto& hex : _grid.getChunks().at(id)->getHexes()) {
         auto cell = hex.second;
 
         if (cell->getGenState() == HexCell::GenState::Blocked) {
             continue;
         }
 
-        auto* obj = scene->createGameObject(
-            std::format("Hex {} {}", cell->getCoord().q(), cell->getCoord().r()), _owner);
-        _hexTransforms.insert(obj->transform());
-        auto height = _perlin.noise(static_cast<float>(cell->getCoord().q()) * 0.1F,
-                                    static_cast<float>(cell->getCoord().r()) * 0.1F) *
-                      2.0F;
-        cell->getCoord().setHeight(height);
-        auto worldPos = cell->getCoord().toWorldPosition(1.0F, 0.0F);
-        obj->transform()->setPosition(worldPos);
-        obj->transform()->setScale({1.0F, 1.0F, 1.0F});
-        obj->transform()->setRotation(
-            glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
-        auto* meshRenderer = obj->addComponent<dzemikk::MeshRenderer>();
-        meshRenderer->setModel(_model);
-        switch (cell->getGenState()) {
-        case HexCell::GenState::Blocked:
-            meshRenderer->setMaterial(0, _material);
-            meshRenderer->setColor(glm::vec4(0.2F, 0.2F, 0.2F, 1.0F));
-            break;
-        case HexCell::GenState::Protected:
-            meshRenderer->setMaterial(0, _material);
-            meshRenderer->setColor(glm::vec4(0.2F, 0.5F, 1.0F, 1.0F));
-            break;
-        case HexCell::GenState::Normal:
-            meshRenderer->setMaterial(0, _material);
-            meshRenderer->setColor(glm::vec4(1.0F, 1.0F, 1.0F, 1.0F));
-            break;
-        }
-        meshRenderer->setTransform(obj->transform());
-        auto* worldHex = obj->addComponent<WorldHex>();
-        worldHex->setHexCell(cell);
+        spawnHexVisual(cell);
+    }
+}
 
-        auto* collider = obj->addComponent<dzemikk::Collider>();
-        collider->setModel(_model);
-        collider->setTransform(obj->transform());
+void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
+    if (_spawnedHexes.contains(cell->getCoord())) {
+        return;
     }
 
-    return chunkId;
+    auto* scene = _owner->getScene();
+    auto* obj = scene->createGameObject(
+        std::format("Hex {} {}", cell->getCoord().q(), cell->getCoord().r()), _owner);
+    _hexTransforms.insert(obj->transform());
+    _spawnedHexes.insert(cell->getCoord());
+
+    auto height = _perlin.noise(static_cast<float>(cell->getCoord().q()) * 0.1F,
+                                static_cast<float>(cell->getCoord().r()) * 0.1F) *
+                  2.0F;
+    cell->getCoord().setHeight(height);
+    auto worldPos = cell->getCoord().toWorldPosition(1.0F, 0.1F);
+    obj->transform()->setPosition(worldPos);
+    obj->transform()->setScale({1.0F, 1.0F, 1.0F});
+    obj->transform()->setRotation(
+        glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
+    auto* meshRenderer = obj->addComponent<dzemikk::MeshRenderer>();
+    meshRenderer->setModel(_model);
+    switch (cell->getGenState()) {
+    case HexCell::GenState::Blocked:
+        meshRenderer->setMaterial(0, _material);
+        meshRenderer->setColor(glm::vec4(0.2F, 0.2F, 0.2F, 1.0F));
+        break;
+    case HexCell::GenState::Protected:
+        meshRenderer->setMaterial(0, _material);
+        meshRenderer->setColor(glm::vec4(0.2F, 0.5F, 1.0F, 1.0F));
+        break;
+    case HexCell::GenState::Normal:
+        meshRenderer->setMaterial(0, _material);
+        meshRenderer->setColor(glm::vec4(1.0F, 1.0F, 1.0F, 1.0F));
+        break;
+    }
+    if (cell->getType() == HexCell::Type::Bridge) {
+        meshRenderer->setColor(glm::vec4(0.0F, 1.0F, 0.0F, 1.0F));
+    }
+    meshRenderer->setTransform(obj->transform());
+    auto* worldHex = obj->addComponent<WorldHex>();
+    worldHex->setHexCell(cell);
+
+    auto* collider = obj->addComponent<dzemikk::Collider>();
+    collider->setModel(_model);
+    collider->setTransform(obj->transform());
 }
 
 void World::setPlayer(PlayerEntity* playerEntity) {

@@ -11,6 +11,7 @@
 
 #include <random>
 #include <tuple>
+#include <unordered_set>
 
 namespace game {
 class PlayerEntity;
@@ -52,9 +53,11 @@ class World : public dzemikk::MonoBehaviour {
     }
     void setPlayer(PlayerEntity* playerEntity);
 
-    boost::uuids::uuid addChunk(const HexChunk::Config& config);
+    void renderChunk(boost::uuids::uuid id);
 
   private:
+    void spawnHexVisual(const std::shared_ptr<HexCell>& cell);
+
     HexGrid _grid;
     Perlin _perlin{1};
     std::mt19937 _rng;
@@ -65,6 +68,7 @@ class World : public dzemikk::MonoBehaviour {
     std::shared_ptr<dzemikk::Material> _material;
     std::shared_ptr<dzemikk::Material> _material2;
     std::unordered_set<dzemikk::Transform*> _hexTransforms;
+    std::unordered_set<HexCoord> _spawnedHexes;
 
     PlayerEntity* _player{nullptr};
 };
