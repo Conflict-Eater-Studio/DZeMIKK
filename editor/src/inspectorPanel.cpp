@@ -55,15 +55,62 @@ void editor::InspectorPanel::draw(dzemikk::GameObject* selectedObject,
         return;
     }
 
-    ImGui::Text("%s", selectedObject->getName().c_str());
+    static char nameBuffer[256];
+
+    strncpy(nameBuffer, selectedObject->getName().c_str(), sizeof(nameBuffer));
+    nameBuffer[sizeof(nameBuffer) - 1] = '\0';
+
+    if (ImGui::InputText("##name", nameBuffer, sizeof(nameBuffer))) {
+        selectedObject->setName(nameBuffer);
+    }
 
     ImGui::Separator();
-    ImGui::TextDisabled("Components");
+
+    ImGui::Spacing();
+    ImGui::Text("Components");
+    ImGui::Spacing();
 
     ImGui::Spacing();
 
     for (auto& component : selectedObject->getAllComponents()) {
+        ImGui::PushID(component.get());
+
+        bool isTransform = dynamic_cast<dzemikk::Transform*>(component.get()) != nullptr;
+
+        ImGui::BeginGroup();
+
+        ImGui::Separator();
+        ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", component->typeName().c_str());
+
+        ImGui::SameLine();
+
+        float avail = ImGui::GetContentRegionAvail().x;
+
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - 20);
+
+        if (isTransform) {
+            ImGui::BeginDisabled();
+            ImGui::Button("X");
+            ImGui::EndDisabled();
+        } else {
+            if (ImGui::Button("X")) {
+                selectedObject->removeComponent(component.get());
+                ImGui::PopID();
+                ImGui::EndGroup();
+                break;
+            }
+        }
+        ImGui::Indent(10.0f);
+
         _registry.drawInspector(component.get(), context);
+
+        ImGui::Unindent(10.0f);
+
+        ImGui::Spacing();
+
+        ImGui::EndGroup();
+
+        ImGui::PopID();
     }
 
     ImGui::Spacing();

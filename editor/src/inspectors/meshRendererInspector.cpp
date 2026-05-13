@@ -31,8 +31,6 @@ void editor::MeshRendererInspector::draw(MeshRenderer* renderer, const Inspector
         renderer->setColor(color);
     }
 
-    ImGui::Separator();
-
     const auto& materials = renderer->getMaterials();
 
     ImGui::Text("Materials: %zu", materials.size());
@@ -92,8 +90,6 @@ void editor::MeshRendererInspector::draw(MeshRenderer* renderer, const Inspector
 
         ImGui::PopID();
     }
-
-    ImGui::Separator();
 
     if (ImGui::Button("Add Material")) {
 

@@ -122,7 +122,6 @@ void Editor::setupEditor() {
     light->direction = glm::normalize(glm::vec3(-0.5F, -1.0F, -0.3F));
     light->color = glm::vec3(1.0F);
     light->intensity = 1.0F;
-
     
     _editorInitialized = true;
 }
