@@ -29,6 +29,7 @@ class Editor {
     void drawScenePanel();
 
     void drawGameObjectNode(dzemikk::GameObject* gameObject);
+    dzemikk::GameObject* createCube(const std::string& name);
 
   private:
     dzemikk::Engine* _engine = nullptr;

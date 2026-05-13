@@ -174,6 +174,17 @@ void Editor::drawHierarchyPanel() {
 
     ImGui::Begin("Hierarchy");
 
+    // ===== ADD BUTTON =====
+    if (ImGui::Button("+ Add Cube")) {
+        auto* cube = createCube("Runtime Cube");
+
+        if (_selectedObject) {
+            cube->setParent(_selectedObject);
+        }
+
+        _selectedObject = cube;
+    }
+
     if (!_activeScene) {
         ImGui::Text("No active scene");
         ImGui::End();
@@ -286,6 +297,30 @@ void Editor::drawGameObjectNode(dzemikk::GameObject* gameObject) {
     }
 
 #endif
+}
+
+dzemikk::GameObject* Editor::createCube(const std::string& name) {
+    if (!_activeScene) {
+        return nullptr;
+    }
+
+    auto* go = _activeScene->createGameObject(name);
+
+    auto* meshRenderer = go->addComponent<dzemikk::MeshRenderer>();
+
+    auto model = _engine->getAssetManager()->getPrimitiveModel(
+        dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Cube);
+
+    auto shader = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
+
+    auto material = std::make_shared<dzemikk::Material>();
+    material->setShader(shader);
+
+    meshRenderer->setModel(model);
+    meshRenderer->setMaterial(0, material);
+    meshRenderer->setTransform(go->transform());
+
+    return go;
 }
 
 } // namespace editor
