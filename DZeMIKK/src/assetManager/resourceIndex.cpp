@@ -15,6 +15,20 @@ bool dzemikk::ResourceIndex::initialize() {
 
     fs::path start = fs::current_path();
 
+    if (!fs::exists(start / "game")) {
+
+        fs::path parent = start.parent_path();
+
+        if (fs::exists(parent / "game") && fs::is_directory(parent / "game")) {
+
+            start = parent / "game";
+        }
+    }
+
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[ResourceIndex] Search start: {}", start.string());
+#endif
+
     for (const auto& entry : fs::recursive_directory_iterator(start)) {
         if (entry.is_directory() && entry.path().filename() == "res") {
             root = fs::absolute(entry.path());
