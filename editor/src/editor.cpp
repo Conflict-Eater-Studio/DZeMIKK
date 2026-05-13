@@ -39,10 +39,6 @@ void Editor::start() {
             drawInspectorPanel();
         }
 
-        if (_showScene) {
-            drawScenePanel();
-        }
-
 #endif
     });
 
@@ -140,14 +136,36 @@ void Editor::renderDockspace() {
 
 #if DZEMIKK_DEV_TOOLS
 
-    // ================= MENU BAR =================
+    static bool dockspaceOpen = true;
+    static bool initialized = false;
 
-    if (ImGui::BeginMainMenuBar()) {
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
+
+    windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse |
+                   ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                   ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |
+                   ImGuiWindowFlags_NoBackground;
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0F);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0F);
+
+    ImGui::Begin("DockSpaceWindow", &dockspaceOpen, windowFlags);
+
+    ImGui::PopStyleVar(2);
+
+    // ===== MENU BAR =====
+
+    if (ImGui::BeginMenuBar()) {
 
         if (ImGui::BeginMenu("File")) {
 
             if (ImGui::MenuItem("Exit")) {
-                // future shutdown
             }
 
             ImGui::EndMenu();
@@ -157,13 +175,48 @@ void Editor::renderDockspace() {
 
             ImGui::MenuItem("Hierarchy", nullptr, &_showHierarchy);
             ImGui::MenuItem("Inspector", nullptr, &_showInspector);
-            ImGui::MenuItem("Scene", nullptr, &_showScene);
 
             ImGui::EndMenu();
         }
 
-        ImGui::EndMainMenuBar();
+        ImGui::EndMenuBar();
     }
+
+    // ===== DOCKSPACE =====
+
+    ImGuiID dockspaceID = ImGui::GetID("MainDockSpace");
+
+    ImGui::DockSpace(dockspaceID, ImVec2(0.0F, 0.0F), ImGuiDockNodeFlags_PassthruCentralNode);
+
+    // ===== INITIAL LAYOUT =====
+
+    if (!initialized) {
+
+        initialized = true;
+
+        ImGui::DockBuilderRemoveNode(dockspaceID);
+        ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_DockSpace);
+
+        ImGui::DockBuilderSetNodeSize(dockspaceID, viewport->WorkSize);
+
+        ImGuiID dockMain = dockspaceID;
+
+        // left panel
+        ImGuiID dockLeft =
+            ImGui::DockBuilderSplitNode(dockMain, ImGuiDir_Left, 0.20F, nullptr, &dockMain);
+
+        // right panel
+        ImGuiID dockRight =
+            ImGui::DockBuilderSplitNode(dockMain, ImGuiDir_Right, 0.25F, nullptr, &dockMain);
+
+        // dock windows
+        ImGui::DockBuilderDockWindow("Hierarchy", dockLeft);
+        ImGui::DockBuilderDockWindow("Inspector", dockRight);
+
+        ImGui::DockBuilderFinish(dockspaceID);
+    }
+
+    ImGui::End();
 
 #endif
 }
@@ -232,29 +285,6 @@ void Editor::drawInspectorPanel() {
             transform->setScale(scale);
         }
     }
-
-    ImGui::End();
-
-#endif
-}
-
-void Editor::drawScenePanel() {
-
-#if DZEMIKK_DEV_TOOLS
-
-    ImGui::Begin("Scene");
-
-    ImVec2 size = ImGui::GetContentRegionAvail();
-
-    ImGui::Text("Scene viewport");
-    ImGui::Text("Size: %.1f x %.1f", size.x, size.y);
-
-    // future:
-    // framebuffer texture
-    // rendered scene
-    // gizmos
-    // drag-drop
-    // editor camera
 
     ImGui::End();
 

@@ -75,6 +75,8 @@ void Engine::init() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     ImGui_ImplGlfw_InitForOpenGL(_mainWindow->nativeHandle(), true);
     ImGui_ImplOpenGL3_Init("#version 330");

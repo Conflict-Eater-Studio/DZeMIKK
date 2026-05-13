@@ -6,6 +6,13 @@
 
 #include <memory>
 
+#if DZEMIKK_DEV_TOOLS
+
+#include <imgui.h>
+#include <imgui_internal.h>
+
+#endif
+
 namespace editor {
 
 class Editor {
