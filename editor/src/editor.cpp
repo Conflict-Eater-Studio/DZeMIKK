@@ -46,6 +46,7 @@ void Editor::start() {
 
         if (_showHierarchy) {
             _hierarchyPanel->draw(_activeScene, _selectedObject);
+            _hierarchyPanel->setEditor(this);
         }
 
         if (_showInspector) {
@@ -54,10 +55,28 @@ void Editor::start() {
             _inspectorPanel->draw(_selectedObject, context);
         }
 
+        for (auto& op : _deferredOps) {
+            op();
+        }
+        _deferredOps.clear();
+
 #endif
     });
 
     _engine->start();
+}
+
+void Editor::createEmptyObject(const std::string& name, dzemikk::GameObject* parent) {
+    _deferredOps.push_back([=]() {
+        auto* go = _activeScene->createGameObject(name);
+
+        if (parent) {
+            parent->addChild(go);
+        }
+
+        go->transform()->setPosition({0, 0, 0});
+        _selectedObject = go;
+    });
 }
 
 void Editor::setupEditor() {
@@ -68,7 +87,6 @@ void Editor::setupEditor() {
 
     auto* sceneManager = _engine->getSceneManager();
 
-    // Create default editor scene
     auto editorScene = std::make_shared<dzemikk::Scene>();
 
     sceneManager->loadScene(editorScene);
@@ -76,63 +94,31 @@ void Editor::setupEditor() {
 
     _activeScene = editorScene.get();
 
-    // ================= CAMERA =================
-
     auto* cameraGO = _activeScene->createGameObject("Editor Camera");
-
     cameraGO->transform()->setPosition({0.0F, 3.0F, 8.0F});
-
     auto* camera = cameraGO->addComponent<dzemikk::Camera>();
-
     camera->lookAt({0.0F, 0.0F, 0.0F});
-
     _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(camera);
 
-    // ================= TEST OBJECT =================
 
     auto* cubeGO = _activeScene->createGameObject("Cube");
-
     cubeGO->transform()->setPosition({0.0F, 0.0F, 0.0F});
-
-
     auto* meshRenderer = cubeGO->addComponent<dzemikk::MeshRenderer>();
-
     auto model = _engine->getAssetManager()->getPrimitiveModel(
         dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Cube);
-
     auto shader = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
-
     auto material = std::make_shared<dzemikk::Material>();
-
     material->setShader(shader);
-
     meshRenderer->setModel(model);
     meshRenderer->setMaterial(0, material);
     meshRenderer->setTransform(cubeGO->transform());
-
     auto* childGO = _activeScene->createGameObject("Cube Child");
-
-    // ustaw parent-child
-    childGO->setParent(cubeGO);
-
-    // lokalna pozycja wzglêdem rodzica
+    cubeGO->addChild(childGO);
     childGO->transform()->setPosition({2.0F, 0.0F, 0.0F});
     childGO->transform()->setScale({0.5F, 0.5F, 0.5F});
-    //auto* meshRendererC = childGO->addComponent<dzemikk::MeshRenderer>();
-
-    //auto model2 = _engine->getAssetManager()->getPrimitiveModel(
-    //    dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Sphere);
-    //meshRendererC->setModel(model2);
-    //meshRendererC->setMaterial(0, material);
-    //meshRendererC->setTransform(childGO->transform());
-
-    // ================= LIGHT =================
-
     
     auto* lightGO = _activeScene->createGameObject("Directional Light");
-
     auto* light = lightGO->addComponent<dzemikk::DirectionalLight>();
-
     light->direction = glm::normalize(glm::vec3(-0.5F, -1.0F, -0.3F));
     light->color = glm::vec3(1.0F);
     light->intensity = 1.0F;
@@ -220,15 +206,12 @@ void Editor::renderDockspace() {
 
         ImGuiID dockMain = dockspaceID;
 
-        // left panel
         ImGuiID dockLeft =
             ImGui::DockBuilderSplitNode(dockMain, ImGuiDir_Left, 0.20F, nullptr, &dockMain);
 
-        // right panel
         ImGuiID dockRight =
             ImGui::DockBuilderSplitNode(dockMain, ImGuiDir_Right, 0.25F, nullptr, &dockMain);
 
-        // dock windows
         ImGui::DockBuilderDockWindow("Hierarchy", dockLeft);
         ImGui::DockBuilderDockWindow("Inspector", dockRight);
 
@@ -238,8 +221,6 @@ void Editor::renderDockspace() {
     // ===== SAVE SCENE POPUP =====
 
     if (ImGui::BeginPopupModal("Save Scene", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-
-        // reset flag so popup opens only once
         _showSaveScenePopup = false;
 
         ImGui::Text("Save current scene");
@@ -287,7 +268,5 @@ void Editor::renderDockspace() {
 
 #endif
 }
-
-
 
 } // namespace editor

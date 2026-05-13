@@ -27,6 +27,8 @@ class Editor {
 
     void start();
 
+    void createEmptyObject(const std::string& name, dzemikk::GameObject* parent = nullptr);
+
   private:
     void setupEditor();
     void renderDockspace();
@@ -48,6 +50,8 @@ class Editor {
 
     std::unique_ptr<HierarchyPanel> _hierarchyPanel;
     std::unique_ptr<InspectorPanel> _inspectorPanel;
+
+    std::vector<std::function<void()>> _deferredOps;
 };
 
 } // namespace editor
