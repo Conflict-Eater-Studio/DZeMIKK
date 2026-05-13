@@ -9,6 +9,7 @@ namespace dzemikk {
 
     class Camera;
     class Collider;
+    class Octree;
 
     class Collisions : public IEngineModule {
     public:
@@ -27,7 +28,7 @@ namespace dzemikk {
          * @param screenHeight Height of the screen/window.
          * @return Collider* Pointer to the hit Collider, or nullptr if no hit.
          */
-        Collider* raycast(const Camera* camera, const glm::vec2& screenPos, float screenWidth, float screenHeight);
+        Collider* raycast(const Camera* camera, const Octree* octree, const glm::vec2& screenPos, float screenWidth, float screenHeight);
 
     private:
         bool intersectRayAABB(const glm::vec3& rayOrigin, const glm::vec3& rayDir, const glm::vec3& minBox, const glm::vec3& maxBox, float& tOut) const;

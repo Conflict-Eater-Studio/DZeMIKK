@@ -1,8 +1,12 @@
 #include "ecs/scene.h"
 
+#include "ecs/components/collider.h"
 #include "ecs/components/monoBehaviour.h"
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
+#include "scene/octree.h"
+#include "renderer/model.h"
+#include "renderer/mesh.h"
 
 #include <algorithm>
 #include <stack>
@@ -10,6 +14,7 @@
 
 namespace dzemikk {
 Scene::Scene() : _id(boost::uuids::random_generator()()) {};
+Scene::~Scene() = default;
 
 GameObject* Scene::createGameObject() {
     auto object = std::make_unique<GameObject>();
@@ -155,6 +160,53 @@ void Scene::processDelete() {
     }
 
     _pendingDestroy.clear();
+}
+
+void Scene::rebuildOctree() {
+    _octree = std::make_unique<Octree>(glm::vec3(0.0f), 5000.0f); // Large bounds for the octree
+    for (const auto& go : _objects) {
+        auto* collider = go->getComponent<Collider>();
+        if (collider && collider->isValid() && collider->getModel()) {
+            glm::vec3 globalMin(FLT_MAX);
+            glm::vec3 globalMax(-FLT_MAX);
+            bool hasBounds = false;
+            
+            for (const auto& mesh : collider->getModel()->getSubMeshes()) {
+                if (!mesh.mesh) continue;
+                globalMin = (glm::min)(globalMin, mesh.mesh->getBoundsMin());
+                globalMax = (glm::max)(globalMax, mesh.mesh->getBoundsMax());
+                hasBounds = true;
+            }
+            
+            if (hasBounds) {
+                const glm::mat4& worldMat = collider->getTransform()->getWorldMatrix();
+                
+                glm::vec3 corners[8] = {
+                    glm::vec3(worldMat * glm::vec4(globalMin.x, globalMin.y, globalMin.z, 1.0f)),
+                    glm::vec3(worldMat * glm::vec4(globalMax.x, globalMin.y, globalMin.z, 1.0f)),
+                    glm::vec3(worldMat * glm::vec4(globalMin.x, globalMax.y, globalMin.z, 1.0f)),
+                    glm::vec3(worldMat * glm::vec4(globalMax.x, globalMax.y, globalMin.z, 1.0f)),
+                    glm::vec3(worldMat * glm::vec4(globalMin.x, globalMin.y, globalMax.z, 1.0f)),
+                    glm::vec3(worldMat * glm::vec4(globalMax.x, globalMin.y, globalMax.z, 1.0f)),
+                    glm::vec3(worldMat * glm::vec4(globalMin.x, globalMax.y, globalMax.z, 1.0f)),
+                    glm::vec3(worldMat * glm::vec4(globalMax.x, globalMax.y, globalMax.z, 1.0f))
+                };
+                
+                glm::vec3 worldMin(FLT_MAX);
+                glm::vec3 worldMax(-FLT_MAX);
+                for (int i = 0; i < 8; ++i) {
+                    worldMin = (glm::min)(worldMin, corners[i]);
+                    worldMax = (glm::max)(worldMax, corners[i]);
+                }
+                
+                _octree->insert(go.get(), worldMin, worldMax);
+            }
+        }
+    }
+}
+
+Octree* Scene::getOctree() const {
+    return _octree.get();
 }
 
 void Scene::addPending(MonoBehaviour* mono) {

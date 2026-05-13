@@ -3,8 +3,10 @@
 #include "ecs/components/collider.h"
 #include "ecs/components/transform.h"
 #include "ecs/componentRegistry.h"
+#include "ecs/gameobject.h"
 #include "renderer/model.h"
 #include "renderer/mesh.h"
+#include "scene/octree.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <limits>
@@ -19,7 +21,7 @@ void Collisions::uninitialize() {
     // Intentionally empty for now
 }
 
-Collider* Collisions::raycast(const Camera* camera, const glm::vec2& screenPos, float screenWidth, float screenHeight) {
+Collider* Collisions::raycast(const Camera* camera, const Octree* octree, const glm::vec2& screenPos, float screenWidth, float screenHeight) {
     if (!camera) return nullptr;
 
     // Convert screen pos to NDC
@@ -40,8 +42,32 @@ Collider* Collisions::raycast(const Camera* camera, const glm::vec2& screenPos, 
     glm::vec3 rayDir = glm::normalize(glm::vec3(rayEndWorld) - glm::vec3(rayStartWorld));
     glm::vec3 rayOrigin = glm::vec3(rayStartWorld);
 
-    static std::vector<Collider*> colliders;
-    ComponentRegistry::get().getComponents<Collider>(colliders);
+    std::vector<Collider*> colliders;
+    if (octree) {
+        static uint32_t s_RaycastQueryId = 0;
+        s_RaycastQueryId++;
+
+        static std::vector<GameObject*> hitGOs;
+        hitGOs.clear();
+        octree->queryRay(rayOrigin, rayDir, hitGOs);
+        
+        for (auto* go : hitGOs) {
+            // Remove duplicates using the query ID instead of sort and unique
+            if (go->getLastRaycastQueryId() == s_RaycastQueryId) {
+                continue;
+            }
+            go->setLastRaycastQueryId(s_RaycastQueryId);
+
+            for (const auto& comp : go->getAllComponents()) {
+                if (typeid(*comp) == typeid(Collider)) {
+                    colliders.push_back(static_cast<Collider*>(comp.get()));
+                    break;
+                }
+            }
+        }
+    } else {
+        ComponentRegistry::get().getComponents<Collider>(colliders);
+    }
 
     Collider* closestHit = nullptr;
     float closestDist = std::numeric_limits<float>::max();

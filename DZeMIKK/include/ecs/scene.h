@@ -10,6 +10,8 @@
 namespace dzemikk {
 class GameObject;
 class MonoBehaviour;
+class Octree;
+
 class Scene {
   public:
     Scene();
@@ -17,7 +19,7 @@ class Scene {
     Scene& operator=(const Scene& other) = delete;
     Scene(Scene&& other) noexcept = delete;
     Scene& operator=(Scene&& other) noexcept = delete;
-    ~Scene() = default;
+    ~Scene();
 
     /*
      * @brief Creates a new GameObject in this scene and returns a pointer to it.
@@ -65,6 +67,9 @@ class Scene {
     void removeActive(MonoBehaviour* mono);
     void processDelete();
 
+    void rebuildOctree();
+    Octree* getOctree() const;
+
     [[nodiscard]] boost::uuids::uuid getId() const;
     [[nodiscard]] const std::vector<std::unique_ptr<dzemikk::GameObject>>& getObjects() const;
     void setId(const boost::uuids::uuid& uuid);
@@ -75,6 +80,8 @@ class Scene {
     std::vector<MonoBehaviour*> _pendingStart;
     std::vector<MonoBehaviour*> _active;
     std::vector<GameObject*> _pendingDestroy;
+
+    std::unique_ptr<Octree> _octree;
 };
 } // namespace dzemikk
 

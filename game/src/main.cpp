@@ -131,7 +131,9 @@ int main() {
 
     auto tileMesh = engine->getAssetManager()->get<dzemikk::Model>("models/pole.fbx");
 
-    createHexIsland(*mainScenePtr, tileMesh.get(), materialA, materialB, 1000, 1.0f, 0.15f, 0.5f);
+    createHexIsland(*mainScenePtr, tileMesh.get(), materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
+
+    mainScenePtr->rebuildOctree();
 
     // --- Player
     auto playerGO = mainScenePtr->createGameObject();
@@ -501,6 +503,7 @@ int main() {
             
             targetCollider = engine->getCollisions()->raycast(
                 engine->getRenderer()->getActiveSceneCamera(), 
+                engine->getSceneManager()->getActiveScene() ? engine->getSceneManager()->getActiveScene()->getOctree() : nullptr,
                 mousePos, 
                 static_cast<float>(width), 
                 static_cast<float>(height)
