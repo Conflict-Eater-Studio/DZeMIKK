@@ -3,10 +3,18 @@ project(Editor LANGUAGES CXX)
 add_executable(editor
     src/main.cpp
     src/editor.cpp
+    src/hierarchyPanel.cpp
+    src/inspectorPanel.cpp
+    src/inspectors/transformInspector.cpp
+    src/ui/propertyDrawer.cpp
 )
 
 target_sources(editor PRIVATE
     include/editor.h
+    include/hierarchyPanel.h
+    include/inspectorPanel.h
+    include/inspectors/transformInspector.h
+    include/ui/propertyDrawer.h
 )
 
 target_include_directories(editor

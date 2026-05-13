@@ -10,7 +10,6 @@ int main() {
     auto editor = new editor::Editor(engine.get());
     editor->start();
 
-    // engine->start();
     delete (editor);
     return 0;
 }

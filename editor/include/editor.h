@@ -14,11 +14,13 @@
 #endif
 
 namespace editor {
+class HierarchyPanel;
+class InspectorPanel;
 
 class Editor {
   public:
     explicit Editor(dzemikk::Engine* engine);
-    ~Editor() = default;
+    ~Editor();
 
     Editor(const Editor&) = delete;
     Editor& operator=(const Editor&) = delete;
@@ -27,16 +29,7 @@ class Editor {
 
   private:
     void setupEditor();
-    void registerCallbacks();
-
     void renderDockspace();
-
-    void drawHierarchyPanel();
-    void drawInspectorPanel();
-    void drawScenePanel();
-
-    void drawGameObjectNode(dzemikk::GameObject* gameObject);
-    dzemikk::GameObject* createCube(const std::string& name);
 
   private:
     dzemikk::Engine* _engine = nullptr;
@@ -49,6 +42,9 @@ class Editor {
     bool _showScene = true;
 
     bool _editorInitialized = false;
+
+    std::unique_ptr<HierarchyPanel> _hierarchyPanel;
+    std::unique_ptr<InspectorPanel> _inspectorPanel;
 };
 
 } // namespace editor

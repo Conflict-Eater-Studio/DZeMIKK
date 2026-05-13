@@ -15,16 +15,23 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
+#include "hierarchyPanel.h"
+#include "inspectorPanel.h"
+
 #endif
 
 namespace editor {
 
-Editor::Editor(dzemikk::Engine* engine) : _engine(engine) {}
+Editor::Editor(dzemikk::Engine* engine) : _engine(engine) {
+    _hierarchyPanel = std::make_unique<HierarchyPanel>();
+    _inspectorPanel = std::make_unique<InspectorPanel>();
+}
+
+Editor::~Editor() = default;
 
 void Editor::start() {
 
     setupEditor();
-    registerCallbacks();
 
     _engine->SetUserUpdateCallback([this]() {
 
@@ -32,11 +39,11 @@ void Editor::start() {
         renderDockspace();
 
         if (_showHierarchy) {
-            drawHierarchyPanel();
+            _hierarchyPanel->draw(_activeScene, _selectedObject);
         }
 
         if (_showInspector) {
-            drawInspectorPanel();
+            _inspectorPanel->draw(_selectedObject);
         }
 
 #endif
@@ -122,14 +129,6 @@ void Editor::setupEditor() {
     light->intensity = 1.0F;
 
     _editorInitialized = true;
-}
-
-void Editor::registerCallbacks() {
-    // future:
-    // shortcuts
-    // gizmos
-    // drag & drop
-    // selection
 }
 
 void Editor::renderDockspace() {
@@ -219,138 +218,6 @@ void Editor::renderDockspace() {
     ImGui::End();
 
 #endif
-}
-
-void Editor::drawHierarchyPanel() {
-
-#if DZEMIKK_DEV_TOOLS
-
-    ImGui::Begin("Hierarchy");
-
-    // ===== ADD BUTTON =====
-    if (ImGui::Button("+ Add Cube")) {
-        auto* cube = createCube("Runtime Cube");
-
-        if (_selectedObject) {
-            cube->setParent(_selectedObject);
-        }
-
-        _selectedObject = cube;
-    }
-
-    if (!_activeScene) {
-        ImGui::Text("No active scene");
-        ImGui::End();
-        return;
-    }
-
-    const auto& objects = _activeScene->getObjects();
-    for (const auto& go : objects) {
-        if (go->getParent() == nullptr) {
-            drawGameObjectNode(go.get());
-        }
-    }
-
-    ImGui::End();
-
-#endif
-}
-
-void Editor::drawInspectorPanel() {
-
-#if DZEMIKK_DEV_TOOLS
-
-    ImGui::Begin("Inspector");
-
-    if (!_selectedObject) {
-        ImGui::Text("No object selected");
-        ImGui::End();
-        return;
-    }
-
-    ImGui::Text("Name: %s", _selectedObject->getName().c_str());
-
-    auto* transform = _selectedObject->transform();
-
-    if (transform) {
-
-        glm::vec3 position = transform->getPosition();
-        glm::vec3 scale = transform->getScale();
-
-        if (ImGui::DragFloat3("Position", &position.x, 0.1F)) {
-            transform->setPosition(position);
-        }
-
-        if (ImGui::DragFloat3("Scale", &scale.x, 0.1F)) {
-            transform->setScale(scale);
-        }
-    }
-
-    ImGui::End();
-
-#endif
-}
-
-void Editor::drawGameObjectNode(dzemikk::GameObject* gameObject) {
-
-#if DZEMIKK_DEV_TOOLS
-
-    if (!gameObject) {
-        return;
-    }
-
-    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-
-    if (_selectedObject == gameObject) {
-        flags |= ImGuiTreeNodeFlags_Selected;
-    }
-
-    const auto& children = gameObject->getChildren();
-
-    if (children.empty()) {
-        flags |= ImGuiTreeNodeFlags_Leaf;
-    }
-
-    bool opened = ImGui::TreeNodeEx((void*)gameObject, flags, "%s", gameObject->getName().c_str());
-
-    if (ImGui::IsItemClicked()) {
-        _selectedObject = gameObject;
-    }
-
-    if (opened) {
-
-        for (auto* child : children) {
-            drawGameObjectNode(child);
-        }
-
-        ImGui::TreePop();
-    }
-
-#endif
-}
-
-dzemikk::GameObject* Editor::createCube(const std::string& name) {
-    if (!_activeScene) {
-        return nullptr;
-    }
-
-    auto* go = _activeScene->createGameObject(name);
-
-    auto* meshRenderer = go->addComponent<dzemikk::MeshRenderer>();
-
-    auto model = _engine->getAssetManager()->getPrimitiveModel(
-        dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Cube);
-
-    auto shader = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
-
-    auto material = std::make_shared<dzemikk::Material>();
-    material->setShader(shader);
-
-    meshRenderer->setModel(model);
-    meshRenderer->setMaterial(0, material);
-    meshRenderer->setTransform(go->transform());
-
-    return go;
 }
 
 } // namespace editor
