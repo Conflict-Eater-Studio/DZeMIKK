@@ -49,7 +49,9 @@ void Editor::start() {
         }
 
         if (_showInspector) {
-            _inspectorPanel->draw(_selectedObject);
+            InspectorContext context;
+            context.assetManager = _engine->getAssetManager();
+            _inspectorPanel->draw(_selectedObject, context);
         }
 
 #endif
@@ -126,14 +128,16 @@ void Editor::setupEditor() {
 
     // ================= LIGHT =================
 
-    //auto* lightGO = _activeScene->createGameObject("Directional Light");
+    /*
+    auto* lightGO = _activeScene->createGameObject("Directional Light");
 
-    //auto* light = lightGO->addComponent<dzemikk::DirectionalLight>();
+    auto* light = lightGO->addComponent<dzemikk::DirectionalLight>();
 
-    //light->direction = glm::normalize(glm::vec3(-0.5F, -1.0F, -0.3F));
-    //light->color = glm::vec3(1.0F);
-    //light->intensity = 1.0F;
+    light->direction = glm::normalize(glm::vec3(-0.5F, -1.0F, -0.3F));
+    light->color = glm::vec3(1.0F);
+    light->intensity = 1.0F;
 
+    */
     _editorInitialized = true;
 }
 
@@ -283,5 +287,7 @@ void Editor::renderDockspace() {
 
 #endif
 }
+
+
 
 } // namespace editor

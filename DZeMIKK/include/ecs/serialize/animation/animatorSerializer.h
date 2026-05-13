@@ -86,7 +86,8 @@ namespace dzemikk {
                 }
                 auto meshRenderer = animator.getOwner()->getComponent<MeshRenderer>();
                 if (meshRenderer != nullptr) {
-                    AnimationClip* clip2 = meshRenderer->getModel()->getSkeleton()->getClip(stateJson["clip"]);
+                    AnimationClip* clip2 =
+                        meshRenderer->getModel().get()->getSkeleton()->getClip(stateJson["clip"]);
                     state->setClip(clip2);
                 }
             }

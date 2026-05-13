@@ -43,8 +43,9 @@ FMOD_LIBS_PATH:C:/Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows/a
 -- Looking for pthread_create in pthread
 -- Looking for pthread_create in pthread - not found
 -- Found Threads: TRUE
+-- Including Win32 support
 -- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE) 
--- Using Win32 for window creation
+-- Documentation generation requires Doxygen 1.9.8 or later
 -- Could NOT find PkgConfig (missing: PKG_CONFIG_EXECUTABLE) 
 -- Enabled dynamic loading of HarfBuzz library at runtime.
 -- Could NOT find ZLIB (missing: ZLIB_LIBRARY ZLIB_INCLUDE_DIR) 
@@ -54,19 +55,20 @@ FMOD_LIBS_PATH:C:/Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows/a
 -- Could NOT find BrotliDec (missing: BROTLIDEC_INCLUDE_DIRS BROTLIDEC_LIBRARIES) 
 Cloning into 'googletest-src'...
 HEAD is now at b514bdc8 Update version strings to 1.15.2 (#4583)
--- Configuring done (82.7s)
+-- Configuring done (97.8s)
 -- Generating done (0.5s)
 -- Build files have been written to: C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug
 $ cmake --build cmake-build-debug --target game -j 10
 Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
 
   1>Checking Build System
+  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/freetype-src/CMakeLists.txt
   Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/DZeMIKK/CMakeLists.txt
   Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/glfw-src/src/CMakeLists.txt
   Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/assimp-src/contrib/zlib/CMakeLists.txt
-  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/freetype-src/CMakeLists.txt
   Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/glm-src/glm/CMakeLists.txt
   glad.c
+  autofit.c
   context.c
   adler32.c
   compress.c
@@ -74,7 +76,6 @@ Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
   deflate.c
   gzclose.c
   gzlib.c
-  glm.cpp
   gzread.c
   gzwrite.c
   inflate.c
@@ -84,28 +85,42 @@ Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
   trees.c
   uncompr.c
   zutil.c
-  autofit.c
+  glm.cpp
   init.c
-  zlibstatic.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\assimp-build\contrib\zlib\Debug\zlibstaticd.lib
-  input.c
   ftbase.c
-  glad.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\Debug\glad.lib
+  input.c
   ftbbox.c
+  glad.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\Debug\glad.lib
   ftbdf.c
-  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/assimp-src/code/CMakeLists.txt
-  monitor.c
   ftbitmap.c
+  monitor.c
   ftcid.c
   ftfstype.c
-  vulkan.c
   ftgasp.c
+  platform.c
+  zlibstatic.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\assimp-build\contrib\zlib\Debug\zlibstaticd.lib
   ftglyph.c
+  ftgxval.c
+  vulkan.c
+  ftinit.c
+  ftmm.c
+  ftotval.c
   window.c
+  ftpatent.c
+  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/assimp-src/code/CMakeLists.txt
+  ftpfr.c
+  ftstroke.c
+  egl_context.c
+  ftsynth.c
+  fttype1.c
+  ftwinfnt.c
+  osmesa_context.c
+  bdf.c
   Assimp.cpp
   CInterfaceIOWrapper.cpp
   Compression.cpp
+  Generowanie kodu...
   BaseImporter.cpp
-  ftgxval.c
   BaseProcess.cpp
   PostStepRegistry.cpp
   ImporterRegistry.cpp
@@ -118,143 +133,135 @@ Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
   VertexTriangleAdjacency.cpp
   SpatialSort.cpp
   SceneCombiner.cpp
-  ftinit.c
-  ftmm.c
-  win32_init.c
-  ftotval.c
-  ftpatent.c
+  glm.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\glm-build\glm\Debug\glmd.lib
+  null_init.c
+  Trwa kompilowanie...
+  ftbzip2.c
+  null_monitor.c
+  ftcache.c
+  cff.c
   ScenePreprocessor.cpp
-  ftpfr.c
-  win32_joystick.c
+  null_window.c
   SkeletonMeshBuilder.cpp
-  ftstroke.c
+  type1cid.c
   StandardShapes.cpp
   TargetAnimation.cpp
   RemoveComments.cpp
-  ftsynth.c
   Subdivision.cpp
-  fttype1.c
-  win32_monitor.c
+  ftgzip.c
+  null_joystick.c
+  hvf.c
   scene.cpp
-  ftwinfnt.c
   Bitmap.cpp
+  ftlzw.c
   Version.cpp
-  bdf.c
-  win32_time.c
-  Generowanie kodu...
+  pcf.c
+  win32_module.c
+  pfr.c
   CreateAnimMesh.cpp
   simd.cpp
-  win32_thread.c
+  psaux.c
   material.cpp
   AssertHandler.cpp
   Exceptional.cpp
   Base64.cpp
   GeometryUtils.cpp
-  Trwa kompilowanie...
-  ftbzip2.c
   DefaultLogger.cpp
-  win32_window.c
+  pshinter.c
+  win32_time.c
   Exporter.cpp
+  psnames.c
   AssimpCExport.cpp
   CalcTangentsProcess.cpp
   ComputeUVMappingProcess.cpp
-  glm.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\glm-build\glm\Debug\glmd.lib
-  ftcache.c
   ConvertToLHProcess.cpp
-  cff.c
+  raster.c
   EmbedTexturesProcess.cpp
   FindDegenerates.cpp
-  wgl_context.c
-  type1cid.c
+  win32_thread.c
   FindInstancesProcess.cpp
+  sdf.c
   FindInvalidDataProcess.cpp
-  ftgzip.c
+  sfnt.c
   FixNormalsStep.cpp
   DropFaceNormalsProcess.cpp
   GenFaceNormalsProcess.cpp
-  egl_context.c
-  hvf.c
   GenVertexNormalsProcess.cpp
+  win32_init.c
+  smooth.c
   PretransformVertices.cpp
-  ftlzw.c
-  pcf.c
-  pfr.c
-  osmesa_context.c
-  psaux.c
+  svg.c
+  truetype.c
   ImproveCacheLocality.cpp
+  win32_joystick.c
+  type1.c
   JoinVerticesProcess.cpp
-  LimitBoneWeightsProcess.cpp
-  RemoveRedundantMaterials.cpp
+  type42.c
   Generowanie kodu...
-  pshinter.c
+  LimitBoneWeightsProcess.cpp
+  win32_monitor.c
+  RemoveRedundantMaterials.cpp
   RemoveVCProcess.cpp
-  psnames.c
   SortByPTypeProcess.cpp
   SplitLargeMeshes.cpp
   TextureTransform.cpp
-  raster.c
   TriangulateProcess.cpp
-  sdf.c
   ValidateDataStructure.cpp
+  Trwa kompilowanie...
+  winfnt.c
   OptimizeGraph.cpp
   OptimizeMeshes.cpp
-  sfnt.c
+  win32_window.c
   DeboneProcess.cpp
+  ftsystem.c
   ProcessHelper.cpp
-  smooth.c
-  svg.c
-  truetype.c
   MakeVerboseFormat.cpp
+  Generowanie kodu...
+  ftdebug.c
+  Generowanie kodu...
   ScaleProcess.cpp
-  type1.c
+  Trwa kompilowanie...
   ArmaturePopulate.cpp
+  wgl_context.c
   GenBoundingBoxesProcess.cpp
   SplitByBoneCountProcess.cpp
-  MaterialSystem.cpp
-  type42.c
-  STEPFileReader.cpp
-  glfw.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\glfw-build\src\Debug\glfw3d.lib
-  STEPFileEncoding.cpp
   Generowanie kodu...
+  MaterialSystem.cpp
+  STEPFileReader.cpp
+  STEPFileEncoding.cpp
   glTFCommon.cpp
   AMFImporter.cpp
   AMFImporter_Geometry.cpp
-  Trwa kompilowanie...
-  winfnt.c
   AMFImporter_Material.cpp
   AMFImporter_Postprocess.cpp
   3DSConverter.cpp
-  ftsystem.c
   3DSLoader.cpp
   ACLoader.cpp
   ASELoader.cpp
-  ftdebug.c
   ASEParser.cpp
-  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/DZeMIKK/CMakeLists.txt
   AssbinLoader.cpp
-  Generowanie kodu...
   B3DImporter.cpp
   BVHLoader.cpp
   ColladaHelper.cpp
+  glfw.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\glfw-build\src\Debug\glfw3d.lib
   ColladaLoader.cpp
   ColladaParser.cpp
   DXFLoader.cpp
+  freetype.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\freetype-build\Debug\freetyped.lib
   CSMLoader.cpp
   HMPLoader.cpp
   IRRMeshLoader.cpp
-  imgui.cpp
   IRRShared.cpp
   IQMImporter.cpp
   IRRLoader.cpp
+  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/DZeMIKK/CMakeLists.txt
   LWOAnimation.cpp
   LWOBLoader.cpp
   LWOLoader.cpp
   LWOMaterial.cpp
   LWSLoader.cpp
   MD2Loader.cpp
-  freetype.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\freetype-build\Debug\freetyped.lib
   MD3Loader.cpp
-  imgui_draw.cpp
   MD5Loader.cpp
   MD5Parser.cpp
   MDCLoader.cpp
@@ -262,12 +269,11 @@ Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
   MDLMaterialLoader.cpp
   HL1MDLLoader.cpp
   UniqueNameGenerator.cpp
-  imgui_tables.cpp
+  imgui.cpp
   NFFLoader.cpp
   NDOLoader.cpp
   OFFLoader.cpp
   ObjFileImporter.cpp
-  imgui_widgets.cpp
   ObjFileMtlImporter.cpp
   ObjFileParser.cpp
   OgreImporter.cpp
@@ -276,37 +282,39 @@ Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
   OgreXmlSerializer.cpp
   OgreMaterial.cpp
   OpenGEXImporter.cpp
-  imgui_impl_glfw.cpp
   PlyLoader.cpp
+  imgui_draw.cpp
   PlyParser.cpp
   MS3DLoader.cpp
   COBLoader.cpp
   BlenderLoader.cpp
   BlenderDNA.cpp
   BlenderScene.cpp
-  imgui_impl_opengl3.cpp
   BlenderModifier.cpp
+  imgui_tables.cpp
   BlenderBMesh.cpp
   BlenderTessellator.cpp
   BlenderCustomData.cpp
   IFCLoader.cpp
+  imgui_widgets.cpp
   IFCReaderGen1_2x3.cpp
-  Generowanie kodu...
   IFCReaderGen2_2x3.cpp
   IFCUtil.cpp
   IFCGeometry.cpp
   IFCMaterial.cpp
   IFCProfile.cpp
   IFCCurve.cpp
+  imgui_impl_glfw.cpp
   IFCBoolean.cpp
   IFCOpenings.cpp
   XGLLoader.cpp
   FBXImporter.cpp
   FBXParser.cpp
   FBXTokenizer.cpp
+  imgui_impl_opengl3.cpp
   FBXConverter.cpp
   FBXDocument.cpp
-  imgui.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\Debug\imguid.lib
+  Generowanie kodu...
   FBXProperties.cpp
   FBXMeshGeometry.cpp
   FBXMaterial.cpp
@@ -316,6 +324,7 @@ Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
   FBXDeformer.cpp
   FBXBinaryTokenizer.cpp
   FBXDocumentUtil.cpp
+  imgui.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\Debug\imguid.lib
   Q3DLoader.cpp
   Q3BSPFileParser.cpp
   Q3BSPFileImporter.cpp
@@ -555,15 +564,15 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.3313
   Trwa skanowanie źródeł pod kątem zależności modułów...
   main.cpp
   HexChunk.cpp
-  world.cpp
   grid.cpp
   game.cpp
+  world.cpp
   Trwa kompilowanie…
-  main.cpp
   game.cpp
   HexChunk.cpp
-  grid.cpp
+  main.cpp
   world.cpp
+  grid.cpp
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
   (kompilowanie pliku źródłowego „../../game/src/main.cpp”)
       C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(32,1):
@@ -585,5 +594,6 @@ C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderer.h(1,1)
   (kompilowanie pliku źródłowego „../../game/src/game.cpp”)
   
      Trwa tworzenie biblioteki C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/game/Debug/game.lib i obiektu C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/game/Debug/game.exp
-imguid.lib(imgui_impl_glfw.obj) : error LNK2019: nierozpoznany symbol zewnętrzny glfwGetPlatform przywołany w funkcji "bool __cdecl ImGui_ImplGlfw_Init(struct GLFWwindow *,bool,enum GlfwClientApi)" (?ImGui_ImplGlfw_Init@@YA_NPEAUGLFWwindow@@_NW4GlfwClientApi@@@Z) [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\Debug\game.exe : fatal error LNK1120: liczba nierozpoznanych elementów zewnętrznych: 1 [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+  game.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\Debug\game.exe
+
+Debug build finished successfully.

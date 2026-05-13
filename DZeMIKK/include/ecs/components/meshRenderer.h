@@ -46,8 +46,8 @@ class MeshRenderer : public Component {
      *
      * @return Model* Pointer to the mesh.
      */
-    [[nodiscard]] Model* getModel() const {
-        return _model.get();
+    [[nodiscard]] AssetHandle<Model> getModel() const {
+        return _model;
     }
     [[nodiscard]] AssetHandle<Model> getModelHandle() const {
         return _model;

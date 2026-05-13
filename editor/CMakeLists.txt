@@ -1,26 +1,41 @@
 project(Editor LANGUAGES CXX)
 
-add_executable(editor
-    src/main.cpp
-    src/editor.cpp
-    src/hierarchyPanel.cpp
-    src/inspectorPanel.cpp
-    src/inspectors/transformInspector.cpp
-    src/ui/propertyDrawer.cpp
+set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+set(EDITOR_SOURCES
+    ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/editor.cpp
+    ${SRC_DIR}/hierarchyPanel.cpp
+    ${SRC_DIR}/inspectorPanel.cpp
+    ${SRC_DIR}/inspectors/transformInspector.cpp
+    ${SRC_DIR}/inspectors/inspectorRegistry.cpp
+    ${SRC_DIR}/inspectors/meshRendererInspector.cpp
+    ${SRC_DIR}/ui/propertyDrawer.cpp
 )
 
-target_sources(editor PRIVATE
-    include/editor.h
-    include/hierarchyPanel.h
-    include/inspectorPanel.h
-    include/inspectors/transformInspector.h
-    include/ui/propertyDrawer.h
+set(EDITOR_HEADERS
+    ${INC_DIR}/editor.h
+    ${INC_DIR}/hierarchyPanel.h
+    ${INC_DIR}/inspectorPanel.h
+    ${INC_DIR}/inspectors/transformInspector.h
+    ${INC_DIR}/inspectors/inspectorRegistry.h
+    ${INC_DIR}/inspectors/meshRendererInspector.h
+    ${INC_DIR}/ui/propertyDrawer.h
+)
+
+add_executable(editor
+    ${EDITOR_SOURCES}
+    ${EDITOR_HEADERS}
 )
 
 target_include_directories(editor
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC
+    ${INC_DIR}
 )
+
+source_group(TREE ${SRC_DIR} PREFIX "Source" FILES ${EDITOR_SOURCES})
+source_group(TREE ${INC_DIR} PREFIX "Include" FILES ${EDITOR_HEADERS})
 
 target_link_libraries(editor
     PUBLIC

@@ -38,7 +38,7 @@ void dzemikk::MeshRenderPass::buildMeshBatches(RenderContext& ctx) {
             if (!r->isValid())
                 continue;
 
-            Model* model = r->getModel();
+            Model* model = r->getModel().get();
             glm::mat4 transform = r->getTransform()->getWorldMatrix();
 
             float radius = r->getCullingRadius();
@@ -108,6 +108,10 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
             Mesh* mesh = batch.mesh;
             Material* material = batch.material;
             Shader* shader = material->getShader();
+
+            if (!shader) {
+                continue;
+            }
 
             shader->bind();
 

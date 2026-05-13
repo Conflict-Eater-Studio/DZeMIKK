@@ -2,11 +2,17 @@
 
 #include "ecs/gameobject.h"
 
+#include "inspectors/inspectorRegistry.h"
+
 namespace editor {
 
 class InspectorPanel {
   public:
-    void draw(dzemikk::GameObject* selectedObject);
+    InspectorPanel();
+    void draw(dzemikk::GameObject* selectedObject, const InspectorContext& context);
+
+  private:
+    InspectorRegistry _registry;
 };
 
 } // namespace editor
