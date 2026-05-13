@@ -118,17 +118,17 @@ void Editor::setupEditor() {
     // lokalna pozycja wzglêdem rodzica
     childGO->transform()->setPosition({2.0F, 0.0F, 0.0F});
     childGO->transform()->setScale({0.5F, 0.5F, 0.5F});
-    auto* meshRendererC = childGO->addComponent<dzemikk::MeshRenderer>();
+    //auto* meshRendererC = childGO->addComponent<dzemikk::MeshRenderer>();
 
-    auto model2 = _engine->getAssetManager()->getPrimitiveModel(
-        dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Sphere);
-    meshRendererC->setModel(model2);
-    meshRendererC->setMaterial(0, material);
-    meshRendererC->setTransform(childGO->transform());
+    //auto model2 = _engine->getAssetManager()->getPrimitiveModel(
+    //    dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Sphere);
+    //meshRendererC->setModel(model2);
+    //meshRendererC->setMaterial(0, material);
+    //meshRendererC->setTransform(childGO->transform());
 
     // ================= LIGHT =================
 
-    /*
+    
     auto* lightGO = _activeScene->createGameObject("Directional Light");
 
     auto* light = lightGO->addComponent<dzemikk::DirectionalLight>();
@@ -137,7 +137,7 @@ void Editor::setupEditor() {
     light->color = glm::vec3(1.0F);
     light->intensity = 1.0F;
 
-    */
+    
     _editorInitialized = true;
 }
 

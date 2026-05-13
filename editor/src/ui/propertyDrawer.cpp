@@ -50,9 +50,15 @@ bool editor::PropertyDrawer::drawModel(const std::string& label,
 
     constexpr std::string_view prefix = "primitive/";
 
-    std::string path = handle.getAssetPath();
-
     ImGui::PushID(label.c_str());
+
+    std::string path;
+
+    if (handle.get()) {
+        path = handle.getAssetPath();
+    } else {
+        path = "";
+    }
 
     static std::unordered_map<std::string, ModelSource> sourceStates;
     static std::unordered_map<std::string, int> primitiveStates;
