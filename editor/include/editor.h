@@ -43,6 +43,9 @@ class Editor {
 
     bool _editorInitialized = false;
 
+    bool _showSaveScenePopup = false;
+    char _scenePathBuffer[256] = "scene.json";
+
     std::unique_ptr<HierarchyPanel> _hierarchyPanel;
     std::unique_ptr<InspectorPanel> _inspectorPanel;
 };

@@ -6,6 +6,7 @@
 #include "ecs/gameobject.h"
 #include "ecs/serialize/componentSerializerRegistry.h"
 #include "ecs/serialize/uuid.h"
+#include "ecs/components/transform.h"
 #include "renderer/model.h"
 #include "renderer/shader.h"
 #include "renderer/material.h"
@@ -55,8 +56,26 @@ inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, As
     meshRenderer.setId(uuidGenerator(json["id"].get<std::string>()));
 
     std::string modelPath = json.value("model", "");
+
     if (!modelPath.empty()) {
-        meshRenderer.setModel(assetManager->get<Model>(modelPath));
+
+        constexpr std::string_view primitivePrefix = "primitive/";
+
+        if (modelPath.starts_with(primitivePrefix)) {
+
+            std::string primitiveIndexString = modelPath.substr(primitivePrefix.size());
+
+            int primitiveIndex = std::stoi(primitiveIndexString);
+
+            meshRenderer.setModel(assetManager->getPrimitiveModel(
+                static_cast<PrimitiveMeshLibrary::PrimitiveMesh>(primitiveIndex)));
+
+        }
+
+        else {
+
+            meshRenderer.setModel(assetManager->get<Model>(modelPath));
+        }
     }
 
     if (json.contains("color") && json["color"].is_array() && json["color"].size() >= 4) {
@@ -70,18 +89,28 @@ inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, As
     }
 
     if (json.contains("materials") && json["materials"].is_array()) {
+
         const auto& materialsJson = json["materials"];
+
         for (size_t i = 0; i < materialsJson.size(); i++) {
+
             if (materialsJson[i].is_string()) {
+
                 std::string shaderPath = materialsJson[i].get<std::string>();
+
                 if (!shaderPath.empty()) {
-                    std::shared_ptr<Material> material = std::shared_ptr<Material>();
+
+                    auto material = std::make_shared<Material>();
+
                     material->setShader(assetManager->get<Shader>(shaderPath));
+
                     meshRenderer.setMaterial(i, material);
                 }
             }
         }
     }
+
+    meshRenderer.setTransform(meshRenderer.getOwner()->transform());
 }
 
 inline void registerMeshRendererSerializer(ComponentSerializerRegistry& registry) {

@@ -21,7 +21,7 @@ namespace dzemikk {
         json["type"] = "Transform";
         json["id"] = boost::uuids::to_string(trs.getId());
         json["position"] = {pos[0], pos[1], pos[2]};
-        json["rotation"] = {rot[0], rot[1], rot[2], rot[3]};
+        json["rotation"] = {rot[3], rot[0], rot[1], rot[2]};
         json["scale"] = {scale[0], scale[1], scale[2]};
     }
 

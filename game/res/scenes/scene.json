@@ -1,0 +1,128 @@
+{
+    "id": "4503c2a6-deec-4c17-937d-ceb00d3263fe",
+    "roots": [
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "808c3aa1-5010-4230-b3e2-efba17cca645",
+                    "position": [
+                        0.0,
+                        3.0,
+                        8.0
+                    ],
+                    "rotation": [
+                        0.9839535355567932,
+                        -0.17842482030391693,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "aspect": 1.7699999809265137,
+                    "bottom": -1.0,
+                    "far": 1000.0,
+                    "fov": 60.0,
+                    "id": 0,
+                    "left": -1.0,
+                    "near": 0.10000000149011612,
+                    "projectionType": 0,
+                    "right": 1.0,
+                    "top": 1.0,
+                    "type": "Camera"
+                }
+            ],
+            "id": "6f065457-538c-4b73-b3d6-2c0dd948219c",
+            "name": "Editor Camera"
+        },
+        {
+            "children": [
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "id": "e491387d-26a0-4863-a7fe-f83b9294e88e",
+                            "position": [
+                                2.0,
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": [
+                                1.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                0.5,
+                                0.5,
+                                0.5
+                            ],
+                            "type": "Transform"
+                        },
+                        {
+                            "color": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "id": "4c31447c-2dbf-4e57-ac76-6cb35c6bd19f",
+                            "materials": [
+                                "shaders/tile1"
+                            ],
+                            "model": "primitive/2",
+                            "type": "MeshRenderer"
+                        }
+                    ],
+                    "id": "2bf007fb-798f-4600-ba8f-81ccbc8529ac",
+                    "name": "Cube Child"
+                }
+            ],
+            "components": [
+                {
+                    "id": "c4e2b96a-6056-4f12-95ad-c9982a1ca095",
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "id": "09abae2c-7a6c-4f14-8d4c-fac4df65238a",
+                    "materials": [
+                        "shaders/tile1"
+                    ],
+                    "model": "primitive/0",
+                    "type": "MeshRenderer"
+                }
+            ],
+            "id": "cc23f92b-6052-423f-a798-c174d3c1ca1e",
+            "name": "Cube"
+        }
+    ]
+}

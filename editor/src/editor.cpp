@@ -18,7 +18,13 @@
 #include "hierarchyPanel.h"
 #include "inspectorPanel.h"
 
+#include "ecs/serialize/sceneSerializer.h"
+
+#include <fstream>
+#include <filesystem>
+
 #endif
+#include <iostream>
 
 namespace editor {
 
@@ -120,13 +126,13 @@ void Editor::setupEditor() {
 
     // ================= LIGHT =================
 
-    auto* lightGO = _activeScene->createGameObject("Directional Light");
+    //auto* lightGO = _activeScene->createGameObject("Directional Light");
 
-    auto* light = lightGO->addComponent<dzemikk::DirectionalLight>();
+    //auto* light = lightGO->addComponent<dzemikk::DirectionalLight>();
 
-    light->direction = glm::normalize(glm::vec3(-0.5F, -1.0F, -0.3F));
-    light->color = glm::vec3(1.0F);
-    light->intensity = 1.0F;
+    //light->direction = glm::normalize(glm::vec3(-0.5F, -1.0F, -0.3F));
+    //light->color = glm::vec3(1.0F);
+    //light->intensity = 1.0F;
 
     _editorInitialized = true;
 }
@@ -164,6 +170,10 @@ void Editor::renderDockspace() {
 
         if (ImGui::BeginMenu("File")) {
 
+            if (ImGui::MenuItem("Save Scene As...")) {
+                _showSaveScenePopup = true;
+            }
+
             if (ImGui::MenuItem("Exit")) {
             }
 
@@ -179,6 +189,12 @@ void Editor::renderDockspace() {
         }
 
         ImGui::EndMenuBar();
+    }
+
+    // ===== OPEN POPUP =====
+
+    if (_showSaveScenePopup) {
+        ImGui::OpenPopup("Save Scene");
     }
 
     // ===== DOCKSPACE =====
@@ -213,6 +229,54 @@ void Editor::renderDockspace() {
         ImGui::DockBuilderDockWindow("Inspector", dockRight);
 
         ImGui::DockBuilderFinish(dockspaceID);
+    }
+
+    // ===== SAVE SCENE POPUP =====
+
+    if (ImGui::BeginPopupModal("Save Scene", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+
+        // reset flag so popup opens only once
+        _showSaveScenePopup = false;
+
+        ImGui::Text("Save current scene");
+
+        ImGui::Separator();
+
+        ImGui::InputText("Path", _scenePathBuffer, sizeof(_scenePathBuffer));
+
+        ImGui::Spacing();
+
+        if (ImGui::Button("Save", ImVec2(120.0F, 0.0F))) {
+
+            try {
+
+                nlohmann::json sceneJson = dzemikk::SceneSerializer::serialize(*_activeScene);
+
+
+                std::cout << std::filesystem::current_path() << std::endl;
+                std::ofstream file(_scenePathBuffer);
+
+                if (file.is_open()) {
+                    file << sceneJson.dump(4);
+                    file.close();
+                }
+
+            } catch (const std::exception& e) {
+
+                // optional logging
+                // std::cerr << e.what() << std::endl;
+            }
+
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Cancel", ImVec2(120.0F, 0.0F))) {
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
     }
 
     ImGui::End();

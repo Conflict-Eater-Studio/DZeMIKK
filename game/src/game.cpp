@@ -62,6 +62,9 @@
 #include <imgui.h>
 #endif
 
+#include <fstream>
+#include <ecs/serialize/sceneSerializer.h>
+
 struct SkyboxInitContext {
     dzemikk::AssetHandle<dzemikk::Shader> shader;
     dzemikk::Renderer* renderer;
@@ -246,14 +249,39 @@ void Game::start() {
     engine->getAssetManager()->getAsync("textures/Daylight Box_Pieces", taskSk);
 
     auto scene = std::make_shared<dzemikk::Scene>();
+
+    std::ifstream file("C:/Users/Admin/Documents/GitHub/DZeMIKK/game/res/scenes/scene.json");
+
+    if (file.is_open()) {
+
+        nlohmann::json sceneJson;
+        file >> sceneJson;
+
+        dzemikk::SceneSerializer::deserializeInto(*scene, sceneJson, assetManager);
+
+        file.close();
+    }
+
     sceneManager->loadScene(scene);
     sceneManager->setActiveScene(scene);
 
+    auto* cameraGO = scene->createGameObject("Editor Camera");
+
+    cameraGO->transform()->setPosition({0.0F, 3.0F, 8.0F});
+
+    auto* camera = cameraGO->addComponent<dzemikk::Camera>();
+
+    camera->lookAt({0.0F, 0.0F, 0.0F});
+
+    engine->getRenderer()->getCameraSystem().setActiveSceneCamera(camera);
+
+    /*
     auto* cameraGO = scene->createGameObject("Camera");
     cameraGO->transform()->setPosition({0.0F, 7.0F, 10.0F});
     auto* camera = cameraGO->addComponent<dzemikk::Camera>();
     camera->lookAt({0.0F, 2.0F, 0.0F});
     engine->getRenderer()->getCameraSystem().setActiveSceneCamera(camera);
+    */
 
     auto* uiCameraGO = scene->createGameObject("UICamera");
     uiCameraGO->transform()->setPosition({0.0F, 0.0F, 1.0F});
@@ -290,6 +318,7 @@ void Game::start() {
     spotLight->innerCutoff = glm::cos(glm::radians(15.0f));
     spotLight->outerCutoff = glm::cos(glm::radians(25.0f));
 
+    /*
     auto shader = assetManager->get<dzemikk::Shader>("shaders/tile1");
     auto shader2 = assetManager->get<dzemikk::Shader>("shaders/tile2");
     auto material = std::make_shared<dzemikk::Material>();
@@ -501,6 +530,8 @@ void Game::start() {
 
     // --- To save your ears :)
     audio->getMasterGroup()->setVolume(0.5F);
+
+    */
 
     engine->start();
 }
