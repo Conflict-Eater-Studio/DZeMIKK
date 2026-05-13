@@ -4,27 +4,35 @@
 #include "ecs/components/monobehaviour.h"
 #include "map/HexCell.h"
 
+#include <memory>
+
 namespace game {
 class Entity : public dzemikk::MonoBehaviour {
   public:
+    using HexCellPtr = std::shared_ptr<HexCell>;
+
     Entity() = default;
 
     [[nodiscard]] std::string typeName() const override {
         return "Entity";
     }
-
-    virtual void onEnter(HexCell* cell) = 0;
+    virtual void onEnter(HexCellPtr cell) = 0;
     virtual void onExit() = 0;
 
-    [[nodiscard]] const HexCell& getCell() const {
+    [[nodiscard]] const HexCellPtr& getCell() const {
         return _cell;
     }
-    HexCell& getCell() {
+    [[nodiscard]] HexCellPtr& getCell() {
         return _cell;
+    }
+
+  protected:
+    void setCell(HexCellPtr cell) {
+        _cell = std::move(cell);
     }
 
   private:
-    HexCell _cell;
+    HexCellPtr _cell{nullptr};
 };
 } // namespace game
 

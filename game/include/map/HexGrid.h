@@ -5,50 +5,33 @@
 #include "map/HexCell.h"
 #include "map/HexChunk.h"
 
-#include <numeric>
+#include <memory>
 #include <random>
-#include <set>
-#include <vector>
 
 namespace game {
 class HexGrid {
   public:
+    using HexCellPtr = std::shared_ptr<HexCell>;
+
     HexGrid() = default;
     HexGrid(std::mt19937& rng);
 
-    [[nodiscard]] std::vector<HexCell*> getHexes() {
-        std::vector<HexCell*> hexes;
-        for (auto& chunk : _chunks) {
-            for (auto& [coord, cell] : chunk.getHexes()) {
-                hexes.push_back(&cell);
-            }
-        }
-        return hexes;
-    }
-
-    [[nodiscard]] const std::vector<HexChunk>& getChunks() const {
+    [[nodiscard]] const std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>>&
+    getChunks() const {
         return _chunks;
     }
 
-    HexChunk* update(boost::uuids::uuid uuid) {
-        auto it = std::ranges::find_if(
-            _chunks, [uuid](const HexChunk& chunk) { return chunk.getId() == uuid; });
-        if (it == _chunks.end()) {
-            return nullptr;
-        }
-
-        return &(*it);
-    };
-
     boost::uuids::uuid makeChunk(const HexChunk::Config& config);
-    boost::uuids::uuid makeChunk(boost::uuids::uuid parentChunkId, HexCoord::Direction dir,
-                                 const HexChunk::Config& config);
+    [[nodiscard]] HexCellPtr getCell(const HexCoord& coord) const;
+    [[nodiscard]] HexCellPtr at(const HexCoord& coord) const;
+    [[nodiscard]] bool contains(const HexCoord& coord) const;
+    bool moveCell(const HexCoord& from, const HexCoord& to);
 
   private:
-    std::vector<HexChunk> _chunks;
+    std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>> _chunks;
     std::mt19937 _rng;
 
-    std::pair<HexCoord, HexCoord> closestPair(boost::uuids::uuid idx1, boost::uuids::uuid idx2);
+    static std::pair<HexCoord, HexCoord> closestPair(HexChunk* chunk1, HexChunk* chunk2);
 };
 } // namespace game
 

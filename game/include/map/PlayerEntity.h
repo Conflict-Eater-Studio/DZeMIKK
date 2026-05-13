@@ -8,14 +8,14 @@ class PlayerEntity : public Entity {
   public:
     PlayerEntity() = default;
 
-    void onEnter(HexCell* cell) override;
+    void onEnter(HexCellPtr cell) override;
     void onExit() override;
 
     [[nodiscard]] std::string typeName() const override {
         return "PlayerEntity";
     }
 
-    void tryMove(HexCell* targetCell);
+    void tryMove(const HexCellPtr& targetCell);
 };
 } // namespace game
 

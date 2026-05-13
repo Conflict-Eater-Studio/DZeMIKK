@@ -32,6 +32,7 @@
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
 #include "input/input.h"
+#include "map/HexCoord.h"
 #include "map/PlayerEntity.h"
 #include "renderer/cameraSystem.h"
 #include "renderer/font.h"
@@ -279,23 +280,46 @@ void Game::start() {
     playerMesh->setTransform(playerGO->transform());
     playerGO->transform()->setPosition({0.0F, 2.5F, 0.0F});
 
-    auto* world = worldGO->addComponent<game::World>(
-        1, std::vector<std::tuple<int, int, std::vector<game::HexCoord::Direction>>>{
-               {4, 6, {}},
-               {6, 8, {}},
-               {8, 10, {}},
-               {10, 12, {game::HexCoord::Direction::R60}},
-               {12, 14, {game::HexCoord::Direction::R300}},
-               {14, 16, {}},
-               {16, 18, {game::HexCoord::Direction::R60, game::HexCoord::Direction::R300}},
-           });
+    auto* world = worldGO->addComponent<game::World>(1);
 
     world->setModel(model);
     world->setMaterial(material);
-    world->setMaterial2(material);
+    world->setMaterial2(material2);
     world->setEnemyModel(enemyModel);
     world->setResourceModel(resourceModel);
     world->setPlayer(_playerEntity);
+
+    auto c1 = world->addChunk({.steps = 5});
+
+    auto c2 = world->addChunk(
+        {.parentChunkId = c1, .steps = 4, .dirFromParent = game::HexCoord::Direction::R0});
+
+    auto c3 = world->addChunk(
+        {.parentChunkId = c2, .steps = 6, .dirFromParent = game::HexCoord::Direction::R0});
+    auto c3s1 = world->addChunk(
+        {.parentChunkId = c3, .steps = 4, .dirFromParent = game::HexCoord::Direction::R60});
+    auto c3s2 = world->addChunk(
+        {.parentChunkId = c3, .steps = 4, .dirFromParent = game::HexCoord::Direction::R300});
+
+    auto c3s2s1 = world->addChunk(
+        {.parentChunkId = c3s2, .steps = 8, .dirFromParent = game::HexCoord::Direction::R300});
+
+    auto c4 = world->addChunk(
+        {.parentChunkId = c3, .steps = 8, .dirFromParent = game::HexCoord::Direction::R0});
+
+    auto c5 = world->addChunk(
+        {.parentChunkId = c4, .steps = 10, .dirFromParent = game::HexCoord::Direction::R0});
+
+    auto c6 = world->addChunk(
+        {.parentChunkId = c5, .steps = 12, .dirFromParent = game::HexCoord::Direction::R0});
+
+    auto c7 = world->addChunk(
+        {.parentChunkId = c6, .steps = 14, .dirFromParent = game::HexCoord::Direction::R0});
+
+    auto c8 = world->addChunk(
+        {.parentChunkId = c7, .steps = 16, .dirFromParent = game::HexCoord::Direction::R0});
+
+    _playerEntity->tryMove(world->getGrid()->at({0, 0}));
 
     auto* uiRootGO = scene->createGameObject("UI Root");
     auto* canvas = uiRootGO->addComponent<dzemikk::Canvas>();
@@ -586,6 +610,7 @@ void Game::setupAudio() {
 void Game::setupInputCallbacks() {
 
     static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
+    static auto lastHitColor = glm::vec4(1.0F);
 
     _engine->SetUserUpdateCallback([this]() {
         if (!_engine || !_engine->getInput()) {
@@ -645,10 +670,11 @@ void Game::setupInputCallbacks() {
         if (currentRenderer != lastHitRenderer) {
 
             if (lastHitRenderer && lastHitRenderer->isValid()) {
-                lastHitRenderer->setColor(glm::vec4(1.0F, 0.5F, 0.2F, 1.0F));
+                lastHitRenderer->setColor(lastHitColor);
             }
 
             if (currentRenderer) {
+                lastHitColor = currentRenderer->getColor();
                 currentRenderer->setColor(glm::vec4(1.0F, 0.0F, 0.0F, 1.0F));
             }
 

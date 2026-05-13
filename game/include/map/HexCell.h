@@ -5,7 +5,6 @@
 
 #include <boost/uuid.hpp>
 #include <cstdint>
-#include <memory>
 #include <tuple>
 #include <utility>
 
@@ -16,11 +15,13 @@ class HexCell {
 
   public:
     enum class State : uint8_t { Prop, Item, Player, Enemy, Empty };
-    enum class Type : uint8_t { Normal, PlayerBattleHex, EnemyBattleHex, Bridge, Blocked };
+    enum class Type : uint8_t { Normal, PlayerBattleHex, EnemyBattleHex, Bridge };
+    enum class GenState : uint8_t { Normal, Blocked, Protected };
 
     HexCell() : _coord(0, 0) {}
-    HexCell(HexCoord coord, State state, Type type, std::shared_ptr<Entity> entity = nullptr)
-        : _coord(coord), _state(state), _type(type), _entity(std::move(entity)) {}
+    HexCell(HexCoord coord, State state, Type type, GenState genState = GenState::Normal,
+            Entity* entity = nullptr)
+        : _coord(coord), _state(state), _type(type), _genState(genState), _entity(entity) {}
 
     [[nodiscard]] const HexCoord& getCoord() const {
         return _coord;
@@ -34,21 +35,33 @@ class HexCell {
     [[nodiscard]] Type getType() const {
         return _type;
     }
-    [[nodiscard]] std::shared_ptr<Entity> getEntity() const {
+    [[nodiscard]] GenState getGenState() const {
+        return _genState;
+    }
+    [[nodiscard]] Entity* getEntity() const {
         return _entity;
     }
-
-    void setCoord(const HexCoord& coord) {
-        _coord = coord;
+    [[nodiscard]] bool isDirty() const {
+        return _dirty;
     }
     void setState(State state) {
         _state = state;
+        _dirty = true;
     }
     void setType(Type type) {
         _type = type;
+        _dirty = true;
+    }
+    void setGenState(GenState genState) {
+        _genState = genState;
+        _dirty = true;
     }
     void setEntity(Entity* entity) {
-        _entity = std::shared_ptr<Entity>(entity, [](Entity*) {});
+        _entity = entity;
+        _dirty = true;
+    }
+    void setDirty(bool dirty) {
+        _dirty = dirty;
     }
 
     bool operator<(const HexCell& other) const {
@@ -61,11 +74,20 @@ class HexCell {
     }
 
   private:
+    friend class HexChunk;
+
+    void setCoord(const HexCoord& coord) {
+        _coord = coord;
+    }
+
     HexCoord _coord{0, 0};
     State _state{State::Empty};
     Type _type{Type::Normal};
+    GenState _genState{GenState::Normal};
 
-    std::shared_ptr<Entity> _entity = nullptr;
+    Entity* _entity = nullptr;
+
+    bool _dirty = false;
 };
 } // namespace game
 namespace std {

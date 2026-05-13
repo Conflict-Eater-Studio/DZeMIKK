@@ -2,6 +2,7 @@
 #define GAME_WORLD_H
 
 #include "ecs/components/monobehaviour.h"
+#include "ecs/components/transform.h"
 #include "ecs/serialize/serializedRef.h"
 #include "map/HexGrid.h"
 #include "renderer/material.h"
@@ -15,12 +16,10 @@ namespace game {
 class PlayerEntity;
 class World : public dzemikk::MonoBehaviour {
   public:
-    World(int seed, int chunkMinSteps = 4, int chunkMaxSteps = 10, int chunkCound = 10);
-    World(int seed,
-          std::vector<std::tuple<int, int, std::vector<HexCoord::Direction>>> chunkConfigs);
+    World(int seed);
 
     void start() override;
-    void update(double dt) override {};
+    void update(double dt) override;
     void lateUpdate() override {};
     void fixedUpdate(double dt) override {};
     void onDestroy() override {};
@@ -31,6 +30,9 @@ class World : public dzemikk::MonoBehaviour {
 
     [[nodiscard]] HexGrid* getGrid() {
         return &_grid;
+    }
+    [[nodiscard]] PlayerEntity* getPlayer() {
+        return _player;
     }
 
     void setModel(const dzemikk::AssetHandle<dzemikk::Model>& model) {
@@ -50,17 +52,19 @@ class World : public dzemikk::MonoBehaviour {
     }
     void setPlayer(PlayerEntity* playerEntity);
 
+    boost::uuids::uuid addChunk(const HexChunk::Config& config);
+
   private:
     HexGrid _grid;
     Perlin _perlin{1};
     std::mt19937 _rng;
     std::uniform_int_distribution<int> _randSteps;
-    std::vector<std::tuple<int, int, std::vector<HexCoord::Direction>>> _chunkConfigs;
     dzemikk::AssetHandle<dzemikk::Model> _model;
     dzemikk::AssetHandle<dzemikk::Model> _enemyModel;
     dzemikk::AssetHandle<dzemikk::Model> _resourceModel;
     std::shared_ptr<dzemikk::Material> _material;
     std::shared_ptr<dzemikk::Material> _material2;
+    std::unordered_set<dzemikk::Transform*> _hexTransforms;
 
     PlayerEntity* _player{nullptr};
 };

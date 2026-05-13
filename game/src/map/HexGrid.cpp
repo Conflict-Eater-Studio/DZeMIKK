@@ -2,25 +2,56 @@
 
 #include "boost/uuid/detail/nil_uuid.hpp"
 #include "boost/uuid/uuid.hpp"
-#include "utils/perlin.h"
 
 #include <algorithm>
-#include <math.h>
-#include <ranges>
 #include <spdlog/spdlog.h>
-#include <unordered_set>
+#include <stdexcept>
 #include <utility>
 
 namespace game {
+namespace {
+using ChunkMap = std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>>;
+
+void setBridgeCell(HexChunk& chunk, const HexCoord& coord) {
+    auto it = chunk.getHexes().find(coord);
+    if (it != chunk.getHexes().end()) {
+        auto& cell = it->second;
+        cell->setType(HexCell::Type::Bridge);
+        cell->setState(HexCell::State::Empty);
+        cell->setGenState(HexCell::GenState::Protected);
+        return;
+    }
+
+    chunk.assignCell(std::make_shared<HexCell>(coord, HexCell::State::Empty, HexCell::Type::Bridge,
+                                               HexCell::GenState::Protected));
+}
+
+void buildBridge(ChunkMap& chunks, const boost::uuids::uuid& chunkId,
+                 const boost::uuids::uuid& parentChunkId, HexCoord::Direction dirToParent,
+                 HexCoord::Direction dirFromParent) {
+    auto h1 = chunks[chunkId]->getFurthestEdgeHexes().at(dirToParent);
+    auto h2 = chunks[parentChunkId]->getFurthestEdgeHexes().at(dirFromParent);
+    auto bridge = HexCoord::hexesOnLine(h1->getCoord(), h2->getCoord());
+
+    for (const auto& coord : bridge) {
+        if (chunks[chunkId]->contains(coord)) {
+            setBridgeCell(*chunks[chunkId], coord);
+            continue;
+        }
+
+        if (chunks[parentChunkId]->contains(coord)) {
+            setBridgeCell(*chunks[parentChunkId], coord);
+            continue;
+        }
+
+        setBridgeCell(*chunks[chunkId], coord);
+    }
+}
+} // namespace
+
 HexGrid::HexGrid(std::mt19937& rng) : _rng(rng) {}
 
-std::pair<HexCoord, HexCoord> HexGrid::closestPair(boost::uuids::uuid idx1,
-                                                   boost::uuids::uuid idx2) {
-    const auto& chunk1 = std::ranges::find_if(
-        _chunks, [&idx1](const HexChunk& chunk) { return chunk.getId() == idx1; });
-    const auto& chunk2 = std::ranges::find_if(
-        _chunks, [&idx2](const HexChunk& chunk) { return chunk.getId() == idx2; });
-
+std::pair<HexCoord, HexCoord> HexGrid::closestPair(HexChunk* chunk1, HexChunk* chunk2) {
     std::pair<HexCoord, HexCoord> closest{chunk1->getHexes().begin()->first,
                                           chunk2->getHexes().begin()->first};
     int minDist = std::numeric_limits<int>::max();
@@ -37,97 +68,99 @@ std::pair<HexCoord, HexCoord> HexGrid::closestPair(boost::uuids::uuid idx1,
 }
 
 boost::uuids::uuid HexGrid::makeChunk(const HexChunk::Config& config) {
-    HexChunk chunk(config, {0, 0});
+    auto parentChunkId = config.parentChunkId;
+    auto dirToParent = HexCoord::opposite(config.dirFromParent);
+    auto dirFromParent = config.dirFromParent;
 
-    if (chunk.getHexes().empty()) {
+    bool hasParent = parentChunkId != boost::uuids::nil_uuid();
+
+    if (!hasParent && !_chunks.empty()) {
         return boost::uuids::nil_uuid();
     }
 
-    // Perlin perlinHoles(2);
-    // std::vector<HexCoord> coordsToRemove;
-    // for (const auto& [coord, cell] : chunk.getHexes()) {
-    //     float noiseVal = perlinHoles.noise(static_cast<float>(coord.q()) * 0.1F,
-    //                                        static_cast<float>(coord.r()) * 0.1F);
-    //     if (noiseVal < config.holeChance && cell.getType() == HexCell::Type::Normal) {
-    //         coordsToRemove.push_back(coord);
+    std::unique_ptr<HexChunk> chunk = nullptr;
+    if (hasParent && !_chunks.empty()) {
+        std::unique_ptr<HexChunk>& parentChunk = _chunks[parentChunkId];
+        chunk = std::make_unique<HexChunk>(config, parentChunk.get());
+    } else {
+        chunk = std::make_unique<HexChunk>(config);
+    }
+
+    auto chunkHexes = chunk->getHexes();
+
+    if (chunkHexes.empty()) {
+        return boost::uuids::nil_uuid();
+    }
+
+    // if (hasParent) {
+    //     const auto& parentChunk = _chunks[parentChunkId];
+    //     while (parentChunk->intersection(*chunk, true).empty()) {
+    //         chunk->shift(dirToParent, 1);
     //     }
+    //     chunk->shift(dirFromParent, 2);
     // }
-    // chunk.remove(coordsToRemove);
 
-    if (chunk.getHexes().empty()) {
-        return boost::uuids::nil_uuid();
+    auto chunkId = chunk->getId();
+    _chunks.insert({chunk->getId(), std::move(chunk)});
+
+    if (hasParent) {
+        buildBridge(_chunks, chunkId, parentChunkId, dirToParent, dirFromParent);
     }
 
-    _chunks.emplace_back(std::move(chunk));
-    return _chunks.back().getId();
+    return chunkId;
 }
 
-boost::uuids::uuid HexGrid::makeChunk(boost::uuids::uuid parentChunkId, HexCoord::Direction dir,
-                                      const HexChunk::Config& config) {
-    if (parentChunkId == boost::uuids::nil_uuid()) {
-        return boost::uuids::nil_uuid();
+HexGrid::HexCellPtr HexGrid::getCell(const HexCoord& coord) const {
+    for (const auto& [chunkId, chunk] : _chunks) {
+        auto cell = chunk->getCell(coord);
+        if (cell != nullptr) {
+            return cell;
+        }
     }
 
-    const auto& parentChunk =
-        std::ranges::find_if(_chunks, [&parentChunkId](const HexChunk& chunk) {
-            return chunk.getId() == parentChunkId;
-        });
+    return nullptr;
+}
 
-    HexChunk chunk(config, parentChunk->getOrigin() +
-                               HexCoord::dir(dir) *
-                                   static_cast<int>(std::round(
-                                       (parentChunk->getConfig().steps + config.steps + 3) / 2)));
-    const auto* chunkHexes = &chunk.getHexes();
-
-    if (chunkHexes->empty()) {
-        return boost::uuids::nil_uuid();
+HexGrid::HexCellPtr HexGrid::at(const HexCoord& coord) const {
+    auto cell = getCell(coord);
+    if (cell == nullptr) {
+        throw std::out_of_range("HexCell not found for given coordinate");
     }
 
-    // Perlin perlinHoles(2);
-    // std::vector<HexCoord> coordsToRemove;
-    // for (const auto& [coord, cell] : *chunkHexes) {
-    //     float noiseVal = perlinHoles.noise(static_cast<float>(coord.q()) * 0.1F,
-    //                                        static_cast<float>(coord.r()) * 0.1F);
-    //     if (noiseVal < config.holeChance && cell.getType() == HexCell::Type::Normal) {
-    //         coordsToRemove.push_back(coord);
-    //     }
-    // }
-    // chunk.remove(coordsToRemove);
-    //
-    if (chunkHexes->empty()) {
-        return boost::uuids::nil_uuid();
+    return cell;
+}
+
+bool HexGrid::contains(const HexCoord& coord) const {
+    return getCell(coord) != nullptr;
+}
+
+bool HexGrid::moveCell(const HexCoord& from, const HexCoord& to) {
+    if (from == to || contains(to)) {
+        return false;
     }
 
-    // Post-porcessing -> Move new chunk towards parent chunk until they are 1 hex apart
-    // Connect the chunks with a single-hex bridge
+    HexChunk* sourceChunk = nullptr;
+    for (const auto& [chunkId, chunk] : _chunks) {
+        if (chunk->contains(from)) {
+            sourceChunk = chunk.get();
+            break;
+        }
+    }
 
-    // auto dirToParent = HexCoord::dir(HexCoord::dir(dir).opposite());
-    // if (dirToParent.has_value()) {
-    //     chunk.setDirToParent(dirToParent.value());
-    // }
-    //
-    // while (parentChunk->intersection(chunk, true).empty()) {
-    //     chunk.shift(dirToParent.value());
-    // }
-    //
-    // chunk.shift(dir, 2);
-    //
-    _chunks.emplace_back(std::move(chunk));
+    if (sourceChunk == nullptr) {
+        return false;
+    }
 
-    // auto closest = closestPair(parentChunkId, _chunks.back().getId());
-    // auto bridgeCoord = HexCoord::hexesOnLine(closest.first, closest.second);
-    //
-    // auto it = std::ranges::find_if(_chunks, [&parentChunkId](const HexChunk& chunk) {
-    //     return chunk.getId() == parentChunkId;
-    // });
-    //
-    // if (!bridgeCoord.empty()) {
-    //     for (const auto& coord : bridgeCoord) {
-    //         _chunks.back().assignCell({coord, HexCell::State::Empty, HexCell::Type::Normal});
-    //         it->assignCell({coord, HexCell::State::Empty, HexCell::Type::Normal});
-    //     }
-    // }
+    auto cell = sourceChunk->extractCell(from);
+    if (cell == nullptr) {
+        return false;
+    }
 
-    return _chunks.back().getId();
+    if (!sourceChunk->insertCell(to, cell)) {
+        sourceChunk->insertCell(from, std::move(cell));
+        return false;
+    }
+
+    return true;
 }
 } // namespace game

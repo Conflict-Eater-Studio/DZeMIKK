@@ -5,6 +5,7 @@
 #include "map/HexCell.h"
 
 #include <string>
+#include <utility>
 
 namespace game {
 class WorldHex : public dzemikk::MonoBehaviour {
@@ -15,15 +16,15 @@ class WorldHex : public dzemikk::MonoBehaviour {
         return "WorldHex";
     }
 
-    void setHexCell(HexCell* hexCell) {
-        _hexCell = hexCell;
+    void setHexCell(std::shared_ptr<HexCell> hexCell) {
+        _hexCell = std::move(hexCell);
     }
-    HexCell* getHexCell() {
+    std::shared_ptr<HexCell>& getHexCell() {
         return _hexCell;
     }
 
   private:
-    HexCell* _hexCell{nullptr};
+    std::shared_ptr<HexCell> _hexCell{nullptr};
 };
 } // namespace game
 
