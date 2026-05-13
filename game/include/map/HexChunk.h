@@ -19,7 +19,6 @@ class HexChunk {
     struct Config {
         boost::uuids::uuid parentChunkId{boost::uuids::nil_uuid()};
         int steps{0};
-        float holeChance{0.1F};
         std::function<float(int)> generator;
         HexCoord::Direction dirFromParent{HexCoord::Direction::R180};
     };
@@ -47,19 +46,19 @@ class HexChunk {
 
   private:
     boost::uuids::uuid _id{boost::uuids::nil_uuid()};
-    void generateHexes();
-    void generateHexCells();
-    void fillBlockedHexes(int minQ, int maxQ, int minR, int maxR, int minS, int maxS);
-    void blockHexesWithMaxNeighbours(int maxNeighbours);
-    void unblockIsolatedHexes();
-
     HexChunk* _parent{nullptr};
     std::unordered_map<HexCoord, HexCellPtr> _hexes;
     HexCoord _origin{0, 0};
     Config _config{};
 
-    std::mt19937 _rng{std::random_device{}()};
+    std::mt19937 _rng{1};
     std::uniform_real_distribution<float> _chanceDist{0.0F, 1.0F};
+
+    void generateHexes();
+    void generateHexCells();
+    void fillBlockedHexes(int minQ, int maxQ, int minR, int maxR, int minS, int maxS);
+    void blockHexesWithOneNeighbour();
+    void unblockIsolatedHexes();
 };
 } // namespace game
 

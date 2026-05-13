@@ -28,10 +28,20 @@ class HexGrid {
     bool moveCell(const HexCoord& from, const HexCoord& to);
 
   private:
+    static bool isBlockedCell(const HexCellPtr& cell);
+    static bool isWalkableCell(const HexCellPtr& cell);
     std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>> _chunks;
     std::mt19937 _rng;
+    boost::uuids::uuid _rootChunkId;
 
     static std::pair<HexCoord, HexCoord> closestPair(HexChunk* chunk1, HexChunk* chunk2);
+    [[nodiscard]] bool neighboursChunk(const HexCoord& coord,
+                                       const boost::uuids::uuid& chunkToSkip) const;
+    void removeOverlaps(HexChunk& chunk) const;
+    void makeBridge(const boost::uuids::uuid& parentChunkId, const boost::uuids::uuid& chunkId,
+                    const std::pair<HexCoord, HexCoord>& closest);
+    void cleanChunkBorders(const boost::uuids::uuid& chunkId);
+    void removeUnreachableHexes();
 };
 } // namespace game
 

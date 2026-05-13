@@ -23,7 +23,6 @@ HexChunk::HexChunk(HexChunk::Config config, HexChunk* parent)
                 return 0.0F;
             }
             return x % 2 == 0 ? 1.0F : 1.0F - (static_cast<float>(x) / static_cast<float>(steps));
-            // return 1.0F;
         };
     }
     generateHexes();
@@ -37,13 +36,13 @@ HexChunk::HexChunk(HexChunk::Config config)
                 return 0.0F;
             }
             return x % 2 == 0 ? 1.0F : 1.0F - (static_cast<float>(x) / static_cast<float>(steps));
-            // return 1.0F;
         };
     }
     generateHexes();
 }
 
 void HexChunk::generateHexes() {
+    // BFS generate hexes based on config::generator
     generateHexCells();
 
     int maxQ = std::numeric_limits<int>::min();
@@ -53,6 +52,7 @@ void HexChunk::generateHexes() {
     int maxS = std::numeric_limits<int>::min();
     int minS = std::numeric_limits<int>::max();
 
+    // Find chunk bounds
     for (const auto& entry : _hexes) {
         const auto& coord = entry.first;
         maxQ = std::max(maxQ, coord.q());
@@ -63,15 +63,23 @@ void HexChunk::generateHexes() {
         minS = std::min(minS, coord.s());
     }
 
+    // Fill chunk bounds + 1 ring around with GenState::Blocked hexes
     fillBlockedHexes(minQ - 1, maxQ + 1, minR - 1, maxR + 1, minS - 1, maxS + 1);
 
+    // If chunk has parent, shift it untill it has a gap between the parent chunk and itself
     if (_parent != nullptr) {
         while (_parent->intersection(*this).empty()) {
             shift(HexCoord::opposite(_config.dirFromParent), 1);
         }
         shift(_config.dirFromParent, 2);
     }
-    blockHexesWithMaxNeighbours(1);
+
+    // Remove GenState::Normal hexes with 0 or 1 GenState::Normal neighbours, repeat until no more
+    // can be removed
+    blockHexesWithOneNeighbour();
+
+    // Remove GenState::Blocked hexes with 0 GenState::Blocked neighbours, to prevent isolated
+    // blocked hexes
     unblockIsolatedHexes();
 }
 
@@ -153,6 +161,8 @@ void HexChunk::protectPathToOrigin(const HexCoord& start) {
         }
         current = parentIt->second;
     }
+
+    unblockIsolatedHexes();
 }
 
 void HexChunk::fillBlockedHexes(int minQ, int maxQ, int minR, int maxR, int minS, int maxS) {
@@ -172,23 +182,42 @@ void HexChunk::fillBlockedHexes(int minQ, int maxQ, int minR, int maxR, int minS
     }
 }
 
-void HexChunk::blockHexesWithMaxNeighbours(int maxNeighbours) {
-    for (const auto& [coord, cell] : _hexes) {
-        if (cell->getGenState() != HexCell::GenState::Normal) {
-            continue;
-        }
+void HexChunk::blockHexesWithOneNeighbour() {
+    bool changed = true;
+    int safety = 0;
+    while (changed && safety <= static_cast<int>(_hexes.size())) {
+        changed = false;
+        std::vector<HexCoord> toBlock;
+        toBlock.reserve(_hexes.size());
 
-        int normalNeighbourCount = 0;
-        for (const auto& neighbor : HexCoord::getNeighbors(coord)) {
-            auto it = _hexes.find(neighbor);
-            if (it != _hexes.end() && it->second->getGenState() == HexCell::GenState::Normal) {
-                normalNeighbourCount++;
+        for (const auto& [coord, cell] : _hexes) {
+            if (cell->getGenState() != HexCell::GenState::Normal) {
+                continue;
+            }
+
+            int normalNeighbourCount = 0;
+            for (const auto& neighbor : HexCoord::getNeighbors(coord)) {
+                auto it = _hexes.find(neighbor);
+                if (it != _hexes.end() && it->second->getGenState() == HexCell::GenState::Normal) {
+                    normalNeighbourCount++;
+                }
+            }
+
+            if (normalNeighbourCount <= 1) {
+                toBlock.push_back(coord);
             }
         }
 
-        if (normalNeighbourCount <= maxNeighbours) {
-            cell->setGenState(HexCell::GenState::Blocked);
+        for (const auto& coord : toBlock) {
+            auto it = _hexes.find(coord);
+            if (it == _hexes.end() || it->second->getGenState() != HexCell::GenState::Normal) {
+                continue;
+            }
+            it->second->setGenState(HexCell::GenState::Blocked);
+            changed = true;
         }
+
+        safety++;
     }
 }
 

@@ -1,6 +1,5 @@
 #include "scripts/world/world.h"
 
-#include "boost/uuid/detail/nil_uuid.hpp"
 #include "ecs/components/collider.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/gameobject.h"
@@ -13,8 +12,6 @@
 #include <random>
 
 namespace game {
-using dzemikk::Model;
-
 World::World(int seed) : _rng(seed) {}
 
 void World::start() {

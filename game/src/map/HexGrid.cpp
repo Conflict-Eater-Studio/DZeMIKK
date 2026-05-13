@@ -3,170 +3,41 @@
 #include "boost/uuid/detail/nil_uuid.hpp"
 #include "boost/uuid/uuid.hpp"
 
-#include <algorithm>
-#include <spdlog/spdlog.h>
+#include <limits>
+#include <queue>
 #include <stdexcept>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
 namespace game {
 HexGrid::HexGrid(std::mt19937& rng) : _rng(rng) {}
 
-namespace {
-bool isBlocked(const HexChunk::HexCellPtr& cell) {
+bool HexGrid::isBlockedCell(const HexGrid::HexCellPtr& cell) {
     return cell != nullptr && cell->getGenState() == HexCell::GenState::Blocked;
 }
 
-bool isNonBlocked(const HexChunk::HexCellPtr& cell) {
+bool HexGrid::isWalkableCell(const HexGrid::HexCellPtr& cell) {
     return cell != nullptr && cell->getGenState() != HexCell::GenState::Blocked;
 }
-
-bool isOccupied(const HexChunk::HexCellPtr& cell) {
-    return cell != nullptr;
-}
-
-bool touchesOtherChunk(
-    const HexCoord& coord,
-    const std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>>& chunks,
-    const boost::uuids::uuid& chunkToSkip) {
-    for (const auto& [otherChunkId, otherChunk] : chunks) {
-        if (otherChunkId == chunkToSkip) {
-            continue;
-        }
-
-        if (isNonBlocked(otherChunk->getCell(coord))) {
-            return true;
-        }
-
-        for (const auto& neighbor : HexCoord::getNeighbors(coord)) {
-            if (isNonBlocked(otherChunk->getCell(neighbor))) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-std::unique_ptr<HexChunk>
-createChunkInstance(const HexChunk::Config& config,
-                    const std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>>& chunks,
-                    bool hasParent, const boost::uuids::uuid& parentChunkId) {
-    if (hasParent && !chunks.empty()) {
-        auto parentIt = chunks.find(parentChunkId);
-        if (parentIt == chunks.end()) {
-            return nullptr;
-        }
-        return std::make_unique<HexChunk>(config, parentIt->second.get());
-    }
-
-    return std::make_unique<HexChunk>(config);
-}
-
-void removeOverlappingBlockedContacts(
-    HexChunk& chunk,
-    const std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>>& chunks) {
-    std::vector<HexCoord> toRemove;
-    for (const auto& entry : chunk.getHexes()) {
-        const auto& coord = entry.first;
-        const auto& cell = entry.second;
-        bool overlapsAnyCell = false;
-        bool overlapsBlocked = false;
-        for (const auto& existingChunkEntry : chunks) {
-            auto existingCell = existingChunkEntry.second->getCell(coord);
-            if (isOccupied(existingCell)) {
-                overlapsAnyCell = true;
-            }
-            if (isBlocked(existingCell)) {
-                overlapsBlocked = true;
-            }
-        }
-
-        if (overlapsAnyCell) {
-            toRemove.push_back(coord);
-            continue;
-        }
-
-        if (!isNonBlocked(cell)) {
-            continue;
-        }
-
-        if (overlapsBlocked && touchesOtherChunk(coord, chunks, boost::uuids::nil_uuid())) {
-            toRemove.push_back(coord);
-        }
-    }
-
-    if (!toRemove.empty()) {
-        chunk.remove(toRemove);
-    }
-}
-
-void connectParentAndChild(
-    std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>>& chunks,
-    const boost::uuids::uuid& parentChunkId, const boost::uuids::uuid& chunkId,
-    const std::pair<HexCoord, HexCoord>& closest) {
-    auto hexes = HexCoord::hexesOnLine(closest.first, closest.second);
-
-    for (const auto& hex : hexes) {
-        bool inParent = chunks[parentChunkId]->contains(hex);
-        bool inChild = chunks[chunkId]->contains(hex);
-
-        if (inParent) {
-            chunks[parentChunkId]->getCell(hex)->setGenState(HexCell::GenState::Protected);
-            chunks[parentChunkId]->getCell(hex)->setType(HexCell::Type::Bridge);
-        }
-
-        if (inChild) {
-            chunks[chunkId]->getCell(hex)->setGenState(HexCell::GenState::Protected);
-            chunks[chunkId]->getCell(hex)->setType(HexCell::Type::Bridge);
-        }
-
-        if (!inParent && !inChild) {
-            chunks[chunkId]->assignCell(std::make_shared<HexCell>(
-                hex, HexCell::State::Empty, HexCell::Type::Bridge, HexCell::GenState::Protected));
-        }
-    }
-
-    chunks[parentChunkId]->protectPathToOrigin(closest.first);
-    chunks[chunkId]->protectPathToOrigin(closest.second);
-}
-
-void pruneNonBridgeContacts(
-    const boost::uuids::uuid& chunkId,
-    std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>>& chunks) {
-    auto& chunk = chunks.at(chunkId);
-    std::vector<HexCoord> toRemove;
-    for (const auto& [coord, cell] : chunk->getHexes()) {
-        if (cell->getGenState() == HexCell::GenState::Blocked ||
-            cell->getType() == HexCell::Type::Bridge) {
-            continue;
-        }
-
-        if (touchesOtherChunk(coord, chunks, chunkId)) {
-            toRemove.push_back(coord);
-        }
-    }
-
-    if (!toRemove.empty()) {
-        chunk->remove(toRemove);
-    }
-}
-} // namespace
 
 std::pair<HexCoord, HexCoord> HexGrid::closestPair(HexChunk* chunk1, HexChunk* chunk2) {
     std::pair<HexCoord, HexCoord> closest{chunk1->getHexes().begin()->first,
                                           chunk2->getHexes().begin()->first};
     bool found = false;
     int minDist = std::numeric_limits<int>::max();
+
     for (const auto& [coord1, cell1] : chunk1->getHexes()) {
-        if (isBlocked(cell1)) {
+        if (isBlockedCell(cell1)) {
             continue;
         }
+
         for (const auto& [coord2, cell2] : chunk2->getHexes()) {
-            if (isBlocked(cell2)) {
+            if (isBlockedCell(cell2)) {
                 continue;
             }
-            auto dist = game::HexCoord::distance(coord1, coord2);
+
+            auto dist = HexCoord::distance(coord1, coord2);
             if (dist < minDist) {
                 minDist = dist;
                 closest = {coord1, coord2};
@@ -182,40 +53,183 @@ std::pair<HexCoord, HexCoord> HexGrid::closestPair(HexChunk* chunk1, HexChunk* c
     return closest;
 }
 
+bool HexGrid::neighboursChunk(const HexCoord& coord, const boost::uuids::uuid& chunkToSkip) const {
+    for (const auto& [otherChunkId, otherChunk] : _chunks) {
+        if (otherChunkId == chunkToSkip) {
+            continue;
+        }
+
+        if (isWalkableCell(otherChunk->getCell(coord))) {
+            return true;
+        }
+
+        for (const auto& neighbor : HexCoord::getNeighbors(coord)) {
+            if (isWalkableCell(otherChunk->getCell(neighbor))) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+void HexGrid::removeOverlaps(HexChunk& chunk) const {
+    std::vector<HexCoord> toRemove;
+
+    for (const auto& [coord, cell] : chunk.getHexes()) {
+        for (const auto& [existingChunkId, existingChunk] : _chunks) {
+            auto existingCell = existingChunk->getCell(coord);
+            if (existingCell != nullptr) {
+                toRemove.push_back(coord);
+                break;
+            }
+        }
+    }
+
+    if (!toRemove.empty()) {
+        chunk.remove(toRemove);
+    }
+}
+
+void HexGrid::makeBridge(const boost::uuids::uuid& parentChunkId, const boost::uuids::uuid& chunkId,
+                         const std::pair<HexCoord, HexCoord>& closest) {
+    auto hexes = HexCoord::hexesOnLine(closest.first, closest.second);
+
+    for (const auto& hex : hexes) {
+        bool inParent = _chunks[parentChunkId]->contains(hex);
+        bool inChild = _chunks[chunkId]->contains(hex);
+
+        if (inParent) {
+            _chunks[parentChunkId]->getCell(hex)->setGenState(HexCell::GenState::Protected);
+            _chunks[parentChunkId]->getCell(hex)->setType(HexCell::Type::Bridge);
+        }
+
+        if (inChild) {
+            _chunks[chunkId]->getCell(hex)->setGenState(HexCell::GenState::Protected);
+            _chunks[chunkId]->getCell(hex)->setType(HexCell::Type::Bridge);
+        }
+
+        if (!inParent && !inChild) {
+            _chunks[chunkId]->assignCell(std::make_shared<HexCell>(
+                hex, HexCell::State::Empty, HexCell::Type::Bridge, HexCell::GenState::Protected));
+        }
+    }
+
+    _chunks[parentChunkId]->protectPathToOrigin(closest.first);
+    _chunks[chunkId]->protectPathToOrigin(closest.second);
+}
+
+void HexGrid::cleanChunkBorders(const boost::uuids::uuid& chunkId) {
+    auto& chunk = _chunks.at(chunkId);
+    std::vector<HexCoord> toRemove;
+
+    for (const auto& [coord, cell] : chunk->getHexes()) {
+        if (cell->getGenState() == HexCell::GenState::Blocked ||
+            cell->getType() == HexCell::Type::Bridge) {
+            continue;
+        }
+
+        if (neighboursChunk(coord, chunkId)) {
+            toRemove.push_back(coord);
+        }
+    }
+
+    if (!toRemove.empty()) {
+        chunk->remove(toRemove);
+    }
+}
+
+void HexGrid::removeUnreachableHexes() {
+    if (_rootChunkId == boost::uuids::nil_uuid()) {
+        return;
+    }
+
+    auto rootIt = _chunks.find(_rootChunkId);
+    if (rootIt == _chunks.end()) {
+        return;
+    }
+
+    auto origin = rootIt->second->getOrigin();
+    auto originCell = getCell(origin);
+    if (!isWalkableCell(originCell)) {
+        return;
+    }
+
+    std::unordered_set<HexCoord> visited;
+    std::queue<HexCoord> frontier;
+    visited.insert(origin);
+    frontier.push(origin);
+
+    while (!frontier.empty()) {
+        auto current = frontier.front();
+        frontier.pop();
+
+        for (const auto& neighbor : HexCoord::getNeighbors(current)) {
+            if (visited.contains(neighbor)) {
+                continue;
+            }
+
+            auto neighborCell = getCell(neighbor);
+            if (!isWalkableCell(neighborCell)) {
+                continue;
+            }
+
+            visited.insert(neighbor);
+            frontier.push(neighbor);
+        }
+    }
+
+    for (const auto& [chunkId, chunk] : _chunks) {
+        for (const auto& [coord, cell] : chunk->getHexes()) {
+            if (isWalkableCell(cell) && !visited.contains(coord)) {
+                cell->setGenState(HexCell::GenState::Blocked);
+            }
+        }
+    }
+}
+
 boost::uuids::uuid HexGrid::makeChunk(const HexChunk::Config& config) {
     auto parentChunkId = config.parentChunkId;
-
     bool hasParent = parentChunkId != boost::uuids::nil_uuid();
 
     if (!hasParent && !_chunks.empty()) {
         return boost::uuids::nil_uuid();
     }
 
-    auto chunk = createChunkInstance(config, _chunks, hasParent, parentChunkId);
-    if (chunk == nullptr) {
+    std::unique_ptr<HexChunk> chunk = nullptr;
+    if (!hasParent) {
+        chunk = std::make_unique<HexChunk>(config);
+    } else {
+        auto parentIt = _chunks.find(parentChunkId);
+        if (parentIt == _chunks.end()) {
+            return boost::uuids::nil_uuid();
+        }
+        chunk = std::make_unique<HexChunk>(config, parentIt->second.get());
+    }
+
+    if (chunk == nullptr || chunk->getHexes().empty()) {
         return boost::uuids::nil_uuid();
     }
 
-    if (chunk->getHexes().empty()) {
-        return boost::uuids::nil_uuid();
-    }
-
-    removeOverlappingBlockedContacts(*chunk, _chunks);
-
+    removeOverlaps(*chunk);
     if (chunk->getHexes().empty()) {
         return boost::uuids::nil_uuid();
     }
 
     auto chunkId = chunk->getId();
-    _chunks.insert({chunk->getId(), std::move(chunk)});
+    _chunks.insert({chunkId, std::move(chunk)});
+
+    if (!hasParent) {
+        _rootChunkId = chunkId;
+    }
 
     if (hasParent) {
         auto closest = closestPair(_chunks[parentChunkId].get(), _chunks[chunkId].get());
-        connectParentAndChild(_chunks, parentChunkId, chunkId, closest);
-
-        pruneNonBridgeContacts(chunkId, _chunks);
+        makeBridge(parentChunkId, chunkId, closest);
+        cleanChunkBorders(chunkId);
     }
 
+    removeUnreachableHexes();
     return chunkId;
 }
 
