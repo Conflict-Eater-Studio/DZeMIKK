@@ -12,180 +12,156 @@
 #include "ecs/components/light/directionalLight.h"
 #include "ecs/components/light/pointLight.h"
 
-#define REGISTER_INSPECTOR(type, InspectorClass)                                                  \
-    _registry.registerInspector(#type, [this](dzemikk::Component* c, const InspectorContext& ctx) { \
-        if (auto* obj = dynamic_cast<dzemikk::type*>(c)) {                                        \
-            InspectorClass::draw(obj, ctx);                                                       \
-        }                                                                                         \
-    })
-
 editor::InspectorPanel::InspectorPanel() {
 
-    REGISTER_INSPECTOR(Transform, TransformInspector);
-    REGISTER_INSPECTOR(MeshRenderer, MeshRendererInspector);
-    REGISTER_INSPECTOR(DirectionalLight, DirectionalLightInspector);
-    REGISTER_INSPECTOR(PointLight, PointLightInspector);
+    registerInspector<dzemikk::Transform, TransformInspector>("Transform");
+    registerInspector<dzemikk::MeshRenderer, MeshRendererInspector>("MeshRenderer");
+    registerInspector<dzemikk::DirectionalLight, DirectionalLightInspector>("DirectionalLight");
+    registerInspector<dzemikk::PointLight, PointLightInspector>("PointLight");
 
 
-    _factories.push_back({"Transform", [](dzemikk::GameObject* go) {
-                              if (!go->getComponent<dzemikk::Transform>())
-                                  go->addComponent<dzemikk::Transform>();
-                          }});
+    _factories = {
+        {"Transform", [](auto* go) { return go->getComponent<dzemikk::Transform>() != nullptr; },
+         [](auto* go) { go->addComponent<dzemikk::Transform>(); }},
 
-    _factories.push_back({"MeshRenderer", [](dzemikk::GameObject* go) {
-                              if (!go->getComponent<dzemikk::MeshRenderer>()) {
-                                  auto renderer = go->addComponent<dzemikk::MeshRenderer>();
-                                  renderer->setTransform(go->getComponent<dzemikk::Transform>());
-                              }
-                          }});
+        {"MeshRenderer",
+         [](auto* go) { return go->getComponent<dzemikk::MeshRenderer>() != nullptr; },
+         [](auto* go) {
+             auto r = go->addComponent<dzemikk::MeshRenderer>();
+             r->setTransform(go->getComponent<dzemikk::Transform>());
+         }},
 
-    _factories.push_back({"DirectionalLight", [](dzemikk::GameObject* go) {
-                              if (!go->getComponent<dzemikk::DirectionalLight>()) {
+        {"DirectionalLight",
+         [](auto* go) { return go->getComponent<dzemikk::DirectionalLight>() != nullptr; },
+         [](auto* go) { go->addComponent<dzemikk::DirectionalLight>(); }},
 
-                                  auto light = go->addComponent<dzemikk::DirectionalLight>();
-                              }
-                          }});
-
-    _factories.push_back({"PointLight", [](dzemikk::GameObject* go) {
-                              if (!go->getComponent<dzemikk::PointLight>()) {
-
-                                  auto light = go->addComponent<dzemikk::PointLight>();
-                              }
-                          }});
+        {"PointLight", [](auto* go) { return go->getComponent<dzemikk::PointLight>() != nullptr; },
+         [](auto* go) { go->addComponent<dzemikk::PointLight>(); }}};
 
 }
 
-void editor::InspectorPanel::draw(dzemikk::GameObject* selectedObject,
-                                  const InspectorContext& context) {
-
+void editor::InspectorPanel::draw(dzemikk::GameObject* obj, const InspectorContext& ctx) {
     ImGui::Begin("Inspector");
 
-    if (!selectedObject) {
+    if (!obj) {
         ImGui::Text("No object selected");
         ImGui::End();
         return;
     }
 
-    static char nameBuffer[256];
+    drawHeader(obj);
+    drawComponents(obj, ctx);
+    drawAddComponent(obj);
 
-    strncpy(nameBuffer, selectedObject->getName().c_str(), sizeof(nameBuffer));
-    nameBuffer[sizeof(nameBuffer) - 1] = '\0';
+    ImGui::End();
+}
+
+void editor::InspectorPanel::drawHeader(dzemikk::GameObject* obj) {
+    char nameBuffer[256];
+    strncpy(nameBuffer, obj->getName().c_str(), sizeof(nameBuffer));
+    nameBuffer[255] = '\0';
 
     if (ImGui::InputText("##name", nameBuffer, sizeof(nameBuffer))) {
-        selectedObject->setName(nameBuffer);
+        obj->setName(nameBuffer);
     }
 
-    bool enabled = selectedObject->isEnabled();
-
+    bool enabled = obj->isEnabled();
     if (ImGui::Checkbox("Enabled", &enabled)) {
-        selectedObject->enabled(enabled);
+        obj->enabled(enabled);
     }
 
     ImGui::Separator();
+}
 
-    ImGui::Spacing();
-    ImGui::Text("Components");
+void editor::InspectorPanel::drawComponents(dzemikk::GameObject* obj,
+                                            const editor::InspectorContext& ctx) {
+    ImGui::TextUnformatted("Components");
     ImGui::Spacing();
 
-    ImGui::Spacing();
+    auto& components = obj->getAllComponents();
 
-    for (auto& component : selectedObject->getAllComponents()) {
+    for (size_t i = 0; i < components.size(); ++i) {
+        auto& component = components[i];
+
         ImGui::PushID(component.get());
-
-        bool isTransform = dynamic_cast<dzemikk::Transform*>(component.get()) != nullptr;
-
-        ImGui::BeginGroup();
 
         ImGui::Separator();
 
-        bool componentEnabled = component->isEnabled();
+        bool isTransform = dynamic_cast<dzemikk::Transform*>(component.get()) != nullptr;
 
-        if (ImGui::Checkbox("##enabled", &componentEnabled)) {
-            component->enabled(componentEnabled);
-        }
+        if (ImGui::BeginTable("component_row", 3,
+                              ImGuiTableFlags_Resizable | ImGuiTableFlags_NoBordersInBody)) {
 
-        ImGui::SameLine();
+            ImGui::TableSetupColumn("enabled", ImGuiTableColumnFlags_WidthFixed, 20.0f);
+            ImGui::TableSetupColumn("name", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("remove", ImGuiTableColumnFlags_WidthFixed, 30.0f);
 
-        ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", component->typeName().c_str());
+            ImGui::TableNextRow();
 
-        ImGui::SameLine();
+            ImGui::TableSetColumnIndex(0);
+            bool enabled = component->isEnabled();
+            if (ImGui::Checkbox("##enabled", &enabled)) {
+                component->enabled(enabled);
+            }
 
-        float avail = ImGui::GetContentRegionAvail().x;
+            ImGui::TableSetColumnIndex(1);
+            ImGui::TextUnformatted(component->typeName().c_str());
 
-        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + avail - 20);
+            ImGui::TableSetColumnIndex(2);
 
-        if (isTransform) {
-            ImGui::BeginDisabled();
-            ImGui::Button("X");
-            ImGui::EndDisabled();
-        } else {
-            if (ImGui::Button("X")) {
-                selectedObject->removeComponent(component.get());
+            bool removed = false;
+
+            if (isTransform) {
+                ImGui::BeginDisabled();
+                ImGui::Button("X");
+                ImGui::EndDisabled();
+            } else {
+                if (ImGui::Button("X")) {
+                    obj->removeComponent(component.get());
+                    removed = true;
+                }
+            }
+
+            ImGui::EndTable();
+
+            if (removed) {
                 ImGui::PopID();
-                ImGui::EndGroup();
                 break;
             }
         }
-        ImGui::Indent(10.0f);
 
-        _registry.drawInspector(component.get(), context);
-
-        ImGui::Unindent(10.0f);
-
-        ImGui::Spacing();
-
-        ImGui::EndGroup();
+        ImGui::Indent();
+        _registry.drawInspector(component.get(), ctx);
+        ImGui::Unindent();
 
         ImGui::PopID();
     }
+}
 
-    ImGui::Spacing();
-    ImGui::Separator();
+void editor::InspectorPanel::drawAddComponent(dzemikk::GameObject* obj) {
     if (ImGui::Button("+ Add Component", ImVec2(-1, 0))) {
         _showComponentList = !_showComponentList;
     }
 
-    if (_showComponentList) {
+    if (!_showComponentList)
+        return;
 
-        ImGui::BeginChild("ComponentList", ImVec2(0, 140), true);
+    ImGui::BeginChild("ComponentList", ImVec2(0, 140), true);
 
-        for (auto& factory : _factories) {
+    for (auto& factory : _factories) {
+        bool exists = factory.has(obj);
 
-            bool alreadyHas = false;
-
-            if (factory.name == "Transform" && selectedObject->getComponent<dzemikk::Transform>()) {
-                alreadyHas = true;
-            }
-
-            if (factory.name == "MeshRenderer" &&
-                selectedObject->getComponent<dzemikk::MeshRenderer>()) {
-                alreadyHas = true;
-            }
-
-            if (factory.name == "DirectionalLight" &&
-                selectedObject->getComponent<dzemikk::DirectionalLight>()) {
-                alreadyHas = true;
-            }
-
-            if (factory.name == "PointLight" &&
-                selectedObject->getComponent<dzemikk::PointLight>()) {
-                alreadyHas = true;
-            }
-
-            if (alreadyHas) {
-                ImGui::BeginDisabled();
-                ImGui::Selectable(factory.name.c_str());
-                ImGui::EndDisabled();
-            } else {
-                if (ImGui::Selectable(factory.name.c_str())) {
-                    factory.create(selectedObject);
-                    _showComponentList = false;
-                }
+        if (exists) {
+            ImGui::BeginDisabled();
+            ImGui::Selectable(factory.name.c_str());
+            ImGui::EndDisabled();
+        } else {
+            if (ImGui::Selectable(factory.name.c_str())) {
+                factory.create(obj);
+                _showComponentList = false;
             }
         }
-
-        ImGui::EndChild();
     }
 
-    ImGui::End();
+    ImGui::EndChild();
 }
