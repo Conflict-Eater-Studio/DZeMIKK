@@ -1,15 +1,15 @@
 {
-    "id": "120cb4a5-54ff-40aa-a3f9-4a1c2396079b",
+    "id": "d0815ff1-dc11-4027-81b6-a0c0690810c0",
     "roots": [
         {
             "children": [],
             "components": [
                 {
-                    "id": "a8595d52-b106-4dd3-a7f3-2d5b8d894c75",
+                    "id": "4742cbf7-42c8-4b8a-a8a7-c02e704f6af6",
                     "position": [
                         0.0,
-                        12.0,
-                        26.899999618530273
+                        3.0,
+                        8.0
                     ],
                     "rotation": [
                         0.9839535355567932,
@@ -39,7 +39,7 @@
                 }
             ],
             "enabled": true,
-            "id": "d15b5823-db8a-4e32-a0f8-b4986816e791",
+            "id": "7144148b-1c11-43a6-bf4b-de6c9cb15028",
             "name": "Editor Camera"
         },
         {
@@ -48,10 +48,10 @@
                     "children": [],
                     "components": [
                         {
-                            "id": "43815ddb-a919-4a55-9542-944415872e1f",
+                            "id": "831b6e1a-f3b2-4fa2-948a-54e087e70f41",
                             "position": [
                                 2.0,
-                                1.7999999523162842,
+                                0.0,
                                 0.0
                             ],
                             "rotation": [
@@ -66,34 +66,16 @@
                                 0.5
                             ],
                             "type": "Transform"
-                        },
-                        {
-                            "castsShadows": false,
-                            "color": [
-                                0.15299299359321594,
-                                0.07244810461997986,
-                                0.9852941036224365
-                            ],
-                            "direction": [
-                                0.0,
-                                -1.0,
-                                0.0
-                            ],
-                            "innerCutoff": 0.0,
-                            "intensity": 0.6859999895095825,
-                            "outerCutoff": 15.300000190734863,
-                            "range": 14.5,
-                            "type": "SpotLight"
                         }
                     ],
                     "enabled": true,
-                    "id": "f8d128a0-2cad-496b-b13c-e24df4fbf397",
+                    "id": "fa15f08c-83ff-49b4-aa90-f52575c4d2d3",
                     "name": "Cube Child"
                 }
             ],
             "components": [
                 {
-                    "id": "fda0e0b0-1caf-4510-ae89-b6977de1e916",
+                    "id": "9cf23509-2f7d-418b-a196-a3468efcfcd5",
                     "position": [
                         0.0,
                         0.0,
@@ -106,9 +88,9 @@
                         0.0
                     ],
                     "scale": [
-                        21.799999237060547,
-                        1.399999976158142,
-                        16.600000381469727
+                        1.0,
+                        1.0,
+                        1.0
                     ],
                     "type": "Transform"
                 },
@@ -119,7 +101,7 @@
                         1.0,
                         1.0
                     ],
-                    "id": "254c0b88-a9a7-4480-872b-5945c19d6c36",
+                    "id": "e678398a-bb72-4af0-8d66-ead845c13f2f",
                     "materials": [
                         "shaders/tile1"
                     ],
@@ -128,14 +110,14 @@
                 }
             ],
             "enabled": true,
-            "id": "3a675f81-26a0-41fa-9cb7-15c38f92c626",
+            "id": "9161f790-48fa-4b24-bec1-35988e3c16b8",
             "name": "Cube"
         },
         {
             "children": [],
             "components": [
                 {
-                    "id": "c2eb9f8b-4364-4200-9f0b-c5563cb21247",
+                    "id": "7c22d9d0-d96f-4ac8-b833-1b5296acfc81",
                     "position": [
                         0.0,
                         0.0,
@@ -166,13 +148,94 @@
                         -0.8638684153556824,
                         -0.2591605484485626
                     ],
-                    "intensity": 0.5709999799728394,
+                    "intensity": 1.0,
                     "type": "DirectionalLight"
                 }
             ],
             "enabled": true,
-            "id": "419cc62c-e444-4ef3-a91e-e17663511e8f",
+            "id": "20610158-e9d5-4aeb-883f-540db40d2971",
             "name": "Directional Light"
+        },
+        {
+            "children": [
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                0.5
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                0.5
+                            ],
+                            "id": "90f22bfa-4f60-4c88-8ef2-b73acf45453e",
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                0.0,
+                                0.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 0
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "efacb382-a9dc-498d-876b-5b3d1b2058d4",
+                    "name": "Empty"
+                }
+            ],
+            "components": [
+                {
+                    "anchorMax": [
+                        0.5,
+                        0.5
+                    ],
+                    "anchorMin": [
+                        0.5,
+                        0.5
+                    ],
+                    "id": "e0974b82-5129-4fa9-9e02-1e71b7da386c",
+                    "pivot": [
+                        0.5,
+                        0.5
+                    ],
+                    "position": [
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": 0.0,
+                    "scale": [
+                        1.0,
+                        1.0
+                    ],
+                    "size": [
+                        0.0,
+                        0.0
+                    ],
+                    "type": "RectTransform",
+                    "zIndex": 0
+                },
+                {
+                    "id": "4b34c768-2ce2-447d-9100-fbef64fb5fa1",
+                    "type": "Canvas"
+                }
+            ],
+            "enabled": true,
+            "id": "84ca9b79-e4fc-456d-bf65-9a63f7b7e334",
+            "name": "Empty"
         }
     ]
 }

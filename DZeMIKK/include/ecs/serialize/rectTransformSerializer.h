@@ -69,18 +69,34 @@ namespace dzemikk {
     }
 
     inline void registerRectTransformSerializer(ComponentSerializerRegistry& registry) {
+
         registry.registerType(
             "RectTransform",
+
             [](const Component& component) {
                 const auto* transform = dynamic_cast<const RectTransform*>(&component);
+
                 if (transform == nullptr) {
-                    throw std::runtime_error("Component type mismatch for RectTransform serialization");
+                    throw std::runtime_error(
+                        "Component type mismatch for RectTransform serialization");
                 }
                 return nlohmann::json(*transform);
             },
+
             [](ComponentSerializerRegistry::DeserializationContext context) {
-                from_json(context.json, *context.gameObject.rectTransform());
+                if (!context.gameObject.getComponent<dzemikk::RectTransform>()) {
+                    context.gameObject.replaceTransformWithRectTransform();
+                }
+
+                auto* rectTransform = context.gameObject.rectTransform();
+
+                if (!rectTransform) {
+                    throw std::runtime_error(
+                        "Failed to create RectTransform during deserialization");
+                }
+
+                from_json(context.json, *rectTransform);
             });
     }
-}
+    }
 #endif

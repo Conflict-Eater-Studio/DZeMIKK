@@ -82,7 +82,10 @@ void Editor::createEmptyObject(const std::string& name, dzemikk::GameObject* par
             parent->addChild(go);
         }
 
-        go->transform()->setPosition({0, 0, 0});
+        if (go->getComponent<dzemikk::Transform>()) {
+            go->transform()->setPosition({0, 0, 0});
+        }
+
         _selectedObject = go;
     });
 }

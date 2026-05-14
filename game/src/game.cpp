@@ -269,6 +269,7 @@ void Game::start() {
 
     cameraGO->transform()->setPosition({0.0F, 3.0F, 8.0F});
 
+
     auto* camera = cameraGO->addComponent<dzemikk::Camera>();
 
     camera->lookAt({0.0F, 0.0F, 0.0F});

@@ -105,19 +105,7 @@ class GameObject {
 
         // When we add a Canvas, make this gameobject have a RectTransform
         if (std::is_same_v<T, Canvas>) {
-            if (_rectTransform != nullptr) {
-#if DZEMIKK_DEV_TOOLS
-                spdlog::error("[{}] GameObject '{}' already has a RectTransform component. "
-                              "GameObject::addComponent<Canvas>() was called, which means this "
-                              "canvas would be nested.",
-                              boost::uuids::to_string(_id), _name);
-#endif
-                throw std::runtime_error("Canvas components cannot be nested");
-            }
-
-            removeComponent(_transform);
-            _transform = nullptr;
-            _rectTransform = addComponent<RectTransform>();
+            replaceTransformWithRectTransform();
         }
 
         auto component = std::make_unique<T>(std::forward<Args>(args)...);
@@ -163,6 +151,8 @@ class GameObject {
             _components.erase(iter);
         }
     }
+
+    RectTransform* replaceTransformWithRectTransform();
 
     // -- Getters
     [[nodiscard]] GameObject* getParent() const;

@@ -1,18 +1,21 @@
 #include "inspectorPanel.h"
 
 #include "ecs/components/transform.h"
+#include "ecs/components/ui/rectTransform.h"
 
 #include "inspectors/transformInspector.h"
 #include "inspectors/meshRendererInspector.h"
 #include "inspectors/directionalLightInspector.h"
 #include "inspectors/pointLightInspector.h"
 #include "inspectors/spotLightInspector.h"
+#include "inspectors/canvasInspector.h"
 
 #include <imgui.h>
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/light/directionalLight.h"
 #include "ecs/components/light/pointLight.h"
 #include "ecs/components/light/spotLight.h"
+#include "ecs/components/ui/canvas.h"
 
 editor::InspectorPanel::InspectorPanel() {
 
@@ -21,6 +24,7 @@ editor::InspectorPanel::InspectorPanel() {
     registerInspector<dzemikk::DirectionalLight, DirectionalLightInspector>("DirectionalLight");
     registerInspector<dzemikk::PointLight, PointLightInspector>("PointLight");
     registerInspector<dzemikk::SpotLight, SpotLightInspector>("SpotLight");
+    registerInspector<dzemikk::Canvas, CanvasInspector>("Canvas");
 
     _factories = {
         {"Transform", [](auto* go) { return go->getComponent<dzemikk::Transform>() != nullptr; },
@@ -41,7 +45,10 @@ editor::InspectorPanel::InspectorPanel() {
          [](auto* go) { go->addComponent<dzemikk::PointLight>(); }},
     
         {"SpotLight", [](auto* go) { return go->getComponent<dzemikk::SpotLight>() != nullptr; },
-         [](auto* go) { go->addComponent<dzemikk::SpotLight>(); }}
+         [](auto* go) { go->addComponent<dzemikk::SpotLight>(); }},
+
+        {"Canvas", [](auto* go) { return go->getComponent<dzemikk::Canvas>() != nullptr; },
+         [](auto* go) { go->addComponent<dzemikk::Canvas>(); }}
     };
 
 }
@@ -94,6 +101,7 @@ void editor::InspectorPanel::drawComponents(dzemikk::GameObject* obj,
         ImGui::Separator();
 
         bool isTransform = dynamic_cast<dzemikk::Transform*>(component.get()) != nullptr;
+        bool isRectTransform = dynamic_cast<dzemikk::RectTransform*>(component.get()) != nullptr;
 
         if (ImGui::BeginTable("component_row", 3,
                               ImGuiTableFlags_Resizable | ImGuiTableFlags_NoBordersInBody)) {
@@ -117,7 +125,7 @@ void editor::InspectorPanel::drawComponents(dzemikk::GameObject* obj,
 
             bool removed = false;
 
-            if (isTransform) {
+            if (isTransform || isRectTransform) {
                 ImGui::BeginDisabled();
                 ImGui::Button("X");
                 ImGui::EndDisabled();

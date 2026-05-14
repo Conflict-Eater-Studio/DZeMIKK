@@ -21,6 +21,7 @@ void editor::SpotLightInspector::draw(dzemikk::SpotLight* light, const Inspector
             light->setDirection(direction);
         }
 
+
         if (PropertyDrawer::drawColor("Color", color)) {
             light->setColor(color);
         }
