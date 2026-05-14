@@ -228,28 +228,38 @@ void dzemikk::Renderer::drawDebugUI() {
                 light->getOwner()->transform()->setPosition(position);
             }
 
-            ImGui::DragFloat3("Direction", &light->direction.x, 0.01f, -1.0f, 1.0f);
+            glm::vec3 dir = light->getDirection();
 
-            light->direction = glm::normalize(light->direction);
+            if (ImGui::DragFloat3("Direction", &dir.x, 0.01f, -1.0f, 1.0f)) {
+                light->setDirection(dir);
+            }
 
-            ImGui::ColorEdit3("Color", &light->color.x);
+            glm::vec3 color = light->getColor();
 
-            ImGui::DragFloat("Intensity", &light->intensity, 0.05f, 0.0f, 100.0f);
+            if (ImGui::ColorEdit3("Color", &color.x)) {
+                light->setColor(color);
+            }
 
-            float innerAngle = glm::degrees(glm::acos(light->innerCutoff));
+            float intensity = light->getIntensity();
 
-            float outerAngle = glm::degrees(glm::acos(light->outerCutoff));
+            if (ImGui::DragFloat("Intensity", &intensity, 0.05f, 0.0f, 100.0f)) {
+                light->setIntensity(intensity);
+            }
+
+            float innerAngle = glm::degrees(glm::acos(light->getInnerCutoff()));
+            float outerAngle = glm::degrees(glm::acos(light->getOuterCutoff()));
 
             if (ImGui::DragFloat("Inner Cutoff", &innerAngle, 0.1f, 1.0f, 89.0f)) {
 
-                light->innerCutoff = glm::cos(glm::radians(innerAngle));
+                float cosValue = glm::cos(glm::radians(innerAngle));
+                light->setInnerCutoff(cosValue);
             }
 
             if (ImGui::DragFloat("Outer Cutoff", &outerAngle, 0.1f, 1.0f, 89.0f)) {
 
-                light->outerCutoff = glm::cos(glm::radians(outerAngle));
+                float cosValue = glm::cos(glm::radians(outerAngle));
+                light->setOuterCutoff(cosValue);
             }
-
             ImGui::PopID();
         }
     }

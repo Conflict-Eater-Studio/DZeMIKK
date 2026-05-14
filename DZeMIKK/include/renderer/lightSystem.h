@@ -86,11 +86,12 @@ class LightSystem {
         for (int i = 0; i < scount; i++) {
             auto* t = _spotComponents[i]->getOwner()->transform();
 
-            _spot.push_back({glm::vec4(t->getPosition(), 1.0f),
-                             glm::vec4(_spotComponents[i]->direction, 0.0f),
-                             glm::vec4(_spotComponents[i]->color, _spotComponents[i]->intensity),
-                             glm::vec4(_spotComponents[i]->range, _spotComponents[i]->innerCutoff,
-                                       _spotComponents[i]->outerCutoff, 0)});
+            _spot.push_back(
+                {glm::vec4(t->getPosition(), 1.0f),
+                 glm::vec4(_spotComponents[i]->getDirection(), 0.0f),
+                 glm::vec4(_spotComponents[i]->getColor(), _spotComponents[i]->getIntensity()),
+                 glm::vec4(_spotComponents[i]->getRange(), _spotComponents[i]->getInnerCutoff(),
+                           _spotComponents[i]->getOuterCutoff(), 0.0f)});
         }
 
         ctx.directionalLights = _dir.data();

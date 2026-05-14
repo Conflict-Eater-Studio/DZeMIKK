@@ -6,11 +6,13 @@
 #include "inspectors/meshRendererInspector.h"
 #include "inspectors/directionalLightInspector.h"
 #include "inspectors/pointLightInspector.h"
+#include "inspectors/spotLightInspector.h"
 
 #include <imgui.h>
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/light/directionalLight.h"
 #include "ecs/components/light/pointLight.h"
+#include "ecs/components/light/spotLight.h"
 
 editor::InspectorPanel::InspectorPanel() {
 
@@ -18,7 +20,7 @@ editor::InspectorPanel::InspectorPanel() {
     registerInspector<dzemikk::MeshRenderer, MeshRendererInspector>("MeshRenderer");
     registerInspector<dzemikk::DirectionalLight, DirectionalLightInspector>("DirectionalLight");
     registerInspector<dzemikk::PointLight, PointLightInspector>("PointLight");
-
+    registerInspector<dzemikk::SpotLight, SpotLightInspector>("SpotLight");
 
     _factories = {
         {"Transform", [](auto* go) { return go->getComponent<dzemikk::Transform>() != nullptr; },
@@ -36,7 +38,11 @@ editor::InspectorPanel::InspectorPanel() {
          [](auto* go) { go->addComponent<dzemikk::DirectionalLight>(); }},
 
         {"PointLight", [](auto* go) { return go->getComponent<dzemikk::PointLight>() != nullptr; },
-         [](auto* go) { go->addComponent<dzemikk::PointLight>(); }}};
+         [](auto* go) { go->addComponent<dzemikk::PointLight>(); }},
+    
+        {"SpotLight", [](auto* go) { return go->getComponent<dzemikk::SpotLight>() != nullptr; },
+         [](auto* go) { go->addComponent<dzemikk::SpotLight>(); }}
+    };
 
 }
 

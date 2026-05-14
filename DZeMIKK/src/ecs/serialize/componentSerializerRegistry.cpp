@@ -16,6 +16,7 @@
 
 #include "ecs/serialize/directionalLightSerializer.h"
 #include "ecs/serialize/pointLightSerializer.h"
+#include "ecs/serialize/spotLightSerializer.h"
 
 #include <stdexcept>
 #include <utility>
@@ -41,6 +42,7 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerAnimatorSerializer(registry);
     registerDirectionalLightSerializer(registry);
     registerPointLightSerializer(registry);
+    registerSpotLightSerializer(registry);
 
     return registry;
 }

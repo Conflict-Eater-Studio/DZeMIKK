@@ -1,21 +1,21 @@
 {
-    "id": "9bef5a2e-83d4-40ff-a837-8655c4089d50",
+    "id": "120cb4a5-54ff-40aa-a3f9-4a1c2396079b",
     "roots": [
         {
             "children": [],
             "components": [
                 {
-                    "id": "0d35369c-7d80-426c-8b08-4a55efed01f1",
+                    "id": "a8595d52-b106-4dd3-a7f3-2d5b8d894c75",
                     "position": [
                         0.0,
-                        8.100000381469727,
-                        9.600000381469727
+                        12.0,
+                        26.899999618530273
                     ],
                     "rotation": [
-                        0.9252958297729492,
-                        -0.37907645106315613,
-                        0.010497604496777058,
-                        0.004300669766962528
+                        0.9839535355567932,
+                        -0.17842482030391693,
+                        0.0,
+                        0.0
                     ],
                     "scale": [
                         1.0,
@@ -39,7 +39,7 @@
                 }
             ],
             "enabled": true,
-            "id": "07ae94d0-9569-42af-afae-76d3fc08c421",
+            "id": "d15b5823-db8a-4e32-a0f8-b4986816e791",
             "name": "Editor Camera"
         },
         {
@@ -48,10 +48,10 @@
                     "children": [],
                     "components": [
                         {
-                            "id": "2a51e359-5566-4c91-bdd0-2faa7355cc57",
+                            "id": "43815ddb-a919-4a55-9542-944415872e1f",
                             "position": [
-                                0.0,
-                                1.600000023841858,
+                                2.0,
+                                1.7999999523162842,
                                 0.0
                             ],
                             "rotation": [
@@ -70,38 +70,45 @@
                         {
                             "castsShadows": false,
                             "color": [
-                                1.0,
-                                0.0,
-                                0.9411764144897461
+                                0.15299299359321594,
+                                0.07244810461997986,
+                                0.9852941036224365
                             ],
-                            "intensity": 0.5580000281333923,
-                            "range": 17.5,
-                            "type": "PointLight"
+                            "direction": [
+                                0.0,
+                                -1.0,
+                                0.0
+                            ],
+                            "innerCutoff": 0.0,
+                            "intensity": 0.6859999895095825,
+                            "outerCutoff": 15.300000190734863,
+                            "range": 14.5,
+                            "type": "SpotLight"
                         }
                     ],
                     "enabled": true,
-                    "id": "ecddda52-d95a-4c50-aff5-78b30fec2fe3",
+                    "id": "f8d128a0-2cad-496b-b13c-e24df4fbf397",
                     "name": "Cube Child"
                 }
             ],
             "components": [
                 {
-                    "id": "72f3b15d-200b-496a-a567-3c1a32ba2aa5",
+                    "id": "fda0e0b0-1caf-4510-ae89-b6977de1e916",
                     "position": [
                         0.0,
                         0.0,
                         0.0
                     ],
                     "rotation": [
-                        0.7071067690849304,
-                        -0.7071067690849304,
-                        -0.0,
+                        1.0,
+                        0.0,
+                        0.0,
                         0.0
                     ],
                     "scale": [
-                        1.0,
-                        1.0,
-                        1.0
+                        21.799999237060547,
+                        1.399999976158142,
+                        16.600000381469727
                     ],
                     "type": "Transform"
                 },
@@ -112,23 +119,23 @@
                         1.0,
                         1.0
                     ],
-                    "id": "bc21c50f-49a0-4146-9de8-4d73dc78ecbb",
+                    "id": "254c0b88-a9a7-4480-872b-5945c19d6c36",
                     "materials": [
                         "shaders/tile1"
                     ],
-                    "model": "models/hex_wypukly.fbx",
+                    "model": "primitive/0",
                     "type": "MeshRenderer"
                 }
             ],
             "enabled": true,
-            "id": "0cf208fa-54f9-42b6-9328-045e1382cb06",
+            "id": "3a675f81-26a0-41fa-9cb7-15c38f92c626",
             "name": "Cube"
         },
         {
             "children": [],
             "components": [
                 {
-                    "id": "76e0aa9e-90a2-4f1f-af21-e2bbd1e3896f",
+                    "id": "c2eb9f8b-4364-4200-9f0b-c5563cb21247",
                     "position": [
                         0.0,
                         0.0,
@@ -150,21 +157,21 @@
                 {
                     "castsShadows": false,
                     "color": [
-                        0.28431373834609985,
-                        0.28431373834609985,
-                        0.28431373834609985
+                        1.0,
+                        1.0,
+                        1.0
                     ],
                     "direction": [
                         -0.4319342076778412,
                         -0.8638684153556824,
                         -0.2591605484485626
                     ],
-                    "intensity": 1.0,
+                    "intensity": 0.5709999799728394,
                     "type": "DirectionalLight"
                 }
             ],
             "enabled": true,
-            "id": "62022894-7a25-4b26-8f52-26358af622ae",
+            "id": "419cc62c-e444-4ef3-a91e-e17663511e8f",
             "name": "Directional Light"
         }
     ]
