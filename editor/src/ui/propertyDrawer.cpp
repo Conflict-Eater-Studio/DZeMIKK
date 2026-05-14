@@ -9,6 +9,11 @@ bool editor::PropertyDrawer::drawFloat(const std::string& label, float& value, f
     return ImGui::DragFloat(label.c_str(), &value, speed);
 }
 
+bool editor::PropertyDrawer::drawFloat(const std::string& label, float& value, float min, float max,
+                                       float speed) {
+    return ImGui::SliderFloat(label.c_str(), &value, min, max);
+}
+
 bool editor::PropertyDrawer::drawVec3(const std::string& label, glm::vec3& value,
                                       float resetValue) {
 

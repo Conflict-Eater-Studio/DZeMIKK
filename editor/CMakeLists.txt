@@ -12,6 +12,7 @@ set(EDITOR_SOURCES
     ${SRC_DIR}/inspectors/transformInspector.cpp
     ${SRC_DIR}/inspectors/inspectorRegistry.cpp
     ${SRC_DIR}/inspectors/meshRendererInspector.cpp
+    ${SRC_DIR}/inspectors/directionalLightInspector.cpp
     ${SRC_DIR}/ui/propertyDrawer.cpp
 )
 
@@ -23,6 +24,7 @@ set(EDITOR_HEADERS
     ${INC_DIR}/inspectors/transformInspector.h
     ${INC_DIR}/inspectors/inspectorRegistry.h
     ${INC_DIR}/inspectors/meshRendererInspector.h
+    ${INC_DIR}/inspectors/directionalLightInspector.h
     ${INC_DIR}/ui/propertyDrawer.h
 )
 

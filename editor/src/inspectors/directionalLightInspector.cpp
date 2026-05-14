@@ -15,7 +15,7 @@ void editor::DirectionalLightInspector::draw(dzemikk::DirectionalLight* light,
     if (ImGui::CollapsingHeader("DirectionalLight", ImGuiTreeNodeFlags_DefaultOpen)) {
 
         glm::vec3 direction = light->getDirection();
-        glm::vec4 color = glm::vec4(light->getColor().x, light->getColor().y, light->getColor().z, 0);
+        glm::vec4 color = glm::vec4(light->getColor().x, light->getColor().y, light->getColor().z, 1);
         float intensity = light->getIntensity();
         bool castsShadows = light->castsShadows();
 
@@ -27,7 +27,7 @@ void editor::DirectionalLightInspector::draw(dzemikk::DirectionalLight* light,
             light->setColor(color);
         }
 
-        if (PropertyDrawer::drawFloat("Intensity", intensity)) {
+        if (PropertyDrawer::drawFloat("Intensity", intensity, 0.0F, 10.0F, 0.1F)) {
             light->setIntensity(intensity);
         }
 
