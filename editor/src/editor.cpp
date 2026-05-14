@@ -55,6 +55,8 @@ void Editor::start() {
             _inspectorPanel->draw(_selectedObject, context);
         }
 
+        renderBottomBar();
+
         for (auto& op : _deferredOps) {
             op();
         }
@@ -295,6 +297,43 @@ void Editor::renderDockspace() {
     ImGui::End();
 
 #endif
+}
+
+void Editor::renderBottomBar() {
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking |
+                             ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav |
+                             ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize |
+                             ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar;
+
+    ImVec2 size = ImVec2(viewport->Size.x, 22.0f);
+    ImVec2 pos = ImVec2(viewport->Pos.x, viewport->Pos.y + viewport->Size.y - size.y);
+
+    ImGui::SetNextWindowPos(pos);
+    ImGui::SetNextWindowSize(size);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.12f, 0.12f, 0.12f, 1.0f));
+
+    ImGui::Begin("BottomBar", nullptr, flags);
+
+    ImGui::Text("Scene: %s", _activeScene ? "Loaded" : "None");
+
+    ImGui::SameLine();
+
+    ImGui::Text("| Selected: %s", _selectedObject ? _selectedObject->getName().c_str() : "None");
+
+    ImGui::SameLine();
+
+    ImGui::SetCursorPosX(viewport->Size.x - 200);
+    ImGui::Text("dzemikk editor");
+
+    ImGui::End();
+
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar(2);
 }
 
 } // namespace editor

@@ -34,6 +34,7 @@ class Editor {
   private:
     void setupEditor();
     void renderDockspace();
+    void renderBottomBar();
 
   private:
     dzemikk::Engine* _engine = nullptr;
