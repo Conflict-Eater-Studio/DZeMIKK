@@ -65,6 +65,10 @@ void editor::HierarchyPanel::drawNode(dzemikk::GameObject* gameObject,
             if (ImGui::MenuItem("Create Child")) {
                 _editor->createEmptyObject("Empty", gameObject);
             }
+
+            if (ImGui::MenuItem("Delete")) {
+                _editor->deleteObject(gameObject);
+            }
         }
         ImGui::EndPopup();
     }

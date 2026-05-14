@@ -28,6 +28,7 @@ class Editor {
     void start();
 
     void createEmptyObject(const std::string& name, dzemikk::GameObject* parent = nullptr);
+    void deleteObject(dzemikk::GameObject* gameObject);
 
   private:
     void setupEditor();

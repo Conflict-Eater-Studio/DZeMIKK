@@ -79,6 +79,24 @@ void Editor::createEmptyObject(const std::string& name, dzemikk::GameObject* par
     });
 }
 
+void Editor::deleteObject(dzemikk::GameObject* gameObject) {
+    _deferredOps.push_back([=]() {
+        if (!gameObject) {
+            return;
+        }
+
+        if (!_activeScene) {
+            return;
+        }
+
+        if (_selectedObject == gameObject) {
+            _selectedObject = nullptr;
+        }
+
+        _activeScene->destroyGameObject(gameObject);
+    });
+}
+
 void Editor::setupEditor() {
 
     if (!_engine) {
