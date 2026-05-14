@@ -15,6 +15,7 @@
 #include "ecs/serialize/ui/uiCheckboxSerializer.h"
 
 #include "ecs/serialize/directionalLightSerializer.h"
+#include "ecs/serialize/pointLightSerializer.h"
 
 #include <stdexcept>
 #include <utility>
@@ -39,6 +40,7 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerUICheckboxSerializer(registry);
     registerAnimatorSerializer(registry);
     registerDirectionalLightSerializer(registry);
+    registerPointLightSerializer(registry);
 
     return registry;
 }

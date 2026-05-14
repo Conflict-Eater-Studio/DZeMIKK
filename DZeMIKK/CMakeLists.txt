@@ -176,6 +176,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/monoBehaviourSerializer.h"
         "${INC_DIR}/ecs/serialize/transformSerializer.h"
         "${INC_DIR}/ecs/serialize/directionalLightSerializer.h"
+        "${INC_DIR}/ecs/serialize/pointLightSerializer.h"
         "${INC_DIR}/ecs/serialize/ui/uiButtonSerializer.h"
         "${INC_DIR}/ecs/serialize/ui/uiSliderSerializer.h"
         "${INC_DIR}/ecs/serialize/uuid.h"

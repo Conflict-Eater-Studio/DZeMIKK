@@ -1,21 +1,21 @@
 {
-    "id": "7f30ee4c-f005-457d-8402-6edc44dccd1c",
+    "id": "9bef5a2e-83d4-40ff-a837-8655c4089d50",
     "roots": [
         {
             "children": [],
             "components": [
                 {
-                    "id": "357c9e94-50c5-4009-9142-badbb5d02b40",
+                    "id": "0d35369c-7d80-426c-8b08-4a55efed01f1",
                     "position": [
                         0.0,
-                        3.0,
-                        8.0
+                        8.100000381469727,
+                        9.600000381469727
                     ],
                     "rotation": [
-                        0.9839535355567932,
-                        -0.17842482030391693,
-                        0.0,
-                        0.0
+                        0.9252958297729492,
+                        -0.37907645106315613,
+                        0.010497604496777058,
+                        0.004300669766962528
                     ],
                     "scale": [
                         1.0,
@@ -39,7 +39,7 @@
                 }
             ],
             "enabled": true,
-            "id": "08bf2ed3-f0a2-417c-8e33-cca0144f7ff8",
+            "id": "07ae94d0-9569-42af-afae-76d3fc08c421",
             "name": "Editor Camera"
         },
         {
@@ -48,10 +48,10 @@
                     "children": [],
                     "components": [
                         {
-                            "id": "145f179b-dba8-479d-bbe5-f4df2665fe85",
+                            "id": "2a51e359-5566-4c91-bdd0-2faa7355cc57",
                             "position": [
-                                2.0,
                                 0.0,
+                                1.600000023841858,
                                 0.0
                             ],
                             "rotation": [
@@ -66,25 +66,36 @@
                                 0.5
                             ],
                             "type": "Transform"
+                        },
+                        {
+                            "castsShadows": false,
+                            "color": [
+                                1.0,
+                                0.0,
+                                0.9411764144897461
+                            ],
+                            "intensity": 0.5580000281333923,
+                            "range": 17.5,
+                            "type": "PointLight"
                         }
                     ],
                     "enabled": true,
-                    "id": "1a865f06-cae6-4e0b-8b5b-6d41d91036e3",
+                    "id": "ecddda52-d95a-4c50-aff5-78b30fec2fe3",
                     "name": "Cube Child"
                 }
             ],
             "components": [
                 {
-                    "id": "013ab8fc-491f-46af-9617-9777d14a0ffe",
+                    "id": "72f3b15d-200b-496a-a567-3c1a32ba2aa5",
                     "position": [
                         0.0,
                         0.0,
                         0.0
                     ],
                     "rotation": [
-                        1.0,
-                        0.0,
-                        0.0,
+                        0.7071067690849304,
+                        -0.7071067690849304,
+                        -0.0,
                         0.0
                     ],
                     "scale": [
@@ -101,23 +112,23 @@
                         1.0,
                         1.0
                     ],
-                    "id": "7c557c96-e7be-430b-89b5-fed78d815959",
+                    "id": "bc21c50f-49a0-4146-9de8-4d73dc78ecbb",
                     "materials": [
                         "shaders/tile1"
                     ],
-                    "model": "primitive/0",
+                    "model": "models/hex_wypukly.fbx",
                     "type": "MeshRenderer"
                 }
             ],
             "enabled": true,
-            "id": "87a650e2-8da7-473e-8982-f016414e871e",
+            "id": "0cf208fa-54f9-42b6-9328-045e1382cb06",
             "name": "Cube"
         },
         {
             "children": [],
             "components": [
                 {
-                    "id": "bba20d93-b2b3-41f3-b455-57d8b88e67dc",
+                    "id": "76e0aa9e-90a2-4f1f-af21-e2bbd1e3896f",
                     "position": [
                         0.0,
                         0.0,
@@ -139,9 +150,9 @@
                 {
                     "castsShadows": false,
                     "color": [
-                        0.06271626800298691,
-                        0.8529411554336548,
-                        0.15568383038043976
+                        0.28431373834609985,
+                        0.28431373834609985,
+                        0.28431373834609985
                     ],
                     "direction": [
                         -0.4319342076778412,
@@ -153,7 +164,7 @@
                 }
             ],
             "enabled": true,
-            "id": "b7e59e9f-bea0-4fa9-93b9-50e8cecf129b",
+            "id": "62022894-7a25-4b26-8f52-26358af622ae",
             "name": "Directional Light"
         }
     ]

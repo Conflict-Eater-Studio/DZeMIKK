@@ -5,40 +5,26 @@
 #include "inspectors/transformInspector.h"
 #include "inspectors/meshRendererInspector.h"
 #include "inspectors/directionalLightInspector.h"
+#include "inspectors/pointLightInspector.h"
 
 #include <imgui.h>
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/light/directionalLight.h"
+#include "ecs/components/light/pointLight.h"
+
+#define REGISTER_INSPECTOR(type, InspectorClass)                                                  \
+    _registry.registerInspector(#type, [this](dzemikk::Component* c, const InspectorContext& ctx) { \
+        if (auto* obj = dynamic_cast<dzemikk::type*>(c)) {                                        \
+            InspectorClass::draw(obj, ctx);                                                       \
+        }                                                                                         \
+    })
 
 editor::InspectorPanel::InspectorPanel() {
 
-    _registry.registerInspector("Transform",
-                                [](dzemikk::Component* component, const InspectorContext&) {
-                                    auto* transform = dynamic_cast<dzemikk::Transform*>(component);
-                                    if (!transform)
-                                        return;
-
-                                    TransformInspector::draw(transform);
-                                });
-
-    _registry.registerInspector(
-        "MeshRenderer", [](dzemikk::Component* component, const InspectorContext& ctx) {
-            auto* renderer = dynamic_cast<dzemikk::MeshRenderer*>(component);
-            if (!renderer)
-                return;
-
-            MeshRendererInspector::draw(renderer, ctx);
-        });
-
-    _registry.registerInspector("DirectionalLight",
-                                [](dzemikk::Component* component, const InspectorContext& ctx) {
-                                    auto* light = dynamic_cast<dzemikk::DirectionalLight*>(component);
-                                    if (!light) {
-                                        return;
-                                    }
-                                    DirectionalLightInspector::draw(light, ctx);
-                                });
-
+    REGISTER_INSPECTOR(Transform, TransformInspector);
+    REGISTER_INSPECTOR(MeshRenderer, MeshRendererInspector);
+    REGISTER_INSPECTOR(DirectionalLight, DirectionalLightInspector);
+    REGISTER_INSPECTOR(PointLight, PointLightInspector);
 
 
     _factories.push_back({"Transform", [](dzemikk::GameObject* go) {
@@ -51,13 +37,19 @@ editor::InspectorPanel::InspectorPanel() {
                                   auto renderer = go->addComponent<dzemikk::MeshRenderer>();
                                   renderer->setTransform(go->getComponent<dzemikk::Transform>());
                               }
-
                           }});
 
     _factories.push_back({"DirectionalLight", [](dzemikk::GameObject* go) {
                               if (!go->getComponent<dzemikk::DirectionalLight>()) {
 
                                   auto light = go->addComponent<dzemikk::DirectionalLight>();
+                              }
+                          }});
+
+    _factories.push_back({"PointLight", [](dzemikk::GameObject* go) {
+                              if (!go->getComponent<dzemikk::PointLight>()) {
+
+                                  auto light = go->addComponent<dzemikk::PointLight>();
                               }
                           }});
 
@@ -172,6 +164,11 @@ void editor::InspectorPanel::draw(dzemikk::GameObject* selectedObject,
 
             if (factory.name == "DirectionalLight" &&
                 selectedObject->getComponent<dzemikk::DirectionalLight>()) {
+                alreadyHas = true;
+            }
+
+            if (factory.name == "PointLight" &&
+                selectedObject->getComponent<dzemikk::PointLight>()) {
                 alreadyHas = true;
             }
 

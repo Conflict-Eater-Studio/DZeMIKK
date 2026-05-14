@@ -2,22 +2,79 @@
 #define DZEMIKK_POINT_LIGHT_H
 
 #include "ecs/component.h"
-#include <glm/ext/vector_float3.hpp>
+
+#include <algorithm>
+#include <glm/vec3.hpp>
+#include <string>
 
 namespace dzemikk {
-class PointLight : public Component {
+
+/**
+ * @brief Omnidirectional point light.
+ *
+ * Emits light equally in all directions from a single point in space.
+ */
+class PointLight final : public Component {
   public:
-    glm::vec3 color = glm::vec3(1.0f);
-    float intensity = 1.0f;
+    PointLight() = default;
 
-    float range = 10.0f; // attenuation radius
+    PointLight(const glm::vec3& color, float intensity = 1.0f, float range = 10.0f,
+               bool castsShadows = false)
+        : _color(color), _intensity(std::max(0.0f, intensity)), _range(std::max(0.0f, range)),
+          _castsShadows(castsShadows) {}
 
-    bool castsShadows = false;
+    ~PointLight() override = default;
 
+  public:
+    [[nodiscard]]
+    const glm::vec3& getColor() const noexcept {
+        return _color;
+    }
+
+    void setColor(const glm::vec3& color) {
+        _color = color;
+    }
+
+    [[nodiscard]]
+    float getIntensity() const noexcept {
+        return _intensity;
+    }
+
+    void setIntensity(float intensity) {
+        _intensity = std::max(0.0f, intensity);
+    }
+
+    [[nodiscard]]
+    float getRange() const noexcept {
+        return _range;
+    }
+
+    void setRange(float range) {
+        _range = std::max(0.0f, range);
+    }
+
+    [[nodiscard]]
+    bool castsShadows() const noexcept {
+        return _castsShadows;
+    }
+
+    void setCastsShadows(bool enabled) noexcept {
+        _castsShadows = enabled;
+    }
+
+  public:
+    [[nodiscard]]
     std::string typeName() const override {
         return "PointLight";
     }
+
+  private:
+    glm::vec3 _color{1.0f, 1.0f, 1.0f};
+    float _intensity{1.0f};
+    float _range{10.0f};
+    bool _castsShadows{false};
 };
+
 } // namespace dzemikk
 
 #endif // DZEMIKK_POINT_LIGHT_H

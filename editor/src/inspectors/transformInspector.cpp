@@ -7,7 +7,7 @@
 
 using namespace dzemikk;
 
-void editor::TransformInspector::draw(Transform* transform) {
+void editor::TransformInspector::draw(Transform* transform, const InspectorContext& ctx) {
 
     if (!transform) {
         return;

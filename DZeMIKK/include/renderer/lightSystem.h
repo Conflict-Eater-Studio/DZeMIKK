@@ -75,8 +75,8 @@ class LightSystem {
             auto* t = _pointComponents[i]->getOwner()->transform();
 
             _point.push_back({glm::vec4(t->getPosition(), 1.0f),
-                              glm::vec4(_pointComponents[i]->color, _pointComponents[i]->intensity),
-                              glm::vec4(_pointComponents[i]->range, 0, 0, 0)});
+                 glm::vec4(_pointComponents[i]->getColor(), _pointComponents[i]->getIntensity()),
+                 glm::vec4(_pointComponents[i]->getRange(), 0, 0, 0)});
         }
 
         reg.getEnabledComponents<SpotLight>(_spotComponents);

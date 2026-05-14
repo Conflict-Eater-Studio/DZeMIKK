@@ -188,11 +188,20 @@ void dzemikk::Renderer::drawDebugUI() {
                 light->getOwner()->transform()->setPosition(position);
             }
 
-            ImGui::ColorEdit3("Color", &light->color.x);
+            glm::vec3 color = light->getColor();
+            if (ImGui::ColorEdit3("Color", &color.x)) {
+                light->setColor(color);
+            }
 
-            ImGui::DragFloat("Intensity", &light->intensity, 0.05f, 0.0f, 100.0f);
+            float intensity = light->getIntensity();
+            if (ImGui::DragFloat("Intensity", &intensity, 0.05f, 0.0f, 100.0f)) {
+                light->setIntensity(intensity);
+            }
 
-            ImGui::DragFloat("Radius", &light->range, 0.1f, 0.1f, 500.0f);
+            float range = light->getRange();
+            if (ImGui::DragFloat("Radius", &range, 0.1f, 0.1f, 500.0f)) {
+                light->setRange(range);
+            }
 
             ImGui::PopID();
         }
