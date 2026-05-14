@@ -15,6 +15,10 @@ bool editor::PropertyDrawer::drawVec3(const std::string& label, glm::vec3& value
     return ImGui::DragFloat3(label.c_str(), &value.x, 0.1F);
 }
 
+bool editor::PropertyDrawer::drawBool(const std::string& label, bool& value) {
+    return ImGui::Checkbox(label.c_str(), &value);
+}
+
 bool editor::PropertyDrawer::drawShader(const std::string& label,
                                         dzemikk::AssetHandle<dzemikk::Shader>& handle,
                                         const InspectorContext& ctx) {

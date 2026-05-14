@@ -131,21 +131,37 @@ void dzemikk::Renderer::drawDebugUI() {
 
     if (ImGui::CollapsingHeader("Directional Lights", ImGuiTreeNodeFlags_DefaultOpen)) {
 
-        for (size_t i = 0; i < dirLights.size(); i++) {
+        for (size_t i = 0; i < dirLights.size(); ++i) {
 
             auto* light = dirLights[i];
 
-            ImGui::PushID((int)i);
+            ImGui::PushID(static_cast<int>(i));
 
             ImGui::SeparatorText(("Directional " + std::to_string(i)).c_str());
 
-            ImGui::DragFloat3("Direction", &light->direction.x, 0.01f, -1.0f, 1.0f);
+            glm::vec3 direction = light->getDirection();
 
-            light->direction = glm::normalize(light->direction);
+            if (ImGui::DragFloat3("Direction", &direction.x, 0.01f, -1.0f, 1.0f)) {
+                light->setDirection(direction);
+            }
 
-            ImGui::ColorEdit3("Color", &light->color.x);
+            glm::vec3 color = light->getColor();
 
-            ImGui::DragFloat("Intensity", &light->intensity, 0.01f, 0.0f, 20.0f);
+            if (ImGui::ColorEdit3("Color", &color.x)) {
+                light->setColor(color);
+            }
+
+            float intensity = light->getIntensity();
+
+            if (ImGui::DragFloat("Intensity", &intensity, 0.01f, 0.0f, 20.0f)) {
+                light->setIntensity(intensity);
+            }
+
+            bool castsShadows = light->castsShadows();
+
+            if (ImGui::Checkbox("Cast Shadows", &castsShadows)) {
+                light->setCastsShadows(castsShadows);
+            }
 
             ImGui::PopID();
         }

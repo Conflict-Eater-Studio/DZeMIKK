@@ -1,11 +1,11 @@
 {
-    "id": "ad04a449-0704-464e-9af7-1cb3568edac0",
+    "id": "c89f38a8-d640-41a5-9781-5f2d99af28c1",
     "roots": [
         {
             "children": [],
             "components": [
                 {
-                    "id": "de298e65-57c0-4166-9014-f15a7da6265d",
+                    "id": "6643cba3-6672-432c-bd24-8a237ba1071b",
                     "position": [
                         0.0,
                         3.0,
@@ -38,7 +38,8 @@
                     "type": "Camera"
                 }
             ],
-            "id": "f2aeb3f9-46fd-467e-88a9-bbc4eb75876c",
+            "enabled": true,
+            "id": "3fe710b9-b108-4db3-9a55-99d02415c722",
             "name": "Editor Camera"
         },
         {
@@ -47,7 +48,7 @@
                     "children": [],
                     "components": [
                         {
-                            "id": "be54cb32-0fd4-4ff4-9b6a-ce33b24adf4e",
+                            "id": "9df6022a-01f6-4390-b756-1850ba458a26",
                             "position": [
                                 2.0,
                                 0.0,
@@ -65,29 +66,16 @@
                                 0.5
                             ],
                             "type": "Transform"
-                        },
-                        {
-                            "color": [
-                                1.0,
-                                1.0,
-                                1.0,
-                                1.0
-                            ],
-                            "id": "6675c95f-a9b9-4b54-a04c-4bfbdb7ccadf",
-                            "materials": [
-                                "shaders/tile1"
-                            ],
-                            "model": "primitive/2",
-                            "type": "MeshRenderer"
                         }
                     ],
-                    "id": "fb42dfd6-1349-49e5-a20d-45cf6385249c",
+                    "enabled": true,
+                    "id": "a0ced2ff-2e7f-41d3-9724-957d6718ff5c",
                     "name": "Cube Child"
                 }
             ],
             "components": [
                 {
-                    "id": "56b89c0e-6534-4d28-b22c-c3403618a512",
+                    "id": "5be972b8-786f-4c31-bbe2-25b9a39d8e51",
                     "position": [
                         0.0,
                         0.0,
@@ -113,18 +101,60 @@
                         1.0,
                         1.0
                     ],
-                    "id": "0589cc95-c8e9-4777-a420-6a08c32dc668",
+                    "id": "4e88b631-557d-4035-b157-f1e047d43570",
                     "materials": [
-                        "shaders/tile1",
-                        "",
-                        ""
+                        "shaders/tile1"
                     ],
                     "model": "primitive/0",
                     "type": "MeshRenderer"
                 }
             ],
-            "id": "a9bf1c20-6d94-4449-b289-b80818ffb681",
+            "enabled": true,
+            "id": "4d779cd0-85dc-4959-81de-7448f0860800",
             "name": "Cube"
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "50ae32c3-7038-4225-94a2-dc2bcb3eaa99",
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "castsShadows": false,
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "direction": [
+                        -0.4319342076778412,
+                        -0.8638684153556824,
+                        -0.2591605484485626
+                    ],
+                    "intensity": 1.0,
+                    "type": "DirectionalLight"
+                }
+            ],
+            "enabled": true,
+            "id": "c8a8272f-e978-4772-9982-d3d7570a03e5",
+            "name": "Directional Light"
         }
     ]
 }

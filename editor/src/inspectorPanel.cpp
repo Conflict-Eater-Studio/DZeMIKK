@@ -4,9 +4,11 @@
 
 #include "inspectors/transformInspector.h"
 #include "inspectors/meshRendererInspector.h"
+#include "inspectors/directionalLightInspector.h"
 
 #include <imgui.h>
-#include <ecs/components/meshRenderer.h>
+#include "ecs/components/meshRenderer.h"
+#include "ecs/components/light/directionalLight.h"
 
 editor::InspectorPanel::InspectorPanel() {
 
@@ -28,6 +30,15 @@ editor::InspectorPanel::InspectorPanel() {
             MeshRendererInspector::draw(renderer, ctx);
         });
 
+    _registry.registerInspector("DirectionalLight",
+                                [](dzemikk::Component* component, const InspectorContext& ctx) {
+                                    auto* light = dynamic_cast<dzemikk::DirectionalLight*>(component);
+                                    if (!light) {
+                                        return;
+                                    }
+                                    DirectionalLightInspector::draw(light, ctx);
+                                });
+
 
 
     _factories.push_back({"Transform", [](dzemikk::GameObject* go) {
@@ -42,6 +53,14 @@ editor::InspectorPanel::InspectorPanel() {
                               }
 
                           }});
+
+    _factories.push_back({"DirectionalLight", [](dzemikk::GameObject* go) {
+                              if (!go->getComponent<dzemikk::DirectionalLight>()) {
+
+                                  auto light = go->addComponent<dzemikk::DirectionalLight>();
+                              }
+                          }});
+
 }
 
 void editor::InspectorPanel::draw(dzemikk::GameObject* selectedObject,
@@ -148,6 +167,11 @@ void editor::InspectorPanel::draw(dzemikk::GameObject* selectedObject,
 
             if (factory.name == "MeshRenderer" &&
                 selectedObject->getComponent<dzemikk::MeshRenderer>()) {
+                alreadyHas = true;
+            }
+
+            if (factory.name == "DirectionalLight" &&
+                selectedObject->getComponent<dzemikk::DirectionalLight>()) {
                 alreadyHas = true;
             }
 

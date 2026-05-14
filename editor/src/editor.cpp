@@ -156,9 +156,9 @@ void Editor::setupEditor() {
     
     auto* lightGO = _activeScene->createGameObject("Directional Light");
     auto* light = lightGO->addComponent<dzemikk::DirectionalLight>();
-    light->direction = glm::normalize(glm::vec3(-0.5F, -1.0F, -0.3F));
-    light->color = glm::vec3(1.0F);
-    light->intensity = 1.0F;
+    light->setDirection(glm::vec3(-0.5f, -1.0f, -0.3f));
+    light->setColor(glm::vec3(1.0f));
+    light->setIntensity(1.0f);
     
     _editorInitialized = true;
 }

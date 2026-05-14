@@ -289,34 +289,6 @@ void Game::start() {
     uiCamera->setOrthographic(0.0F, 1920.0F, 0.0F, 1080.0F, -1.0F, 1.0F);
     engine->getRenderer()->getCameraSystem().setActiveUICamera(uiCamera);
 
-    auto* sunGO = scene->createGameObject("Sun");
-    sunLight = sunGO->addComponent<dzemikk::DirectionalLight>();
-
-    sunLight->direction = glm::normalize(glm::vec3(-0.5f, -1.0f, -0.3f));
-    sunLight->color = glm::vec3(1.0f, 0.95f, 0.8f);
-    sunLight->intensity = .9f;
-
-
-    auto* pointGO = scene->createGameObject("Point Light");
-    pointGO->transform()->setPosition({3.0f, 4.0f, 2.0f});
-
-    pointLight = pointGO->addComponent<dzemikk::PointLight>();
-    pointLight->color = glm::vec3(1.0f, 0.2f, 0.2f);
-    pointLight->intensity = 4.0f;
-    pointLight->range = 15.0f;
-
-
-    auto* spotGO = scene->createGameObject("Spot Light");
-    spotGO->transform()->setPosition({0.0f, 6.0f, 0.0f});
-
-    spotLight = spotGO->addComponent<dzemikk::SpotLight>();
-
-    spotLight->direction = glm::normalize(glm::vec3(0.0f, -1.0f, 0.0f));
-    spotLight->color = glm::vec3(0.2f, 0.4f, 1.0f);
-
-    spotLight->intensity = 2.6f;
-    spotLight->innerCutoff = glm::cos(glm::radians(15.0f));
-    spotLight->outerCutoff = glm::cos(glm::radians(25.0f));
 
     /*
     auto shader = assetManager->get<dzemikk::Shader>("shaders/tile1");

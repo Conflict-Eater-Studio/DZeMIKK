@@ -18,6 +18,8 @@ class PropertyDrawer {
 
     static bool drawVec3(const std::string& label, glm::vec3& value, float resetValue = 0.0F);
 
+    static bool drawBool(const std::string& label, bool& value);
+
     static bool drawModel(const std::string& label, dzemikk::AssetHandle<dzemikk::Model>& handle,
                           const InspectorContext& ctx);
 

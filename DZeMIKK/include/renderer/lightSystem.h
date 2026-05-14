@@ -58,16 +58,16 @@ class LightSystem {
 
         auto& reg = dzemikk::ComponentRegistry::get();
 
-        reg.getComponents<DirectionalLight>(_dirComponents);
+        reg.getEnabledComponents<DirectionalLight>(_dirComponents);
 
         int dcount = std::min((int)_dirComponents.size(), MAX_DIR_LIGHTS);
 
         for (int i = 0; i < dcount; i++) {
-            _dir.push_back({glm::vec4(_dirComponents[i]->direction, 0.0f),
-                            glm::vec4(_dirComponents[i]->color, _dirComponents[i]->intensity)});
+            _dir.push_back({glm::vec4(_dirComponents[i]->getDirection(), 0.0f),
+                 glm::vec4(_dirComponents[i]->getColor(), _dirComponents[i]->getIntensity())});
         }
 
-        reg.getComponents<PointLight>(_pointComponents);
+        reg.getEnabledComponents<PointLight>(_pointComponents);
 
         int pcount = std::min((int)_pointComponents.size(), MAX_POINT_LIGHTS);
 
@@ -79,7 +79,7 @@ class LightSystem {
                               glm::vec4(_pointComponents[i]->range, 0, 0, 0)});
         }
 
-        reg.getComponents<SpotLight>(_spotComponents);
+        reg.getEnabledComponents<SpotLight>(_spotComponents);
 
         int scount = std::min((int)_spotComponents.size(), MAX_SPOT_LIGHTS);
 
