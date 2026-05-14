@@ -9,8 +9,9 @@
 
 #include "inspectors/inspectorRegistry.h"
 
-namespace editor {
+#include "ecs/components/meshRenderer.h"
 
+namespace editor {
 class PropertyDrawer {
   public:
     static bool drawFloat(const std::string& label, float& value, float speed = 0.1F);
@@ -22,6 +23,11 @@ class PropertyDrawer {
 
     static bool drawShader(const std::string& label, dzemikk::AssetHandle<dzemikk::Shader>& handle,
                            const InspectorContext& ctx);
+
+    static bool drawColor(const std::string& label, glm::vec4& color);
+
+    static bool drawMaterials(const std::string& label, dzemikk::MeshRenderer* renderer,
+                              const InspectorContext& ctx);
 };
 
 } // namespace editor

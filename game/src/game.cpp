@@ -250,7 +250,7 @@ void Game::start() {
 
     auto scene = std::make_shared<dzemikk::Scene>();
 
-    std::ifstream file("C:/Users/Admin/Documents/GitHub/DZeMIKK/game/res/scenes/scene.json");
+    std::ifstream file("./Debug/res/scenes/scene.json");
 
     if (file.is_open()) {
 

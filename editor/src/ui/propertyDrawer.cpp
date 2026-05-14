@@ -1,5 +1,7 @@
 #include "ui/propertyDrawer.h"
 
+#include "renderer/material.h"
+
 #include <imgui.h>
 
 bool editor::PropertyDrawer::drawFloat(const std::string& label, float& value, float speed) {
@@ -41,6 +43,88 @@ bool editor::PropertyDrawer::drawShader(const std::string& label,
     }
 
     return false;
+}
+
+bool editor::PropertyDrawer::drawColor(const std::string& label, glm::vec4& color) {
+    return ImGui::ColorEdit4("Color", &color.x);
+}
+
+bool editor::PropertyDrawer::drawMaterials(const std::string& label, dzemikk::MeshRenderer* renderer,
+                                           const InspectorContext& ctx) {
+    if (!renderer) {
+        return false;
+    }
+
+    auto& materials = renderer->getMaterials();
+
+    bool changed = false;
+
+    ImGui::Text("Materials: %zu", materials.size());
+
+    for (size_t i = 0; i < materials.size(); i++) {
+
+        ImGui::PushID(static_cast<int>(i));
+
+        auto material = materials[i];
+
+        std::string header = "Material " + std::to_string(i);
+
+        if (!material) {
+
+            ImGui::Text("Material %zu: null", i);
+
+            ImGui::SameLine();
+
+            std::string createButton = "Create##" + std::to_string(i);
+
+            if (ImGui::Button(createButton.c_str())) {
+
+                auto newMaterial = std::make_shared<dzemikk::Material>();
+                renderer->setMaterial(i, newMaterial);
+
+                changed = true;
+            }
+
+            ImGui::PopID();
+            continue;
+        }
+
+        if (ImGui::TreeNode(header.c_str())) {
+
+            auto shaderHandle = material->getShaderHandle();
+
+            if (PropertyDrawer::drawShader("Shader", shaderHandle, ctx)) {
+                material->setShader(shaderHandle);
+                changed = true;
+            }
+
+            std::string removeButton = "Remove##" + std::to_string(i);
+
+            if (ImGui::Button(removeButton.c_str())) {
+
+                renderer->setMaterial(i, nullptr);
+
+                ImGui::TreePop();
+                ImGui::PopID();
+
+                return true;
+            }
+
+            ImGui::TreePop();
+        }
+
+        ImGui::PopID();
+    }
+
+    if (ImGui::Button("Add Material")) {
+
+        auto material = std::make_shared<dzemikk::Material>();
+        renderer->setMaterial(materials.size(), material);
+
+        changed = true;
+    }
+
+    return changed;
 }
 
 bool editor::PropertyDrawer::drawModel(const std::string& label,
