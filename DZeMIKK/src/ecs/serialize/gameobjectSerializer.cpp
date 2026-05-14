@@ -38,6 +38,8 @@ nlohmann::json GameObjectSerializer::serialize(const GameObject& gameObject) {
         json["children"].push_back(serialize(*child));
     }
 
+    json["enabled"] = gameObject.isEnabled();
+
     return json;
 }
 
@@ -68,6 +70,10 @@ void GameObjectSerializer::deserializeInto(GameObject& gameObject, const nlohman
             };
             componentRegistry.deserializeIntoGameObject(context);
         }
+    }
+
+    if (json.contains("enabled") && json["enabled"].is_boolean()) {
+        gameObject.enabled(json["enabled"].get<bool>());
     }
 }
 

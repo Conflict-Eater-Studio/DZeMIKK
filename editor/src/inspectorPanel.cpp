@@ -64,6 +64,12 @@ void editor::InspectorPanel::draw(dzemikk::GameObject* selectedObject,
         selectedObject->setName(nameBuffer);
     }
 
+    bool enabled = selectedObject->isEnabled();
+
+    if (ImGui::Checkbox("Enabled", &enabled)) {
+        selectedObject->enabled(enabled);
+    }
+
     ImGui::Separator();
 
     ImGui::Spacing();
@@ -80,6 +86,15 @@ void editor::InspectorPanel::draw(dzemikk::GameObject* selectedObject,
         ImGui::BeginGroup();
 
         ImGui::Separator();
+
+        bool componentEnabled = component->isEnabled();
+
+        if (ImGui::Checkbox("##enabled", &componentEnabled)) {
+            component->enabled(componentEnabled);
+        }
+
+        ImGui::SameLine();
+
         ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", component->typeName().c_str());
 
         ImGui::SameLine();

@@ -11,7 +11,7 @@
 #include "core/profiler.h"
 
 void dzemikk::SpriteRenderPass::execute(RenderContext& ctx) {
-    dzemikk::ComponentRegistry::get().getComponents<SpriteRenderer>(_spriteRenderers);
+    dzemikk::ComponentRegistry::get().getEnabledComponents<SpriteRenderer>(_spriteRenderers);
 
     {
         DZ_PROFILE_GPU("Transparent Rendering (Sprites)");

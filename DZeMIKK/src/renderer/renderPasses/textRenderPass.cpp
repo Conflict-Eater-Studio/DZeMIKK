@@ -15,7 +15,7 @@ dzemikk::TextRenderPass::TextRenderPass() {
 }
 
 void dzemikk::TextRenderPass::execute(RenderContext& ctx) {
-    ComponentRegistry::get().getComponents<TextRenderer>(_texts);
+    ComponentRegistry::get().getEnabledComponents<TextRenderer>(_texts);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

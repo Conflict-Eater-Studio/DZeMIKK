@@ -26,7 +26,7 @@ dzemikk::MeshRenderPass::~MeshRenderPass() {
 }
 
 void dzemikk::MeshRenderPass::buildMeshBatches(RenderContext& ctx) {
-    dzemikk::ComponentRegistry::get().getComponents<MeshRenderer>(_meshRenderers);
+    dzemikk::ComponentRegistry::get().getEnabledComponents<MeshRenderer>(_meshRenderers);
 
     for (auto& batch : _batches) {
         batch.models.clear();

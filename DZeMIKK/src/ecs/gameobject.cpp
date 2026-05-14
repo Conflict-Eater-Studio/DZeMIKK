@@ -111,6 +111,10 @@ Scene* GameObject::getScene() {
     return _scene;
 }
 
+bool GameObject::isEnabled() const {
+    return _isEnabled;
+}
+
 // --- Setters
 void GameObject::setName(const std::string& name) {
     _name = name;

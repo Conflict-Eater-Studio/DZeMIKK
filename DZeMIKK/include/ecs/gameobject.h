@@ -173,6 +173,7 @@ class GameObject {
     [[nodiscard]] const std::vector<std::unique_ptr<Component>>& getAllComponents() const;
     [[nodiscard]] bool hasStarted() const;
     [[nodiscard]] Scene* getScene();
+    [[nodiscard]] bool isEnabled() const;
 
     // --- Setters
     void setId(const boost::uuids::uuid& uuid);

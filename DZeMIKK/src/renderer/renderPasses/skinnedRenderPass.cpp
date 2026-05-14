@@ -8,7 +8,7 @@
 
 
 void dzemikk::SkinnedRenderPass::execute(RenderContext& ctx) {
-    ComponentRegistry::get().getComponents<SkinnedMeshRenderer>(_skinnedRenderers);
+    ComponentRegistry::get().getEnabledComponents<SkinnedMeshRenderer>(_skinnedRenderers);
 
     {
         DZ_PROFILE_GPU("Skinned Rendering");
