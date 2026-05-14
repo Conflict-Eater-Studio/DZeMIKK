@@ -83,3 +83,14 @@ void dzemikk::ResourceIndex::clear() {
 std::string dzemikk::ResourceIndex::getRoot() {
     return _rootPath;
 }
+
+std::vector<std::string> dzemikk::ResourceIndex::getAllPaths() const {
+    std::vector<std::string> out;
+    out.reserve(_pathIndex.size());
+
+    for (const auto& [rel, full] : _pathIndex) {
+        out.push_back(rel);
+    }
+
+    return out;
+}

@@ -16,6 +16,7 @@
 namespace editor {
 class HierarchyPanel;
 class InspectorPanel;
+class AssetManagerPanel;
 
 class Editor {
   public:
@@ -44,6 +45,7 @@ class Editor {
 
     bool _showHierarchy = true;
     bool _showInspector = true;
+    bool _showAssetManager = true;
     bool _showScene = true;
 
     bool _editorInitialized = false;
@@ -53,6 +55,7 @@ class Editor {
 
     std::unique_ptr<HierarchyPanel> _hierarchyPanel;
     std::unique_ptr<InspectorPanel> _inspectorPanel;
+    std::unique_ptr<AssetManagerPanel> _assetManagerPanel;
 
     std::vector<std::function<void()>> _deferredOps;
 };

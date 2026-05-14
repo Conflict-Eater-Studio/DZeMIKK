@@ -142,6 +142,10 @@ class AssetManager : public IEngineModule {
      */
     [[nodiscard]] FMOD::System* getFMODSystem() const;
 
+    std::vector<std::string> getAllAssets() const {
+        return _resources.getAllPaths();
+    }
+
 #pragma endregion
 
   private:

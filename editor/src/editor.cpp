@@ -17,6 +17,7 @@
 
 #include "hierarchyPanel.h"
 #include "inspectorPanel.h"
+#include "assetManagerPanel.h"
 
 #include "ecs/serialize/sceneSerializer.h"
 
@@ -31,6 +32,7 @@ namespace editor {
 Editor::Editor(dzemikk::Engine* engine) : _engine(engine) {
     _hierarchyPanel = std::make_unique<HierarchyPanel>();
     _inspectorPanel = std::make_unique<InspectorPanel>();
+    _assetManagerPanel = std::make_unique<AssetManagerPanel>();
 }
 
 Editor::~Editor() = default;
@@ -53,6 +55,10 @@ void Editor::start() {
             InspectorContext context;
             context.assetManager = _engine->getAssetManager();
             _inspectorPanel->draw(_selectedObject, context);
+        }
+
+        if (_showAssetManager) {
+            _assetManagerPanel->draw(_engine->getAssetManager());
         }
 
         renderBottomBar();
@@ -204,6 +210,7 @@ void Editor::renderDockspace() {
 
             ImGui::MenuItem("Hierarchy", nullptr, &_showHierarchy);
             ImGui::MenuItem("Inspector", nullptr, &_showInspector);
+            ImGui::MenuItem("Asset Manager", nullptr, &_showAssetManager);
 
             ImGui::EndMenu();
         }
@@ -242,8 +249,12 @@ void Editor::renderDockspace() {
         ImGuiID dockRight =
             ImGui::DockBuilderSplitNode(dockMain, ImGuiDir_Right, 0.25F, nullptr, &dockMain);
 
+        ImGuiID dockBottom =
+            ImGui::DockBuilderSplitNode(dockMain, ImGuiDir_Down, 0.25F, nullptr, &dockMain);
+
         ImGui::DockBuilderDockWindow("Hierarchy", dockLeft);
         ImGui::DockBuilderDockWindow("Inspector", dockRight);
+        ImGui::DockBuilderDockWindow("Asset Manager", dockBottom);
 
         ImGui::DockBuilderFinish(dockspaceID);
     }
