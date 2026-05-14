@@ -39,6 +39,22 @@ void editor::HierarchyPanel::draw(dzemikk::Scene* scene, dzemikk::GameObject*& s
         }
     }
 
+    ImGui::Dummy(ImVec2(ImGui::GetContentRegionAvail().x, 30.0f));
+
+    if (ImGui::BeginDragDropTarget()) {
+
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECT")) {
+
+            auto* dragged = *static_cast<dzemikk::GameObject**>(payload->Data);
+
+            if (dragged && _editor) {
+                _editor->reparentObject(dragged, nullptr);
+            }
+        }
+
+        ImGui::EndDragDropTarget();
+    }
+
     ImGui::End();
 }
 
@@ -58,6 +74,30 @@ void editor::HierarchyPanel::drawNode(dzemikk::GameObject* gameObject,
 
     if (ImGui::IsItemClicked()) {
         selectedObject = gameObject;
+    }
+
+    if (ImGui::BeginDragDropSource()) {
+
+        ImGui::SetDragDropPayload("GAMEOBJECT", &gameObject, sizeof(dzemikk::GameObject*));
+
+        ImGui::Text("%s", gameObject->getName().c_str());
+
+        ImGui::EndDragDropSource();
+    }
+
+    if (ImGui::BeginDragDropTarget()) {
+
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECT")) {
+
+            auto* dragged = *static_cast<dzemikk::GameObject**>(payload->Data);
+
+            if (dragged && dragged != gameObject && _editor) {
+
+                _editor->reparentObject(dragged, gameObject);
+            }
+        }
+
+        ImGui::EndDragDropTarget();
     }
 
     if (ImGui::BeginPopupContextItem("NodeContext")) {

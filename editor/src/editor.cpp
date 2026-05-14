@@ -97,6 +97,17 @@ void Editor::deleteObject(dzemikk::GameObject* gameObject) {
     });
 }
 
+void Editor::reparentObject(dzemikk::GameObject* child, dzemikk::GameObject* parent) {
+    _deferredOps.push_back([=]() {
+
+        if (child == parent) {
+            return;
+        }
+
+        child->setParent(parent);
+    });
+}
+
 void Editor::setupEditor() {
 
     if (!_engine) {
