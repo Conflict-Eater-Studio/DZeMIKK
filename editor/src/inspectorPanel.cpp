@@ -12,6 +12,7 @@
 #include "inspectors/rectTransformInspector.h"
 #include "inspectors/imageRendererInspector.h"
 #include "inspectors/gridLayoutInspector.h"
+#include "inspectors/horizontalLayoutInspector.h"
 
 #include <imgui.h>
 #include "ecs/components/meshRenderer.h"
@@ -21,6 +22,7 @@
 #include "ecs/components/ui/canvas.h"
 #include "ecs/components/ui/imageRenderer.h"
 #include "ecs/components/ui/gridLayout.h"
+#include "ecs/components/ui/horizontalLayout.h"
 
 editor::InspectorPanel::InspectorPanel() {
 
@@ -33,6 +35,7 @@ editor::InspectorPanel::InspectorPanel() {
     registerInspector<dzemikk::RectTransform, RectTransformInspector>("RectTransform");
     registerInspector<dzemikk::ImageRenderer, ImageRendererInspector>("ImageRenderer");
     registerInspector<dzemikk::GridLayout, GridLayoutInspector>("GridLayout");
+    registerInspector<dzemikk::HorizontalLayout, HorizontalLayoutInspector>("HorizontalLayout");
 
     _factories = {
         {"Transform", [](auto* go) { return go->getComponent<dzemikk::Transform>() != nullptr; },
@@ -70,7 +73,11 @@ editor::InspectorPanel::InspectorPanel() {
         }},
 
         {"GridLayout", [](auto* go) { return go->getComponent<dzemikk::GridLayout>() != nullptr; },
-         [](auto* go) { go->addComponent<dzemikk::GridLayout>(); }}
+         [](auto* go) { go->addComponent<dzemikk::GridLayout>(); }},
+
+        {"HorizontalLayout",
+         [](auto* go) { return go->getComponent<dzemikk::HorizontalLayout>() != nullptr; },
+         [](auto* go) { go->addComponent<dzemikk::HorizontalLayout>(); }}
     };
 
 }

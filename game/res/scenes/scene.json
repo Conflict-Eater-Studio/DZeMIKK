@@ -180,8 +180,8 @@
                                                 0.5
                                             ],
                                             "position": [
-                                                90.0,
-                                                176.5
+                                                53.88874816894531,
+                                                100.0
                                             ],
                                             "rotation": 0.0,
                                             "scale": [
@@ -189,8 +189,8 @@
                                                 1.0
                                             ],
                                             "size": [
-                                                180.0,
-                                                353.0
+                                                87.77749633789063,
+                                                200.0
                                             ],
                                             "type": "RectTransform",
                                             "zIndex": 0
@@ -229,8 +229,8 @@
                                                 0.5
                                             ],
                                             "position": [
-                                                280.0,
-                                                176.5
+                                                148.333251953125,
+                                                100.0
                                             ],
                                             "rotation": 0.0,
                                             "scale": [
@@ -238,8 +238,8 @@
                                                 1.0
                                             ],
                                             "size": [
-                                                180.0,
-                                                353.0
+                                                87.77749633789063,
+                                                200.0
                                             ],
                                             "type": "RectTransform",
                                             "zIndex": 0
@@ -278,8 +278,8 @@
                                                 0.5
                                             ],
                                             "position": [
-                                                90.0,
-                                                539.5
+                                                242.77774047851563,
+                                                100.0
                                             ],
                                             "rotation": 0.0,
                                             "scale": [
@@ -287,8 +287,8 @@
                                                 1.0
                                             ],
                                             "size": [
-                                                180.0,
-                                                353.0
+                                                87.77749633789063,
+                                                200.0
                                             ],
                                             "type": "RectTransform",
                                             "zIndex": 0
@@ -327,8 +327,8 @@
                                                 0.5
                                             ],
                                             "position": [
-                                                280.0,
-                                                539.5
+                                                337.22222900390625,
+                                                100.0
                                             ],
                                             "rotation": 0.0,
                                             "scale": [
@@ -336,8 +336,8 @@
                                                 1.0
                                             ],
                                             "size": [
-                                                180.0,
-                                                353.0
+                                                87.77749633789063,
+                                                200.0
                                             ],
                                             "type": "RectTransform",
                                             "zIndex": 0
@@ -376,8 +376,8 @@
                                                 0.5
                                             ],
                                             "position": [
-                                                90.0,
-                                                902.5
+                                                431.666748046875,
+                                                100.0
                                             ],
                                             "rotation": 0.0,
                                             "scale": [
@@ -385,8 +385,8 @@
                                                 1.0
                                             ],
                                             "size": [
-                                                180.0,
-                                                353.0
+                                                87.77749633789063,
+                                                200.0
                                             ],
                                             "type": "RectTransform",
                                             "zIndex": 0
@@ -425,8 +425,8 @@
                                                 0.5
                                             ],
                                             "position": [
-                                                280.0,
-                                                902.5
+                                                526.1112060546875,
+                                                100.0
                                             ],
                                             "rotation": 0.0,
                                             "scale": [
@@ -434,8 +434,8 @@
                                                 1.0
                                             ],
                                             "size": [
-                                                180.0,
-                                                353.0
+                                                87.77749633789063,
+                                                200.0
                                             ],
                                             "type": "RectTransform",
                                             "zIndex": 0
@@ -460,12 +460,12 @@
                             "components": [
                                 {
                                     "anchorMax": [
-                                        0.0,
-                                        0.0
+                                        0.5,
+                                        0.5
                                     ],
                                     "anchorMin": [
-                                        0.07999999821186066,
-                                        0.0
+                                        0.0,
+                                        0.5
                                     ],
                                     "id": "5a68579b-7488-42cf-90e9-fadc7b11b1ea",
                                     "pivot": [
@@ -482,25 +482,18 @@
                                         1.0
                                     ],
                                     "size": [
-                                        0.0,
-                                        0.0
+                                        580.0,
+                                        100.0
                                     ],
                                     "type": "RectTransform",
                                     "zIndex": 0
                                 },
                                 {
-                                    "cellSize": [
-                                        180.0,
-                                        353.0
-                                    ],
-                                    "columns": 2,
-                                    "id": "2f988615-f1b5-4454-9564-2461cd33b47c",
-                                    "spacing": [
-                                        10.0,
-                                        10.0
-                                    ],
-                                    "startCorner": 0,
-                                    "type": "GridLayout"
+                                    "childForceExpandHeight": false,
+                                    "childForceExpandWidth": true,
+                                    "id": "864135b4-eafc-4c57-9cee-7af4bb050ae2",
+                                    "spacing": 6.666999816894531,
+                                    "type": "HorizontalLayout"
                                 }
                             ],
                             "enabled": true,
@@ -520,11 +513,11 @@
                             ],
                             "id": "d03f2691-ba21-4b9b-9102-6251ca7178e3",
                             "pivot": [
-                                0.5,
+                                0.0,
                                 0.5
                             ],
                             "position": [
-                                0.0,
+                                610.0,
                                 0.0
                             ],
                             "rotation": 0.0,
@@ -559,11 +552,11 @@
             "components": [
                 {
                     "anchorMax": [
-                        0.5,
+                        0.0,
                         0.5
                     ],
                     "anchorMin": [
-                        0.5,
+                        0.0,
                         0.5
                     ],
                     "id": "3bb8b244-7a8c-4527-bc8f-e36ca252a17f",
@@ -595,6 +588,47 @@
             "enabled": true,
             "id": "d7540132-1b16-41f3-b064-2741650a8b50",
             "name": "Canvas"
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "0b904143-8865-4b1c-a312-de4f860d944d",
+                    "position": [
+                        0.0,
+                        3.0,
+                        8.0
+                    ],
+                    "rotation": [
+                        0.9839535355567932,
+                        -0.17842482030391693,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "aspect": 1.7699999809265137,
+                    "bottom": -1.0,
+                    "far": 1000.0,
+                    "fov": 60.0,
+                    "id": 1,
+                    "left": -1.0,
+                    "near": 0.10000000149011612,
+                    "projectionType": 0,
+                    "right": 1.0,
+                    "top": 1.0,
+                    "type": "Camera"
+                }
+            ],
+            "enabled": true,
+            "id": "4865f2c9-b762-4384-a8cb-e7fba17bdc42",
+            "name": "Editor Camera"
         }
     ]
 }

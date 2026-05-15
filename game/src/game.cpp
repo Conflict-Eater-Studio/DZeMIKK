@@ -263,6 +263,7 @@ void Game::start() {
     }
 
     sceneManager->loadScene(scene);
+
     sceneManager->setActiveScene(scene);
 
     auto* cameraGO = scene->createGameObject("Editor Camera");
