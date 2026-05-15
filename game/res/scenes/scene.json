@@ -66,6 +66,11 @@
                     ],
                     "model": "primitive/0",
                     "type": "MeshRenderer"
+                },
+                {
+                    "id": "9868ec3b-fb77-4ea0-bc23-2cd253460116",
+                    "model": "primitive/0",
+                    "type": "Collider"
                 }
             ],
             "enabled": true,
@@ -540,7 +545,7 @@
                         1.0
                     ],
                     "size": [
-                        1920.0,
+                        400.0,
                         1080.0
                     ],
                     "type": "RectTransform",

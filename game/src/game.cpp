@@ -263,6 +263,7 @@ void Game::start() {
     }
 
     sceneManager->loadScene(scene);
+    
 
     sceneManager->setActiveScene(scene);
 
@@ -488,7 +489,6 @@ void Game::start() {
     task.onLoad = onEnemyModelLoaded;
     engine->getAssetManager()->getAsync("models/Dancing Twerk.fbx", task);
 
-    setupInputCallbacks();
     newModels(material, scene.get());
 
         // --- Sound test ---
@@ -507,6 +507,7 @@ void Game::start() {
 
     */
 
+    setupInputCallbacks();
     engine->start();
 }
 
@@ -631,7 +632,7 @@ void Game::setupInputCallbacks() {
         }
 
         // ================= GAMEPAD =================
-
+        /*
         glm::vec3 pos = enemyGO->transform()->getPosition();
         auto* trs = enemyGO->transform();
 
@@ -664,6 +665,7 @@ void Game::setupInputCallbacks() {
         }
 
         enemyGO->transform()->setPosition(pos);
+        */
 
         // ================= RAYCAST =================
 
@@ -682,14 +684,34 @@ void Game::setupInputCallbacks() {
             currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
         }
 
+        constexpr float hoverStrength = 0.2f;
+
         if (currentRenderer != lastHitRenderer) {
 
             if (lastHitRenderer && lastHitRenderer->isValid()) {
-                lastHitRenderer->setColor(glm::vec4(1.0F, 0.5F, 0.2F, 1.0F));
+
+                glm::vec4 color = lastHitRenderer->getColor();
+
+                color.r += hoverStrength;
+                color.g += hoverStrength;
+                color.b += hoverStrength;
+
+                color = glm::clamp(color, 0.0f, 1.0f);
+
+                lastHitRenderer->setColor(color);
             }
 
-            if (currentRenderer) {
-                currentRenderer->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+            if (currentRenderer && currentRenderer->isValid()) {
+
+                glm::vec4 color = currentRenderer->getColor();
+
+                color.r -= hoverStrength;
+                color.g -= hoverStrength;
+                color.b -= hoverStrength;
+
+                color = glm::clamp(color, 0.0f, 1.0f);
+
+                currentRenderer->setColor(color);
             }
 
             lastHitRenderer = currentRenderer;

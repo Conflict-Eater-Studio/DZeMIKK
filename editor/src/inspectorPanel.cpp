@@ -15,10 +15,13 @@
 #include "inspectors/horizontalLayoutInspector.h"
 #include "inspectors/verticalLayoutInspector.h"
 #include "inspectors/cameraInspector.h"
+#include "inspectors/colliderInspector.h"
 
 #include <imgui.h>
 #include "ecs/components/meshRenderer.h"
+#include "ecs/components/skinnedMeshRenderer.h"
 #include "ecs/components/camera.h"
+#include "ecs/components/collider.h"
 #include "ecs/components/light/directionalLight.h"
 #include "ecs/components/light/pointLight.h"
 #include "ecs/components/light/spotLight.h"
@@ -42,6 +45,7 @@ editor::InspectorPanel::InspectorPanel() {
     registerInspector<dzemikk::HorizontalLayout, HorizontalLayoutInspector>("HorizontalLayout");
     registerInspector<dzemikk::VerticalLayout, VerticalLayoutInspector>("VerticalLayout");
     registerInspector<dzemikk::Camera, CameraInspector>("Camera");
+    registerInspector<dzemikk::Collider, ColliderInspector>("Collider");
 
     _factories = {
         {"Transform", [](auto* go) { return go->getComponent<dzemikk::Transform>() != nullptr; },
@@ -90,7 +94,21 @@ editor::InspectorPanel::InspectorPanel() {
          [](auto* go) { go->addComponent<dzemikk::VerticalLayout>(); }},
 
         {"Camera", [](auto* go) { return go->getComponent<dzemikk::Camera>() != nullptr; },
-         [](auto* go) { go->addComponent<dzemikk::Camera>(); }}
+         [](auto* go) { go->addComponent<dzemikk::Camera>(); }},
+
+        {"Collider", [](auto* go) { return go->getComponent<dzemikk::Collider>() != nullptr; },
+         [](auto* go) { 
+            auto collider = go->addComponent<dzemikk::Collider>();
+             if (go->getComponent<dzemikk::MeshRenderer>()) {
+                 auto r =  go->getComponent<dzemikk::MeshRenderer>();
+                 collider->setModel(r->getModel());
+             } else if (go->getComponent<dzemikk::SkinnedMeshRenderer>()) {
+                 auto r = go->getComponent<dzemikk::SkinnedMeshRenderer>();
+                 collider->setModel(r->getModel());
+             }
+
+             collider->setTransform(go->transform());
+        }}
     };
 
 }

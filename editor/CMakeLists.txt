@@ -21,6 +21,8 @@ set(EDITOR_SOURCES
     ${SRC_DIR}/inspectors/gridLayoutInspector.cpp
     ${SRC_DIR}/inspectors/horizontalLayoutInspector.cpp
     ${SRC_DIR}/inspectors/verticalLayoutInspector.cpp
+    ${SRC_DIR}/inspectors/cameraInspector.cpp
+    ${SRC_DIR}/inspectors/colliderInspector.cpp
     ${SRC_DIR}/ui/propertyDrawer.cpp
 )
 
@@ -41,6 +43,8 @@ set(EDITOR_HEADERS
     ${INC_DIR}/inspectors/gridLayoutInspector.h
     ${INC_DIR}/inspectors/horizontalLayoutInspector.h
     ${INC_DIR}/inspectors/verticalLayoutInspector.h
+    ${INC_DIR}/inspectors/cameraInspector.h
+    ${INC_DIR}/inspectors/colliderInspector.h
     ${INC_DIR}/ui/propertyDrawer.h
 )
 
