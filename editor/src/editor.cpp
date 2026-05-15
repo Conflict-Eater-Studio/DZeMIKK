@@ -146,12 +146,14 @@ void Editor::setupEditor() {
 
     _activeScene = scene.get();
 
-    auto* cameraGO = _activeScene->createGameObject("Editor Camera");
-    cameraGO->transform()->setPosition({0.0F, 3.0F, 8.0F});
-    auto* camera = cameraGO->addComponent<dzemikk::Camera>();
-    camera->lookAt({0.0F, 0.0F, 0.0F});
-    _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(camera);
-    
+    for (auto& obj : _activeScene->getObjects()) {
+        if (obj->getComponent<dzemikk::Camera>()) {
+            auto camera = obj->getComponent<dzemikk::Camera>();
+            _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(camera);
+
+            break;
+        }
+    }
     _editorInitialized = true;
 }
 
