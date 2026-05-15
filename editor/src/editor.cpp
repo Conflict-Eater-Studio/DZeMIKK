@@ -127,41 +127,30 @@ void Editor::setupEditor() {
 
     auto* sceneManager = _engine->getSceneManager();
 
-    auto editorScene = std::make_shared<dzemikk::Scene>();
+    auto scene = std::make_shared<dzemikk::Scene>();
 
-    sceneManager->loadScene(editorScene);
-    sceneManager->setActiveScene(editorScene);
+    std::ifstream file("./scene.json");
 
-    _activeScene = editorScene.get();
+    if (file.is_open()) {
+
+        nlohmann::json sceneJson;
+        file >> sceneJson;
+
+        dzemikk::SceneSerializer::deserializeInto(*scene, sceneJson, _engine->getAssetManager());
+
+        file.close();
+    }
+
+    sceneManager->loadScene(scene);
+    sceneManager->setActiveScene(scene);
+
+    _activeScene = scene.get();
 
     auto* cameraGO = _activeScene->createGameObject("Editor Camera");
     cameraGO->transform()->setPosition({0.0F, 3.0F, 8.0F});
     auto* camera = cameraGO->addComponent<dzemikk::Camera>();
     camera->lookAt({0.0F, 0.0F, 0.0F});
     _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(camera);
-
-
-    auto* cubeGO = _activeScene->createGameObject("Cube");
-    cubeGO->transform()->setPosition({0.0F, 0.0F, 0.0F});
-    auto* meshRenderer = cubeGO->addComponent<dzemikk::MeshRenderer>();
-    auto model = _engine->getAssetManager()->getPrimitiveModel(
-        dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Cube);
-    auto shader = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
-    auto material = std::make_shared<dzemikk::Material>();
-    material->setShader(shader);
-    meshRenderer->setModel(model);
-    meshRenderer->setMaterial(0, material);
-    meshRenderer->setTransform(cubeGO->transform());
-    auto* childGO = _activeScene->createGameObject("Cube Child");
-    cubeGO->addChild(childGO);
-    childGO->transform()->setPosition({2.0F, 0.0F, 0.0F});
-    childGO->transform()->setScale({0.5F, 0.5F, 0.5F});
-    
-    auto* lightGO = _activeScene->createGameObject("Directional Light");
-    auto* light = lightGO->addComponent<dzemikk::DirectionalLight>();
-    light->setDirection(glm::vec3(-0.5f, -1.0f, -0.3f));
-    light->setColor(glm::vec3(1.0f));
-    light->setIntensity(1.0f);
     
     _editorInitialized = true;
 }

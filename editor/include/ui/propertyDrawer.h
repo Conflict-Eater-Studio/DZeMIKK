@@ -11,6 +11,8 @@
 
 #include "ecs/components/meshRenderer.h"
 
+#include <imgui.h>
+
 namespace editor {
 class PropertyDrawer {
   public:
@@ -36,6 +38,25 @@ class PropertyDrawer {
 
     static bool drawMaterials(const std::string& label, dzemikk::MeshRenderer* renderer,
                               const InspectorContext& ctx);
+
+    template <typename Enum>
+    static bool drawEnum(const std::string& label, Enum& value, const char* const items[],
+                         int itemCount);
 };
 
+template <typename Enum>
+bool editor::PropertyDrawer::drawEnum(const std::string& label, Enum& value,
+                                      const char* const items[], int itemCount) {
+
+    int current = static_cast<int>(value);
+
+    if (ImGui::Combo(label.c_str(), &current, items, itemCount)) {
+
+        value = static_cast<Enum>(current);
+
+        return true;
+    }
+
+    return false;
+}
 } // namespace editor

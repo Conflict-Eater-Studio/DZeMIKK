@@ -14,6 +14,10 @@
 #include "ecs/serialize/transformSerializer.h"
 #include "ecs/serialize/ui/canvasSerializer.h"
 #include "ecs/serialize/ui/uiCheckboxSerializer.h"
+#include "ecs/serialize/ui/gridLayoutSerializer.h"
+#include "ecs/serialize/ui/horizontalLayoutSerializer.h"
+//#include "ecs/serialize/ui/uiDropdownSerializer.h"
+#include "ecs/serialize/ui/verticalLayoutSerializer.h"
 
 #include "ecs/serialize/directionalLightSerializer.h"
 #include "ecs/serialize/pointLightSerializer.h"
@@ -45,6 +49,10 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerPointLightSerializer(registry);
     registerSpotLightSerializer(registry);
     registerImageRendererSerializer(registry);
+    registerGridLayoutSerializer(registry);
+    registerHorizontalLayoutSerializer(registry);
+    //registerUIDropdownSerializer(registry);
+    registerVerticalLayoutSerializer(registry);
 
     return registry;
 }

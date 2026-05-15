@@ -2,8 +2,6 @@
 
 #include "renderer/material.h"
 
-#include <imgui.h>
-
 bool editor::PropertyDrawer::drawFloat(const std::string& label, float& value, float speed) {
 
     return ImGui::DragFloat(label.c_str(), &value, speed);
