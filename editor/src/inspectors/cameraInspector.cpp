@@ -12,70 +12,67 @@ void editor::CameraInspector::draw(dzemikk::Camera* camera, const InspectorConte
 
     if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen)) {
 
-        bool changed = false;
-
         auto type = camera->getProjectionType();
-        int currentType = static_cast<int>(type);
 
         const char* types[] = {"Perspective", "Orthographic"};
 
-        if (ImGui::Combo("Projection Type", &currentType, types, IM_ARRAYSIZE(types))) {
+        if (PropertyDrawer::drawEnum("Projection Type", type, types, IM_ARRAYSIZE(types))) {
 
-            type = static_cast<dzemikk::Camera::ProjectionType>(currentType);
-            changed = true;
+            camera->setProjectionType(type);
         }
 
         float nearPlane = camera->getNear();
-        float farPlane = camera->getFar();
 
         if (PropertyDrawer::drawFloat("Near", nearPlane)) {
-            changed = true;
+            camera->setNear(nearPlane);
         }
 
+        float farPlane = camera->getFar();
+
         if (PropertyDrawer::drawFloat("Far", farPlane)) {
-            changed = true;
+            camera->setFar(farPlane);
         }
 
         if (type == dzemikk::Camera::ProjectionType::Perspective) {
 
             float fov = camera->getFov();
-            float aspect = camera->getAspect();
 
             if (PropertyDrawer::drawFloat("FOV", fov)) {
-                changed = true;
+                camera->setFov(fov);
             }
 
+            float aspect = camera->getAspect();
+
             if (PropertyDrawer::drawFloat("Aspect", aspect)) {
-                changed = true;
+                camera->setAspect(aspect);
             }
         }
 
         if (type == dzemikk::Camera::ProjectionType::Orthographic) {
 
             float left = camera->getLeft();
-            float right = camera->getRightOrtographic();
-            float bottom = camera->getBottom();
-            float top = camera->getTop();
 
             if (PropertyDrawer::drawFloat("Left", left)) {
-                changed = true;
+                camera->setLeft(left);
             }
+
+            float right = camera->getRightOrtographic();
 
             if (PropertyDrawer::drawFloat("Right", right)) {
-                changed = true;
+                camera->setRight(right);
             }
+
+            float bottom = camera->getBottom();
 
             if (PropertyDrawer::drawFloat("Bottom", bottom)) {
-                changed = true;
+                camera->setBottom(bottom);
             }
+
+            float top = camera->getTop();
 
             if (PropertyDrawer::drawFloat("Top", top)) {
-                changed = true;
+                camera->setTop(top);
             }
-        }
-
-        if (changed) {
-            camera->markDirty();
         }
     }
 }

@@ -42,6 +42,19 @@ class Camera : public Component {
     float getBottom() const;
     float getRightOrtographic() const;
     float getTop() const;
+    void setProjectionType(ProjectionType type);
+
+    void setNear(float nearPlane);
+    void setFar(float farPlane);
+
+    void setFov(float fov);
+    void setAspect(float aspect);
+
+    void setLeft(float left);
+    void setRight(float right);
+
+    void setBottom(float bottom);
+    void setTop(float top);
 
 #pragma region Disable copy and move
 
