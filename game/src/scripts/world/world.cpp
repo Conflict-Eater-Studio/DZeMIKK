@@ -71,8 +71,10 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
 
     auto height = _perlin.noise(static_cast<float>(cell->getCoord().q()) * 0.1F,
                                 static_cast<float>(cell->getCoord().r()) * 0.1F) *
-                  2.0F;
-    cell->getCoord().setHeight(height);
+                  3.0F;
+    std::mt19937 rng(std::random_device{}());
+    std::uniform_real_distribution<float> dist(-0.2F, 0.2F);
+    cell->getCoord().setHeight(height + dist(rng));
     auto worldPos = cell->getCoord().toWorldPosition(1.0F, 0.1F);
     obj->transform()->setPosition(worldPos);
     obj->transform()->setScale({1.0F, 1.0F, 1.0F});

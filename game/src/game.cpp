@@ -21,6 +21,7 @@
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/skinnedMeshRenderer.h"
 #include "ecs/components/ui/canvas.h"
+#include "ecs/components/ui/gridLayout.h"
 #include "ecs/components/ui/imageRenderer.h"
 #include "ecs/components/ui/rectTransform.h"
 #include "ecs/components/ui/uiBuilder.h"
@@ -388,7 +389,7 @@ void Game::start() {
         dzemikk::UIBuilder::createButton(vertGO, btnParams);
     }
     vertLayout->rebuild();
-
+    //
     // Grid Layout (6 buttons)
     auto* gridGO = scene->createGameObject("GridGO", uiRootGO);
     gridGO->rectTransform()->setAnchorMin({0.0F, 0.0F});
@@ -396,11 +397,12 @@ void Game::start() {
     gridGO->rectTransform()->setOffsetMin({10.0F, 10.0F});
     gridGO->rectTransform()->setOffsetMax({10.0F, 10.0F});
     auto* gridLayout = gridGO->addComponent<dzemikk::GridLayout>();
+    gridLayout->setStartCorner(dzemikk::LayoutStartCorner::UpperLeft);
     gridLayout->setCellSize({0.0F, 0.0F}); // dynamic: calculate from container size
     gridLayout->setSpacing({10.0F, 10.0F});
     gridLayout->setColumns(3);
 
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 5; ++i) {
         auto btnParams = dzemikk::UIBuilder::UIButtonParams{.name = "GridBtn" + std::to_string(i),
                                                             .size = {0.0F, 0.0F},
                                                             .text = "G" + std::to_string(i + 1),
