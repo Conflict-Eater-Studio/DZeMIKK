@@ -5,6 +5,44 @@
 #include <cstring>
 #include <imgui.h>
 
+static std::string normalizeAssetPath(std::string path) {
+    constexpr std::string_view prefix = "Assets/";
+    if (path.starts_with(prefix)) {
+        path = path.substr(prefix.size());
+    }
+
+    auto removeSuffix = [&](std::string_view suffix) {
+        if (path.size() >= suffix.size() &&
+            path.compare(path.size() - suffix.size(), suffix.size(), suffix) == 0) {
+            path.erase(path.size() - suffix.size());
+        }
+    };
+
+    removeSuffix(".vert");
+    removeSuffix(".frag");
+
+    return path;
+}
+
+static const char* getAssetDragType(const std::string& path) {
+    if (path.ends_with(".ttf") || path.ends_with(".otf"))
+        return "ASSET_FONT";
+
+    if (path.ends_with(".png") || path.ends_with(".jpg") || path.ends_with(".jpng"))
+        return "ASSET_TEXTURE";
+
+    if (path.ends_with(".obj") || path.ends_with(".fbx"))
+        return "ASSET_MODEL";
+
+    if (path.ends_with(".vert") || path.ends_with(".frag") || path.ends_with(".glsl"))
+        return "ASSET_SHADER";
+
+    if (path.ends_with(".wav"))
+        return "ASSET_AUDIO";
+
+    return "ASSET_PATH";
+}
+
 void editor::AssetManagerPanel::draw(dzemikk::AssetManager* assetManager) {
     ImGui::Begin("Asset Manager");
 
@@ -73,7 +111,27 @@ void editor::AssetManagerPanel::draw(dzemikk::AssetManager* assetManager) {
 
             ImGui::BeginGroup();
 
-            if (ImGui::Button("[FILE]", ImVec2(iconSize, iconSize))) {
+            ImGui::Button("[FILE]", ImVec2(iconSize, iconSize));
+
+            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+
+                std::string fullPath;
+
+                if (_selectedPath.empty()) {
+                    fullPath = file;
+                } else {
+                    fullPath = _selectedPath + "/" + file;
+                }
+
+                const char* type = getAssetDragType(fullPath);
+                
+                fullPath = normalizeAssetPath(fullPath);
+
+                ImGui::SetDragDropPayload(type, fullPath.c_str(), fullPath.size() + 1);
+
+                ImGui::TextUnformatted(fullPath.c_str());
+
+                ImGui::EndDragDropSource();
             }
 
             float textWidth = ImGui::CalcTextSize(file.c_str()).x;
