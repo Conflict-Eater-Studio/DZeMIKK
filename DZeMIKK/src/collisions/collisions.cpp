@@ -7,6 +7,14 @@
 #include "renderer/model.h"
 #include "renderer/mesh.h"
 #include "scene/octree.h"
+#include "core/engine.h"
+#include "core/window.h"
+#include "input/input.h"
+#include "renderer/renderer.h"
+#include "ecs/scene.h"
+#include "ecs/scenemanager.h"
+#include "ecs/components/ui/iUIInteractable.h"
+#include <GLFW/glfw3.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <limits>
@@ -19,6 +27,38 @@ void Collisions::initialize() {
 
 void Collisions::uninitialize() {
     // Intentionally empty for now
+}
+
+void Collisions::update(Engine* engine, float deltaTime) {
+    (void)deltaTime;
+    _hoveredCollider = nullptr;
+
+    if (!engine) return;
+
+    bool isMouseOverUI = false;
+    std::vector<IUIInteractable*> uiElements;
+    ComponentRegistry::get().getComponents<IUIInteractable>(uiElements);
+    for (auto* element : uiElements) {
+        if (element->isHovered()) {
+            isMouseOverUI = true;
+            break;
+        }
+    }
+
+    if (!isMouseOverUI && engine->getRenderer()->getActiveSceneCamera()) {
+        glm::vec2 mousePos = engine->getInput()->GetMousePosition();
+        int width, height;
+        glfwGetWindowSize(engine->getWindow()->nativeHandle(), &width, &height);
+
+        auto activeScene = engine->getSceneManager()->getActiveScene();
+        _hoveredCollider = raycast(
+            engine->getRenderer()->getActiveSceneCamera(),
+            activeScene ? activeScene->getOctree() : nullptr,
+            mousePos,
+            static_cast<float>(width),
+            static_cast<float>(height)
+        );
+    }
 }
 
 Collider* Collisions::raycast(const Camera* camera, const Octree* octree, const glm::vec2& screenPos, float screenWidth, float screenHeight) {
@@ -99,18 +139,14 @@ Collider* Collisions::raycast(const Camera* camera, const Octree* octree, const 
         bool hit = false;
         float closestHitModel = std::numeric_limits<float>::max();
 
-        for (const auto& subMesh : model->getSubMeshes()) {
-            if (!subMesh.mesh) continue;
-
-            glm::vec3 minBox = subMesh.mesh->getBoundsMin();
-            glm::vec3 maxBox = subMesh.mesh->getBoundsMax();
-            
-            float t = 0.0f;
-            if (intersectRayAABB(localRayOrigin, localRayDir, minBox, maxBox, t)) {
-                if (t >= 0.0f && t < closestHitModel) {
-                    closestHitModel = t;
-                    hit = true;
-                }
+        glm::vec3 minBox = c->getBoundsMin();
+        glm::vec3 maxBox = c->getBoundsMax();
+        
+        float t = 0.0f;
+        if (intersectRayAABB(localRayOrigin, localRayDir, minBox, maxBox, t)) {
+            if (t >= 0.0f && t < closestHitModel) {
+                closestHitModel = t;
+                hit = true;
             }
         }
 

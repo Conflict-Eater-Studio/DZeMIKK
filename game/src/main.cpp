@@ -483,32 +483,7 @@ int main() {
 
         static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
 
-        bool isMouseOverUI = false;
-        std::vector<dzemikk::IUIInteractable*> uiElements;
-        dzemikk::ComponentRegistry::get().getComponents<dzemikk::IUIInteractable>(uiElements);
-        for (auto* element : uiElements) {
-            if (element->isHovered()) {
-                isMouseOverUI = true;
-                break;
-            }
-        }
-
-        dzemikk::Collider* targetCollider = nullptr;
-
-        if (!isMouseOverUI) {
-            glm::vec2 mousePos = engine->getInput()->GetMousePosition();
-            
-            int width, height;
-            glfwGetWindowSize(engine->getWindow()->nativeHandle(), &width, &height);
-            
-            targetCollider = engine->getCollisions()->raycast(
-                engine->getRenderer()->getActiveSceneCamera(), 
-                engine->getSceneManager()->getActiveScene() ? engine->getSceneManager()->getActiveScene()->getOctree() : nullptr,
-                mousePos, 
-                static_cast<float>(width), 
-                static_cast<float>(height)
-            );
-        }
+        dzemikk::Collider* targetCollider = engine->getCollisions()->getHoveredCollider();
 
         dzemikk::MeshRenderer* targetRenderer = nullptr;
         if (targetCollider) {

@@ -153,6 +153,8 @@ void Engine::start() {
         updateCameraArrows(1.1f);
         updateMouseUI(deltaTime);
 
+        _collisions->update(this, deltaTime);
+
         if (m_UserUpdateCallback) {
             m_UserUpdateCallback();
         }

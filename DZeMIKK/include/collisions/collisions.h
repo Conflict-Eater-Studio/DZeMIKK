@@ -11,6 +11,8 @@ namespace dzemikk {
     class Collider;
     class Octree;
 
+    class Engine;
+
     class Collisions : public IEngineModule {
     public:
         Collisions() = default;
@@ -18,6 +20,7 @@ namespace dzemikk {
 
         void initialize() override;
         void uninitialize() override;
+        void update(Engine* engine, float deltaTime);
 
         /**
          * @brief Raycasts against all active Colliders in the scene and returns the closest hit.
@@ -30,8 +33,12 @@ namespace dzemikk {
          */
         Collider* raycast(const Camera* camera, const Octree* octree, const glm::vec2& screenPos, float screenWidth, float screenHeight);
 
+        Collider* getHoveredCollider() const { return _hoveredCollider; }
+
     private:
         bool intersectRayAABB(const glm::vec3& rayOrigin, const glm::vec3& rayDir, const glm::vec3& minBox, const glm::vec3& maxBox, float& tOut) const;
+
+        Collider* _hoveredCollider = nullptr;
     };
 
 } // namespace dzemikk
