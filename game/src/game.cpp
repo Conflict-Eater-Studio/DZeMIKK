@@ -705,7 +705,6 @@ void Game::setupInputCallbacks() {
             if (currentRenderer && currentRenderer->isValid()) {
 
                 glm::vec4 color = currentRenderer->getColor();
-
                 color.r -= hoverStrength;
                 color.g -= hoverStrength;
                 color.b -= hoverStrength;

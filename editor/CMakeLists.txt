@@ -25,6 +25,7 @@ set(EDITOR_SOURCES
     ${SRC_DIR}/inspectors/colliderInspector.cpp
     ${SRC_DIR}/inspectors/spriteRendererInspector.cpp
     ${SRC_DIR}/inspectors/uITextRendererInspector.cpp
+    ${SRC_DIR}/inspectors/textRendererInspector.cpp
     ${SRC_DIR}/ui/propertyDrawer.cpp
 )
 
@@ -49,6 +50,7 @@ set(EDITOR_HEADERS
     ${INC_DIR}/inspectors/colliderInspector.h
     ${INC_DIR}/inspectors/spriteRendererInspector.h
     ${INC_DIR}/inspectors/uITextRendererInspector.h
+    ${INC_DIR}/inspectors/textRendererInspector.h
     ${INC_DIR}/ui/propertyDrawer.h
 )
 

@@ -692,6 +692,46 @@
             "enabled": true,
             "id": "1152e010-064c-443f-9e1a-7163e23022bd",
             "name": "Sprite"
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "74087366-bde4-4c74-a333-ecbc0d250781",
+                    "position": [
+                        500.0,
+                        500.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "color": [
+                        1.0,
+                        0.0,
+                        0.6764707565307617
+                    ],
+                    "font": "fonts/Arima-VariableFont_wght.ttf",
+                    "id": "a41cc5a5-0b49-4acc-95a1-c55cfbbe52a4",
+                    "scale": 1.0,
+                    "text": "Hello",
+                    "type": "TextRenderer"
+                }
+            ],
+            "enabled": true,
+            "id": "0be16ac6-8505-41d9-9279-deb6b175d5f5",
+            "name": "Empty"
         }
     ]
 }
