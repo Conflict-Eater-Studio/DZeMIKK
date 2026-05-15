@@ -16,12 +16,14 @@
 #include "inspectors/verticalLayoutInspector.h"
 #include "inspectors/cameraInspector.h"
 #include "inspectors/colliderInspector.h"
+#include "inspectors/spriteRendererInspector.h"
 
 #include <imgui.h>
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/skinnedMeshRenderer.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/collider.h"
+#include "ecs/components/spriteRenderer.h"
 #include "ecs/components/light/directionalLight.h"
 #include "ecs/components/light/pointLight.h"
 #include "ecs/components/light/spotLight.h"
@@ -46,6 +48,7 @@ editor::InspectorPanel::InspectorPanel() {
     registerInspector<dzemikk::VerticalLayout, VerticalLayoutInspector>("VerticalLayout");
     registerInspector<dzemikk::Camera, CameraInspector>("Camera");
     registerInspector<dzemikk::Collider, ColliderInspector>("Collider");
+    registerInspector<dzemikk::SpriteRenderer, SpriteRendererInspector>("SpriteRenderer");
 
     _factories = {
         {"Transform", [](auto* go) { return go->getComponent<dzemikk::Transform>() != nullptr; },
@@ -108,7 +111,14 @@ editor::InspectorPanel::InspectorPanel() {
              }
 
              collider->setTransform(go->transform());
-        }}
+        }},
+
+        {"SpriteRenderer",
+         [](auto* go) { return go->getComponent<dzemikk::SpriteRenderer>() != nullptr; },
+         [](auto* go) { 
+            auto r = go->addComponent<dzemikk::SpriteRenderer>(); 
+            r->setTransform(go->getComponent<dzemikk::Transform>());
+        }},
     };
 
 }
@@ -214,6 +224,16 @@ void editor::InspectorPanel::drawComponents(dzemikk::GameObject* obj,
                 dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
 
             imageRenderer->setMesh(quad);
+        }
+
+        auto* spriteRenderer = dynamic_cast<dzemikk::SpriteRenderer*>(component.get());
+
+        if (spriteRenderer && !spriteRenderer->getMesh()) {
+
+            auto quad = ctx.assetManager->getPrimitive(
+                dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
+
+            spriteRenderer->setMesh(quad);
         }
 
         _registry.drawInspector(component.get(), ctx);

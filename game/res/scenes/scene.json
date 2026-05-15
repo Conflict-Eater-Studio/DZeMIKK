@@ -600,6 +600,46 @@
             "enabled": true,
             "id": "f596f462-d3bf-40aa-bb65-9db746fb5a56",
             "name": "Editor Camera"
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "71ee4754-c116-4c81-bfe7-562a9ee799cd",
+                    "position": [
+                        600.0,
+                        600.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        200.0,
+                        200.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        0.364705890417099
+                    ],
+                    "id": "1a3582ae-67f3-416d-a41f-53a9238ab571",
+                    "shader": "shaders/quad",
+                    "texture": "textures/tex3.png",
+                    "type": "SpriteRenderer"
+                }
+            ],
+            "enabled": true,
+            "id": "1152e010-064c-443f-9e1a-7163e23022bd",
+            "name": "Sprite"
         }
     ]
 }

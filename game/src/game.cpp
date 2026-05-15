@@ -701,6 +701,7 @@ void Game::setupInputCallbacks() {
                 lastHitRenderer->setColor(color);
             }
 
+
             if (currentRenderer && currentRenderer->isValid()) {
 
                 glm::vec4 color = currentRenderer->getColor();

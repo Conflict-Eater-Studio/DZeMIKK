@@ -43,7 +43,8 @@ void dzemikk::ImageRenderPass::execute(RenderContext& ctx) {
 
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, r->getTexture());
-            shader->setInt("spriteTexture", 0);
+            //shader->setInt("spriteTexture", 0);
+            shader->setBool("useTexture", false);
             shader->setVec4("spriteColor", r->getColor());
 
             r->getMesh()->draw();

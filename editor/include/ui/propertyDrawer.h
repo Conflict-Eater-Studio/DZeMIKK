@@ -6,6 +6,7 @@
 #include "assetManager/assetHandle.h"
 #include "renderer/model.h"
 #include "renderer/shader.h"
+#include "renderer/texture.h"
 
 #include "inspectors/inspectorRegistry.h"
 
@@ -42,6 +43,10 @@ class PropertyDrawer {
     template <typename Enum>
     static bool drawEnum(const std::string& label, Enum& value, const char* const items[],
                          int itemCount);
+
+    static bool drawTexture(const std::string& label,
+                            dzemikk::AssetHandle<dzemikk::Texture>& handle,
+                            const InspectorContext& ctx);
 };
 
 template <typename Enum>

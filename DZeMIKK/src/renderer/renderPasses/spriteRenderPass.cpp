@@ -20,6 +20,11 @@ void dzemikk::SpriteRenderPass::execute(RenderContext& ctx) {
                 continue;
 
             Shader* shader = r->getMaterial()->getShader();
+
+            if (!shader) {
+                continue;
+            }
+
             shader->bind();
 
             shader->setMat4("model", r->getTransform()->getWorldMatrix());
