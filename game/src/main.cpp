@@ -133,8 +133,6 @@ int main() {
 
     createHexIsland(*mainScenePtr, tileMesh.get(), materialA, materialB, 100000, 1.0f, 0.15f, 0.5f);
 
-    mainScenePtr->rebuildOctree();
-
     // --- Player
     auto playerGO = mainScenePtr->createGameObject();
     playerGO->transform()->setPosition(glm::vec3(0.0f, 2.5f, 0.0f));
@@ -144,6 +142,16 @@ int main() {
     playerMeshR->getModel()->addMesh(std::shared_ptr<dzemikk::Mesh>(playerMesh), 0);
     playerMeshR->setTransform(playerGO->transform());
     playerMeshR->setMaterial(0, materialA);
+    auto playerCol = playerGO->addComponent<dzemikk::Collider>();
+    playerCol->setModel(playerMeshR->getModel());
+    playerCol->setTransform(playerGO->transform());
+    playerCol->onClick = [playerGO]() {
+        spdlog::info("Kliknąłeś gracza");
+        glm::vec3 scale = playerGO->transform()->getScale();
+        playerGO->transform()->setScale(scale * 0.8f);
+    };
+    playerCol->onMouseEnter = [playerMeshR]() { playerMeshR->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)); };
+    playerCol->onMouseExit = [playerMeshR]() { playerMeshR->setColor(glm::vec4(1.0f)); };
 
     auto chestGO = mainScenePtr->createGameObject();
     chestGO->transform()->setPosition(glm::vec3(-4.0f, 2.5f, 0.0f));
@@ -153,6 +161,16 @@ int main() {
     chestMeshR->setModel(chestMesh.get());
     chestMeshR->setTransform(chestGO->transform());
     chestMeshR->setMaterial(0, materialA);
+    auto chestCol = chestGO->addComponent<dzemikk::Collider>();
+    chestCol->setModel(chestMesh.get());
+    chestCol->setTransform(chestGO->transform());
+    chestCol->onClick = [chestGO]() {
+        spdlog::info("Otwieram skrzynię");
+        glm::vec3 scale = chestGO->transform()->getScale();
+        chestGO->transform()->setScale(scale * 1.5f); 
+    };
+    chestCol->onMouseEnter = [chestMeshR]() { chestMeshR->setColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)); };
+    chestCol->onMouseExit = [chestMeshR]() { chestMeshR->setColor(glm::vec4(1.0f)); };
 
     auto enemyGO = mainScenePtr->createGameObject();
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 0.0f));
@@ -163,6 +181,16 @@ int main() {
     enemyMeshR->setTransform(enemyGO->transform());
     enemyMeshR->setMaterial(0, materialA);
     enemyMeshR->setMaterial(1, materialB);
+    auto enemyCol = enemyGO->addComponent<dzemikk::Collider>();
+    enemyCol->setModel(enemyMesh.get());
+    enemyCol->setTransform(enemyGO->transform());
+    enemyCol->onClick = [enemyGO]() {
+        spdlog::info("Atakujesz wroga");
+        glm::vec3 scale = enemyGO->transform()->getScale();
+        enemyGO->transform()->setScale(scale * 0.8f);
+    };
+    enemyCol->onMouseEnter = [enemyMeshR]() { enemyMeshR->setColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)); }; 
+    enemyCol->onMouseExit = [enemyMeshR]() { enemyMeshR->setColor(glm::vec4(1.0f)); };
 
     // UI Camera
     auto cameraUIGO = mainScenePtr->createGameObject();
@@ -441,6 +469,8 @@ int main() {
 
     animator->setStateMachine(animationStateMachine);
 
+    mainScenePtr->rebuildOctree();
+
 
         engine->getInput()->OnMouseMoved.addListener([&](dzemikk::MouseMovedEvent& event) {
         static glm::vec2 lastMousePos = engine->getInput()->GetMousePosition();
@@ -474,12 +504,8 @@ int main() {
     });
 
     engine->getCollisions()->OnColliderClicked.addListener([](dzemikk::Collider* hitCollider) {
-        if (auto* owner = hitCollider->getOwner()) {
-            dzemikk::Transform* transform = owner->transform();
-            glm::vec3 pos = transform->getPosition();
-            pos.y += 1.0f; 
-            transform->setPosition(pos);
-            spdlog::info("Podniesiono obiekt: {}", owner->getName());
+        if (hitCollider->onClick) {
+            hitCollider->onClick();
         }
     });
 
@@ -602,6 +628,15 @@ void createHexIsland(dzemikk::Scene& scene, dzemikk::Model* mesh, dzemikk::Mater
         auto collider = tile->addComponent<dzemikk::Collider>();
         collider->setModel(mesh);
         collider->setTransform(tile->transform());
+        
+        collider->onClick = [tile]() {
+            glm::vec3 pos = tile->transform()->getPosition();
+            pos.y += 0.5f; 
+            tile->transform()->setPosition(pos);
+        };
+
+        collider->onMouseEnter = [renderer]() { renderer->setColor(glm::vec4(0.8f, 0.8f, 1.0f, 1.0f)); };
+        collider->onMouseExit = [renderer]() { renderer->setColor(glm::vec4(1.0f)); };
     }
 
 }

@@ -41,6 +41,10 @@ public:
     [[nodiscard]] const glm::vec3& getBoundsMin() const { return _boundsMin; }
     [[nodiscard]] const glm::vec3& getBoundsMax() const { return _boundsMax; }
 
+    std::function<void()> onClick = nullptr;
+    std::function<void()> onMouseEnter = nullptr;
+    std::function<void()> onMouseExit = nullptr;
+
     [[nodiscard]] std::string typeName() const override {
         return "Collider";
     }

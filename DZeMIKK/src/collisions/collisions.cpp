@@ -31,6 +31,8 @@ void Collisions::uninitialize() {
 
 void Collisions::update(Engine* engine, float deltaTime) {
     (void)deltaTime;
+    
+    Collider* previousHovered = _hoveredCollider;
     _hoveredCollider = nullptr;
 
     if (!engine) return;
@@ -58,6 +60,15 @@ void Collisions::update(Engine* engine, float deltaTime) {
             static_cast<float>(width),
             static_cast<float>(height)
         );
+    }
+
+    if (previousHovered != _hoveredCollider) {
+        if (previousHovered && previousHovered->onMouseExit) {
+            previousHovered->onMouseExit();
+        }
+        if (_hoveredCollider && _hoveredCollider->onMouseEnter) {
+            _hoveredCollider->onMouseEnter();
+        }
     }
 
     bool isLeftDown = engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT);
