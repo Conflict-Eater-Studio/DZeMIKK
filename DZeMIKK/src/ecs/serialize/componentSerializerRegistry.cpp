@@ -2,6 +2,7 @@
 
 #include "ecs/serialize/ui/uiButtonSerializer.h"
 #include "ecs/serialize/ui/uiSliderSerializer.h"
+#include "ecs/serialize/ui/imageRendererSerializer.h"
 #include "ecs/serialize/animation/animatorSerializer.h"
 #include "ecs/serialize/cameraSerializer.h"
 #include "ecs/serialize/colliderSerializer.h"
@@ -43,6 +44,7 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerDirectionalLightSerializer(registry);
     registerPointLightSerializer(registry);
     registerSpotLightSerializer(registry);
+    registerImageRendererSerializer(registry);
 
     return registry;
 }

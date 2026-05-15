@@ -31,6 +31,11 @@ void dzemikk::ImageRenderPass::execute(RenderContext& ctx) {
             }
 
             Shader* shader = r->getMaterial()->getShader();
+
+            if (!shader) {
+                continue;
+            }
+
             shader->bind();
 
             shader->setMat4("model", r->getRectTransform()->getWorldMatrix());

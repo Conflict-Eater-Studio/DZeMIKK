@@ -9,6 +9,8 @@
 #include "inspectors/pointLightInspector.h"
 #include "inspectors/spotLightInspector.h"
 #include "inspectors/canvasInspector.h"
+#include "inspectors/rectTransformInspector.h"
+#include "inspectors/imageRendererInspector.h"
 
 #include <imgui.h>
 #include "ecs/components/meshRenderer.h"
@@ -16,6 +18,7 @@
 #include "ecs/components/light/pointLight.h"
 #include "ecs/components/light/spotLight.h"
 #include "ecs/components/ui/canvas.h"
+#include "ecs/components/ui/imageRenderer.h"
 
 editor::InspectorPanel::InspectorPanel() {
 
@@ -25,6 +28,8 @@ editor::InspectorPanel::InspectorPanel() {
     registerInspector<dzemikk::PointLight, PointLightInspector>("PointLight");
     registerInspector<dzemikk::SpotLight, SpotLightInspector>("SpotLight");
     registerInspector<dzemikk::Canvas, CanvasInspector>("Canvas");
+    registerInspector<dzemikk::RectTransform, RectTransformInspector>("RectTransform");
+    registerInspector<dzemikk::ImageRenderer, ImageRendererInspector>("ImageRenderer");
 
     _factories = {
         {"Transform", [](auto* go) { return go->getComponent<dzemikk::Transform>() != nullptr; },
@@ -48,7 +53,18 @@ editor::InspectorPanel::InspectorPanel() {
          [](auto* go) { go->addComponent<dzemikk::SpotLight>(); }},
 
         {"Canvas", [](auto* go) { return go->getComponent<dzemikk::Canvas>() != nullptr; },
-         [](auto* go) { go->addComponent<dzemikk::Canvas>(); }}
+         [](auto* go) { go->addComponent<dzemikk::Canvas>(); }},
+
+        {"RectTransform",
+         [](auto* go) { return go->getComponent<dzemikk::RectTransform>() != nullptr; },
+         [](auto* go) { go->addComponent<dzemikk::RectTransform>(); }},
+
+        {"ImageRenderer",
+         [](auto* go) { return go->getComponent<dzemikk::ImageRenderer>() != nullptr; },
+         [](auto* go) { 
+            auto i = go->addComponent<dzemikk::ImageRenderer>(); 
+            i->setRectTransform(go->getComponent<dzemikk::RectTransform>());
+        }}
     };
 
 }
@@ -145,6 +161,17 @@ void editor::InspectorPanel::drawComponents(dzemikk::GameObject* obj,
         }
 
         ImGui::Indent();
+
+        auto* imageRenderer = dynamic_cast<dzemikk::ImageRenderer*>(component.get());
+
+        if (imageRenderer && !imageRenderer->getMesh()) {
+
+            auto quad = ctx.assetManager->getPrimitiveMesh(
+                dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
+
+            imageRenderer->setMesh(quad);
+        }
+
         _registry.drawInspector(component.get(), ctx);
         ImGui::Unindent();
 

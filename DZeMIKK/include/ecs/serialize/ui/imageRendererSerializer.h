@@ -24,8 +24,8 @@ inline void from_json(const nlohmann::json& json, ImageRenderer& renderer, Asset
     if (!json.contains("type") || !json["type"].is_string() || json["type"] != renderer.typeName()) {
         throw std::runtime_error("Invalid component type for ImageRenderer deserialization");
     }
-    if (!json.contains("id") || !json.contains("color") || !json["color"].is_array() || !json.contains("meshPath")  || !json.contains("materialPath")) {
-        throw std::runtime_error("Missing fields for UICheckbox deserialization");
+    if (!json.contains("id") || !json.contains("color") || !json["color"].is_array() || !json.contains("materialPath")) {
+        throw std::runtime_error("Missing fields for ImageRenderer deserialization");
         }
     renderer.setId(boost::uuids::string_generator()(json["id"].get<std::string>()));
     renderer.setColor(glm::vec4(json["color"][0], json["color"][1], json["color"][2], json["color"][3]));
@@ -33,7 +33,7 @@ inline void from_json(const nlohmann::json& json, ImageRenderer& renderer, Asset
     renderer.setMesh(assetManager->getPrimitiveMesh(PrimitiveMeshLibrary::PrimitiveMesh::Quad));
 
     std::string shaderPath = json.value("materialPath", "");
-    std::shared_ptr<dzemikk::Material> material = nullptr;
+    auto material = std::make_shared<dzemikk::Material>();
     material->setShader(assetManager->get<Shader>(shaderPath));
     renderer.setMaterial(material);
 }

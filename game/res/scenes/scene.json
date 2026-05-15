@@ -1,11 +1,11 @@
 {
-    "id": "d0815ff1-dc11-4027-81b6-a0c0690810c0",
+    "id": "3edc8466-b874-48ea-aeea-91720ad219ff",
     "roots": [
         {
             "children": [],
             "components": [
                 {
-                    "id": "4742cbf7-42c8-4b8a-a8a7-c02e704f6af6",
+                    "id": "3d91bfce-6cf8-4d04-96cc-750841ed61f8",
                     "position": [
                         0.0,
                         3.0,
@@ -39,7 +39,7 @@
                 }
             ],
             "enabled": true,
-            "id": "7144148b-1c11-43a6-bf4b-de6c9cb15028",
+            "id": "2519f5ea-d65a-42bf-a177-d4eb27b0784a",
             "name": "Editor Camera"
         },
         {
@@ -48,7 +48,7 @@
                     "children": [],
                     "components": [
                         {
-                            "id": "831b6e1a-f3b2-4fa2-948a-54e087e70f41",
+                            "id": "c1ed3d07-ca0f-463e-a052-1982ff96476a",
                             "position": [
                                 2.0,
                                 0.0,
@@ -69,13 +69,13 @@
                         }
                     ],
                     "enabled": true,
-                    "id": "fa15f08c-83ff-49b4-aa90-f52575c4d2d3",
+                    "id": "14e821dc-91bb-4dce-8313-1d3a05cddcc8",
                     "name": "Cube Child"
                 }
             ],
             "components": [
                 {
-                    "id": "9cf23509-2f7d-418b-a196-a3468efcfcd5",
+                    "id": "1389410f-3939-49be-93ad-99b8177dcc9d",
                     "position": [
                         0.0,
                         0.0,
@@ -101,7 +101,7 @@
                         1.0,
                         1.0
                     ],
-                    "id": "e678398a-bb72-4af0-8d66-ead845c13f2f",
+                    "id": "6b02a703-fb1a-42a3-9453-c8435b1356f6",
                     "materials": [
                         "shaders/tile1"
                     ],
@@ -110,14 +110,14 @@
                 }
             ],
             "enabled": true,
-            "id": "9161f790-48fa-4b24-bec1-35988e3c16b8",
+            "id": "c93f95cc-23b7-4e55-ab0b-e4b3541a00b0",
             "name": "Cube"
         },
         {
             "children": [],
             "components": [
                 {
-                    "id": "7c22d9d0-d96f-4ac8-b833-1b5296acfc81",
+                    "id": "3dca3278-e158-4986-9640-de5d074dc658",
                     "position": [
                         0.0,
                         0.0,
@@ -153,7 +153,7 @@
                 }
             ],
             "enabled": true,
-            "id": "20610158-e9d5-4aeb-883f-540db40d2971",
+            "id": "459c43e6-260b-491a-a2c4-b3f4cae05c4c",
             "name": "Directional Light"
         },
         {
@@ -170,14 +170,14 @@
                                 0.5,
                                 0.5
                             ],
-                            "id": "90f22bfa-4f60-4c88-8ef2-b73acf45453e",
+                            "id": "dd409491-bc93-4222-b1ca-0b9527b4aa72",
                             "pivot": [
                                 0.5,
                                 0.5
                             ],
                             "position": [
                                 0.0,
-                                0.0
+                                200.0
                             ],
                             "rotation": 0.0,
                             "scale": [
@@ -185,16 +185,27 @@
                                 1.0
                             ],
                             "size": [
-                                0.0,
-                                0.0
+                                199.0,
+                                199.0
                             ],
                             "type": "RectTransform",
                             "zIndex": 0
+                        },
+                        {
+                            "color": [
+                                0.6421568393707275,
+                                0.02518261969089508,
+                                0.02518261969089508,
+                                1.0
+                            ],
+                            "id": "b8e105dd-8e29-4014-be9e-1444e95cf6b6",
+                            "materialPath": "shaders/quad",
+                            "type": "ImageRenderer"
                         }
                     ],
                     "enabled": true,
-                    "id": "efacb382-a9dc-498d-876b-5b3d1b2058d4",
-                    "name": "Empty"
+                    "id": "17a9f122-8e11-4110-a1cf-e1f9413366de",
+                    "name": "Image"
                 }
             ],
             "components": [
@@ -207,7 +218,7 @@
                         0.5,
                         0.5
                     ],
-                    "id": "e0974b82-5129-4fa9-9e02-1e71b7da386c",
+                    "id": "94999198-a87e-4637-9c9d-853237856237",
                     "pivot": [
                         0.5,
                         0.5
@@ -222,19 +233,19 @@
                         1.0
                     ],
                     "size": [
-                        0.0,
-                        0.0
+                        1920.0,
+                        1080.0
                     ],
                     "type": "RectTransform",
                     "zIndex": 0
                 },
                 {
-                    "id": "4b34c768-2ce2-447d-9100-fbef64fb5fa1",
+                    "id": "d9e07775-0211-4b35-8b52-8c367e44029f",
                     "type": "Canvas"
                 }
             ],
             "enabled": true,
-            "id": "84ca9b79-e4fc-456d-bf65-9a63f7b7e334",
+            "id": "8c5a8aa6-d181-43a5-948a-bc8987d66ada",
             "name": "Empty"
         }
     ]

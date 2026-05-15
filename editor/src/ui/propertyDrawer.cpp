@@ -14,6 +14,22 @@ bool editor::PropertyDrawer::drawFloat(const std::string& label, float& value, f
     return ImGui::SliderFloat(label.c_str(), &value, min, max);
 }
 
+bool editor::PropertyDrawer::drawInt(const std::string& label, int& value, int speed) {
+
+    return ImGui::DragInt(label.c_str(), &value, speed);
+}
+
+bool editor::PropertyDrawer::drawInt(const std::string& label, int& value, int min, int max) {
+
+    return ImGui::SliderInt(label.c_str(), &value, min, max);
+}
+
+bool editor::PropertyDrawer::drawVec2(const std::string& label, glm::vec2& value,
+                                      float resetValue) {
+
+    return ImGui::DragFloat2(label.c_str(), &value.x, 0.1F);
+}
+
 bool editor::PropertyDrawer::drawVec3(const std::string& label, glm::vec3& value,
                                       float resetValue) {
 
