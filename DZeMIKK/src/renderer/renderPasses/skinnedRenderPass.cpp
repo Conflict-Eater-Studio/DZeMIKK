@@ -43,9 +43,17 @@ void dzemikk::SkinnedRenderPass::execute(RenderContext& ctx) {
 
                 Material* mat = r->getMaterial(i);
                 if (!mat)
+                    mat = r->getMaterial(0);
+
+                if (!mat)
                     continue;
 
                 Shader* shader = mat->getShader();
+
+                if (!shader) {
+                    continue;
+                }
+
                 shader->bind();
 
                 shader->setMat4("model", transform->getWorldMatrix());
