@@ -2,6 +2,7 @@
 #define DZEMIKK_COLLISIONS_H
 
 #include "core/iEngineModule.h"
+#include "input/input.h"
 #include <glm/glm.hpp>
 #include <vector>
 
@@ -35,10 +36,13 @@ namespace dzemikk {
 
         Collider* getHoveredCollider() const { return _hoveredCollider; }
 
+        Action<Collider*> OnColliderClicked;
+
     private:
         bool intersectRayAABB(const glm::vec3& rayOrigin, const glm::vec3& rayDir, const glm::vec3& minBox, const glm::vec3& maxBox, float& tOut) const;
 
         Collider* _hoveredCollider = nullptr;
+        bool _wasLeftMouseDown = false;
     };
 
 } // namespace dzemikk

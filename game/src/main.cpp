@@ -473,6 +473,16 @@ int main() {
         if (event.GetKeyCode() == GLFW_KEY_M) moveDirection.x -= 1.0f;
     });
 
+    engine->getCollisions()->OnColliderClicked.addListener([](dzemikk::Collider* hitCollider) {
+        if (auto* owner = hitCollider->getOwner()) {
+            dzemikk::Transform* transform = owner->transform();
+            glm::vec3 pos = transform->getPosition();
+            pos.y += 1.0f; 
+            transform->setPosition(pos);
+            spdlog::info("Podniesiono obiekt: {}", owner->getName());
+        }
+    });
+
     engine->SetUserUpdateCallback([&engine, playerGO]() {
         if (glm::length(moveDirection) > 0.01f) {
             glm::vec3 pos = playerGO->transform()->getPosition();

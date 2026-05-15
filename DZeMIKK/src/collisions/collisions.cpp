@@ -59,6 +59,15 @@ void Collisions::update(Engine* engine, float deltaTime) {
             static_cast<float>(height)
         );
     }
+
+    bool isLeftDown = engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT);
+    bool pressedThisFrame = isLeftDown && !_wasLeftMouseDown;
+
+    if (pressedThisFrame && _hoveredCollider) {
+        OnColliderClicked.Invoke(_hoveredCollider);
+    }
+
+    _wasLeftMouseDown = isLeftDown;
 }
 
 Collider* Collisions::raycast(const Camera* camera, const Octree* octree, const glm::vec2& screenPos, float screenWidth, float screenHeight) {
