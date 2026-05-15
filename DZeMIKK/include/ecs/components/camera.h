@@ -85,6 +85,8 @@ class Camera : public Component {
      */
     void setViewportSize(float width, float height);
 
+    void markDirty();
+
 #pragma endregion
 
 #pragma region Matrices

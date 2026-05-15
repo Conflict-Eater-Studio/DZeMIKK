@@ -101,9 +101,21 @@ void GridLayout::rebuild() {
         int row = static_cast<int>(i) / columns;
         int col = static_cast<int>(i) % columns;
 
-        float posX = startX + (static_cast<float>(col) * cellFull[0]) +
+        int effectiveCol = col;
+        int effectiveRow = row;
+
+        if (_startCorner == LayoutStartCorner::UpperRight ||
+            _startCorner == LayoutStartCorner::LowerRight) {
+            effectiveCol = columns - 1 - col;
+        }
+        if (_startCorner == LayoutStartCorner::UpperLeft ||
+            _startCorner == LayoutStartCorner::UpperRight) {
+            effectiveRow = rows - 1 - row;
+        }
+
+        float posX = startX + (static_cast<float>(effectiveCol) * cellFull[0]) +
                      (effectiveCellSize[0] * childPivot[0]);
-        float posY = startY + (static_cast<float>(row) * cellFull[1]) +
+        float posY = startY + (static_cast<float>(effectiveRow) * cellFull[1]) +
                      (effectiveCellSize[1] * childPivot[1]);
 
         childRect->setPosition(glm::vec2(posX, posY));

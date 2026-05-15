@@ -268,6 +268,7 @@ void Game::start() {
 
     auto* cameraGO = scene->createGameObject("Editor Camera");
 
+
     cameraGO->transform()->setPosition({0.0F, 3.0F, 8.0F});
 
 

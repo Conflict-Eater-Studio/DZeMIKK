@@ -140,6 +140,12 @@ void dzemikk::Camera::setViewportSize(float width, float height) {
         recalcProjection();
 }
 
+void dzemikk::Camera::markDirty() {
+    _viewProjectionDirty = true;
+    _viewDirty = true;
+    recalcProjection();
+}
+
 int dzemikk::Camera::getId() const {
     return _id;
 }

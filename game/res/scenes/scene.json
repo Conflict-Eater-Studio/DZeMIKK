@@ -506,6 +506,155 @@
                     "enabled": true,
                     "id": "b5660fb8-dfde-40ad-ac49-82f80836af14",
                     "name": "Background"
+                },
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "c1cebd28-9219-49da-88c6-9d103e13e13e",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                -1.5,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                50.0,
+                                                50.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                0.08823490142822266,
+                                                0.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "id": "0d10dbbe-69cb-4048-94c5-5e5b692de136",
+                                            "materialPath": "shaders/quad",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "330f8cab-b09f-4081-8206-e1acba196765",
+                                    "name": "Empty"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "13f835d4-7ef4-4e19-aeac-59bac9726ff0",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        1.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        100.0,
+                                        100.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 3
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "id": "39cb9d19-9b05-4a80-81b3-cd9050ea8a4b",
+                                    "materialPath": "shaders/quad",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "4999f1fb-74b1-4bdd-9db9-5f1dd5768c09",
+                            "name": "aa"
+                        }
+                    ],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                0.5
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                0.5
+                            ],
+                            "id": "7c2d109b-24dd-47af-87de-cee2dea3f8b1",
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                -9.699999809265137,
+                                0.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                200.0,
+                                200.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 2
+                        },
+                        {
+                            "color": [
+                                1.0,
+                                0.0,
+                                0.0,
+                                1.0
+                            ],
+                            "id": "f217d044-6e1a-42a9-b0c4-f499d8ddcbe2",
+                            "materialPath": "shaders/quad",
+                            "type": "ImageRenderer"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "bec11e2c-fecf-44ca-8e47-57bc4e6c64df",
+                    "name": "Empty"
                 }
             ],
             "components": [
@@ -576,7 +725,7 @@
                     "bottom": -1.0,
                     "far": 1000.0,
                     "fov": 60.0,
-                    "id": 1,
+                    "id": 0,
                     "left": -1.0,
                     "near": 0.10000000149011612,
                     "projectionType": 0,
