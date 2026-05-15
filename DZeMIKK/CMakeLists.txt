@@ -230,6 +230,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/cameraSerializer.h"
         "${INC_DIR}/ecs/serialize/ui/canvasSerializer.h"
         "${INC_DIR}/ecs/serialize/ui/imageRendererSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/uITextRendererSerializer.h"
         "${INC_DIR}/ecs/components/ui/uiDropdown.h"
         "${INC_DIR}/ecs/components/light/directionalLight.h"
         "${INC_DIR}/ecs/components/light/pointLight.h"

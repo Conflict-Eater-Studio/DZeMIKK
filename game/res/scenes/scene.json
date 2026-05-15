@@ -518,6 +518,58 @@
                     "enabled": true,
                     "id": "b5660fb8-dfde-40ad-ac49-82f80836af14",
                     "name": "Background"
+                },
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                0.5
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                0.5
+                            ],
+                            "id": "db371139-7ab4-43cc-bcbb-b246ed830b0b",
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                200.0,
+                                200.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 0
+                        },
+                        {
+                            "color": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "font": "fonts/Arima-VariableFont_wght.ttf",
+                            "horizontalAlign": 0,
+                            "id": "4ee95a17-2f30-4860-bfc2-a0522a5fa0e7",
+                            "scale": 1.0,
+                            "text": "bla bla bla bla ",
+                            "type": "UITextRenderer",
+                            "verticalAlign": 0
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "b6b0e094-d3ad-4391-9b06-6e6506e4b37c",
+                    "name": "UIText"
                 }
             ],
             "components": [
@@ -527,7 +579,7 @@
                         0.5
                     ],
                     "anchorMin": [
-                        0.5,
+                        6.0,
                         0.5
                     ],
                     "id": "3bb8b244-7a8c-4527-bc8f-e36ca252a17f",

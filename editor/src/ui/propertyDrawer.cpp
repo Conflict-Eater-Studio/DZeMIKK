@@ -267,3 +267,35 @@ bool editor::PropertyDrawer::drawTexture(const std::string& label,
 
     return false;
 }
+
+bool editor::PropertyDrawer::drawFont(const std::string& label,
+                                      dzemikk::AssetHandle<dzemikk::Font>& handle,
+                                      const InspectorContext& ctx) {
+
+    std::string path = handle.get() ? handle.getAssetPath() : "";
+
+    static std::unordered_map<std::string, std::array<char, 256>> textBuffers;
+
+    auto& buffer = textBuffers[label];
+
+    std::snprintf(buffer.data(), buffer.size(), "%s", path.c_str());
+
+    if (ImGui::InputText(label.c_str(), buffer.data(), buffer.size(),
+                         ImGuiInputTextFlags_EnterReturnsTrue)) {
+
+        auto newHandle = ctx.assetManager->get<dzemikk::Font>(buffer.data());
+
+        if (!newHandle.get()) {
+
+            ImGui::TextColored(ImVec4(1, 0, 0, 1), "Failed to load font!");
+
+            return false;
+        }
+
+        handle = newHandle;
+
+        return true;
+    }
+
+    return false;
+}

@@ -18,6 +18,7 @@
 #include "ecs/serialize/ui/horizontalLayoutSerializer.h"
 //#include "ecs/serialize/ui/uiDropdownSerializer.h"
 #include "ecs/serialize/ui/verticalLayoutSerializer.h"
+#include "ecs/serialize/ui/UITextRendererSerializer.h"
 
 #include "ecs/serialize/directionalLightSerializer.h"
 #include "ecs/serialize/pointLightSerializer.h"
@@ -53,6 +54,7 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerHorizontalLayoutSerializer(registry);
     //registerUIDropdownSerializer(registry);
     registerVerticalLayoutSerializer(registry);
+    registerUITextRendererSerializer(registry);
 
     return registry;
 }

@@ -7,6 +7,7 @@
 #include "renderer/model.h"
 #include "renderer/shader.h"
 #include "renderer/texture.h"
+#include "renderer/font.h"
 
 #include "inspectors/inspectorRegistry.h"
 
@@ -47,6 +48,9 @@ class PropertyDrawer {
     static bool drawTexture(const std::string& label,
                             dzemikk::AssetHandle<dzemikk::Texture>& handle,
                             const InspectorContext& ctx);
+
+    static bool drawFont(const std::string& label, dzemikk::AssetHandle<dzemikk::Font>& handle,
+                         const InspectorContext& ctx);
 };
 
 template <typename Enum>

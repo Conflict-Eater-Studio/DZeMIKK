@@ -17,6 +17,7 @@
 #include "inspectors/cameraInspector.h"
 #include "inspectors/colliderInspector.h"
 #include "inspectors/spriteRendererInspector.h"
+#include "inspectors/uITextRendererInspector.h"
 
 #include <imgui.h>
 #include "ecs/components/meshRenderer.h"
@@ -32,6 +33,7 @@
 #include "ecs/components/ui/gridLayout.h"
 #include "ecs/components/ui/horizontalLayout.h"
 #include "ecs/components/ui/verticalLayout.h"
+#include "ecs/components/ui/uiTextRenderer.h"
 
 editor::InspectorPanel::InspectorPanel() {
 
@@ -49,6 +51,7 @@ editor::InspectorPanel::InspectorPanel() {
     registerInspector<dzemikk::Camera, CameraInspector>("Camera");
     registerInspector<dzemikk::Collider, ColliderInspector>("Collider");
     registerInspector<dzemikk::SpriteRenderer, SpriteRendererInspector>("SpriteRenderer");
+    registerInspector<dzemikk::UITextRenderer, UITextRendererInspector>("UITextRenderer");
 
     _factories = {
         {"Transform", [](auto* go) { return go->getComponent<dzemikk::Transform>() != nullptr; },
@@ -119,6 +122,9 @@ editor::InspectorPanel::InspectorPanel() {
             auto r = go->addComponent<dzemikk::SpriteRenderer>(); 
             r->setTransform(go->getComponent<dzemikk::Transform>());
         }},
+
+        {"UITextRenderer", [](auto* go) { return go->getComponent<dzemikk::UITextRenderer>() != nullptr; },
+         [](auto* go) { go->addComponent<dzemikk::UITextRenderer>(); }},
     };
 
 }
