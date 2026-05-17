@@ -7,6 +7,7 @@
 #include "ecs/components/ui/uiButton.h"
 #include "ecs/gameobject.h"
 #include "ecs/serialize/componentSerializerRegistry.h"
+#include "ecs/serialize/ui/UITextRendererSerializer.h"
 #include "ecs/serialize/ui/imageRendererSerializer.h"
 
 #include <boost/uuid/string_generator.hpp>
@@ -26,10 +27,6 @@ inline void to_json(nlohmann::json& json, const UIButton& button) {
     json["normalColor"] = {normalColor[0], normalColor[1], normalColor[2], normalColor[3]};
     json["hoverColor"] = {hoverColor[0], hoverColor[1], hoverColor[2], hoverColor[3]};
     json["pressedColor"] = {pressedColor[0], pressedColor[1], pressedColor[2], pressedColor[3]};
-
-    if (button.getTextGO()) {
-        json["textGOName"] = button.getTextGO()->getName();
-    }
 
     auto ea = button.getEventActions();
     for (const auto& [eventType, actionIds] : ea) {
@@ -52,14 +49,6 @@ inline void to_json(nlohmann::json& json, const UIButton& button) {
         }
         json["events"][eventKey] = actionIds;
     }
-
-    if (button.getSpriteRenderer()) {
-        nlohmann::json spriteJson;
-        dzemikk::to_json(spriteJson, *button.getSpriteRenderer());
-        json["spriteRenderer"] = spriteJson;
-    } else {
-        json["spriteRenderer"] = nlohmann::json::object();
-    }
 }
 
 inline void from_json(const nlohmann::json& json, UIButton& button, AssetManager* assetManager) {
@@ -69,70 +58,55 @@ inline void from_json(const nlohmann::json& json, UIButton& button, AssetManager
         throw std::runtime_error("Invalid component type for UIButton deserialization");
     }
 
-    if (!json.contains("id") || !json.contains("normalColor") || !json.contains("hoverColor") ||
-        !json.contains("pressedColor") || !json.contains("events")) {
+    if (!json.contains("id")) {
         throw std::runtime_error("Missing required fields for UIButton deserialization");
     }
 
     button.setId(uuidGenerator(json["id"].get<std::string>()));
-    UIButton::Style style = {
-        .normalColor =
-            {
-                json["normalColor"][0].get<float>(),
-                json["normalColor"][1].get<float>(),
-                json["normalColor"][2].get<float>(),
-                json["normalColor"][3].get<float>(),
-            },
-        .hoverColor =
-            {
-                json["hoverColor"][0].get<float>(),
-                json["hoverColor"][1].get<float>(),
-                json["hoverColor"][2].get<float>(),
-                json["hoverColor"][3].get<float>(),
-            },
-        .pressedColor =
-            {
-                json["pressedColor"][0].get<float>(),
-                json["pressedColor"][1].get<float>(),
-                json["pressedColor"][2].get<float>(),
-                json["pressedColor"][3].get<float>(),
-            },
-    };
-    button.setStyle(style);
 
-    std::string textGOName = json.value("textGOName", "");
-    if (!textGOName.empty()) {
-        auto* textGO = button.getOwner()->getChildren().empty()
-                           ? nullptr
-                           : button.getOwner()->getChildren().front();
-        button.setTextGO(textGO);
+    if (json.contains("normalColor") && json.contains("hoverColor") &&
+        json.contains("pressedColor")) {
+        button.setStyle({.normalColor =
+                             {
+                                 json["normalColor"][0].get<float>(),
+                                 json["normalColor"][1].get<float>(),
+                                 json["normalColor"][2].get<float>(),
+                                 json["normalColor"][3].get<float>(),
+                             },
+                         .hoverColor =
+                             {
+                                 json["hoverColor"][0].get<float>(),
+                                 json["hoverColor"][1].get<float>(),
+                                 json["hoverColor"][2].get<float>(),
+                                 json["hoverColor"][3].get<float>(),
+                             },
+                         .pressedColor = {
+                             json["pressedColor"][0].get<float>(),
+                             json["pressedColor"][1].get<float>(),
+                             json["pressedColor"][2].get<float>(),
+                             json["pressedColor"][3].get<float>(),
+                         }});
     }
 
-    for (const auto& [eventKey, actionIdsJson] : json["events"].items()) {
-        UIEventType eventType = UIEventType::Click;
-        if (eventKey == "click") {
-            eventType = UIEventType::Click;
-        } else if (eventKey == "enter") {
-            eventType = UIEventType::Enter;
-        } else if (eventKey == "exit") {
-            eventType = UIEventType::Exit;
-        } else if (eventKey == "valueChanged") {
-            eventType = UIEventType::ValueChanged;
-        } else {
-            continue;
+    if (json.contains("events")) {
+        for (const auto& [eventKey, actionIdsJson] : json["events"].items()) {
+            UIEventType eventType = UIEventType::Click;
+            if (eventKey == "click") {
+                eventType = UIEventType::Click;
+            } else if (eventKey == "enter") {
+                eventType = UIEventType::Enter;
+            } else if (eventKey == "exit") {
+                eventType = UIEventType::Exit;
+            } else if (eventKey == "valueChanged") {
+                eventType = UIEventType::ValueChanged;
+            } else {
+                continue;
+            }
+            std::vector<std::string> actionIds = actionIdsJson.get<std::vector<std::string>>();
+            for (const auto& actionId : actionIds) {
+                button.addEventListener(eventType, actionId);
+            }
         }
-        std::vector<std::string> actionIds = actionIdsJson.get<std::vector<std::string>>();
-        for (const auto& actionId : actionIds) {
-            button.addEventListener(eventType, actionId);
-        }
-    }
-
-    if (json.contains("spriteRenderer") && json["spriteRenderer"].is_object() &&
-        !json["spriteRenderer"].empty()) {
-        auto* image = button.getOwner()->addComponent<ImageRenderer>();
-        image->setRectTransform(button.getOwner()->rectTransform());
-        dzemikk::from_json(json["spriteRenderer"], *image, assetManager);
-        button.setSpriteRenderer(image);
     }
 }
 
@@ -148,8 +122,9 @@ inline void registerUIButtonSerializer(ComponentSerializerRegistry& registry) {
             return nlohmann::json(*button);
         },
         [](ComponentSerializerRegistry::DeserializationContext context) {
-            auto* button = context.gameObject.addComponent<UIButton>();
-            from_json(context.json, *button, context.assetManager);
+            auto* uiButton = context.gameObject.addComponent<UIButton>();
+
+            from_json(context.json, *uiButton, context.assetManager);
         });
 }
 // NOLINTEND(readability-identifier-naming)

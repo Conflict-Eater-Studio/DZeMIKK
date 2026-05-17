@@ -20,8 +20,8 @@ class UIBuilder {
         std::string name;
         glm::vec2 position = {0.0F, 0.0F};
         glm::vec2 size = {100.0F, 50.0F};
-        glm::vec2 anchorMin = {0.0F, 0.0F};
-        glm::vec2 anchorMax = {0.0F, 0.0F};
+        glm::vec2 anchorMin = {0.5F, 0.5F};
+        glm::vec2 anchorMax = {0.5F, 0.5F};
         glm::vec2 pivot = {0.5F, 0.5F};
         glm::vec2 scale = {1.0F, 1.0F};
         float rotation = 0.0F;
@@ -104,7 +104,7 @@ class UIBuilder {
         glm::vec4 arrowColor = {1.0F, 1.0F, 1.0F, 1.0F};
         AssetHandle<Mesh> bgMesh;
         AssetHandle<Mesh> arrowMesh;
-        AssetHandle<Mesh>optionMesh;
+        AssetHandle<Mesh> optionMesh;
         AssetHandle<Mesh> optionsBgMesh;
         AssetHandle<Mesh> scrollbarMesh;
         std::shared_ptr<dzemikk::Material> bgMat = nullptr;
@@ -131,20 +131,16 @@ class UIBuilder {
         btnGO->rectTransform()->setZIndex(1);
 
         auto* btn = btnGO->addComponent<UIButton>();
+        auto* btnBg = btnGO->addComponent<ImageRenderer>();
+        btnBg->setMesh(params.mesh);
+        btnBg->setMaterial(params.material);
+        btnBg->setRectTransform(btnGO->rectTransform());
+
         btn->setStyle({.normalColor = params.normalColor,
                        .hoverColor = params.hoverColor,
                        .pressedColor = params.pressedColor});
 
-        auto* image = btnGO->addComponent<ImageRenderer>();
-        image->setRectTransform(btnGO->rectTransform());
-        image->setMesh(params.mesh);
-        image->setMaterial(params.material);
-        image->setColor(params.normalColor);
-
-        btn->setSpriteRenderer(image);
-
         auto* textGO = scene->createGameObject(params.name + "_Text", btnGO);
-        btn->setTextGO(textGO);
         auto* textRect = textGO->rectTransform();
         textRect->setSize({0, 0});
         textRect->setAnchorMin({0.0F, 0.0F});
@@ -317,7 +313,7 @@ class UIBuilder {
             .textVAlign = params.textVAlign,
             .textHAlign = params.textHAlign,
         };
-dropdown->setOptions(params.options);
+        dropdown->setOptions(params.options);
         dropdown->setSelectedIndex(params.selectedIndex);
         dropdown->setOptionRender(optionRender);
 

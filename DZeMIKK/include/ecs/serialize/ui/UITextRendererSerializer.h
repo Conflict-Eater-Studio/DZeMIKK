@@ -16,23 +16,15 @@ namespace dzemikk {
 inline void to_json(nlohmann::json& json, const UITextRenderer& textRenderer) {
 
     json["type"] = textRenderer.typeName();
-
     json["id"] = boost::uuids::to_string(textRenderer.getId());
-
     json["text"] = textRenderer.text;
-
     json["scale"] = textRenderer.scale;
-
-    json["color"] = {textRenderer.color.r, textRenderer.color.g, textRenderer.color.b};
-
+    json["color"] = {textRenderer.color[0], textRenderer.color[1], textRenderer.color[2]};
     json["horizontalAlign"] = static_cast<uint8_t>(textRenderer.horizontalAlign);
-
     json["verticalAlign"] = static_cast<uint8_t>(textRenderer.verticalAlign);
 
     if (textRenderer.fontAsset.get() != nullptr) {
         json["font"] = textRenderer.fontAsset.getAssetPath();
-    } else {
-        json["font"] = "";
     }
 }
 
@@ -50,33 +42,25 @@ inline void from_json(const nlohmann::json& json, UITextRenderer& textRenderer,
     if (!json.contains("id") || !json.contains("text") || !json.contains("scale") ||
         !json.contains("color") || !json["color"].is_array() || json["color"].size() < 3 ||
         !json.contains("horizontalAlign") || !json.contains("verticalAlign") ||
-        !json.contains("font")) {
+        !json.contains("font") || !json["font"].is_string() ||
+        json["font"].get<std::string>().empty()) {
 
         throw std::runtime_error("Missing fields for UITextRenderer deserialization");
     }
 
     textRenderer.setId(uuidGenerator(json["id"].get<std::string>()));
-
     textRenderer.text = json["text"].get<std::string>();
-
     textRenderer.scale = json["scale"].get<float>();
-
     const auto& c = json["color"];
-
     textRenderer.color = glm::vec3(c[0].get<float>(), c[1].get<float>(), c[2].get<float>());
-
     textRenderer.horizontalAlign =
         static_cast<UITextRenderer::HorizontalAlign>(json["horizontalAlign"].get<uint8_t>());
-
     textRenderer.verticalAlign =
         static_cast<UITextRenderer::VerticalAlign>(json["verticalAlign"].get<uint8_t>());
 
     std::string fontPath = json.value("font", "");
-
     if (!fontPath.empty()) {
-
         textRenderer.fontAsset = assetManager->get<Font>(fontPath);
-
         textRenderer.font = textRenderer.fontAsset.get();
     }
 }

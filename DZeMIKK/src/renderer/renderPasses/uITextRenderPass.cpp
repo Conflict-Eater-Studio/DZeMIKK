@@ -70,13 +70,13 @@ void dzemikk::UITextRenderPass::execute(RenderContext& ctx) {
 
             float offsetX = 0.0F;
             switch (t->horizontalAlign) {
-            case UITextRenderer::HorizontalAlign::Right:
+            case UITextRenderer::HorizontalAlign::Left:
                 offsetX = 0.0F;
                 break;
             case UITextRenderer::HorizontalAlign::Center:
                 offsetX = (rectSize.x - textWidth) * 0.5F;
                 break;
-            case UITextRenderer::HorizontalAlign::Left:
+            case UITextRenderer::HorizontalAlign::Right:
                 offsetX = rectSize.x - textWidth;
                 break;
             }
