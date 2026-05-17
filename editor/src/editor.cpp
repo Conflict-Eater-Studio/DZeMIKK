@@ -26,6 +26,8 @@
 
 #endif
 #include <iostream>
+#include <renderer/font.h>
+#include <ecs/components/ui/uiBuilder.h>
 
 namespace editor {
 
@@ -87,6 +89,34 @@ void Editor::createEmptyObject(const std::string& name, dzemikk::GameObject* par
         }
 
         _selectedObject = go;
+    });
+}
+
+void Editor::createUIButton(dzemikk::GameObject* parent) {
+
+    _deferredOps.push_back([=]() {
+        auto* assetManager = _engine->getAssetManager();
+
+        auto font = assetManager->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
+
+        auto quadMesh =
+            assetManager->getPrimitiveMesh(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
+
+        auto quadShader = assetManager->get<dzemikk::Shader>("shaders/quad");
+
+        auto quadMat = std::make_shared<dzemikk::Material>();
+        quadMat->setShader(quadShader);
+
+        dzemikk::UIBuilder::UIButtonParams params{.name = "Button",
+                                                  .size = {200.0F, 60.0F},
+                                                  .text = "Button",
+                                                  .textFont = font,
+                                                  .mesh = quadMesh,
+                                                  .material = quadMat};
+
+        auto* buttonGO = dzemikk::UIBuilder::createButton(parent, params);
+
+        _selectedObject = buttonGO;
     });
 }
 

@@ -106,6 +106,10 @@ void editor::HierarchyPanel::drawNode(dzemikk::GameObject* gameObject,
                 _editor->createEmptyObject("Empty", gameObject);
             }
 
+            if (ImGui::MenuItem("CreateButton")) {
+                _editor->createUIButton(gameObject);
+            }
+
             if (ImGui::MenuItem("Delete")) {
                 _editor->deleteObject(gameObject);
             }

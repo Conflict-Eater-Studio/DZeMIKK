@@ -20,6 +20,7 @@
 #include "inspectors/uITextRendererInspector.h"
 #include "inspectors/textRendererInspector.h"
 #include "inspectors/skinnedMeshRendererInspector.h"
+#include "inspectors/uIButtonInspector.h"
 
 #include <imgui.h>
 #include "ecs/components/meshRenderer.h"
@@ -38,6 +39,8 @@
 #include "ecs/components/ui/horizontalLayout.h"
 #include "ecs/components/ui/verticalLayout.h"
 #include "ecs/components/ui/uiTextRenderer.h"
+#include "ecs/components/ui/uiButton.h"
+#include "ecs/components/ui/uiBuilder.h"
 
 editor::InspectorPanel::InspectorPanel() {
 
