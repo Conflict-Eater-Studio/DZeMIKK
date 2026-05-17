@@ -58,6 +58,7 @@ void GridLayout::rebuild() {
     }
 
     const glm::vec2 rectSize = rect->getSize();
+    const glm::vec2 rectPivot = rect->getPivot();
     const glm::vec2 offsetMin = rect->getOffsetMin();
     const glm::vec2 offsetMax = rect->getOffsetMax();
 
@@ -86,8 +87,14 @@ void GridLayout::rebuild() {
         return;
     }
 
-    float startX = offsetMin[0];
-    float startY = offsetMin[1];
+    float totalChildrenWidth =
+        (static_cast<float>(columns) * cellWidth) + (static_cast<float>(columns - 1) * _spacing[0]);
+    float totalChildrenHeight =
+        (static_cast<float>(rows) * cellHeight) + (static_cast<float>(rows - 1) * _spacing[1]);
+    const float left = (-rectPivot[0] * rectSize[0]) + offsetMin[0];
+    const float bottom = (-rectPivot[1] * rectSize[1]) + offsetMin[1];
+    float startX = left + ((availableWidth - totalChildrenWidth) / 2.0F);
+    float startY = bottom + ((availableHeight - totalChildrenHeight) / 2.0F);
 
     for (size_t i = 0; i < childCount; ++i) {
         auto* child = children[i];

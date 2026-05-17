@@ -1,12 +1,11 @@
 #include "renderer/renderPasses/uITextRenderPass.h"
-#include "renderer/shader.h"
-#include "renderer/font.h"
 
+#include "core/profiler.h"
 #include "ecs/componentRegistry.h"
 #include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
-
-#include "core/profiler.h"
+#include "renderer/font.h"
+#include "renderer/shader.h"
 
 #include <GLFW/glfw3.h>
 
@@ -71,13 +70,13 @@ void dzemikk::UITextRenderPass::execute(RenderContext& ctx) {
 
             float offsetX = 0.0F;
             switch (t->horizontalAlign) {
-            case UITextRenderer::HorizontalAlign::Left:
+            case UITextRenderer::HorizontalAlign::Right:
                 offsetX = 0.0F;
                 break;
             case UITextRenderer::HorizontalAlign::Center:
                 offsetX = (rectSize.x - textWidth) * 0.5F;
                 break;
-            case UITextRenderer::HorizontalAlign::Right:
+            case UITextRenderer::HorizontalAlign::Left:
                 offsetX = rectSize.x - textWidth;
                 break;
             }

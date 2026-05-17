@@ -1,9 +1,7 @@
 #include "ecs/components/ui/rectTransform.h"
 
+#include "core/windowContext.h"
 #include "ecs/gameobject.h"
-#include "glm/fwd.hpp"
-
-#include <glm/gtc/matrix_transform.hpp>
 
 namespace dzemikk {
 RectTransform::RectTransform(RectTransformParams params)
@@ -166,7 +164,7 @@ glm::mat4 RectTransform::getLocalNoSizeMatrix() const {
         anchorCenter = (anchorNormalized - parentPivot) * parentSize;
     } else {
         const glm::vec2 anchorNormalized = (_anchorMin + _anchorMax) * 0.5F;
-        anchorCenter = anchorNormalized * getSize();
+        anchorCenter = anchorNormalized * WindowContext::get().getWindowSize();
     }
 
     glm::mat4 translation =
@@ -207,10 +205,6 @@ glm::mat4 RectTransform::getWorldNoSizeMatrix() const {
 }
 
 void RectTransform::markDirty() {
-    if (_worldDirty && _localDirty) {
-        return;
-    }
-
     _localDirty = true;
     _worldDirty = true;
 

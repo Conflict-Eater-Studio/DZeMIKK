@@ -19,6 +19,7 @@
 #include "core/profiler.h"
 #include "core/time.h"
 #include "core/window.h"
+#include "core/windowContext.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
@@ -87,7 +88,8 @@ void Engine::init() {
 }
 
 void Engine::shutdown() {
-    if (!_mainWindow) return;
+    if (!_mainWindow)
+        return;
 
     _input->uninitialize();
     _animationModule->uninitialize();
@@ -155,8 +157,8 @@ void Engine::start() {
         _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
         if (_mode == EngineMode::Game) {
-            //updateCameraWASD(.3f);
-            //updateCameraArrows(0.3f);
+            // updateCameraWASD(.3f);
+            // updateCameraArrows(0.3f);
             updateMouseUI(deltaTime);
         }
 
@@ -196,7 +198,7 @@ Time* Engine::getTime() const {
     return _time.get();
 }
 
-AnimationModule* Engine::getAnimationModule() const{
+AnimationModule* Engine::getAnimationModule() const {
     return _animationModule.get();
 }
 
@@ -303,6 +305,7 @@ void Engine::updateMouseUI(float deltaTime) {
     int width = 0;
     int height = 0;
     glfwGetWindowSize(_mainWindow->nativeHandle(), &width, &height);
+    WindowContext::get().setWindowSize({width, height});
 
     const glm::vec2 pointerPos(static_cast<float>(mouseX),
                                static_cast<float>(height) - static_cast<float>(mouseY));

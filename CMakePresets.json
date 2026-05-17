@@ -25,18 +25,21 @@
       "name": "debug-game",
       "displayName": "Build game (Debug)",
       "configurePreset": "debug",
-      "targets": [
-        "game"
-      ],
+      "targets": ["game"],
+      "jobs": 10
+    },
+    {
+      "name": "debug-editor",
+      "displayName": "Build editor (Debug)",
+      "configurePreset": "debug",
+      "targets": ["editor"],
       "jobs": 10
     },
     {
       "name": "debug-tests",
       "displayName": "Build tests (Debug)",
       "configurePreset": "debug",
-      "targets": [
-        "dzemikk_tests"
-      ],
+      "targets": ["dzemikk_tests"],
       "jobs": 10
     }
   ],
@@ -55,3 +58,4 @@
     }
   ]
 }
+
