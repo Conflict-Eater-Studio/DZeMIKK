@@ -159,6 +159,18 @@ void UISlider::setHandleSpriteRenderer(ImageRenderer* spriteRenderer) {
     applyVisualState();
 }
 
+ImageRenderer* UISlider::getBackgroundSpriteRenderer() const {
+    return _backgroundSpriteRenderer;
+}
+
+ImageRenderer* UISlider::getFillSpriteRenderer() const {
+    return _fillSpriteRenderer;
+}
+
+ImageRenderer* UISlider::getHandleSpriteRenderer() const {
+    return _handleSpriteRenderer;
+}
+
 void UISlider::setStyle(const Style& style) {
     _style = style;
     applyVisualState();

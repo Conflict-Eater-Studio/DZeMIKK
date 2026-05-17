@@ -42,6 +42,9 @@ class UISlider : public IUIInteractable {
     void setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer);
     void setFillSpriteRenderer(ImageRenderer* spriteRenderer);
     void setHandleSpriteRenderer(ImageRenderer* spriteRenderer);
+    [[nodiscard]] ImageRenderer* getBackgroundSpriteRenderer() const;
+    [[nodiscard]] ImageRenderer* getFillSpriteRenderer() const;
+    [[nodiscard]] ImageRenderer* getHandleSpriteRenderer() const;
 
     void setStyle(const Style& style);
     [[nodiscard]] const Style& getStyle() const {

@@ -3,9 +3,11 @@
 
 #pragma once
 
+#include "ecs/components/ui/imageRenderer.h"
 #include "ecs/components/ui/uiButton.h"
 #include "ecs/gameobject.h"
 #include "ecs/serialize/componentSerializerRegistry.h"
+#include "ecs/serialize/ui/imageRendererSerializer.h"
 
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -24,6 +26,11 @@ inline void to_json(nlohmann::json& json, const UIButton& button) {
     json["normalColor"] = {normalColor[0], normalColor[1], normalColor[2], normalColor[3]};
     json["hoverColor"] = {hoverColor[0], hoverColor[1], hoverColor[2], hoverColor[3]};
     json["pressedColor"] = {pressedColor[0], pressedColor[1], pressedColor[2], pressedColor[3]};
+
+    if (button.getTextGO()) {
+        json["textGOName"] = button.getTextGO()->getName();
+    }
+
     auto ea = button.getEventActions();
     for (const auto& [eventType, actionIds] : ea) {
         const char* eventKey = nullptr;
@@ -45,9 +52,17 @@ inline void to_json(nlohmann::json& json, const UIButton& button) {
         }
         json["events"][eventKey] = actionIds;
     }
+
+    if (button.getSpriteRenderer()) {
+        nlohmann::json spriteJson;
+        dzemikk::to_json(spriteJson, *button.getSpriteRenderer());
+        json["spriteRenderer"] = spriteJson;
+    } else {
+        json["spriteRenderer"] = nlohmann::json::object();
+    }
 }
 
-inline void from_json(const nlohmann::json& json, UIButton& button) {
+inline void from_json(const nlohmann::json& json, UIButton& button, AssetManager* assetManager) {
     boost::uuids::string_generator uuidGenerator;
 
     if (!json.contains("type") || !json["type"].is_string() || json["type"] != "UIButton") {
@@ -84,6 +99,15 @@ inline void from_json(const nlohmann::json& json, UIButton& button) {
             },
     };
     button.setStyle(style);
+
+    std::string textGOName = json.value("textGOName", "");
+    if (!textGOName.empty()) {
+        auto* textGO = button.getOwner()->getChildren().empty()
+                           ? nullptr
+                           : button.getOwner()->getChildren().front();
+        button.setTextGO(textGO);
+    }
+
     for (const auto& [eventKey, actionIdsJson] : json["events"].items()) {
         UIEventType eventType = UIEventType::Click;
         if (eventKey == "click") {
@@ -102,6 +126,14 @@ inline void from_json(const nlohmann::json& json, UIButton& button) {
             button.addEventListener(eventType, actionId);
         }
     }
+
+    if (json.contains("spriteRenderer") && json["spriteRenderer"].is_object() &&
+        !json["spriteRenderer"].empty()) {
+        auto* image = button.getOwner()->addComponent<ImageRenderer>();
+        image->setRectTransform(button.getOwner()->rectTransform());
+        dzemikk::from_json(json["spriteRenderer"], *image, assetManager);
+        button.setSpriteRenderer(image);
+    }
 }
 
 inline void registerUIButtonSerializer(ComponentSerializerRegistry& registry) {
@@ -117,7 +149,7 @@ inline void registerUIButtonSerializer(ComponentSerializerRegistry& registry) {
         },
         [](ComponentSerializerRegistry::DeserializationContext context) {
             auto* button = context.gameObject.addComponent<UIButton>();
-            from_json(context.json, *button);
+            from_json(context.json, *button, context.assetManager);
         });
 }
 // NOLINTEND(readability-identifier-naming)

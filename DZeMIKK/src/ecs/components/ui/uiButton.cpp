@@ -58,4 +58,8 @@ void UIButton::setTextGO(GameObject* textGO) {
 GameObject* UIButton::getTextGO() const {
     return _textGO;
 }
+
+ImageRenderer* UIButton::getSpriteRenderer() const {
+    return _spriteRenderer;
+}
 } // namespace dzemikk

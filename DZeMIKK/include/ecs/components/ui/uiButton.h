@@ -42,6 +42,7 @@ class UIButton : public IUIInteractable {
 
     void setTextGO(GameObject* textGO);
     [[nodiscard]] GameObject* getTextGO() const;
+    [[nodiscard]] ImageRenderer* getSpriteRenderer() const;
 
   private:
     void applyVisualState();
