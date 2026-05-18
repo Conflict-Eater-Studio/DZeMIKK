@@ -30,7 +30,7 @@ class World : public dzemikk::MonoBehaviour {
     }
 
     [[nodiscard]] HexGrid* getGrid() {
-        return &_grid;
+        return _grid.get();
     }
     [[nodiscard]] PlayerEntity* getPlayer() {
         return _player;
@@ -58,7 +58,7 @@ class World : public dzemikk::MonoBehaviour {
   private:
     void spawnHexVisual(const std::shared_ptr<HexCell>& cell);
 
-    HexGrid _grid;
+    std::unique_ptr<HexGrid> _grid;
     Perlin _perlin{1};
     std::mt19937 _rng;
     std::uniform_int_distribution<int> _randSteps;
