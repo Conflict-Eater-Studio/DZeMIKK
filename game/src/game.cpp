@@ -190,7 +190,6 @@ void Game::newModels(const std::shared_ptr<dzemikk::Material>& m, dzemikk::Scene
 Game::Game(dzemikk::Engine* engine) : _engine(engine) {}
 
 void Game::start() {
-
     game::Perlin perlin(1);
 
     auto* assetManager = _engine->getAssetManager();
@@ -281,8 +280,8 @@ void Game::start() {
     playerMesh->setTransform(playerGO->transform());
     playerGO->transform()->setPosition({0.0F, 2.5F, 0.0F});
 
+    _worldGO = worldGO;
     auto* world = worldGO->addComponent<game::World>(1);
-
     world->setModel(model);
     world->setMaterial(material);
     world->setMaterial2(material2);
@@ -330,8 +329,14 @@ void Game::start() {
     world->renderChunk(c3s2);
     world->renderChunk(c3s2s1);
 
-    _playerEntity->tryMove(world->getGrid()->at({0, 0}));
+    _hexGrid = world->getGrid();
 
+    _playerEntity->tryMove(world->getGrid()->at({0, 0}));
+    std::vector<game::HexGrid::HexCellPtr> path = _hexGrid->findPath(_playerEntity->getCell(), _hexGrid->at({0, 2}));
+    spdlog::info(path.size());
+    for (auto& cell : path) {
+        spdlog::info("[Path] {}, {} ", cell->getCoord().q(), cell->getCoord().r());
+    }
     auto* uiRootGO = scene->createGameObject("UI Root");
     auto* canvas = uiRootGO->addComponent<dzemikk::Canvas>();
     uiRootGO->rectTransform()->setSize({1920.0F, 1080.0F});
@@ -620,7 +625,6 @@ void Game::setupAudio() {
 }
 
 void Game::setupInputCallbacks() {
-
     static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
     static auto lastHitColor = glm::vec4(1.0F);
 
@@ -674,7 +678,8 @@ void Game::setupInputCallbacks() {
             if (_engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
                 auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
                 if (wh != nullptr && wh->getHexCell() != nullptr) {
-                    _playerEntity->tryMove(wh->getHexCell());
+                    std::vector<game::HexGrid::HexCellPtr> _path = _hexGrid->findPath(_playerEntity->getCell(), wh->getHexCell());
+                    _playerEntity->setPath(_path);
                 }
             }
         }
