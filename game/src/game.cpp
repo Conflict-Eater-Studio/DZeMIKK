@@ -1,69 +1,67 @@
-#pragma once 
+#pragma once
 
 #include "game.h"
 
-#include "ecs/components/animator.h"
 #include "animation/animationclip.h"
+#include "animation/animationmodule.h"
+#include "animation/animationstatemachine.h"
 #include "animation/quaterniontrack.h"
 #include "animation/vectortrack.h"
-#include "animation/animationstatemachine.h"
-#include "animation/animationmodule.h"
 #include "assetManager/assetmanager.h"
+#include "audio/audioManager.h"
 #include "audio/sound.h"
 #include "collisions/collisions.h"
 #include "core/engine.h"
-#include "core/window.h"
 #include "core/time.h"
+#include "core/window.h"
+#include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/collider.h"
+#include "ecs/components/light/directionalLight.h"
+#include "ecs/components/light/pointLight.h"
+#include "ecs/components/light/spotLight.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/skinnedMeshRenderer.h"
 #include "ecs/components/ui/canvas.h"
 #include "ecs/components/ui/colors.h"
-#include "ecs/components/ui/imageRenderer.h"
-#include "ecs/components/ui/rectTransform.h"
-#include "ecs/components/ui/uiButton.h"
-#include "ecs/components/ui/uiCheckbox.h"
-#include "ecs/components/ui/uiSlider.h"
-#include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/components/ui/gridLayout.h"
 #include "ecs/components/ui/horizontalLayout.h"
+#include "ecs/components/ui/imageRenderer.h"
+#include "ecs/components/ui/rectTransform.h"
 #include "ecs/components/ui/uiActionRegistry.h"
 #include "ecs/components/ui/uiBuilder.h"
+#include "ecs/components/ui/uiButton.h"
+#include "ecs/components/ui/uiCheckbox.h"
 #include "ecs/components/ui/uiEvent.h"
+#include "ecs/components/ui/uiSlider.h"
+#include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/components/ui/verticalLayout.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
 #include "input/input.h"
+#include "renderer/cameraSystem.h"
 #include "renderer/font.h"
 #include "renderer/material.h"
 #include "renderer/mesh.h"
 #include "renderer/model.h"
 #include "renderer/renderer.h"
 #include "renderer/shader.h"
-#include "renderer/cameraSystem.h"
-
-#include "audio/audioManager.h"
-#include "audio/sound.h"
-
-#include "utils/perlin.h"
 #include "scripts/world/world.h"
+#include "utils/perlin.h"
 
 #include <GLFW/glfw3.h>
+#include <algorithm>
 #include <iostream>
 #include <memory>
-
-#include "ecs/components/light/directionalLight.h"
-#include "ecs/components/light/pointLight.h"
-#include "ecs/components/light/spotLight.h"
+#include <ranges>
 
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
 #endif
 
-#include <fstream>
 #include <ecs/serialize/sceneSerializer.h>
+#include <fstream>
 
 struct SkyboxInitContext {
     dzemikk::AssetHandle<dzemikk::Shader> shader;
@@ -94,7 +92,7 @@ void onEnemyModelLoaded(dzemikk::AssetHandle<dzemikk::Model> model, EnemyInitCon
     dzemikk::AnimationClip* clip = nullptr;
     clip = skeleton->getClip("mixamo.com");
 
-    auto state = ctx.sm->addState("idle"); 
+    auto state = ctx.sm->addState("idle");
     state->setClip(clip);
 
     ctx.animator->play("idle");
@@ -103,7 +101,6 @@ void onEnemyModelLoaded(dzemikk::AssetHandle<dzemikk::Model> model, EnemyInitCon
 dzemikk::DirectionalLight* sunLight = nullptr;
 dzemikk::PointLight* pointLight = nullptr;
 dzemikk::SpotLight* spotLight = nullptr;
-
 
 struct ModelInitContext {
     dzemikk::MeshRenderer* renderer;
@@ -115,8 +112,7 @@ void onModelLoaded(dzemikk::AssetHandle<dzemikk::Model> model, ModelInitContext&
 
 void Game::spawnModel(dzemikk::Scene* scene, std::shared_ptr<dzemikk::Material> material,
                       const std::string& modelPath, const glm::vec3& position,
-                      const glm::vec3& scale,
-                      const glm::quat& rotation) {
+                      const glm::vec3& scale, const glm::quat& rotation) {
     auto go = scene->createGameObject();
 
     go->transform()->setPosition(position);
@@ -167,7 +163,6 @@ void Game::newModels(std::shared_ptr<dzemikk::Material> m, dzemikk::Scene* scene
     spawnModel(scene, m, "models/kamyk_v2.fbx", glm::vec3(-8.5f, 5.5f, 5.0f), glm::vec3(4.0f),
                glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
-    
     spawnModel(scene, m, "models/krysztal_v1.fbx", glm::vec3(-9.5f, 5.5f, 5.0f), glm::vec3(4.0f),
                glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
@@ -175,7 +170,7 @@ void Game::newModels(std::shared_ptr<dzemikk::Material> m, dzemikk::Scene* scene
                glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
     spawnModel(scene, m, "models/krysztal_v3.fbx", glm::vec3(-11.5f, 5.5f, 5.0f), glm::vec3(4.0f),
-                   glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
     spawnModel(scene, m, "models/krzak.fbx", glm::vec3(-13.f, 5.5f, 5.0f), glm::vec3(1.0f),
                glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
@@ -201,11 +196,11 @@ void Game::newModels(std::shared_ptr<dzemikk::Material> m, dzemikk::Scene* scene
     spawnModel(scene, m, "models/tipi.fbx", glm::vec3(-25.f, 5.5f, 5.0f), glm::vec3(1.0f),
                glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
-    spawnModel(scene, m, "models/tipi_z_galezami.fbx", glm::vec3(-27.f, 5.5f, 5.0f), glm::vec3(1.0f),
-               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
-
-    spawnModel(scene, m, "models/znak.fbx", glm::vec3(-29.f, 5.5f, 5.0f),
+    spawnModel(scene, m, "models/tipi_z_galezami.fbx", glm::vec3(-27.f, 5.5f, 5.0f),
                glm::vec3(1.0f), glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+
+    spawnModel(scene, m, "models/znak.fbx", glm::vec3(-29.f, 5.5f, 5.0f), glm::vec3(1.0f),
+               glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
     spawnModel(scene, m, "models/totem.fbx", glm::vec3(-32.f, 5.5f, 5.0f), glm::vec3(.2f),
                glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
@@ -213,15 +208,12 @@ void Game::newModels(std::shared_ptr<dzemikk::Material> m, dzemikk::Scene* scene
     spawnModel(scene, m, "models/Baba.fbx", glm::vec3(-35.f, 5.5f, 5.0f), glm::vec3(1.0f),
                glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
-
     spawnModel(scene, m, "models/Test(2).fbx", glm::vec3(-38.f, 5.5f, 5.0f), glm::vec3(1.0f),
                glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
 
     spawnModel(scene, m, "models/chonker.fbx", glm::vec3(-42.f, 5.5f, 5.0f), glm::vec3(1.0f),
                glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
-
 }
-
 
 Game::Game(dzemikk::Engine* engine) : engine(engine) {}
 
@@ -250,7 +242,7 @@ void Game::start() {
 
     auto scene = std::make_shared<dzemikk::Scene>();
 
-    std::ifstream file("./Debug/res/scenes/scene.json");
+    std::ifstream file("./res/scenes/scene.json");
 
     if (file.is_open()) {
 
@@ -263,14 +255,12 @@ void Game::start() {
     }
 
     sceneManager->loadScene(scene);
-    
 
     sceneManager->setActiveScene(scene);
 
     auto* cameraGO = scene->createGameObject("Editor Camera");
 
     cameraGO->transform()->setPosition({0.0F, 3.0F, 8.0F});
-
 
     auto* camera = cameraGO->addComponent<dzemikk::Camera>();
 
@@ -291,7 +281,6 @@ void Game::start() {
     auto* uiCamera = uiCameraGO->addComponent<dzemikk::Camera>();
     uiCamera->setOrthographic(0.0F, 1920.0F, 0.0F, 1080.0F, -1.0F, 1.0F);
     engine->getRenderer()->getCameraSystem().setActiveUICamera(uiCamera);
-
 
     /*
     auto shader = assetManager->get<dzemikk::Shader>("shaders/tile1");
@@ -432,36 +421,50 @@ void Game::start() {
     //horiGO->enabled(false);
     vertGO->enabled(false);
     gridGO->enabled(false);
+    */
 
-         auto* dropdownGO = dzemikk::UIBuilder::createDropdown(
-         uiRootGO, {
-                       .name = "Test Dropdown",
-                       .position = {(1920.0F / 4.0F) - 100.0F, 1080.0F - 150.0F},
-                       .size = {400.0F, 70.0F},
-                       .options =
-                           {
-                               {.text = "Option 1", .value = "opt1"},
-                               {.text = "Option 2", .value = "opt2"},
-                               {.text = "Option 3", .value = "opt3"},
-                               {.text = "Option 4", .value = "opt4"},
-                               {.text = "Option 5", .value = "opt5"},
-                               {.text = "Option 6", .value = "opt6"},
-                           },
-                       .optionHeight = 70.0F,
-                       .maxVisibleOptions = 3,
-                       .textFont = font,
-                       .bgMesh = quadMesh,
-                       .arrowMesh = quadMesh,
-                       .optionMesh = quadMesh,
-                       .optionsBgMesh = quadMesh,
-                       .bgMat = quadMat,
-                       .arrowMat = quadMat,
-                       .optionMat = quadMat,
-                       .optionsBgMat = quadMat,
-                   });
-    
-     auto* dropdown = dropdownGO->getComponent<dzemikk::UIDropdown>();
+    auto quadMesh =
+        assetManager->getPrimitiveMesh(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
+    auto quadShader = assetManager->get<dzemikk::Shader>("shaders/quad");
+    auto quadMat = std::make_shared<dzemikk::Material>();
+    quadMat->setShader(quadShader);
 
+    auto font = assetManager->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
+    dzemikk::GameObject* uiRootGO = nullptr;
+    for (const auto& obj : scene->getObjects()) {
+        if (obj->getName() == "Canvas") {
+            uiRootGO = obj.get();
+        }
+    }
+    auto* dropdownGO = dzemikk::UIBuilder::createDropdown(
+        uiRootGO, {
+                      .name = "Dropdown",
+                      .position = {0.0F, 0.0F},
+                      .size = {200.0F, 20.0F},
+                      .options =
+                          {
+                              {.text = "Option 1", .value = "opt1"},
+                              {.text = "Option 2", .value = "opt2"},
+                              {.text = "Option 3", .value = "opt3"},
+                              {.text = "Option 4", .value = "opt4"},
+                              {.text = "Option 5", .value = "opt5"},
+                              {.text = "Option 6", .value = "opt6"},
+                          },
+                      .optionHeight = 20.0F,
+                      .maxVisibleOptions = 3,
+                      .textFont = font,
+                      .bgMesh = quadMesh,
+                      .arrowMesh = quadMesh,
+                      .optionMesh = quadMesh,
+                      .optionsBgMesh = quadMesh,
+                      .scrollbarMesh = quadMesh,
+                      .bgMat = quadMat,
+                      .arrowMat = quadMat,
+                      .optionMat = quadMat,
+                      .optionsBgMat = quadMat,
+                      .scrollbarMat = quadMat,
+                  });
+    /*
 
     enemyGO = scene->createGameObject();
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 5.0f));
@@ -494,9 +497,9 @@ void Game::start() {
         // --- Sound test ---
     auto audio = engine->getAudioManager();
 
-    auto sound = engine->getAssetManager()->get<dzemikk::Sound>("audio/prime_przygodowka (loop, ale przyjemny).wav");
-    engine->getInput()->OnKeyPressed.addListener([audio, &sound](dzemikk::KeyPressedEvent& event) {
-        if (event.GetKeyCode() == GLFW_KEY_SPACE) {
+    auto sound = engine->getAssetManager()->get<dzemikk::Sound>("audio/prime_przygodowka (loop, ale
+    przyjemny).wav"); engine->getInput()->OnKeyPressed.addListener([audio,
+    &sound](dzemikk::KeyPressedEvent& event) { if (event.GetKeyCode() == GLFW_KEY_SPACE) {
             spdlog::info("Playing sound");
             audio->play(*sound.get(), dzemikk::AudioManager::SoundType::Music);
         }
@@ -547,9 +550,7 @@ void Game::setupMaterials() {
     quadMaterial->setShader(quadShader);
 }
 
-void Game::setupWorld() {
-
-}
+void Game::setupWorld() {}
 
 void Game::setupChest() {
     auto chestGO = mainScene->createGameObject();
@@ -561,7 +562,7 @@ void Game::setupChest() {
 
     chestMeshR->setModel(chestMesh);
     chestMeshR->setTransform(chestGO->transform());
-    //chestMeshR->setMaterial(0, materialA);
+    // chestMeshR->setMaterial(0, materialA);
 }
 
 void Game::setupEnemy() {
@@ -574,8 +575,8 @@ void Game::setupEnemy() {
 
     enemyMeshR->setModel(enemyMesh);
     enemyMeshR->setTransform(enemyGO->transform());
-    //enemyMeshR->setMaterial(0, materialA);
-    //enemyMeshR->setMaterial(1, materialB);
+    // enemyMeshR->setMaterial(0, materialA);
+    // enemyMeshR->setMaterial(1, materialB);
 }
 
 void Game::setupUICamera() {
@@ -601,16 +602,11 @@ void Game::setupUI() {
     setupCheckbox(canvasGo);
 }
 
-void Game::setupButton(dzemikk::GameObject* canvasGo) {
-}
+void Game::setupButton(dzemikk::GameObject* canvasGo) {}
 
-void Game::setupSlider(dzemikk::GameObject* canvasGo) {
+void Game::setupSlider(dzemikk::GameObject* canvasGo) {}
 
-}
-
-void Game::setupCheckbox(dzemikk::GameObject* canvasGo) {
-
-}
+void Game::setupCheckbox(dzemikk::GameObject* canvasGo) {}
 
 void Game::setupAudio() {
     FMOD::System* system;
@@ -652,7 +648,7 @@ void Game::setupInputCallbacks() {
             if (std::abs(axisY) > 0.1f)
                 pos.z += axisY * speed;
 
-            
+
             if (engine->getInput()->IsGamepadButtonPressed(GLFW_JOYSTICK_1,
                                                            GLFW_GAMEPAD_BUTTON_LEFT_BUMPER)) {
                 trs->setScale(trs->getScale() * 1.1F);
@@ -700,7 +696,6 @@ void Game::setupInputCallbacks() {
 
                 lastHitRenderer->setColor(color);
             }
-
 
             if (currentRenderer && currentRenderer->isValid()) {
 

@@ -57,30 +57,6 @@ inline void to_json(nlohmann::json& json, const UISlider& slider) {
         }
         json["events"][eventKey] = actionIds;
     }
-
-    if (slider.getBackgroundSpriteRenderer()) {
-        nlohmann::json bgJson;
-        dzemikk::to_json(bgJson, *slider.getBackgroundSpriteRenderer());
-        json["backgroundRenderer"] = bgJson;
-    } else {
-        json["backgroundRenderer"] = nlohmann::json::object();
-    }
-
-    if (slider.getFillSpriteRenderer()) {
-        nlohmann::json fillJson;
-        dzemikk::to_json(fillJson, *slider.getFillSpriteRenderer());
-        json["fillRenderer"] = fillJson;
-    } else {
-        json["fillRenderer"] = nlohmann::json::object();
-    }
-
-    if (slider.getHandleSpriteRenderer()) {
-        nlohmann::json handleJson;
-        dzemikk::to_json(handleJson, *slider.getHandleSpriteRenderer());
-        json["handleRenderer"] = handleJson;
-    } else {
-        json["handleRenderer"] = nlohmann::json::object();
-    }
 }
 
 inline void from_json(const nlohmann::json& json, UISlider& slider, AssetManager* assetManager) {
@@ -132,45 +108,6 @@ inline void from_json(const nlohmann::json& json, UISlider& slider, AssetManager
         std::vector<std::string> actionIds = actionIdsJson.get<std::vector<std::string>>();
         for (const auto& actionId : actionIds) {
             slider.addEventListener(eventType, actionId);
-        }
-    }
-
-    auto* owner = slider.getOwner();
-    ImageRenderer* backgroundRenderer = nullptr;
-    ImageRenderer* fillRenderer = nullptr;
-    ImageRenderer* handleRenderer = nullptr;
-
-    if (json.contains("backgroundRenderer") && json["backgroundRenderer"].is_object() &&
-        !json["backgroundRenderer"].empty()) {
-        backgroundRenderer = owner->addComponent<ImageRenderer>();
-        backgroundRenderer->setRectTransform(owner->rectTransform());
-        dzemikk::from_json(json["backgroundRenderer"], *backgroundRenderer, assetManager);
-        slider.setBackgroundSpriteRenderer(backgroundRenderer);
-    }
-
-    for (auto* child : owner->getChildren()) {
-        if (child == nullptr) {
-            continue;
-        }
-        const auto& childName = child->getName();
-        if (childName.find("_Fill") != std::string::npos) {
-            auto* image = child->addComponent<ImageRenderer>();
-            image->setRectTransform(child->rectTransform());
-            if (json.contains("fillRenderer") && json["fillRenderer"].is_object() &&
-                !json["fillRenderer"].empty()) {
-                dzemikk::from_json(json["fillRenderer"], *image, assetManager);
-            }
-            fillRenderer = image;
-            slider.setFillSpriteRenderer(fillRenderer);
-        } else if (childName.find("_Handle") != std::string::npos) {
-            auto* image = child->addComponent<ImageRenderer>();
-            image->setRectTransform(child->rectTransform());
-            if (json.contains("handleRenderer") && json["handleRenderer"].is_object() &&
-                !json["handleRenderer"].empty()) {
-                dzemikk::from_json(json["handleRenderer"], *image, assetManager);
-            }
-            handleRenderer = image;
-            slider.setHandleSpriteRenderer(handleRenderer);
         }
     }
 }

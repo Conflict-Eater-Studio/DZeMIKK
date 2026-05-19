@@ -144,30 +144,47 @@ float UISlider::getValue() const {
     return _value;
 }
 
-void UISlider::setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _backgroundSpriteRenderer = spriteRenderer;
-    applyVisualState();
-}
-
-void UISlider::setFillSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _fillSpriteRenderer = spriteRenderer;
-    applyVisualState();
-}
-
-void UISlider::setHandleSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _handleSpriteRenderer = spriteRenderer;
-    applyVisualState();
-}
-
 ImageRenderer* UISlider::getBackgroundSpriteRenderer() const {
+    if (_backgroundSpriteRenderer == nullptr) {
+        _backgroundSpriteRenderer = _owner->getComponent<ImageRenderer>();
+    }
+
     return _backgroundSpriteRenderer;
 }
 
 ImageRenderer* UISlider::getFillSpriteRenderer() const {
+    if (_fillSpriteRenderer == nullptr) {
+        for (const auto& child : _owner->getChildren()) {
+            if (child == nullptr || child->getName().find("_Fill") == std::string::npos) {
+                continue;
+            }
+
+            auto* img = child->getComponent<ImageRenderer>();
+            if (img != nullptr) {
+                _fillSpriteRenderer = img;
+                break;
+            }
+        }
+    }
+
     return _fillSpriteRenderer;
 }
 
 ImageRenderer* UISlider::getHandleSpriteRenderer() const {
+    if (_handleSpriteRenderer == nullptr) {
+        for (const auto& child : _owner->getChildren()) {
+            if (child == nullptr || child->getName().find("_Handle") == std::string::npos) {
+                continue;
+            }
+
+            auto* img = child->getComponent<ImageRenderer>();
+            if (img != nullptr) {
+                _handleSpriteRenderer = img;
+                break;
+            }
+        }
+    }
+
     return _handleSpriteRenderer;
 }
 
@@ -177,15 +194,15 @@ void UISlider::setStyle(const Style& style) {
 }
 
 void UISlider::applyVisualState() {
-    if (_backgroundSpriteRenderer != nullptr) {
+    if (getBackgroundSpriteRenderer() != nullptr) {
         _backgroundSpriteRenderer->setColor(_style.backgroundColor);
     }
 
-    if (_fillSpriteRenderer != nullptr) {
+    if (getFillSpriteRenderer() != nullptr) {
         _fillSpriteRenderer->setColor(_style.fillColor);
     }
 
-    if (_handleSpriteRenderer == nullptr) {
+    if (getHandleSpriteRenderer() == nullptr) {
         return;
     }
 

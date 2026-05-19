@@ -61,10 +61,6 @@ ImageRenderer* UIButton::getSpriteRenderer() const {
         _spriteRenderer = _owner->getComponent<ImageRenderer>();
     }
 
-    if (_spriteRenderer == nullptr) {
-        return nullptr;
-    }
-
     return _spriteRenderer;
 }
 } // namespace dzemikk

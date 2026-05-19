@@ -12,6 +12,12 @@
 #include <boost/uuid.hpp>
 
 namespace dzemikk {
+UIDropdown::UIDropdown() {
+    UIActionRegistry::get().registerAction(
+        [&](const UIEvent& event) { toggle(); },
+        boost::uuids::to_string(boost::uuids::random_generator()()));
+};
+
 void UIDropdown::processPointer(const glm::vec2& point, bool isDown, bool pressedThisFrame,
                                 bool releasedThisFrame, double scrollDelta) {
     setPointerDown(isDown);
@@ -22,19 +28,11 @@ void UIDropdown::processPointer(const glm::vec2& point, bool isDown, bool presse
     updateHoverState();
     processStandardPressRelease(pressedThisFrame, releasedThisFrame);
 
-    if (pressedInsideMain && _backgroundSpriteRenderer->getRectTransform()->containsPoint(point)) {
-        _isOpen = !_isOpen;
-        if (_optionsContainerGO) {
-            _optionsContainerGO->enabled(_isOpen);
-        }
-        onClick();
-    }
-
     applyVisualState();
 }
 
 void UIDropdown::updateOptionVisuals() {
-    if (_optionsContainerGO == nullptr) {
+    if (getOptionsContainerGO() == nullptr) {
         return;
     }
 
@@ -99,44 +97,11 @@ void UIDropdown::onValueChanged() {
     emit(UIEventType::ValueChanged);
 }
 
-void UIDropdown::setArrowSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _arrowSpriteRenderer = spriteRenderer;
-    if (_arrowSpriteRenderer) {
-        _arrowSpriteRenderer->setColor(_style.arrowColor);
-    }
-}
-
-void UIDropdown::setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _backgroundSpriteRenderer = spriteRenderer;
-    if (_backgroundSpriteRenderer) {
-        _backgroundSpriteRenderer->setColor(_style.normalColor);
-    }
-}
-
-void UIDropdown::setOptionsBackgroundRenderer(ImageRenderer* spriteRenderer) {
-    _optionsBackgroundRenderer = spriteRenderer;
-    if (_optionsBackgroundRenderer) {
-        _optionsBackgroundRenderer->setColor(_style.normalColor);
-    }
-}
-
 void UIDropdown::applyVisualState() {
-    if (_backgroundSpriteRenderer) {
-        if (pointerInside() && pointerDown()) {
-            _backgroundSpriteRenderer->setColor(_style.pressedColor);
-        } else if (isHovered()) {
-            _backgroundSpriteRenderer->setColor(_style.hoverColor);
-        } else {
-            _backgroundSpriteRenderer->setColor(_style.normalColor);
-        }
-    }
-
-    if (_triggerGO) {
-        auto* textRenderer =
-            _triggerGO->getComponent<UIButton>()->getTextGO()->getComponent<UITextRenderer>();
-        if (textRenderer) {
-            textRenderer->text = getSelectedOption().text;
-        }
+    auto* textRenderer =
+        _owner->getComponent<UIButton>()->getTextGO()->getComponent<UITextRenderer>();
+    if (textRenderer) {
+        textRenderer->text = getSelectedOption().text;
     }
 
     if (!_optionButtons.empty()) {
@@ -165,13 +130,6 @@ void UIDropdown::toggle() {
     }
 }
 
-void UIDropdown::setOptionsContainerGO(GameObject* go) {
-    _optionsContainerGO = go;
-    if (_optionsContainerGO) {
-        _optionsContainerGO->enabled(_isOpen);
-    }
-}
-
 void UIDropdown::setStyle(const Style& style) {
     _style = style;
     applyVisualState();
@@ -184,7 +142,28 @@ UIDropdown::Option UIDropdown::getSelectedOption() const {
     return {};
 }
 
-void UIDropdown::setTriggerGO(GameObject* go) {
-    _triggerGO = go;
+GameObject* UIDropdown::getOptionsContainerGO() {
+    if (_optionsContainerGO == nullptr) {
+        for (auto* child : _owner->getChildren()) {
+            if (child->getName().find("_OptionsBG") != std::string::npos) {
+                _optionsContainerGO = child;
+                break;
+            }
+        }
+    }
+
+    return _optionsContainerGO;
+}
+
+ImageRenderer* UIDropdown::getOptionsBackgroundRenderer() {
+    if (getOptionsContainerGO() == nullptr) {
+        return nullptr;
+    }
+
+    if (_optionsBackgroundRenderer == nullptr) {
+        _optionsBackgroundRenderer = _optionsContainerGO->getComponent<ImageRenderer>();
+    }
+
+    return _optionsBackgroundRenderer;
 }
 } // namespace dzemikk

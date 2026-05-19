@@ -42,7 +42,7 @@ class UIDropdown : public IUIInteractable {
         glm::vec4 highlightOptColor = glm::vec4(0.2F, 0.6F, 1.0F, 1.0F);
     };
 
-    UIDropdown() = default;
+    UIDropdown();
     UIDropdown(const UIDropdown& other) = delete;
     UIDropdown& operator=(const UIDropdown& other) = delete;
     UIDropdown(UIDropdown&& other) noexcept = delete;
@@ -84,28 +84,15 @@ class UIDropdown : public IUIInteractable {
 
     void toggle();
 
-    void setOptionsContainerGO(GameObject* go);
-    [[nodiscard]] GameObject* getOptionsContainerGO() const {
-        return _optionsContainerGO;
-    }
+    [[nodiscard]] GameObject* getOptionsContainerGO();
 
-    void setTriggerGO(GameObject* go);
-    [[nodiscard]] GameObject* getTriggerGO() const {
-        return _triggerGO;
-    }
-
-    void setOptionRender(const OptionRender& optionRender) {
-        _optionRender = optionRender;
-    }
-    [[nodiscard]] OptionRender getOptionRender() const {
-        return _optionRender;
-    }
-
+    [[nodiscard]] OptionRender getOptionRender() const;
     [[nodiscard]] Option getSelectedOption() const;
 
-    void setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer);
-    void setArrowSpriteRenderer(ImageRenderer* spriteRenderer);
-    void setOptionsBackgroundRenderer(ImageRenderer* spriteRenderer);
+    // [[nodiscard]] ImageRenderer* getArrowSpriteRenderer();
+    [[nodiscard]] ImageRenderer* getOptionsBackgroundRenderer();
+    // [[nodiscard]] ImageRenderer* getScrollbarSpriteRenderer();
+    // [[nodiscard]] ImageRenderer* getScrollbarHandleSpriteRenderer();
 
     void updateOptionVisuals();
     void applyVisualState();
@@ -121,16 +108,15 @@ class UIDropdown : public IUIInteractable {
 
     bool _pointerInsideMain = false;
 
-    GameObject* _triggerGO = nullptr;
     GameObject* _optionsContainerGO = nullptr;
     GameObject* _scrollbarGO = nullptr;
 
-    ImageRenderer* _backgroundSpriteRenderer = nullptr;
     ImageRenderer* _arrowSpriteRenderer = nullptr;
     ImageRenderer* _optionsBackgroundRenderer = nullptr;
-    std::vector<UIButton*> _optionButtons;
     ImageRenderer* _scrollbarSpriteRenderer = nullptr;
     ImageRenderer* _scrollbarHandleSpriteRenderer = nullptr;
+
+    std::vector<UIButton*> _optionButtons;
 };
 } // namespace dzemikk
 

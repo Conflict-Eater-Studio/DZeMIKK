@@ -44,22 +44,6 @@ inline void to_json(nlohmann::json& json, const UICheckbox& checkbox) {
         }
         json["events"][eventKey] = actionIds;
     }
-
-    if (checkbox.getBackgroundSpriteRenderer()) {
-        nlohmann::json bgJson;
-        dzemikk::to_json(bgJson, *checkbox.getBackgroundSpriteRenderer());
-        json["backgroundRenderer"] = bgJson;
-    } else {
-        json["backgroundRenderer"] = nlohmann::json::object();
-    }
-
-    if (checkbox.getCheckmarkSpriteRenderer()) {
-        nlohmann::json checkJson;
-        dzemikk::to_json(checkJson, *checkbox.getCheckmarkSpriteRenderer());
-        json["checkmarkRenderer"] = checkJson;
-    } else {
-        json["checkmarkRenderer"] = nlohmann::json::object();
-    }
 }
 inline void from_json(const nlohmann::json& json, UICheckbox& checkbox,
                       AssetManager* assetManager) {
@@ -102,36 +86,6 @@ inline void from_json(const nlohmann::json& json, UICheckbox& checkbox,
         std::vector<std::string> actionIds = actionIdsJson.get<std::vector<std::string>>();
         for (const auto& actionId : actionIds) {
             checkbox.addEventListener(eventType, actionId);
-        }
-    }
-
-    auto* owner = checkbox.getOwner();
-    ImageRenderer* backgroundRenderer = nullptr;
-    ImageRenderer* checkmarkRenderer = nullptr;
-
-    if (json.contains("backgroundRenderer") && json["backgroundRenderer"].is_object() &&
-        !json["backgroundRenderer"].empty()) {
-        backgroundRenderer = owner->addComponent<ImageRenderer>();
-        backgroundRenderer->setRectTransform(owner->rectTransform());
-        dzemikk::from_json(json["backgroundRenderer"], *backgroundRenderer, assetManager);
-        checkbox.setBackgroundSpriteRenderer(backgroundRenderer);
-    }
-
-    for (auto* child : owner->getChildren()) {
-        if (child == nullptr) {
-            continue;
-        }
-        const auto& childName = child->getName();
-        if (childName.find("_Checkmark") != std::string::npos) {
-            auto* image = child->addComponent<ImageRenderer>();
-            image->setRectTransform(child->rectTransform());
-            if (json.contains("checkmarkRenderer") && json["checkmarkRenderer"].is_object() &&
-                !json["checkmarkRenderer"].empty()) {
-                dzemikk::from_json(json["checkmarkRenderer"], *image, assetManager);
-            }
-            checkmarkRenderer = image;
-            checkbox.setCheckmarkSpriteRenderer(checkmarkRenderer);
-            break;
         }
     }
 }

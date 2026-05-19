@@ -39,9 +39,6 @@ class UISlider : public IUIInteractable {
     void onValueChanged(float newValue);
     [[nodiscard]] float getValue() const;
 
-    void setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer);
-    void setFillSpriteRenderer(ImageRenderer* spriteRenderer);
-    void setHandleSpriteRenderer(ImageRenderer* spriteRenderer);
     [[nodiscard]] ImageRenderer* getBackgroundSpriteRenderer() const;
     [[nodiscard]] ImageRenderer* getFillSpriteRenderer() const;
     [[nodiscard]] ImageRenderer* getHandleSpriteRenderer() const;
