@@ -12,13 +12,13 @@
 #include <random>
 
 namespace game {
-World::World(int seed) : _rng(seed), _grid(std::make_unique<HexGrid>()){}
+World::World(int seed) : _rng(seed) {}
 
 void World::start() {
 }
 
 void World::update(double dt) {
-    for (const auto& chunk : _grid->getChunks()) {
+    for (const auto& chunk : _grid.getChunks()) {
         for (const auto& [coord, cell] : chunk.second->getHexes()) {
             if (cell->getGenState() == HexCell::GenState::Blocked ||
                 _spawnedHexes.contains(coord)) {
@@ -46,7 +46,7 @@ void World::update(double dt) {
 }
 
 void World::renderChunk(boost::uuids::uuid id) {
-    for (const auto& hex : _grid->getChunks().at(id)->getHexes()) {
+    for (const auto& hex : _grid.getChunks().at(id)->getHexes()) {
         auto cell = hex.second;
 
         if (cell->getGenState() == HexCell::GenState::Blocked) {
