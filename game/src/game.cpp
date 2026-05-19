@@ -624,6 +624,31 @@ void Game::setupInputCallbacks() {
     static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
     static auto lastHitColor = glm::vec4(1.0F);
 
+    _engine->getInput()->OnMouseButtonPressed.addListener([this](dzemikk::MouseButtonPressedEvent& event) {
+        if (event.GetMouseButton() != GLFW_MOUSE_BUTTON_LEFT) {
+            return;
+        }
+
+        int windowWidth = 0;
+        int windowHeight = 0;
+        glfwGetWindowSize(_engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
+
+        dzemikk::Collider* collider = _engine->getCollisions()->raycast(
+        _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
+        _engine->getInput()->GetMousePosition(), static_cast<float>(windowWidth),
+        static_cast<float>(windowHeight));
+
+        if (collider) {
+            if (_engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+                auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
+                if (wh != nullptr && wh->getHexCell() != nullptr) {
+                    std::vector<game::HexGrid::HexCellPtr> _path = _hexGrid->findPath(_playerEntity->getCell(), wh->getHexCell());
+                    _playerEntity->setPath(_path);
+                }
+            }
+        }
+});
+
     _engine->SetUserUpdateCallback([this]() {
         if (!_engine || !_engine->getInput()) {
             return;
@@ -670,14 +695,6 @@ void Game::setupInputCallbacks() {
 
         if (collider) {
             currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
-
-            if (_engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-                auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
-                if (wh != nullptr && wh->getHexCell() != nullptr) {
-                    std::vector<game::HexGrid::HexCellPtr> _path = _hexGrid->findPath(_playerEntity->getCell(), wh->getHexCell());
-                    _playerEntity->setPath(_path);
-                }
-            }
         }
 
         if (currentRenderer != lastHitRenderer) {

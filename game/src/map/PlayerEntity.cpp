@@ -33,4 +33,23 @@ void PlayerEntity::tryMove(const HexCellPtr& targetCell) {
         break;
     }
 }
+void PlayerEntity::update(double dt) {
+    Entity::update(dt);
+    if (_path.empty()) {
+        return;
+    }
+
+    _duration += dt;
+
+    if (_duration > 0.1f && _moveCount < _path.size()) {
+        HexCellPtr ptr = _path[_moveCount % _path.size()];
+        tryMove(ptr);
+        _duration = 0.0f;
+        _moveCount++;
+    }
+}
+void PlayerEntity::setPath(const std::vector<HexCellPtr>& path) {
+    _path = path;
+    _moveCount = 1;
+}
 } // namespace game

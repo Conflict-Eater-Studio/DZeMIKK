@@ -274,10 +274,10 @@ std::vector<HexGrid::HexCellPtr> HexGrid::findPath(const HexCellPtr& startCell, 
 
     struct PathNode {
         HexCoord coord;
-        int priority;
+        int fScore;
 
         bool operator<(const PathNode& other) const {
-            return priority > other.priority;
+            return fScore > other.fScore;
         }
     };
 
