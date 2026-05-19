@@ -17,6 +17,28 @@ inline void to_json(nlohmann::json& json, const UIDropdown& dropdown) {
     }
     json["triggerActionId"] = boost::uuids::to_string(dropdown.getTriggerActionId());
 
+    auto ea = dropdown.getEventActions();
+    for (const auto& [eventType, actionIds] : ea) {
+        const char* eventKey = nullptr;
+        switch (eventType) {
+        case UIEventType::Click:
+            eventKey = "click";
+            break;
+        case UIEventType::Enter:
+            eventKey = "enter";
+            break;
+        case UIEventType::Exit:
+            eventKey = "exit";
+            break;
+        case UIEventType::ValueChanged:
+            eventKey = "valueChanged";
+            break;
+        default:
+            continue;
+        }
+        json["events"][eventKey] = actionIds;
+    }
+
     nlohmann::json optionsArray = nlohmann::json::array();
     for (const auto& opt : dropdown.getOptions()) {
         nlohmann::json optionJson;
@@ -115,6 +137,28 @@ inline void from_json(const nlohmann::json& json, UIDropdown& dropdown, AssetMan
 
     dropdown.init(style, render, opts, selectedIndex,
                   boost::uuids::string_generator()(json["triggerActionId"].get<std::string>()));
+
+    if (json.contains("events")) {
+        for (const auto& [eventKey, actionIdsJson] : json["events"].items()) {
+            UIEventType eventType = UIEventType::Click;
+            if (eventKey == "click") {
+                eventType = UIEventType::Click;
+            } else if (eventKey == "enter") {
+                eventType = UIEventType::Enter;
+            } else if (eventKey == "exit") {
+                eventType = UIEventType::Exit;
+            } else if (eventKey == "valueChanged") {
+                eventType = UIEventType::ValueChanged;
+            } else {
+                continue;
+            }
+
+            std::vector<std::string> actionIds = actionIdsJson.get<std::vector<std::string>>();
+            for (const auto& actionId : actionIds) {
+                dropdown.addEventListener(eventType, actionId);
+            }
+        }
+    }
 }
 
 inline void postUIDropdownDeserialize(Component& component) {
