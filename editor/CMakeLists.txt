@@ -9,6 +9,7 @@ set(EDITOR_SOURCES
     ${SRC_DIR}/hierarchyPanel.cpp
     ${SRC_DIR}/inspectorPanel.cpp
     ${SRC_DIR}/assetManagerPanel.cpp
+    ${SRC_DIR}/scenePanel.cpp
     ${SRC_DIR}/inspectors/transformInspector.cpp
     ${SRC_DIR}/inspectors/inspectorRegistry.cpp
     ${SRC_DIR}/inspectors/meshRendererInspector.cpp
@@ -36,6 +37,7 @@ set(EDITOR_HEADERS
     ${INC_DIR}/hierarchyPanel.h
     ${INC_DIR}/inspectorPanel.h
     ${INC_DIR}/assetManagerPanel.h
+    ${INC_DIR}/scenePanel.h
     ${INC_DIR}/inspectors/transformInspector.h
     ${INC_DIR}/inspectors/inspectorRegistry.h
     ${INC_DIR}/inspectors/meshRendererInspector.h

@@ -2,6 +2,7 @@
 #define DZEMIKK_RENDERER_H
 
 #include "core/iEngineModule.h"
+#include "core/engine.h"
 #include "frustum.h"
 #include "skybox.h"
 #include <memory>   
@@ -9,6 +10,8 @@
 #include "renderer/renderPasses/IRenderPass.h"
 #include "renderer/cameraSystem.h"
 #include "renderer/lightSystem.h"
+
+#include "renderer/framebuffer.h"
 
 namespace dzemikk {
     class Camera;
@@ -24,7 +27,7 @@ namespace dzemikk {
      */
     class Renderer : public IEngineModule {
     public:
-        Renderer() = default;
+        Renderer(EngineMode engineMode) : _engineMode(engineMode) {};
         ~Renderer() = default;
 
 #pragma region Disable copy/move
@@ -100,6 +103,12 @@ namespace dzemikk {
             return _cameraSystem;
         }
 
+        void setViewportSize(uint32_t width, uint32_t height);
+
+        [[nodiscard]] Framebuffer* getSceneFramebuffer() const {
+            return _sceneFramebuffer.get();
+        }
+
     private:
 #pragma region Internal Data
       /**
@@ -142,6 +151,13 @@ namespace dzemikk {
         CameraSystem _cameraSystem;
 
         LightSystem _lightSystem;
+
+        std::unique_ptr<Framebuffer> _sceneFramebuffer;
+
+        uint32_t _viewportWidth = 1920;
+        uint32_t _viewportHeight = 1080;
+
+        EngineMode _engineMode = EngineMode::Game;
 
         /**
          * @brief Prepares frame before rendering.

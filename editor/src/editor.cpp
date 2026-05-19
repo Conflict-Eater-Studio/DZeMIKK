@@ -18,6 +18,7 @@
 #include "hierarchyPanel.h"
 #include "inspectorPanel.h"
 #include "assetManagerPanel.h"
+#include "scenePanel.h"
 
 #include "ecs/serialize/sceneSerializer.h"
 
@@ -35,6 +36,7 @@ Editor::Editor(dzemikk::Engine* engine) : _engine(engine) {
     _hierarchyPanel = std::make_unique<HierarchyPanel>();
     _inspectorPanel = std::make_unique<InspectorPanel>();
     _assetManagerPanel = std::make_unique<AssetManagerPanel>();
+    _scenePanel = std::make_unique<ScenePanel>();
 }
 
 Editor::~Editor() = default;
@@ -62,6 +64,8 @@ void Editor::start() {
         if (_showAssetManager) {
             _assetManagerPanel->draw(_engine->getAssetManager());
         }
+
+        _scenePanel->draw(_engine->getRenderer());
 
         renderBottomBar();
 
@@ -177,13 +181,19 @@ void Editor::setupEditor() {
     _activeScene = scene.get();
 
     for (auto& obj : _activeScene->getObjects()) {
-        if (obj->getComponent<dzemikk::Camera>()) {
-            auto camera = obj->getComponent<dzemikk::Camera>();
-            _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(camera);
+        if (auto camera = obj->getComponent<dzemikk::Camera>()) {
+            if (camera->getProjectionType() == dzemikk::Camera::ProjectionType::Perspective) {
+                auto camera = obj->getComponent<dzemikk::Camera>();
+                _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(camera);
+            }
 
-            break;
+            if (camera->getProjectionType() == dzemikk::Camera::ProjectionType::Orthographic) {
+                auto camera = obj->getComponent<dzemikk::Camera>();
+                _engine->getRenderer()->getCameraSystem().setActiveUICamera(camera);
+            }
         }
     }
+
     _editorInitialized = true;
 }
 
@@ -279,6 +289,7 @@ void Editor::renderDockspace() {
         ImGui::DockBuilderDockWindow("Hierarchy", dockLeft);
         ImGui::DockBuilderDockWindow("Inspector", dockRight);
         ImGui::DockBuilderDockWindow("Asset Manager", dockBottom);
+        ImGui::DockBuilderDockWindow("Scene", dockMain);
 
         ImGui::DockBuilderFinish(dockspaceID);
     }

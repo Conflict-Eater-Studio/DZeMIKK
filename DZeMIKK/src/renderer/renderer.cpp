@@ -23,6 +23,10 @@
 #endif
 
 void dzemikk::Renderer::initialize() {
+    if (_engineMode == EngineMode::Editor) {
+        _sceneFramebuffer = std::make_unique<Framebuffer>(_viewportWidth, _viewportHeight);
+    }
+
     _context = RenderContext(_cameraSystem.getActiveSceneCamera(),
                              _cameraSystem.getActiveUICamera(), glm::mat4(1.0f),
                              glm::mat4(1.0f),
@@ -62,6 +66,11 @@ void dzemikk::Renderer::uninitialize() {
 void dzemikk::Renderer::render() {
     _lightSystem.update(_context);
 
+    if (_engineMode == EngineMode::Editor) {
+        _sceneFramebuffer->bind();
+        glViewport(0, 0, _viewportWidth, _viewportHeight);
+    }
+
     setupFrame();
     _cameraSystem.update(_context);
     _context.sceneCamera = _cameraSystem.getActiveSceneCamera();
@@ -69,6 +78,10 @@ void dzemikk::Renderer::render() {
 
     for (auto& pass : _passes)
         pass->execute(_context);
+
+    if (_engineMode == EngineMode::Editor) {
+        _sceneFramebuffer->unbind();
+    }
 
 #if DZEMIKK_DEV_TOOLS
     drawDebugUI();
@@ -95,6 +108,10 @@ const dzemikk::AssetHandle<dzemikk::Skybox> dzemikk::Renderer::getSkybox() const
 }
 
 void dzemikk::Renderer::setupFrame() {
+    if (_engineMode == EngineMode::Editor) {
+        glViewport(0, 0, _viewportWidth, _viewportHeight);    
+    }
+
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
 
@@ -268,3 +285,19 @@ void dzemikk::Renderer::drawDebugUI() {
 }
 
 #endif
+
+void dzemikk::Renderer::setViewportSize(uint32_t width, uint32_t height) {
+
+    if (width == 0 || height == 0) {
+        return;
+    }
+
+    if (_viewportWidth == width && _viewportHeight == height) {
+        return;
+    }
+
+    _viewportWidth = width;
+    _viewportHeight = height;
+
+    _sceneFramebuffer->resize(width, height);
+}

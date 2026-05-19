@@ -17,6 +17,7 @@ namespace editor {
 class HierarchyPanel;
 class InspectorPanel;
 class AssetManagerPanel;
+class ScenePanel;
 
 class Editor {
   public:
@@ -57,6 +58,7 @@ class Editor {
     std::unique_ptr<HierarchyPanel> _hierarchyPanel;
     std::unique_ptr<InspectorPanel> _inspectorPanel;
     std::unique_ptr<AssetManagerPanel> _assetManagerPanel;
+    std::unique_ptr<ScenePanel> _scenePanel;
 
     std::vector<std::function<void()>> _deferredOps;
 };

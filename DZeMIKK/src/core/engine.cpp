@@ -46,7 +46,7 @@ Engine::~Engine() {
 void Engine::init() {
     _mainWindow = std::make_unique<Window>(1920, 1080, "DZeMIKK");
     _assetManager = std::make_unique<AssetManager>();
-    _renderer = std::make_unique<Renderer>();
+    _renderer = std::make_unique<Renderer>(_mode);
     _sceneManager = std::make_unique<SceneManager>();
     _time = std::make_unique<Time>();
     _animationModule = std::make_unique<AnimationModule>();
@@ -157,8 +157,8 @@ void Engine::start() {
         _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
         if (_mode == EngineMode::Game) {
-            // updateCameraWASD(.3f);
-            // updateCameraArrows(0.3f);
+            //updateCameraWASD(.3f);
+            //updateCameraArrows(0.3f);
             updateMouseUI(deltaTime);
         }
 
