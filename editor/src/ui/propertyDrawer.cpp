@@ -83,7 +83,7 @@ bool editor::PropertyDrawer::drawShader(const std::string& label,
 }
 
 bool editor::PropertyDrawer::drawColor(const std::string& label, glm::vec4& color) {
-    return ImGui::ColorEdit4("Color", &color.x);
+    return ImGui::ColorEdit4(label.c_str(), &color.x);
 }
 
 bool editor::PropertyDrawer::drawMaterials(const std::string& label, dzemikk::MeshRenderer* renderer,

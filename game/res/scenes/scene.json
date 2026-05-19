@@ -446,8 +446,8 @@
                                         1.0
                                     ],
                                     "size": [
-                                        1580.0,
-                                        1080.0
+                                        0.0,
+                                        0.0
                                     ],
                                     "type": "RectTransform",
                                     "zIndex": 0
@@ -570,6 +570,130 @@
                     "enabled": true,
                     "id": "b6b0e094-d3ad-4391-9b06-6e6506e4b37c",
                     "name": "UIText"
+                },
+                {
+                    "children": [
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "anchorMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "id": "3319afd7-ec43-4b35-8f59-21270cdc13f8",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 2
+                                },
+                                {
+                                    "color": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "font": "fonts/UncialAntiqua-Regular.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "7b04aabf-62f3-48b1-adbc-2c66b66adaec",
+                                    "scale": 1.0,
+                                    "text": "Button",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "a925b9ac-27be-4b6a-a2f6-251346be16df",
+                            "name": "Button_Text"
+                        }
+                    ],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                0.5
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                0.5
+                            ],
+                            "id": "e96fa2c9-57e3-44ec-9bd7-0e81ae099d7a",
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                200.0,
+                                60.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 1
+                        },
+                        {
+                            "hoverColor": [
+                                0.14705848693847656,
+                                0.0,
+                                1.0,
+                                1.0
+                            ],
+                            "id": "c1b5bd79-288e-40f0-8cf9-a81bd667c7aa",
+                            "normalColor": [
+                                0.9019607901573181,
+                                0.07074201852083206,
+                                0.07074201852083206,
+                                1.0
+                            ],
+                            "pressedColor": [
+                                0.0,
+                                1.0,
+                                0.529411792755127,
+                                1.0
+                            ],
+                            "type": "UIButton"
+                        },
+                        {
+                            "color": [
+                                0.9019607901573181,
+                                0.07074201852083206,
+                                0.07074201852083206,
+                                1.0
+                            ],
+                            "id": "20192a24-bd3b-40af-963a-82e8eacfedc2",
+                            "materialPath": "shaders/quad",
+                            "type": "ImageRenderer"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "505c7b8d-a02d-4bd8-9c3e-8a865a544822",
+                    "name": "Button"
                 }
             ],
             "components": [
@@ -579,7 +703,7 @@
                         0.5
                     ],
                     "anchorMin": [
-                        6.0,
+                        0.5,
                         0.5
                     ],
                     "id": "3bb8b244-7a8c-4527-bc8f-e36ca252a17f",
@@ -597,7 +721,7 @@
                         1.0
                     ],
                     "size": [
-                        400.0,
+                        1920.0,
                         1080.0
                     ],
                     "type": "RectTransform",

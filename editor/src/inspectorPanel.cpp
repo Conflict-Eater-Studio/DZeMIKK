@@ -61,6 +61,7 @@ editor::InspectorPanel::InspectorPanel() {
     registerInspector<dzemikk::UITextRenderer, UITextRendererInspector>("UITextRenderer");
     registerInspector<dzemikk::TextRenderer, TextRendererInspector>("TextRenderer");
     registerInspector<dzemikk::SkinnedMeshRenderer, SkinnedMeshRendererInspector>("SkinnedMeshRenderer");
+    registerInspector<dzemikk::UIButton, UIButtonInspector>("UIButton");
 
     _factories = {
         {"Transform", [](auto* go) { return go->getComponent<dzemikk::Transform>() != nullptr; },
