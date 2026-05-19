@@ -248,12 +248,9 @@ void Game::start() {
     taskSk.context = sCtx;
     taskSk.onLoad = onSkyboxLoad;
     engine->getAssetManager()->getAsync("textures/Daylight Box_Pieces", taskSk);
-
     
     auto scene = assetManager->get<dzemikk::Scene>("scenes/scene.json");
-
     std::shared_ptr<dzemikk::Scene> sceneShared(scene.get(), [](dzemikk::Scene*) {});
-
     sceneManager->loadScene(sceneShared);
     sceneManager->setActiveScene(sceneShared);
 

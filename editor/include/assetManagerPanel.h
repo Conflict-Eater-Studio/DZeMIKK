@@ -26,6 +26,7 @@ class AssetManagerPanel {
     static void insert(Node& root, const std::string& path);
     void drawNode(const Node& node, const std::string& path);
     const Node* findNode(const Node& node, const std::string& path);
+    std::string openSavePrefabDialog();
 };
 
 } // namespace editor

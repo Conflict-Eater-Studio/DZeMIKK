@@ -55,6 +55,22 @@ void editor::HierarchyPanel::draw(dzemikk::Scene* scene, dzemikk::GameObject*& s
         ImGui::EndDragDropTarget();
     }
 
+    ImVec2 size = ImGui::GetContentRegionAvail();
+
+    if (ImGui::BeginDragDropTarget()) {
+
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PREFAB")) {
+
+            std::string path = (const char*)payload->Data;
+
+            if (_editor) {
+                _editor->instantiatePrefab(path, nullptr); 
+            }
+        }
+
+        ImGui::EndDragDropTarget();
+    }
+
     ImGui::End();
 }
 
@@ -87,13 +103,27 @@ void editor::HierarchyPanel::drawNode(dzemikk::GameObject* gameObject,
 
     if (ImGui::BeginDragDropTarget()) {
 
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECT")) {
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_GAMEOBJECT")) {
 
             auto* dragged = *static_cast<dzemikk::GameObject**>(payload->Data);
 
             if (dragged && dragged != gameObject && _editor) {
 
                 _editor->reparentObject(dragged, gameObject);
+            }
+        }
+
+        ImGui::EndDragDropTarget();
+    }
+
+    if (ImGui::BeginDragDropTarget()) {
+
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PREFAB")) {
+
+            const char* path = (const char*)payload->Data;
+
+            if (_editor) {
+                _editor->instantiatePrefab(path, gameObject); 
             }
         }
 
@@ -127,6 +157,7 @@ void editor::HierarchyPanel::drawNode(dzemikk::GameObject* gameObject,
         }
         ImGui::EndPopup();
     }
+
 
     if (opened) {
         for (auto* child : gameObject->getChildren()) {

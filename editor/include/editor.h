@@ -33,6 +33,7 @@ class Editor {
     void createUIButton(dzemikk::GameObject* parent);
     void deleteObject(dzemikk::GameObject* gameObject);
     void reparentObject(dzemikk::GameObject* child, dzemikk::GameObject* parent);
+    void instantiatePrefab(const std::string& path, dzemikk::GameObject* parent); 
 
   private:
     void setupEditor();

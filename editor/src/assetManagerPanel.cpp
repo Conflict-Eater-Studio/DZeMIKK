@@ -5,6 +5,8 @@
 #include <cstring>
 #include <imgui.h>
 #include <fstream>
+#include <windows.h>
+#include <commdlg.h>
 
 #include <ecs/gameobject.h>
 #include <ecs/serialize/prefabSerializer.h>
@@ -44,6 +46,9 @@ static const char* getAssetDragType(const std::string& path) {
 
     if (path.ends_with(".wav"))
         return "ASSET_AUDIO";
+
+    if (path.ends_with(".prefab"))
+        return "ASSET_PREFAB";
 
     return "ASSET_PATH";
 }
@@ -104,15 +109,15 @@ void editor::AssetManagerPanel::draw(dzemikk::AssetManager* assetManager) {
 
                 auto json = dzemikk::PrefabSerializer::serialize(*gameObject);
 
-                std::filesystem::create_directories("Assets/Prefabs");
+                std::string path = openSavePrefabDialog();
 
-                std::string path = "Assets/Prefabs/" + gameObject->getName() + ".prefab";
+                if (!path.empty()) {
+                    std::ofstream file(path);
 
-                std::ofstream file(path);
-
-                if (file.is_open()) {
-                    file << json.dump(4);
-                    file.close();
+                    if (file.is_open()) {
+                        file << json.dump(4);
+                        file.close();
+                    }
                 }
             }
         }
@@ -267,4 +272,25 @@ editor::AssetManagerPanel::findNode(const editor::AssetManagerPanel::Node& node,
     }
 
     return current;
+}
+
+std::string editor::AssetManagerPanel::openSavePrefabDialog() {
+    char fileName[MAX_PATH] = "";
+
+    OPENFILENAMEA ofn{};
+    ofn.lStructSize = sizeof(OPENFILENAMEA);
+    ofn.hwndOwner = nullptr;
+    ofn.lpstrFile = fileName;
+    ofn.nMaxFile = MAX_PATH;
+
+    ofn.lpstrFilter = "Prefab Files (*.prefab)\0*.prefab\0All Files (*.*)\0*.*\0";
+    ofn.nFilterIndex = 1;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+    ofn.lpstrDefExt = "prefab";
+
+    if (GetSaveFileNameA(&ofn)) {
+        return fileName;
+    }
+
+    return {};
 }

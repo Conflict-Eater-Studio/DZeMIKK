@@ -31,10 +31,14 @@
 #include <iostream>
 #include <renderer/font.h>
 #include <ecs/components/ui/uiBuilder.h>
+#include <ecs/serialize/prefabSerializer.h>
 
 namespace editor {
 
 Editor::Editor(dzemikk::Engine* engine) : _engine(engine) {
+    ImGuiIO& io = ImGui::GetIO();
+    io.IniFilename = nullptr;
+
     _hierarchyPanel = std::make_unique<HierarchyPanel>();
     _inspectorPanel = std::make_unique<InspectorPanel>();
     _assetManagerPanel = std::make_unique<AssetManagerPanel>();
@@ -152,6 +156,18 @@ void Editor::reparentObject(dzemikk::GameObject* child, dzemikk::GameObject* par
         }
 
         child->setParent(parent);
+    });
+}
+
+void Editor::instantiatePrefab(const std::string& path, dzemikk::GameObject* parent) {
+
+    _deferredOps.push_back([=]() {
+        auto prefabJson = _engine->getAssetManager()->get<nlohmann::json>(path);
+        auto prefab = dzemikk::PrefabSerializer::instantiate(*_activeScene, *prefabJson.get(),
+                                               _engine->getAssetManager());
+        if (parent != nullptr) {
+            prefab->setParent(parent);
+        }
     });
 }
 
