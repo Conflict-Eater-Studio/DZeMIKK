@@ -38,6 +38,7 @@ class Editor {
     void setupEditor();
     void renderDockspace();
     void renderBottomBar();
+    std::string openSaveFileDialog();
 
   private:
     dzemikk::Engine* _engine = nullptr;

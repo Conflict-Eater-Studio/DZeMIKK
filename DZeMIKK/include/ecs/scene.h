@@ -64,6 +64,7 @@ class Scene {
     void addPending(MonoBehaviour* mono);
     void removeActive(MonoBehaviour* mono);
     void processDelete();
+    void clearAllObjects();
 
     [[nodiscard]] boost::uuids::uuid getId() const;
     [[nodiscard]] const std::vector<std::unique_ptr<dzemikk::GameObject>>& getObjects() const;

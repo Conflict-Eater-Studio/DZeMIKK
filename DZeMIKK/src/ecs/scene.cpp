@@ -181,4 +181,12 @@ const std::vector<std::unique_ptr<GameObject>>& Scene::getObjects() const {
 void Scene::setId(const boost::uuids::uuid& uuid) {
     _id = uuid;
 }
+
+void Scene::clearAllObjects() {
+    for (auto& obj : _objects) {
+        destroyGameObject(obj.get());
+    }
+
+    processDelete();
+}
 } // namespace dzemikk

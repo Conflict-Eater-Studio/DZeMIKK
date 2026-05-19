@@ -24,6 +24,8 @@
 
 #include <fstream>
 #include <filesystem>
+#include <windows.h>
+#include <commdlg.h>
 
 #endif
 #include <iostream>
@@ -161,22 +163,12 @@ void Editor::setupEditor() {
 
     auto* sceneManager = _engine->getSceneManager();
 
-    auto scene = std::make_shared<dzemikk::Scene>();
+    auto scene = _engine->getAssetManager()->get<dzemikk::Scene>("scenes/scene.json");
 
-    std::ifstream file("./scene.json");
+    std::shared_ptr<dzemikk::Scene> sceneShared(scene.get(), [](dzemikk::Scene*) {});
 
-    if (file.is_open()) {
-
-        nlohmann::json sceneJson;
-        file >> sceneJson;
-
-        dzemikk::SceneSerializer::deserializeInto(*scene, sceneJson, _engine->getAssetManager());
-
-        file.close();
-    }
-
-    sceneManager->loadScene(scene);
-    sceneManager->setActiveScene(scene);
+    sceneManager->loadScene(sceneShared);
+    sceneManager->setActiveScene(sceneShared);
 
     _activeScene = scene.get();
 
@@ -294,8 +286,6 @@ void Editor::renderDockspace() {
         ImGui::DockBuilderFinish(dockspaceID);
     }
 
-    // ===== SAVE SCENE POPUP =====
-
     if (ImGui::BeginPopupModal("Save Scene", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
         _showSaveScenePopup = false;
 
@@ -309,23 +299,23 @@ void Editor::renderDockspace() {
 
         if (ImGui::Button("Save", ImVec2(120.0F, 0.0F))) {
 
-            try {
+            std::string path = openSaveFileDialog();
 
-                nlohmann::json sceneJson = dzemikk::SceneSerializer::serialize(*_activeScene);
+            if (!path.empty()) {
 
+                try {
 
-                std::cout << std::filesystem::current_path() << std::endl;
-                std::ofstream file(_scenePathBuffer);
+                    nlohmann::json sceneJson = dzemikk::SceneSerializer::serialize(*_activeScene);
 
-                if (file.is_open()) {
-                    file << sceneJson.dump(4);
-                    file.close();
+                    std::ofstream file(path);
+
+                    if (file.is_open()) {
+                        file << sceneJson.dump(4);
+                        file.close();
+                    }
+
+                } catch (...) {
                 }
-
-            } catch (const std::exception& e) {
-
-                // optional logging
-                // std::cerr << e.what() << std::endl;
             }
 
             ImGui::CloseCurrentPopup();
@@ -380,6 +370,31 @@ void Editor::renderBottomBar() {
 
     ImGui::PopStyleColor();
     ImGui::PopStyleVar(2);
+}
+
+std::string Editor::openSaveFileDialog() {
+    char fileName[MAX_PATH] = "";
+
+    OPENFILENAMEA ofn{};
+    ofn.lStructSize = sizeof(OPENFILENAMEA);
+    ofn.hwndOwner = nullptr;
+    ofn.lpstrFile = fileName;
+    ofn.nMaxFile = MAX_PATH;
+
+    ofn.lpstrFilter = "Scene Files (*.json)\0*.json\0"
+                      "All Files (*.*)\0*.*\0";
+
+    ofn.nFilterIndex = 1;
+
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+
+    ofn.lpstrDefExt = "json";
+
+    if (GetSaveFileNameA(&ofn)) {
+        return fileName;
+    }
+
+    return {};
 }
 
 } // namespace editor

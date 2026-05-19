@@ -249,55 +249,24 @@ void Game::start() {
     taskSk.onLoad = onSkyboxLoad;
     engine->getAssetManager()->getAsync("textures/Daylight Box_Pieces", taskSk);
 
-    auto scene = std::make_shared<dzemikk::Scene>();
+    
+    auto scene = assetManager->get<dzemikk::Scene>("scenes/scene.json");
 
-    std::ifstream file("./Debug/res/scenes/scene.json");
+    std::shared_ptr<dzemikk::Scene> sceneShared(scene.get(), [](dzemikk::Scene*) {});
 
-    if (file.is_open()) {
+    sceneManager->loadScene(sceneShared);
+    sceneManager->setActiveScene(sceneShared);
 
-        nlohmann::json sceneJson;
-        file >> sceneJson;
+    auto prefabJson = assetManager->get<nlohmann::json>("prefabs/Skinned.prefab");
+    dzemikk::PrefabSerializer::instantiate(*scene.get(), *prefabJson.get(), assetManager);
 
-        dzemikk::SceneSerializer::deserializeInto(*scene, sceneJson, assetManager);
-
-        file.close();
-    }
-
-    sceneManager->loadScene(scene);
-    sceneManager->setActiveScene(scene);
-
-    std::ifstream prefabFile("./Debug/res/prefabs/Skinned.prefab");
-
-    if (prefabFile.is_open()) {
-
-        nlohmann::json prefabJson;
-        prefabFile >> prefabJson;
-
-        dzemikk::PrefabSerializer::instantiate(*scene, prefabJson, assetManager);
-
-        prefabFile.close();
-    }
-
-    auto* cameraGO = scene->createGameObject("Editor Camera");
-
+    auto* cameraGO = scene.get()->createGameObject("Editor Camera");
     cameraGO->transform()->setPosition({0.0F, 3.0F, 8.0F});
-
-
     auto* camera = cameraGO->addComponent<dzemikk::Camera>();
-
     camera->lookAt({0.0F, 0.0F, 0.0F});
-
     engine->getRenderer()->getCameraSystem().setActiveSceneCamera(camera);
 
-    /*
-    auto* cameraGO = scene->createGameObject("Camera");
-    cameraGO->transform()->setPosition({0.0F, 7.0F, 10.0F});
-    auto* camera = cameraGO->addComponent<dzemikk::Camera>();
-    camera->lookAt({0.0F, 2.0F, 0.0F});
-    engine->getRenderer()->getCameraSystem().setActiveSceneCamera(camera);
-    */
-
-    auto* uiCameraGO = scene->createGameObject("UICamera");
+    auto* uiCameraGO = scene.get()->createGameObject("UICamera");
     uiCameraGO->transform()->setPosition({0.0F, 0.0F, 1.0F});
     auto* uiCamera = uiCameraGO->addComponent<dzemikk::Camera>();
     uiCamera->setOrthographic(0.0F, 1920.0F, 0.0F, 1080.0F, -1.0F, 1.0F);

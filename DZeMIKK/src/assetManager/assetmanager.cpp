@@ -11,6 +11,8 @@
 #include "assetManager/soundHandler.h"
 #include "assetManager/textureHandler.h"
 #include "assetManager/modelHandler.h"
+#include "assetManager/sceneHandler.h"
+#include "assetManager/prefabHandler.h"
 
 #include "audio/sound.h"
 
@@ -142,6 +144,8 @@ void dzemikk::AssetManager::registerHandlers() {
     _loaders.registerHandler<Font>(std::make_unique<FontHandler>());
     _loaders.registerHandler<Sound>(std::make_unique<SoundHandler>());
     _loaders.registerHandler<Model>(std::make_unique<ModelHandler>());
+    _loaders.registerHandler<Scene>(std::make_unique<SceneHandler>(this));
+    _loaders.registerHandler<nlohmann::json>(std::make_unique<PrefabHandler>(this));
 }
 
 void dzemikk::AssetManager::update() {
