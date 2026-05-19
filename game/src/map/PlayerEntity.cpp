@@ -11,7 +11,8 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                                          glm::vec3(0.0F, 1.5F, 0.0F));
 }
 
-void PlayerEntity::onExit() {}
+void PlayerEntity::onExit() {
+}
 
 void PlayerEntity::tryMove(const HexCellPtr& targetCell) {
     if (!targetCell) {
@@ -24,7 +25,10 @@ void PlayerEntity::tryMove(const HexCellPtr& targetCell) {
     }
     switch (targetCell->getType()) {
     default:
-        // Any other type of cell we just move into it
+        if (getCell() != nullptr) {
+            getCell()->setEntity(nullptr);
+            getCell()->setState(HexCell::State::Empty);
+        }
         onEnter(targetCell);
         break;
     }

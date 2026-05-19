@@ -260,15 +260,15 @@ bool HexGrid::contains(const HexCoord& coord) const {
     return getCell(coord) != nullptr;
 }
 
-std::vector<HexGrid::HexCellPtr> HexGrid::findPath(const HexCellPtr& startCell, const HexCellPtr& targetCell) const{
-      if (!isWalkableCell(startCell) || !isWalkableCell(targetCell)) {
+std::vector<HexGrid::HexCellPtr> HexGrid::findPath(const HexCellPtr& startCell, const HexCellPtr& targetCell) const {
+    if (startCell == nullptr || targetCell == nullptr) {
         return {};
     }
 
     const HexCoord start = startCell->getCoord();
     const HexCoord target = targetCell->getCoord();
 
-    if (start == target) {
+    if (!isWalkableCell(startCell) || !isWalkableCell(targetCell)) {
         return {};
     }
 

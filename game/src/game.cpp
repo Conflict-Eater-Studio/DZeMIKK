@@ -332,11 +332,7 @@ void Game::start() {
     _hexGrid = world->getGrid();
 
     _playerEntity->tryMove(world->getGrid()->at({0, 0}));
-    std::vector<game::HexGrid::HexCellPtr> path = _hexGrid->findPath(_playerEntity->getCell(), _hexGrid->at({0, 2}));
-    spdlog::info(path.size());
-    for (auto& cell : path) {
-        spdlog::info("[Path] {}, {} ", cell->getCoord().q(), cell->getCoord().r());
-    }
+
     auto* uiRootGO = scene->createGameObject("UI Root");
     auto* canvas = uiRootGO->addComponent<dzemikk::Canvas>();
     uiRootGO->rectTransform()->setSize({1920.0F, 1080.0F});
@@ -685,7 +681,6 @@ void Game::setupInputCallbacks() {
         }
 
         if (currentRenderer != lastHitRenderer) {
-
             if (lastHitRenderer && lastHitRenderer->isValid()) {
                 lastHitRenderer->setColor(lastHitColor);
             }
