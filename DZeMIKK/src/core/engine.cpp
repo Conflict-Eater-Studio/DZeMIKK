@@ -146,11 +146,6 @@ void Engine::start() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("Debug Panel");
-        ImGui::Text("Background");
-        ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
-        ImGui::End();
-
         _mainWindow->clear(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
 #else

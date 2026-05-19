@@ -861,11 +861,11 @@
             "children": [],
             "components": [
                 {
-                    "id": "8b869be4-1e97-469e-a456-2a046b264e0d",
+                    "id": "22edec92-75a2-4d25-8988-08e7545e1df9",
                     "position": [
-                        -1.2000000476837158,
                         0.0,
-                        0.0
+                        0.0,
+                        1.0
                     ],
                     "rotation": [
                         1.0,
@@ -874,25 +874,29 @@
                         0.0
                     ],
                     "scale": [
-                        0.009999999776482582,
-                        0.009999999776482582,
-                        0.009999999776482582
+                        1.0,
+                        1.0,
+                        1.0
                     ],
                     "type": "Transform"
                 },
                 {
-                    "id": "4651c3a8-7312-40f9-9f6d-6f75c6ad3522",
-                    "materials": [
-                        "shaders/skinned",
-                        "shaders/skinned2"
-                    ],
-                    "model": "models/Dancing Twerk.fbx",
-                    "type": "SkinnedMeshRenderer"
+                    "aspect": 1.7699999809265137,
+                    "bottom": 0.0,
+                    "far": 1.0,
+                    "fov": 60.0,
+                    "id": 1,
+                    "left": 0.0,
+                    "near": -1.0,
+                    "projectionType": 1,
+                    "right": 1920.0,
+                    "top": 1080.0,
+                    "type": "Camera"
                 }
             ],
             "enabled": true,
-            "id": "cb3ed7fc-986c-4cd1-951d-2a50d0e2543c",
-            "name": "Skinned"
+            "id": "1ba86b50-ba7c-4968-a838-fef96e8f472f",
+            "name": "UICamera"
         }
     ]
 }

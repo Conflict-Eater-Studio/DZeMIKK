@@ -100,6 +100,17 @@ void editor::HierarchyPanel::drawNode(dzemikk::GameObject* gameObject,
         ImGui::EndDragDropTarget();
     }
 
+    if (ImGui::BeginDragDropSource()) {
+
+        dzemikk::GameObject* ptr = gameObject;
+
+        ImGui::SetDragDropPayload("HIERARCHY_GAMEOBJECT", &ptr, sizeof(dzemikk::GameObject*));
+
+        ImGui::Text("%s", gameObject->getName().c_str());
+
+        ImGui::EndDragDropSource();
+    }
+
     if (ImGui::BeginPopupContextItem("NodeContext")) {
         if (_editor) {
             if (ImGui::MenuItem("Create Child")) {

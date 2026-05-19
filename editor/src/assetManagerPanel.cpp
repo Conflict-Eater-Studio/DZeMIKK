@@ -4,6 +4,11 @@
 
 #include <cstring>
 #include <imgui.h>
+#include <fstream>
+
+#include <ecs/gameobject.h>
+#include <ecs/serialize/prefabSerializer.h>
+
 
 static std::string normalizeAssetPath(std::string path) {
     constexpr std::string_view prefix = "Assets/";
@@ -88,6 +93,32 @@ void editor::AssetManagerPanel::draw(dzemikk::AssetManager* assetManager) {
     }
 
     ImGui::EndChild();
+
+    if (ImGui::BeginDragDropTarget()) {
+
+        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_GAMEOBJECT")) {
+
+            auto* gameObject = *static_cast<dzemikk::GameObject**>(payload->Data);
+
+            if (gameObject) {
+
+                auto json = dzemikk::PrefabSerializer::serialize(*gameObject);
+
+                std::filesystem::create_directories("Assets/Prefabs");
+
+                std::string path = "Assets/Prefabs/" + gameObject->getName() + ".prefab";
+
+                std::ofstream file(path);
+
+                if (file.is_open()) {
+                    file << json.dump(4);
+                    file.close();
+                }
+            }
+        }
+
+        ImGui::EndDragDropTarget();
+    }
 
     ImGui::NextColumn();
 

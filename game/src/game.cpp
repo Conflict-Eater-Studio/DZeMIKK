@@ -64,6 +64,7 @@
 
 #include <fstream>
 #include <ecs/serialize/sceneSerializer.h>
+#include <ecs/serialize/prefabSerializer.h>
 
 struct SkyboxInitContext {
     dzemikk::AssetHandle<dzemikk::Shader> shader;
@@ -263,9 +264,19 @@ void Game::start() {
     }
 
     sceneManager->loadScene(scene);
-    
-
     sceneManager->setActiveScene(scene);
+
+    std::ifstream prefabFile("./Debug/res/prefabs/Skinned.prefab");
+
+    if (prefabFile.is_open()) {
+
+        nlohmann::json prefabJson;
+        prefabFile >> prefabJson;
+
+        dzemikk::PrefabSerializer::instantiate(*scene, prefabJson, assetManager);
+
+        prefabFile.close();
+    }
 
     auto* cameraGO = scene->createGameObject("Editor Camera");
 

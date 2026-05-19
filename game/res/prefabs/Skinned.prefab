@@ -1,0 +1,39 @@
+{
+    "root": {
+        "children": [],
+        "components": [
+            {
+                "id": "8b869be4-1e97-469e-a456-2a046b264e0d",
+                "position": [
+                    -1.2000000476837158,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.009999999776482582,
+                    0.009999999776482582,
+                    0.009999999776482582
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "4651c3a8-7312-40f9-9f6d-6f75c6ad3522",
+                "materials": [
+                    "shaders/skinned",
+                    "shaders/skinned2"
+                ],
+                "model": "models/Dancing Twerk.fbx",
+                "type": "SkinnedMeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "cb3ed7fc-986c-4cd1-951d-2a50d0e2543c",
+        "name": "Skinned"
+    }
+}
