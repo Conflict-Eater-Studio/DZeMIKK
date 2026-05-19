@@ -44,8 +44,8 @@ void UISlider::processPointer(const glm::vec2& point, bool isDown, bool pressedT
                               bool releasedThisFrame, double scrollDelta) {
     setPointerDown(isDown);
 
-    setPointerInside(_handleSpriteRenderer->getRectTransform() != nullptr
-                         ? _handleSpriteRenderer->getRectTransform()->containsPoint(point)
+    setPointerInside(getHandleSpriteRenderer()->getRectTransform() != nullptr
+                         ? getHandleSpriteRenderer()->getRectTransform()->containsPoint(point)
                          : _owner->rectTransform()->containsPoint(point));
     updateHoverState();
 
@@ -212,6 +212,18 @@ void UISlider::applyVisualState() {
         _handleSpriteRenderer->setColor(_style.handleHoverColor);
     } else {
         _handleSpriteRenderer->setColor(_style.handleColor);
+    }
+}
+
+void UISlider::init(Style style, float value, float minValue, float maxValue, float step,
+                    std::vector<std::pair<UIEventType, std::string>> events) {
+    _style = style;
+    _value = std::clamp(value, std::min(minValue, maxValue), std::max(minValue, maxValue));
+    _minValue = minValue;
+    _maxValue = maxValue;
+    _step = step;
+    for (const auto& [eventType, actionId] : events) {
+        addEventListener(eventType, actionId);
     }
 }
 } // namespace dzemikk

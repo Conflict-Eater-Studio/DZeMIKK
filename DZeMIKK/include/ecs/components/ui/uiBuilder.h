@@ -12,6 +12,7 @@
 #include "ecs/scene.h"
 
 #include <algorithm>
+#include <limits>
 
 namespace dzemikk {
 class UIBuilder {
@@ -89,7 +90,7 @@ class UIBuilder {
         glm::vec2 scale = {1.0F, 1.0F};
         float rotation = 0.0F;
         std::vector<UIDropdown::Option> options;
-        std::size_t selectedIndex = 0;
+        std::size_t selectedIndex = std::numeric_limits<std::size_t>::max();
         float optionHeight = 30.0F;
         std::size_t maxVisibleOptions = 5;
         std::string text;
@@ -298,6 +299,9 @@ class UIBuilder {
 
         auto* dropdown = go->addComponent<UIDropdown>();
 
+        dtrigger->addEventListener(UIEventType::Click,
+                                   boost::uuids::to_string(dropdown->getTriggerActionId()));
+
         // --- Construct options ---
         UIDropdown::OptionRender optionRender{
             .height = params.optionHeight,
@@ -307,6 +311,7 @@ class UIBuilder {
             .textVAlign = params.textVAlign,
             .textHAlign = params.textHAlign,
         };
+        dropdown->setOptionRender(optionRender);
         dropdown->setOptions(params.options);
         dropdown->setSelectedIndex(params.selectedIndex);
 
@@ -341,7 +346,8 @@ class UIBuilder {
             .pressedOptColor = params.pressedColor,
             .highlightOptColor = params.highlightColor,
         });
-        dropdown->updateOptionVisuals();
+
+        optsBgGo->enabled(false);
 
         return go;
     }

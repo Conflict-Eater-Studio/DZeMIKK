@@ -46,8 +46,10 @@ class UICheckbox : public IUIInteractable {
     void setStyle(const Style& style);
     [[nodiscard]] Style getStyle() const;
 
-  private:
     void applyVisualState();
+    void init(Style style, bool value, std::vector<std::pair<UIEventType, std::string>> events);
+
+  private:
 
     mutable ImageRenderer* _backgroundSpriteRenderer = nullptr;
     mutable ImageRenderer* _checkmarkSpriteRenderer = nullptr;

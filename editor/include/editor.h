@@ -32,6 +32,7 @@ class Editor {
     void createUIButton(dzemikk::GameObject* parent);
     void createUICheckbox(dzemikk::GameObject* parent);
     void createUISlider(dzemikk::GameObject* parent);
+    void createUIDropdown(dzemikk::GameObject* parent);
     void deleteObject(dzemikk::GameObject* gameObject);
     void reparentObject(dzemikk::GameObject* child, dzemikk::GameObject* parent);
 

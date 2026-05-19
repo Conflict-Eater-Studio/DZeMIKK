@@ -67,12 +67,16 @@ class UISlider : public IUIInteractable {
         return _maxValue;
     }
 
+    void init(Style style, float value, float minValue, float maxValue, float step,
+              std::vector<std::pair<UIEventType, std::string>> events);
+
+    void applyVisualState();
+
   private:
     void processPress(const glm::vec2& point, bool pressedThisFrame);
     void processRelease(bool releasedThisFrame);
     void processDrag(const glm::vec2& point);
     void processScroll(double scrollDelta);
-    void applyVisualState();
 
     float _value = 0.0F;
     float _minValue = 0.0F;

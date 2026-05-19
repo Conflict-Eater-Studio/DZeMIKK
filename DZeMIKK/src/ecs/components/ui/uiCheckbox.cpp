@@ -77,4 +77,12 @@ void UICheckbox::applyVisualState() {
         _backgroundSpriteRenderer->setColor(_style.normalColor);
     }
 }
+
+void UICheckbox::init(Style style, bool value, std::vector<std::pair<UIEventType, std::string>> events) {
+    _style = style;
+    _value = value;
+    for (const auto& [eventType, actionId] : events) {
+        addEventListener(eventType, actionId);
+    }
+}
 } // namespace dzemikk

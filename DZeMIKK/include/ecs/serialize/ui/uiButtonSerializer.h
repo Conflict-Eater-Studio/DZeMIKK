@@ -64,30 +64,20 @@ inline void from_json(const nlohmann::json& json, UIButton& button, AssetManager
 
     button.setId(uuidGenerator(json["id"].get<std::string>()));
 
+    UIButton::Style style{};
     if (json.contains("normalColor") && json.contains("hoverColor") &&
         json.contains("pressedColor")) {
-        button.setStyle({.normalColor =
-                             {
-                                 json["normalColor"][0].get<float>(),
-                                 json["normalColor"][1].get<float>(),
-                                 json["normalColor"][2].get<float>(),
-                                 json["normalColor"][3].get<float>(),
-                             },
-                         .hoverColor =
-                             {
-                                 json["hoverColor"][0].get<float>(),
-                                 json["hoverColor"][1].get<float>(),
-                                 json["hoverColor"][2].get<float>(),
-                                 json["hoverColor"][3].get<float>(),
-                             },
-                         .pressedColor = {
-                             json["pressedColor"][0].get<float>(),
-                             json["pressedColor"][1].get<float>(),
-                             json["pressedColor"][2].get<float>(),
-                             json["pressedColor"][3].get<float>(),
-                         }});
+        style.normalColor = {
+            json["normalColor"][0].get<float>(), json["normalColor"][1].get<float>(),
+            json["normalColor"][2].get<float>(), json["normalColor"][3].get<float>()};
+        style.hoverColor = {json["hoverColor"][0].get<float>(), json["hoverColor"][1].get<float>(),
+                            json["hoverColor"][2].get<float>(), json["hoverColor"][3].get<float>()};
+        style.pressedColor = {
+            json["pressedColor"][0].get<float>(), json["pressedColor"][1].get<float>(),
+            json["pressedColor"][2].get<float>(), json["pressedColor"][3].get<float>()};
     }
 
+    std::vector<std::pair<UIEventType, std::string>> events;
     if (json.contains("events")) {
         for (const auto& [eventKey, actionIdsJson] : json["events"].items()) {
             UIEventType eventType = UIEventType::Click;
@@ -104,10 +94,21 @@ inline void from_json(const nlohmann::json& json, UIButton& button, AssetManager
             }
             std::vector<std::string> actionIds = actionIdsJson.get<std::vector<std::string>>();
             for (const auto& actionId : actionIds) {
-                button.addEventListener(eventType, actionId);
+                events.emplace_back(eventType, actionId);
             }
         }
     }
+
+    button.init(style, events);
+}
+
+inline void postUIButtonDeserialize(Component& component) {
+    auto* button = dynamic_cast<UIButton*>(&component);
+    if (button == nullptr) {
+        throw std::runtime_error("Component type mismatch for UIButton post-deserialization");
+    }
+
+    button->applyVisualState();
 }
 
 inline void registerUIButtonSerializer(ComponentSerializerRegistry& registry) {
@@ -125,7 +126,8 @@ inline void registerUIButtonSerializer(ComponentSerializerRegistry& registry) {
             auto* uiButton = context.gameObject.addComponent<UIButton>();
 
             from_json(context.json, *uiButton, context.assetManager);
-        });
+        },
+        postUIButtonDeserialize);
 }
 // NOLINTEND(readability-identifier-naming)
 } // namespace dzemikk

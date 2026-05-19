@@ -190,7 +190,13 @@ void Editor::createUIDropdown(dzemikk::GameObject* parent) {
 
         dzemikk::UIBuilder::UIDropdownParams params{
             .name = "Dropdown",
-            .size = {200.0F, 20.0F},
+            .size = {400.0F, 70.0F},
+            .options =
+                {
+                    {.text = "Option 1", .value = "opt1"},
+                    {.text = "Option 2", .value = "opt2"},
+                },
+            .optionHeight = 70.0F,
             .text = "Select an option",
             .textFont = font,
             .bgMesh = quadMesh,

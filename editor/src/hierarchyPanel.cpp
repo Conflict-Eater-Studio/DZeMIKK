@@ -119,6 +119,10 @@ void editor::HierarchyPanel::drawNode(dzemikk::GameObject* gameObject,
                 _editor->createUISlider(gameObject);
             }
 
+            if (ImGui::MenuItem("CreateDropdown")) {
+                _editor->createUIDropdown(gameObject);
+            }
+
             if (ImGui::MenuItem("Delete")) {
                 _editor->deleteObject(gameObject);
             }

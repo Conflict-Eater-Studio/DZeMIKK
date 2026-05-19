@@ -5,10 +5,13 @@
 #include "ecs/components/ui/uiButton.h"
 #include "ecs/components/ui/uiTextRenderer.h"
 
+#include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
+#include <limits>
 #include <vector>
 
 namespace dzemikk {
+class AssetManager;
 class ImageRenderer;
 class Mesh;
 class Material;
@@ -65,22 +68,36 @@ class UIDropdown : public IUIInteractable {
 
     void setOptions(const std::vector<Option>& options) {
         _options = options;
-        if (_selectedIndex >= _options.size()) {
-            _selectedIndex = 0;
+        if (_selectedIndex != noSelection() && _selectedIndex >= _options.size()) {
+            _selectedIndex = noSelection();
         }
+    };
+    void setOptionRender(const OptionRender& render) {
+        _optionRender = render;
     };
     [[nodiscard]] std::vector<Option> getOptions() const {
         return _options;
     };
 
     void setSelectedIndex(std::size_t index) {
-        if (index < _options.size()) {
+        if (index == noSelection()) {
+            _selectedIndex = noSelection();
+        } else if (index < _options.size()) {
             _selectedIndex = index;
         }
     };
     [[nodiscard]] std::size_t getSelectedIndex() const {
         return _selectedIndex;
     };
+
+    [[nodiscard]] static constexpr std::size_t noSelection() {
+        return std::numeric_limits<std::size_t>::max();
+    }
+
+    void setTriggerActionId(const boost::uuids::uuid& actionId);
+    [[nodiscard]] boost::uuids::uuid getTriggerActionId() const {
+        return _triggerActionId;
+    }
 
     void toggle();
 
@@ -96,14 +113,20 @@ class UIDropdown : public IUIInteractable {
 
     void updateOptionVisuals();
     void applyVisualState();
+    void applyOptionButtonColors();
 
     void selectOption(std::size_t index);
 
+    void init(const Style& style, const OptionRender& render, const std::vector<Option>& options,
+              std::size_t selectedIndex, const boost::uuids::uuid& triggerActionId);
+
   private:
+    boost::uuids::uuid _triggerActionId;
+
     Style _style;
     OptionRender _optionRender;
     std::vector<Option> _options;
-    std::size_t _selectedIndex = 0;
+    std::size_t _selectedIndex = noSelection();
     bool _isOpen = false;
 
     bool _pointerInsideMain = false;
@@ -116,6 +139,7 @@ class UIDropdown : public IUIInteractable {
     ImageRenderer* _scrollbarSpriteRenderer = nullptr;
     ImageRenderer* _scrollbarHandleSpriteRenderer = nullptr;
 
+    std::vector<std::string> _optionActionIds;
     std::vector<UIButton*> _optionButtons;
 };
 } // namespace dzemikk

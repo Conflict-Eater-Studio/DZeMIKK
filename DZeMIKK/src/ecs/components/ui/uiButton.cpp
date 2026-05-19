@@ -63,4 +63,11 @@ ImageRenderer* UIButton::getSpriteRenderer() const {
 
     return _spriteRenderer;
 }
+
+void UIButton::init(Style style, std::vector<std::pair<UIEventType, std::string>> events) {
+    _style = style;
+    for (const auto& [eventType, actionId] : events) {
+        addEventListener(eventType, actionId);
+    }
+}
 } // namespace dzemikk

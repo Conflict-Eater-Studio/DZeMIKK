@@ -24,6 +24,15 @@ class UIActionRegistry {
         _actions[actionId] = std::move(action);
     }
 
+    void renameAction(const std::string& oldActionId, const std::string& newActionId) {
+        std::scoped_lock lock(_mutex);
+        auto iter = _actions.find(oldActionId);
+        if (iter != _actions.end()) {
+            _actions[newActionId] = std::move(iter->second);
+            _actions.erase(iter);
+        }
+    }
+
     [[nodiscard]] bool hasAction(const std::string& actionId) const {
         std::scoped_lock lock(_mutex);
         return _actions.contains(actionId);

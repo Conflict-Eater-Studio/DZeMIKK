@@ -421,7 +421,6 @@ void Game::start() {
     //horiGO->enabled(false);
     vertGO->enabled(false);
     gridGO->enabled(false);
-    */
 
     auto quadMesh =
         assetManager->getPrimitiveMesh(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
@@ -436,11 +435,12 @@ void Game::start() {
             uiRootGO = obj.get();
         }
     }
+
     auto* dropdownGO = dzemikk::UIBuilder::createDropdown(
         uiRootGO, {
                       .name = "Dropdown",
                       .position = {0.0F, 0.0F},
-                      .size = {200.0F, 20.0F},
+                      .size = {400.0F, 70.0F},
                       .options =
                           {
                               {.text = "Option 1", .value = "opt1"},
@@ -450,7 +450,7 @@ void Game::start() {
                               {.text = "Option 5", .value = "opt5"},
                               {.text = "Option 6", .value = "opt6"},
                           },
-                      .optionHeight = 20.0F,
+                      .optionHeight = 70.0F,
                       .maxVisibleOptions = 3,
                       .textFont = font,
                       .bgMesh = quadMesh,
@@ -464,7 +464,6 @@ void Game::start() {
                       .optionsBgMat = quadMat,
                       .scrollbarMat = quadMat,
                   });
-    /*
 
     enemyGO = scene->createGameObject();
     enemyGO->transform()->setPosition(glm::vec3(2.0f, 1.5f, 5.0f));
