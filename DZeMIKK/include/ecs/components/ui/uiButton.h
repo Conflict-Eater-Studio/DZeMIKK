@@ -45,9 +45,10 @@ class UIButton : public IUIInteractable {
     [[nodiscard]] GameObject* getTextGO() const;
     [[nodiscard]] ImageRenderer* getSpriteRenderer() const;
 
-  private:
     void applyVisualState();
+    void init(Style style, std::vector<std::pair<UIEventType, std::string>> events);
 
+  private:
     Style _style{.normalColor = glm::vec4(1.0F),
                  .hoverColor = glm::vec4(0.9F, 0.9F, 0.9F, 1.0F),
                  .pressedColor = glm::vec4(0.8F, 0.8F, 0.8F, 1.0F)};

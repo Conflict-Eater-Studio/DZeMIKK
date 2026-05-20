@@ -57,51 +57,25 @@ inline void to_json(nlohmann::json& json, const UISlider& slider) {
         }
         json["events"][eventKey] = actionIds;
     }
-
-    if (slider.getBackgroundSpriteRenderer()) {
-        nlohmann::json bgJson;
-        dzemikk::to_json(bgJson, *slider.getBackgroundSpriteRenderer());
-        json["backgroundRenderer"] = bgJson;
-    } else {
-        json["backgroundRenderer"] = nlohmann::json::object();
-    }
-
-    if (slider.getFillSpriteRenderer()) {
-        nlohmann::json fillJson;
-        dzemikk::to_json(fillJson, *slider.getFillSpriteRenderer());
-        json["fillRenderer"] = fillJson;
-    } else {
-        json["fillRenderer"] = nlohmann::json::object();
-    }
-
-    if (slider.getHandleSpriteRenderer()) {
-        nlohmann::json handleJson;
-        dzemikk::to_json(handleJson, *slider.getHandleSpriteRenderer());
-        json["handleRenderer"] = handleJson;
-    } else {
-        json["handleRenderer"] = nlohmann::json::object();
-    }
 }
 
 inline void from_json(const nlohmann::json& json, UISlider& slider, AssetManager* assetManager) {
     boost::uuids::string_generator uuidGenerator;
 
     if (!json.contains("type") || !json["type"].is_string() || json["type"] != "UISlider") {
+        spdlog::info("Expected type 'UISlider' for deserialization, but got '{}'",
+                     json.value("type", "null"));
         throw std::runtime_error("Invalid component type for UISlider deserialization");
     }
 
     if (!json.contains("id") || !json.contains("value") || !json.contains("fillColor") ||
         !json.contains("backgroundColor") || !json.contains("handleColor") ||
-        !json.contains("handleHoverColor") || !json.contains("handlePressedColor") ||
-        !json.contains("events")) {
+        !json.contains("handleHoverColor") || !json.contains("handlePressedColor")) {
+        spdlog::info("Missing required fields for UISlider deserialization");
         throw std::runtime_error("Missing required fields for UISlider deserialization");
     }
 
     slider.setId(uuidGenerator(json["id"].get<std::string>()));
-    slider.setMinValue(json["minValue"]);
-    slider.setMaxValue(json["maxValue"]);
-    slider.setStep(json["step"]);
-    slider.onValueChanged(json["value"]);
 
     UISlider::Style style;
     style.fillColor = {json["fillColor"][0], json["fillColor"][1], json["fillColor"][2],
@@ -115,64 +89,38 @@ inline void from_json(const nlohmann::json& json, UISlider& slider, AssetManager
     style.handlePressedColor = {json["handlePressedColor"][0], json["handlePressedColor"][1],
                                 json["handlePressedColor"][2], json["handlePressedColor"][3]};
 
-    slider.setStyle(style);
-    for (const auto& [eventKey, actionIdsJson] : json["events"].items()) {
-        UIEventType eventType = UIEventType::Click;
-        if (eventKey == "clickActions") {
-            eventType = UIEventType::Click;
-        } else if (eventKey == "enterActions") {
-            eventType = UIEventType::Enter;
-        } else if (eventKey == "exitActions") {
-            eventType = UIEventType::Exit;
-        } else if (eventKey == "valueChangedActions") {
-            eventType = UIEventType::ValueChanged;
-        } else {
-            continue;
-        }
-        std::vector<std::string> actionIds = actionIdsJson.get<std::vector<std::string>>();
-        for (const auto& actionId : actionIds) {
-            slider.addEventListener(eventType, actionId);
-        }
-    }
-
-    auto* owner = slider.getOwner();
-    ImageRenderer* backgroundRenderer = nullptr;
-    ImageRenderer* fillRenderer = nullptr;
-    ImageRenderer* handleRenderer = nullptr;
-
-    if (json.contains("backgroundRenderer") && json["backgroundRenderer"].is_object() &&
-        !json["backgroundRenderer"].empty()) {
-        backgroundRenderer = owner->addComponent<ImageRenderer>();
-        backgroundRenderer->setRectTransform(owner->rectTransform());
-        dzemikk::from_json(json["backgroundRenderer"], *backgroundRenderer, assetManager);
-        slider.setBackgroundSpriteRenderer(backgroundRenderer);
-    }
-
-    for (auto* child : owner->getChildren()) {
-        if (child == nullptr) {
-            continue;
-        }
-        const auto& childName = child->getName();
-        if (childName.find("_Fill") != std::string::npos) {
-            auto* image = child->addComponent<ImageRenderer>();
-            image->setRectTransform(child->rectTransform());
-            if (json.contains("fillRenderer") && json["fillRenderer"].is_object() &&
-                !json["fillRenderer"].empty()) {
-                dzemikk::from_json(json["fillRenderer"], *image, assetManager);
+    std::vector<std::pair<UIEventType, std::string>> events{};
+    if (json.contains("events")) {
+        for (const auto& [eventKey, actionIdsJson] : json["events"].items()) {
+            UIEventType eventType = UIEventType::Click;
+            if (eventKey == "clickActions") {
+                eventType = UIEventType::Click;
+            } else if (eventKey == "enterActions") {
+                eventType = UIEventType::Enter;
+            } else if (eventKey == "exitActions") {
+                eventType = UIEventType::Exit;
+            } else if (eventKey == "valueChangedActions") {
+                eventType = UIEventType::ValueChanged;
+            } else {
+                continue;
             }
-            fillRenderer = image;
-            slider.setFillSpriteRenderer(fillRenderer);
-        } else if (childName.find("_Handle") != std::string::npos) {
-            auto* image = child->addComponent<ImageRenderer>();
-            image->setRectTransform(child->rectTransform());
-            if (json.contains("handleRenderer") && json["handleRenderer"].is_object() &&
-                !json["handleRenderer"].empty()) {
-                dzemikk::from_json(json["handleRenderer"], *image, assetManager);
+            std::vector<std::string> actionIds = actionIdsJson.get<std::vector<std::string>>();
+            for (const auto& actionId : actionIds) {
+                events.emplace_back(eventType, actionId);
             }
-            handleRenderer = image;
-            slider.setHandleSpriteRenderer(handleRenderer);
         }
     }
+
+    slider.init(style, json["value"].get<float>(), json["minValue"].get<float>(),
+                json["maxValue"].get<float>(), json["step"].get<float>(), events);
+}
+
+inline void postUISliderDeserialize(Component& component) {
+    auto* slider = dynamic_cast<UISlider*>(&component);
+    if (slider == nullptr) {
+        throw std::runtime_error("Component type mismatch for UISlider post-deserialization");
+    }
+    slider->applyVisualState();
 }
 
 inline void registerUISliderSerializer(ComponentSerializerRegistry& registry) {
@@ -189,7 +137,8 @@ inline void registerUISliderSerializer(ComponentSerializerRegistry& registry) {
         [](ComponentSerializerRegistry::DeserializationContext context) {
             auto* slider = context.gameObject.addComponent<UISlider>();
             from_json(context.json, *slider, context.assetManager);
-        });
+        },
+        postUISliderDeserialize);
 }
 // NOLINTEND(readability-identifier-naming)
 } // namespace dzemikk

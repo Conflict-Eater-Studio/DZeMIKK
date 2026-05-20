@@ -34,18 +34,21 @@ void UICheckbox::onClick() {
     emit(UIEventType::Click, _value);
 }
 
-void UICheckbox::setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _backgroundSpriteRenderer = spriteRenderer;
-    applyVisualState();
+ImageRenderer* UICheckbox::getBackgroundSpriteRenderer() const {
+    if (_backgroundSpriteRenderer == nullptr) {
+        _backgroundSpriteRenderer = getOwner()->getComponent<ImageRenderer>();
+    }
+    return _backgroundSpriteRenderer;
 }
 
-void UICheckbox::setCheckmarkSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _checkmarkSpriteRenderer = spriteRenderer;
-    if (_checkmarkSpriteRenderer != nullptr) {
-        _checkmarkSpriteRenderer->enabled(_value);
+ImageRenderer* UICheckbox::getCheckmarkSpriteRenderer() const {
+    if (_checkmarkSpriteRenderer == nullptr) {
+        const auto& children = getOwner()->getChildren();
+        if (!children.empty()) {
+            _checkmarkSpriteRenderer = children[0]->getComponent<ImageRenderer>();
+        }
     }
-
-    applyVisualState();
+    return _checkmarkSpriteRenderer;
 }
 
 void UICheckbox::setStyle(const Style& style) {
@@ -58,11 +61,11 @@ UICheckbox::Style UICheckbox::getStyle() const {
 }
 
 void UICheckbox::applyVisualState() {
-    if (_backgroundSpriteRenderer == nullptr) {
+    if (getBackgroundSpriteRenderer() == nullptr) {
         return;
     }
 
-    if (_checkmarkSpriteRenderer != nullptr) {
+    if (getCheckmarkSpriteRenderer() != nullptr) {
         _checkmarkSpriteRenderer->setColor(_style.checkmarkColor);
     }
 
@@ -72,6 +75,14 @@ void UICheckbox::applyVisualState() {
         _backgroundSpriteRenderer->setColor(_style.hoverColor);
     } else {
         _backgroundSpriteRenderer->setColor(_style.normalColor);
+    }
+}
+
+void UICheckbox::init(Style style, bool value, std::vector<std::pair<UIEventType, std::string>> events) {
+    _style = style;
+    _value = value;
+    for (const auto& [eventType, actionId] : events) {
+        addEventListener(eventType, actionId);
     }
 }
 } // namespace dzemikk

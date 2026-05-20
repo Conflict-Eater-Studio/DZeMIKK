@@ -31,6 +31,9 @@ class Editor {
 
     void createEmptyObject(const std::string& name, dzemikk::GameObject* parent = nullptr);
     void createUIButton(dzemikk::GameObject* parent);
+    void createUICheckbox(dzemikk::GameObject* parent);
+    void createUISlider(dzemikk::GameObject* parent);
+    void createUIDropdown(dzemikk::GameObject* parent);
     void deleteObject(dzemikk::GameObject* gameObject);
     void reparentObject(dzemikk::GameObject* child, dzemikk::GameObject* parent);
     void instantiatePrefab(const std::string& path, dzemikk::GameObject* parent); 

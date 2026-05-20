@@ -2,6 +2,8 @@
 #define DZEMIKK_UICHECKBOX_H
 
 #include "ecs/components/ui/iUIInteractable.h"
+#include "ecs/components/ui/imageRenderer.h"
+#include "ecs/gameobject.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
@@ -38,20 +40,16 @@ class UICheckbox : public IUIInteractable {
 
     void onClick() override;
 
-    ImageRenderer* getBackgroundSpriteRenderer() const {
-        return _backgroundSpriteRenderer;
-    }
-    ImageRenderer* getCheckmarkSpriteRenderer() const {
-        return _checkmarkSpriteRenderer;
-    }
-    void setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer);
-    void setCheckmarkSpriteRenderer(ImageRenderer* spriteRenderer);
+    [[nodiscard]] ImageRenderer* getBackgroundSpriteRenderer() const;
+    [[nodiscard]] ImageRenderer* getCheckmarkSpriteRenderer() const;
 
     void setStyle(const Style& style);
     [[nodiscard]] Style getStyle() const;
 
-  private:
     void applyVisualState();
+    void init(Style style, bool value, std::vector<std::pair<UIEventType, std::string>> events);
+
+  private:
 
     mutable ImageRenderer* _backgroundSpriteRenderer = nullptr;
     mutable ImageRenderer* _checkmarkSpriteRenderer = nullptr;

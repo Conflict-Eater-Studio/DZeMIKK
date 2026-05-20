@@ -2,7 +2,6 @@
 #ifndef DZEMIKK_COMPONENTSERIALIZERREGISTRY_H
 #define DZEMIKK_COMPONENTSERIALIZERREGISTRY_H
 
-
 #include "assetManager/assetmanager.h"
 #include "ecs/component.h"
 #include "ecs/components/monoBehaviour.h"
@@ -28,17 +27,22 @@ class ComponentSerializerRegistry {
 
     using SerializeFn = std::function<nlohmann::json(const Component&)>;
     using DeserializeIntoGameObjectFn = std::function<void(DeserializationContext context)>;
+    using PostDeserializeComponentFn = std::function<void(Component& component)>;
 
     struct Entry {
         SerializeFn serialize;
         DeserializeIntoGameObjectFn deserializeIntoGameObject;
+        PostDeserializeComponentFn postDeserializeComponent = [](Component&) {};
     };
 
     static ComponentSerializerRegistry& get();
 
-    void registerType(std::string typeName, SerializeFn serializeFn, DeserializeIntoGameObjectFn deserializeFn);
+    void registerType(
+        std::string typeName, SerializeFn serializeFn, DeserializeIntoGameObjectFn deserializeFn,
+        PostDeserializeComponentFn postDeserializeComponentFn = [](Component&) {});
 
-    template <typename T> requires std::derived_from<T, MonoBehaviour>
+    template <typename T>
+        requires std::derived_from<T, MonoBehaviour>
     void registerType(std::string typeName) {
         std::string resolvedTypeName = std::move(typeName);
 
@@ -59,10 +63,11 @@ class ComponentSerializerRegistry {
 
     [[nodiscard]] nlohmann::json serialize(const Component& component) const;
     void deserializeIntoGameObject(const DeserializationContext& context) const;
+    void postDeserializeComponents(GameObject* obj) const;
 
   private:
     std::unordered_map<std::string, Entry> _entries;
 };
-}
+} // namespace dzemikk
 
 #endif

@@ -313,7 +313,7 @@ void Engine::updateMouseUI(float deltaTime) {
     const bool releasedThisFrame = !isLeftDown && _wasLeftMouseDown;
 
     std::vector<IUIInteractable*> uiElements;
-    ComponentRegistry::get().getComponents<IUIInteractable>(uiElements);
+    ComponentRegistry::get().getEnabledComponents<IUIInteractable>(uiElements);
     for (auto* element : uiElements) {
         element->processPointer(pointerPos, isLeftDown, pressedThisFrame, releasedThisFrame,
                                 _scrollDelta);

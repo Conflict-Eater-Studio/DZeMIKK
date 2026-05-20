@@ -1,4 +1,5 @@
 #include "hierarchyPanel.h"
+
 #include "editor.h"
 
 #include <imgui.h>
@@ -149,6 +150,18 @@ void editor::HierarchyPanel::drawNode(dzemikk::GameObject* gameObject,
 
             if (ImGui::MenuItem("CreateButton")) {
                 _editor->createUIButton(gameObject);
+            }
+
+            if (ImGui::MenuItem("CreateCheckbox")) {
+                _editor->createUICheckbox(gameObject);
+            }
+
+            if (ImGui::MenuItem("CreateSlider")) {
+                _editor->createUISlider(gameObject);
+            }
+
+            if (ImGui::MenuItem("CreateDropdown")) {
+                _editor->createUIDropdown(gameObject);
             }
 
             if (ImGui::MenuItem("Delete")) {

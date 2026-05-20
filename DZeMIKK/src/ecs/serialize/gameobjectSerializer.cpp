@@ -1,10 +1,10 @@
 #include "ecs/serialize/gameobjectSerializer.h"
 
+#include "assetManager/assetmanager.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/serialize/componentSerializerRegistry.h"
 #include "renderer/mesh.h"
-#include "assetManager/assetmanager.h"
 
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -64,9 +64,9 @@ void GameObjectSerializer::deserializeInto(GameObject& gameObject, const nlohman
         const auto& componentRegistry = ComponentSerializerRegistry::get();
         for (const auto& componentJson : json["components"]) {
             ComponentSerializerRegistry::DeserializationContext context{
-                gameObject,
-                assetManager,
-                componentJson,
+                .gameObject = gameObject,
+                .assetManager = assetManager,
+                .json = componentJson,
             };
             componentRegistry.deserializeIntoGameObject(context);
         }
@@ -78,7 +78,8 @@ void GameObjectSerializer::deserializeInto(GameObject& gameObject, const nlohman
 }
 
 GameObject* GameObjectSerializer::instantiateIntoScene(Scene& scene, const nlohmann::json& json,
-                                                       GameObject* parent, AssetManager* assetManager) {
+                                                       GameObject* parent,
+                                                       AssetManager* assetManager) {
     GameObject* gameObject = scene.createGameObject();
     deserializeInto(*gameObject, json, assetManager);
 
@@ -92,9 +93,12 @@ GameObject* GameObjectSerializer::instantiateIntoScene(Scene& scene, const nlohm
         }
     }
 
+    ComponentSerializerRegistry::get().postDeserializeComponents(gameObject);
+
     return gameObject;
 }
-std::unique_ptr<GameObject> GameObjectSerializer::deserialize(const nlohmann::json& json, AssetManager* assetManager) {
+std::unique_ptr<GameObject> GameObjectSerializer::deserialize(const nlohmann::json& json,
+                                                              AssetManager* assetManager) {
     static boost::uuids::string_generator uuidGenerator;
 
     if (!json.contains("id") || !json["id"].is_string()) {

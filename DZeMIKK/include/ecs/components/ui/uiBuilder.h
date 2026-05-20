@@ -12,6 +12,7 @@
 #include "ecs/scene.h"
 
 #include <algorithm>
+#include <limits>
 
 namespace dzemikk {
 class UIBuilder {
@@ -41,8 +42,8 @@ class UIBuilder {
         std::string name;
         glm::vec2 position = {0.0F, 0.0F};
         glm::vec2 size = {200.0F, 20.0F};
-        glm::vec2 anchorMin = {0.0F, 0.0F};
-        glm::vec2 anchorMax = {0.0F, 0.0F};
+        glm::vec2 anchorMin = {0.5F, 0.5F};
+        glm::vec2 anchorMax = {0.5F, 0.5F};
         glm::vec2 pivot = {0.5F, 0.5F};
         glm::vec2 scale = {1.0F, 1.0F};
         float rotation = 0.0F;
@@ -51,7 +52,7 @@ class UIBuilder {
         glm::vec2 handleSize = {20.0F, 20.0F};
         glm::vec4 handleColor = {1.0F, 1.0F, 1.0F, 1.0F};
         glm::vec4 handleHoverColor = {0.8F, 0.8F, 0.8F, 1.0F};
-        glm::vec4 hadnlePressedColor = {0.6F, 0.6F, 0.6F, 1.0F};
+        glm::vec4 handlePressedColor = {0.6F, 0.6F, 0.6F, 1.0F};
         AssetHandle<Mesh> bgMesh;
         AssetHandle<Mesh> fillMesh;
         AssetHandle<Mesh> handleMesh;
@@ -63,9 +64,9 @@ class UIBuilder {
     struct UICheckboxParams {
         std::string name;
         glm::vec2 position = {0.0F, 0.0F};
-        glm::vec2 size = {200.0F, 20.0F};
-        glm::vec2 anchorMin = {0.0F, 0.0F};
-        glm::vec2 anchorMax = {0.0F, 0.0F};
+        glm::vec2 size = {50.0F, 50.0F};
+        glm::vec2 anchorMin = {0.5F, 0.5F};
+        glm::vec2 anchorMax = {0.5F, 0.5F};
         glm::vec2 pivot = {0.5F, 0.5F};
         glm::vec2 scale = {1.0F, 1.0F};
         glm::vec4 normalColor = {1.0F, 1.0F, 1.0F, 1.0F};
@@ -83,13 +84,13 @@ class UIBuilder {
         std::string name;
         glm::vec2 position = {0.0F, 0.0F};
         glm::vec2 size = {200.0F, 20.0F};
-        glm::vec2 anchorMin = {0.0F, 0.0F};
-        glm::vec2 anchorMax = {0.0F, 0.0F};
+        glm::vec2 anchorMin = {0.5F, 0.5F};
+        glm::vec2 anchorMax = {0.5F, 0.5F};
         glm::vec2 pivot = {0.5F, 0.5F};
         glm::vec2 scale = {1.0F, 1.0F};
         float rotation = 0.0F;
         std::vector<UIDropdown::Option> options;
-        std::size_t selectedIndex = 0;
+        std::size_t selectedIndex = std::numeric_limits<std::size_t>::max();
         float optionHeight = 30.0F;
         std::size_t maxVisibleOptions = 5;
         std::string text;
@@ -111,7 +112,7 @@ class UIBuilder {
         std::shared_ptr<dzemikk::Material> arrowMat = nullptr;
         std::shared_ptr<dzemikk::Material> optionMat = nullptr;
         std::shared_ptr<dzemikk::Material> optionsBgMat = nullptr;
-        std::shared_ptr<dzemikk::Material> scrollBarMat = nullptr;
+        std::shared_ptr<dzemikk::Material> scrollbarMat = nullptr;
     };
 
     static GameObject* createButton(GameObject* parent, const UIButtonParams& params) {
@@ -210,10 +211,11 @@ class UIBuilder {
         handle->setMesh(params.handleMesh);
         handle->setMaterial(params.handleMat);
 
-        slider->setHandleSpriteRenderer(handle);
-        slider->setBackgroundSpriteRenderer(background);
-        slider->setFillSpriteRenderer(fill);
-
+        slider->setStyle({.fillColor = params.fillColor,
+                          .backgroundColor = params.bgColor,
+                          .handleColor = params.handleColor,
+                          .handleHoverColor = params.handleHoverColor,
+                          .handlePressedColor = params.handlePressedColor});
         slider->onValueChanged(0.0F);
 
         return sliderGO;
@@ -262,8 +264,6 @@ class UIBuilder {
                             .hoverColor = params.hoverColor,
                             .pressedColor = params.pressedColor,
                             .checkmarkColor = params.checkmarkColor});
-        checkbox->setBackgroundSpriteRenderer(background);
-        checkbox->setCheckmarkSpriteRenderer(checkmark);
 
         return go;
     }
@@ -293,16 +293,14 @@ class UIBuilder {
                                          .textColor = params.textColor,
                                          .mesh = params.bgMesh,
                                          .material = params.bgMat});
+
         auto* dtrigger = go->getComponent<UIButton>();
         auto* drect = go->rectTransform();
 
         auto* dropdown = go->addComponent<UIDropdown>();
-        dropdown->setTriggerGO(go);
 
-        auto dtriggerOnClick = boost::uuids::to_string(boost::uuids::random_generator()());
-        UIActionRegistry::get().registerAction(
-            [dropdown](const UIEvent& event) { dropdown->toggle(); }, dtriggerOnClick);
-        dtrigger->addEventListener(UIEventType::Click, dtriggerOnClick);
+        dtrigger->addEventListener(UIEventType::Click,
+                                   boost::uuids::to_string(dropdown->getTriggerActionId()));
 
         // --- Construct options ---
         UIDropdown::OptionRender optionRender{
@@ -313,13 +311,12 @@ class UIBuilder {
             .textVAlign = params.textVAlign,
             .textHAlign = params.textHAlign,
         };
+        dropdown->setOptionRender(optionRender);
         dropdown->setOptions(params.options);
         dropdown->setSelectedIndex(params.selectedIndex);
-        dropdown->setOptionRender(optionRender);
 
         // --- Construct background for options ---
         auto* optsBgGo = scene->createGameObject(params.name + "_OptionsBG", go);
-        dropdown->setOptionsContainerGO(optsBgGo);
         auto* optsBgGoRect = optsBgGo->rectTransform();
         optsBgGoRect->setSize({
             params.size[0],
@@ -349,7 +346,8 @@ class UIBuilder {
             .pressedOptColor = params.pressedColor,
             .highlightOptColor = params.highlightColor,
         });
-        dropdown->updateOptionVisuals();
+
+        optsBgGo->enabled(false);
 
         return go;
     }

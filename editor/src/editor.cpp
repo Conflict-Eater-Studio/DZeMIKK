@@ -2,16 +2,20 @@
 
 #if DZEMIKK_DEV_TOOLS
 
+#include "assetManager/assetmanager.h"
+#include "assetManagerPanel.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/transform.h"
 #include "ecs/scenemanager.h"
-
-#include "renderer/renderer.h"
+#include "ecs/serialize/sceneSerializer.h"
+#include "hierarchyPanel.h"
+#include "inspectorPanel.h"
 #include "renderer/material.h"
+#include "renderer/renderer.h"
 
-#include "assetManager/assetmanager.h"
-
+#include <filesystem>
+#include <fstream>
 #include <imgui.h>
 #include <imgui_internal.h>
 
@@ -28,6 +32,7 @@
 #include <commdlg.h>
 
 #endif
+#include <ecs/components/ui/uiBuilder.h>
 #include <iostream>
 #include <renderer/font.h>
 #include <ecs/components/ui/uiBuilder.h>
@@ -117,7 +122,7 @@ void Editor::createUIButton(dzemikk::GameObject* parent) {
         auto quadMat = std::make_shared<dzemikk::Material>();
         quadMat->setShader(quadShader);
 
-        dzemikk::UIBuilder::UIButtonParams params{.name = "Button",
+        dzemikk::UIBuilder::UIButtonParams params{.name = "Checkbox",
                                                   .size = {200.0F, 60.0F},
                                                   .text = "Button",
                                                   .textFont = font,
@@ -127,6 +132,106 @@ void Editor::createUIButton(dzemikk::GameObject* parent) {
         auto* buttonGO = dzemikk::UIBuilder::createButton(parent, params);
 
         _selectedObject = buttonGO;
+    });
+}
+
+void Editor::createUICheckbox(dzemikk::GameObject* parent) {
+
+    _deferredOps.push_back([=]() {
+        auto* assetManager = _engine->getAssetManager();
+
+        auto quadMesh =
+            assetManager->getPrimitiveMesh(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
+
+        auto quadShader = assetManager->get<dzemikk::Shader>("shaders/quad");
+
+        auto quadMat = std::make_shared<dzemikk::Material>();
+        quadMat->setShader(quadShader);
+
+        dzemikk::UIBuilder::UICheckboxParams params{
+            .name = "Checkbox",
+            .size = {50.0F, 50.0F},
+            .bgMesh = quadMesh,
+            .checkmarkMesh = quadMesh,
+            .bgMat = quadMat,
+            .checkmarkMat = quadMat,
+        };
+
+        auto* checkboxGO = dzemikk::UIBuilder::createCheckbox(parent, params);
+
+        _selectedObject = checkboxGO;
+    });
+}
+
+void Editor::createUISlider(dzemikk::GameObject* parent) {
+
+    _deferredOps.push_back([=]() {
+        auto* assetManager = _engine->getAssetManager();
+
+        auto quadMesh =
+            assetManager->getPrimitiveMesh(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
+
+        auto quadShader = assetManager->get<dzemikk::Shader>("shaders/quad");
+
+        auto quadMat = std::make_shared<dzemikk::Material>();
+        quadMat->setShader(quadShader);
+
+        dzemikk::UIBuilder::UISliderParams params{
+            .name = "Slider",
+            .size = {200.0F, 20.0F},
+            .bgMesh = quadMesh,
+            .fillMesh = quadMesh,
+            .handleMesh = quadMesh,
+            .bgMat = quadMat,
+            .fillMat = quadMat,
+            .handleMat = quadMat,
+        };
+
+        auto* sliderGO = dzemikk::UIBuilder::createSlider(parent, params);
+
+        _selectedObject = sliderGO;
+    });
+}
+
+void Editor::createUIDropdown(dzemikk::GameObject* parent) {
+
+    _deferredOps.push_back([=]() {
+        auto* assetManager = _engine->getAssetManager();
+
+        auto quadMesh =
+            assetManager->getPrimitiveMesh(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Quad);
+
+        auto quadShader = assetManager->get<dzemikk::Shader>("shaders/quad");
+
+        auto quadMat = std::make_shared<dzemikk::Material>();
+        quadMat->setShader(quadShader);
+
+        auto font = assetManager->get<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
+
+        dzemikk::UIBuilder::UIDropdownParams params{
+            .name = "Dropdown",
+            .size = {400.0F, 70.0F},
+            .options =
+                {
+                    {.text = "Option 1", .value = "opt1"},
+                    {.text = "Option 2", .value = "opt2"},
+                },
+            .optionHeight = 70.0F,
+            .text = "Select an option",
+            .textFont = font,
+            .bgMesh = quadMesh,
+            .arrowMesh = quadMesh,
+            .optionMesh = quadMesh,
+            .optionsBgMesh = quadMesh,
+            .bgMat = quadMat,
+            .arrowMat = quadMat,
+            .optionMat = quadMat,
+            .optionsBgMat = quadMat,
+        };
+
+        auto* sliderGO = dzemikk::UIBuilder::createDropdown(parent, params);
+
+        _selectedObject = sliderGO;
     });
 }
 
@@ -150,7 +255,6 @@ void Editor::deleteObject(dzemikk::GameObject* gameObject) {
 
 void Editor::reparentObject(dzemikk::GameObject* child, dzemikk::GameObject* parent) {
     _deferredOps.push_back([=]() {
-
         if (child == parent) {
             return;
         }
@@ -180,7 +284,7 @@ void Editor::setupEditor() {
     auto* sceneManager = _engine->getSceneManager();
 
     auto scene = _engine->getAssetManager()->get<dzemikk::Scene>("scenes/s4.json");
-
+	
     std::shared_ptr<dzemikk::Scene> sceneShared(scene.get(), [](dzemikk::Scene*) {});
 
     sceneManager->loadScene(sceneShared);
