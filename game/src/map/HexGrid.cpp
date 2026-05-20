@@ -333,17 +333,17 @@ std::vector<HexGrid::HexCellPtr> HexGrid::findPath(const HexCellPtr& startCell, 
                 continue;
             }
 
-            const int tentativeGScore = gScore.at(current) + 1;
+            const int neighbourGScore = gScore.at(current) + 1;
             auto neighborGScoreIt = gScore.find(neighbor);
 
-            if (neighborGScoreIt != gScore.end() && tentativeGScore >= neighborGScoreIt->second) {
+            if (neighborGScoreIt != gScore.end() && neighbourGScore >= neighborGScoreIt->second) {
                 continue;
             }
 
             cameFrom[neighbor] = current;
-            gScore[neighbor] = tentativeGScore;
+            gScore[neighbor] = neighbourGScore;
 
-            const int fScore = tentativeGScore + HexCoord::distance(neighbor, target);
+            const int fScore = neighbourGScore + HexCoord::distance(neighbor, target);
             frontier.push({neighbor, fScore});
         }
     }

@@ -35,6 +35,7 @@
 #include "input/input.h"
 #include "map/HexCoord.h"
 #include "map/PlayerEntity.h"
+#include "playerMovement.h"
 #include "renderer/cameraSystem.h"
 #include "renderer/font.h"
 #include "renderer/material.h"
@@ -275,6 +276,9 @@ void Game::start() {
     auto* playerGO = scene->createGameObject("Player", worldGO);
     auto* playerMesh = playerGO->addComponent<dzemikk::MeshRenderer>();
     _playerEntity = playerGO->addComponent<game::PlayerEntity>();
+    _playerMovement = playerGO->addComponent<game::PlayerMovement>();
+    _playerMovement->setPlayerEntity(_playerEntity);
+
     playerMesh->setModel(enemyModel);
     playerMesh->setMaterial(0, material);
     playerMesh->setTransform(playerGO->transform());
@@ -331,7 +335,7 @@ void Game::start() {
 
     _hexGrid = world->getGrid();
 
-    _playerEntity->tryMove(world->getGrid()->at({0, 0}));
+    _playerMovement->setHexGrid(_hexGrid);
 
     auto* uiRootGO = scene->createGameObject("UI Root");
     auto* canvas = uiRootGO->addComponent<dzemikk::Canvas>();
@@ -642,8 +646,7 @@ void Game::setupInputCallbacks() {
             if (_engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
                 auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
                 if (wh != nullptr && wh->getHexCell() != nullptr) {
-                    std::vector<game::HexGrid::HexCellPtr> _path = _hexGrid->findPath(_playerEntity->getCell(), wh->getHexCell());
-                    _playerEntity->setPath(_path);
+                    _playerMovement->moveTo(wh->getHexCell());
                 }
             }
         }

@@ -13,6 +13,9 @@ namespace dzemikk {
 class Material;
 class GameObject;
 } // namespace dzemikk
+namespace game {
+class PlayerMovement;
+}
 class Game {
   public:
     Game(const Game&) = default;
@@ -56,6 +59,7 @@ class Game {
     dzemikk::Material* _materialB = nullptr;
     dzemikk::Material* _quadMaterial = nullptr;
     game::PlayerEntity* _playerEntity = nullptr;
+    game::PlayerMovement* _playerMovement = nullptr;
 };
 
 #endif
