@@ -35,7 +35,7 @@ void PlayerEntity::tryMove(const HexCellPtr& targetCell) {
 }
 void PlayerEntity::update(double dt) {
     Entity::update(dt);
-    if (_path.empty()) {
+    if (_path.empty() || _moveCount >= _path.size() - 1) {
         return;
     }
 
