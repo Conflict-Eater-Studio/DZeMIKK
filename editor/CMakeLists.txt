@@ -29,6 +29,7 @@ set(EDITOR_SOURCES
     ${SRC_DIR}/inspectors/textRendererInspector.cpp
     ${SRC_DIR}/inspectors/skinnedMeshRendererInspector.cpp
     ${SRC_DIR}/inspectors/uIButtonInspector.cpp
+    ${SRC_DIR}/inspectors/animatorInspector.cpp
     ${SRC_DIR}/ui/propertyDrawer.cpp
 )
 
@@ -57,6 +58,7 @@ set(EDITOR_HEADERS
     ${INC_DIR}/inspectors/textRendererInspector.h
     ${INC_DIR}/inspectors/skinnedMeshRendererInspector.h
     ${INC_DIR}/inspectors/uIButtonInspector.h
+    ${INC_DIR}/inspectors/animatorInspector.h
     ${INC_DIR}/ui/propertyDrawer.h
 )
 

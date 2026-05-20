@@ -189,6 +189,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/ui/uiCheckboxSerializer.h"
         "${INC_DIR}/ecs/serialize/ui/uiDropdownSerializer.h"
         "${INC_DIR}/ecs/serialize/ui/verticalLayoutSerializer.h"
+        "${INC_DIR}/ecs/serialize/animation/animatorSerializer.h"
         "${INC_DIR}/ecs/serialize/uuid.h"
         "${INC_DIR}/assetManager/assetManager.h"
         "${INC_DIR}/assetManager/assetError.h"

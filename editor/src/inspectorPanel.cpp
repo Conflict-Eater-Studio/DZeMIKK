@@ -21,6 +21,7 @@
 #include "inspectors/textRendererInspector.h"
 #include "inspectors/skinnedMeshRendererInspector.h"
 #include "inspectors/uIButtonInspector.h"
+#include "inspectors/animatorInspector.h"
 
 #include <imgui.h>
 #include "ecs/components/meshRenderer.h"
@@ -29,7 +30,6 @@
 #include "ecs/components/collider.h"
 #include "ecs/components/spriteRenderer.h"
 #include "ecs/components/textRenderer.h"
-#include "ecs/components/skinnedMeshRenderer.h"
 #include "ecs/components/light/directionalLight.h"
 #include "ecs/components/light/pointLight.h"
 #include "ecs/components/light/spotLight.h"
@@ -41,6 +41,7 @@
 #include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/components/ui/uiButton.h"
 #include "ecs/components/ui/uiBuilder.h"
+#include "ecs/components/animator.h"
 
 editor::InspectorPanel::InspectorPanel() {
 
@@ -62,6 +63,7 @@ editor::InspectorPanel::InspectorPanel() {
     registerInspector<dzemikk::TextRenderer, TextRendererInspector>("TextRenderer");
     registerInspector<dzemikk::SkinnedMeshRenderer, SkinnedMeshRendererInspector>("SkinnedMeshRenderer");
     registerInspector<dzemikk::UIButton, UIButtonInspector>("UIButton");
+    registerInspector<dzemikk::Animator, AnimatorInspector>("Animator");
 
     _factories = {
         {"Transform", [](auto* go) { return go->getComponent<dzemikk::Transform>() != nullptr; },
@@ -146,6 +148,9 @@ editor::InspectorPanel::InspectorPanel() {
              auto r = go->addComponent<dzemikk::SkinnedMeshRenderer>();
              r->setTransform(go->getComponent<dzemikk::Transform>());
          }},
+
+        {"Animator", [](auto* go) { return go->getComponent<dzemikk::Animator>() != nullptr; },
+         [](auto* go) { go->addComponent<dzemikk::Animator>(); }},
     };
 
 }

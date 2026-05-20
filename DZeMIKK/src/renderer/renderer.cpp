@@ -84,7 +84,8 @@ void dzemikk::Renderer::render() {
     }
 
 #if DZEMIKK_DEV_TOOLS
-    drawDebugUI();
+    if (_engineMode == EngineMode::Game)
+        drawDebugUI();
 #endif
 }
 

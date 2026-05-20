@@ -8,11 +8,13 @@ namespace dzemikk {
     enum Operator {
         Greater, Less, Equal, NotEqual
     };
+
     struct Condition {
         std::string parameter;
         Operator op;
         float value;
     };
+
     struct Transition {
         float duration;
         std::string targetState;

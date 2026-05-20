@@ -169,7 +169,9 @@ void Engine::start() {
         _assetManager->update();
 
 #if DZEMIKK_DEV_TOOLS
-        Profiler::Get().DrawImGui();
+        if (_mode == EngineMode::Game) {
+            Profiler::Get().DrawImGui();
+        }
         glDisable(GL_DEPTH_TEST);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
