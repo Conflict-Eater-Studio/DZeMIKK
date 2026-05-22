@@ -23,6 +23,7 @@
 #include "inspectors/uIButtonInspector.h"
 #include "inspectors/uICheckboxInspector.h"
 #include "inspectors/uIDropdownInspector.h"
+#include "inspectors/uISliderInspector.h"
 #include "inspectors/animatorInspector.h"
 
 #include <imgui.h>
@@ -45,6 +46,7 @@
 #include "ecs/components/ui/uiBuilder.h"
 #include "ecs/components/ui/uiCheckbox.h"
 #include "ecs/components/ui/uiDropdown.h"
+#include "ecs/components/ui/uiSlider.h"
 #include "ecs/components/animator.h"
 
 editor::InspectorPanel::InspectorPanel() {
@@ -70,6 +72,7 @@ editor::InspectorPanel::InspectorPanel() {
     registerInspector<dzemikk::Animator, AnimatorInspector>("Animator");
     registerInspector<dzemikk::UICheckbox, UICheckboxInspector>("UICheckbox");
     registerInspector<dzemikk::UIDropdown, UIDropdownInspector>("UIDropdown");
+    registerInspector<dzemikk::UISlider, UISliderInspector>("UISlider");
 
     _factories = {
         {"Transform", [](auto* go) { return go->getComponent<dzemikk::Transform>() != nullptr; },

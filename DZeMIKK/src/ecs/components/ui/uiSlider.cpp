@@ -132,6 +132,21 @@ void UISlider::onValueChanged(float newValue) {
     const float maxBound = std::max(_minValue, _maxValue);
     _value = std::clamp(newValue, minBound, maxBound);
 
+    auto* fillRect = _fillSpriteRenderer->getRectTransform();
+    fillRect->setPivot({0.0f, 0.5f});
+    fillRect->setPosition(
+        {-_backgroundSpriteRenderer->getOwner()->rectTransform()->getSize().x / 2,
+         fillRect->getPosition().y});
+
+    if (fillRect != nullptr) {
+        float t = (_value - _minValue) / (_maxValue - _minValue);
+        t = glm::clamp(t, 0.0f, 1.0f);
+
+        glm::vec2 scale = fillRect->getScale();
+        scale.x = t;
+        fillRect->setScale(scale);
+    }
+
     auto slideArea = _fillSpriteRenderer->getRectTransform()->getSize();
     auto handleProgress = (_value - _minValue) / (_maxValue - _minValue);
     auto handlePosX = (handleProgress * slideArea[0]) - (slideArea[0] * 0.5F);
@@ -200,6 +215,21 @@ void UISlider::applyVisualState() {
 
     if (getFillSpriteRenderer() != nullptr) {
         _fillSpriteRenderer->setColor(_style.fillColor);
+
+        auto* fillRect = _fillSpriteRenderer->getRectTransform();
+        fillRect->setPivot({0.0f, 0.5f});
+        fillRect->setPosition(
+            {-_backgroundSpriteRenderer->getOwner()->rectTransform()->getSize().x / 2,
+             fillRect->getPosition().y});
+
+        if (fillRect != nullptr) {
+            float t = (_value - _minValue) / (_maxValue - _minValue);
+            t = glm::clamp(t, 0.0f, 1.0f);
+
+            glm::vec2 scale = fillRect->getScale();
+            scale.x = t;
+            fillRect->setScale(scale);
+        }
     }
 
     if (getHandleSpriteRenderer() == nullptr) {
