@@ -63,6 +63,15 @@ class IUIInteractable : public Component {
         return _eventActionIds;
     }
 
+    [[nodiscard]] std::unordered_map<UIEventType, std::vector<std::string>>& getEventActionsRef() {
+        return _eventActionIds;
+    }
+
+    [[nodiscard]] const std::unordered_map<UIEventType, std::vector<std::string>>&
+    getEventActionsRef() const {
+        return _eventActionIds;
+    }
+
   protected:
     void emit(UIEventType eventType,
               std::variant<std::monostate, float, bool> payload = std::monostate{}) {

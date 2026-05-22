@@ -14,6 +14,7 @@
 #include "ecs/components/meshRenderer.h"
 
 #include <imgui.h>
+#include <ecs/components/ui/iUIInteractable.h>
 
 namespace editor {
 class PropertyDrawer {
@@ -51,6 +52,9 @@ class PropertyDrawer {
 
     static bool drawFont(const std::string& label, dzemikk::AssetHandle<dzemikk::Font>& handle,
                          const InspectorContext& ctx);
+
+    static bool drawUIEvents(const std::string& label, dzemikk::IUIInteractable* interactable,
+                             const InspectorContext& ctx);
 };
 
 template <typename Enum>

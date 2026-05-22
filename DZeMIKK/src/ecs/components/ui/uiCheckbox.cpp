@@ -67,6 +67,8 @@ void UICheckbox::applyVisualState() {
 
     if (getCheckmarkSpriteRenderer() != nullptr) {
         _checkmarkSpriteRenderer->setColor(_style.checkmarkColor);
+
+        _checkmarkSpriteRenderer->enabled(_value);
     }
 
     if (pressedInside() && pointerInside() && pointerDown()) {

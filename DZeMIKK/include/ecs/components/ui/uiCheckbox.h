@@ -45,6 +45,14 @@ class UICheckbox : public IUIInteractable {
 
     void setStyle(const Style& style);
     [[nodiscard]] Style getStyle() const;
+    [[nodiscard]] bool getValue() const {
+        return _value;
+    }
+
+    void setValue(bool value) {
+        _value = value;
+        applyVisualState();
+    }
 
     void applyVisualState();
     void init(Style style, bool value, std::vector<std::pair<UIEventType, std::string>> events);

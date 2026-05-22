@@ -42,5 +42,11 @@ void editor::UIButtonInspector::draw(dzemikk::UIButton* uiButton, const Inspecto
         } else {
             ImGui::Text("Text GameObject: null");
         }
+
+        
+        ImGui::Spacing();
+        ImGui::Separator();
+
+        PropertyDrawer::drawUIEvents("Events", uiButton, ctx);
     }
 }

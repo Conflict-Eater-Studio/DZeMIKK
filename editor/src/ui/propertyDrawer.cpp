@@ -2,6 +2,38 @@
 
 #include "renderer/material.h"
 
+
+namespace {
+
+const char* toString(dzemikk::UIEventType type) {
+    switch (type) {
+    case dzemikk::UIEventType::Click:
+        return "Click";
+    case dzemikk::UIEventType::Enter:
+        return "Enter";
+    case dzemikk::UIEventType::Exit:
+        return "Exit";
+    default:
+        return "Unknown";
+    }
+}
+
+dzemikk::UIEventType fromIndex(int i) {
+    using namespace dzemikk;
+    switch (i) {
+    case 0:
+        return UIEventType::Click;
+    case 1:
+        return UIEventType::Enter;
+    case 2:
+        return UIEventType::Exit;
+    default:
+        return UIEventType::Click;
+    }
+}
+
+} // namespace
+
 bool editor::PropertyDrawer::drawFloat(const std::string& label, float& value, float speed) {
 
     return ImGui::DragFloat(label.c_str(), &value, speed);
@@ -336,6 +368,94 @@ bool editor::PropertyDrawer::drawFont(const std::string& label,
 
         if (newHandle.get()) {
             handle = newHandle;
+            changed = true;
+        }
+    }
+
+    return changed;
+}
+
+bool editor::PropertyDrawer::drawUIEvents(const std::string& label,
+                                          dzemikk::IUIInteractable* interactable,
+                                          const InspectorContext&) {
+    if (!interactable)
+        return false;
+
+    bool changed = false;
+
+    ImGui::Text("%s", label.c_str());
+    ImGui::Separator();
+
+    auto& eventMap = interactable->getEventActionsRef();
+
+    for (auto& [eventType, actions] : eventMap) {
+
+        ImGui::PushID(static_cast<int>(eventType));
+
+        if (ImGui::TreeNode(toString(eventType))) {
+
+            for (int i = 0; i < (int)actions.size(); ++i) {
+
+                ImGui::PushID(i);
+
+                char buffer[128];
+                std::snprintf(buffer, sizeof(buffer), "%s", actions[i].c_str());
+
+                if (ImGui::InputText("Action ID", buffer, sizeof(buffer))) {
+
+                    std::string old = actions[i];
+                    std::string now = buffer;
+
+                    interactable->removeEventListener(eventType, old);
+                    interactable->addEventListener(eventType, now);
+
+                    actions[i] = now;
+                    changed = true;
+                }
+
+                if (ImGui::Button("Remove")) {
+                    interactable->removeEventListener(eventType, actions[i]);
+                    ImGui::PopID();
+                    changed = true;
+                    break;
+                }
+
+                ImGui::PopID();
+            }
+
+            static char newAction[128] = "";
+
+            ImGui::InputText("New Action", newAction, sizeof(newAction));
+
+            if (ImGui::Button("Add")) {
+                if (newAction[0] != '\0') {
+                    interactable->addEventListener(eventType, newAction);
+                    newAction[0] = '\0';
+                    changed = true;
+                }
+            }
+
+            ImGui::TreePop();
+        }
+
+        ImGui::PopID();
+    }
+
+    ImGui::Spacing();
+    ImGui::Separator();
+
+    static int selectedEvent = 0;
+    const char* items[] = {"Click", "Enter", "Exit", "ValueChanged"};
+
+    ImGui::Combo("Add Event Type", &selectedEvent, items, IM_ARRAYSIZE(items));
+
+    static char newEventAction[128] = "";
+    ImGui::InputText("Action ID (new event)", newEventAction, sizeof(newEventAction));
+
+    if (ImGui::Button("Add Event Binding")) {
+        if (newEventAction[0] != '\0') {
+            interactable->addEventListener(fromIndex(selectedEvent), newEventAction);
+            newEventAction[0] = '\0';
             changed = true;
         }
     }

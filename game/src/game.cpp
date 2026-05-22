@@ -251,7 +251,6 @@ void Game::start() {
     
     auto scene = assetManager->get<dzemikk::Scene>("scenes/s8.json");
 
-
     std::shared_ptr<dzemikk::Scene> sceneShared(scene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
     sceneManager->setActiveScene(sceneShared);
@@ -270,6 +269,9 @@ void Game::start() {
     auto* uiCamera = uiCameraGO->addComponent<dzemikk::Camera>();
     uiCamera->setOrthographic(0.0F, 1920.0F, 0.0F, 1080.0F, -1.0F, 1.0F);
     engine->getRenderer()->getCameraSystem().setActiveUICamera(uiCamera);
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [](const dzemikk::UIEvent& event) { spdlog::info("Action mmm triggered!"); }, "mmm");
 
 
     /*

@@ -142,5 +142,11 @@ void editor::UIDropdownInspector::draw(dzemikk::UIDropdown* dropdown, const Insp
         }
 
         dropdown->refreshOptionLayout();
+
+        
+        ImGui::Spacing();
+        ImGui::Separator();
+
+        PropertyDrawer::drawUIEvents("Events", dropdown, ctx);
     }
 }

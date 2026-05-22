@@ -16,14 +16,12 @@ void editor::UISliderInspector::draw(dzemikk::UISlider* slider, const InspectorC
 
         bool changed = false;
 
-        // --- Style ---
         changed |= PropertyDrawer::drawColor("Fill Color", style.fillColor);
         changed |= PropertyDrawer::drawColor("Background Color", style.backgroundColor);
         changed |= PropertyDrawer::drawColor("Handle Color", style.handleColor);
         changed |= PropertyDrawer::drawColor("Handle Hover Color", style.handleHoverColor);
         changed |= PropertyDrawer::drawColor("Handle Pressed Color", style.handlePressedColor);
 
-        // --- Properties ---
         float value = slider->getValue();
         float minValue = slider->getMinValue();
         float maxValue = slider->getMaxValue();
@@ -45,5 +43,11 @@ void editor::UISliderInspector::draw(dzemikk::UISlider* slider, const InspectorC
 
             slider->applyVisualState();
         }
+
+        
+        ImGui::Spacing();
+        ImGui::Separator();
+
+        PropertyDrawer::drawUIEvents("Events", slider, ctx);
     }
 }

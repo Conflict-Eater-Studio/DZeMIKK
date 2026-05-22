@@ -17,7 +17,7 @@ void dzemikk::ImageRenderPass::execute(RenderContext& ctx) {
 
     std::vector<ImageRenderer*> uiSprites;
     ComponentRegistry::get().getEnabledComponents<ImageRenderer>(uiSprites);
-    try
+
     {
         DZ_PROFILE_GPU("Image Rendering");
         std::ranges::sort(uiSprites, [](ImageRenderer* a, ImageRenderer* b) {
@@ -54,7 +54,5 @@ void dzemikk::ImageRenderPass::execute(RenderContext& ctx) {
             Profiler::Get().stats.vertexCount += r->getMesh()->getVertexCount();
             Profiler::Get().stats.triangleCount += r->getMesh()->getVertexCount() / 3;
         }
-    } catch (...) {
-    
-    }
+    } 
 }

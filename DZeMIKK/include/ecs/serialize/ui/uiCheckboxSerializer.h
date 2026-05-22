@@ -23,6 +23,8 @@ inline void to_json(nlohmann::json& json, const UICheckbox& checkbox) {
     json["checkmarkColor"] = {checkmarkColor[0], checkmarkColor[1], checkmarkColor[2],
                               checkmarkColor[3]};
 
+    json["value"] = checkbox.getValue(); 
+
     auto ea = checkbox.getEventActions();
     for (const auto& [eventType, actionIds] : ea) {
         const char* eventKey = nullptr;

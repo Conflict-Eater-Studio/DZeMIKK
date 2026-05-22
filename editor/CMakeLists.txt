@@ -32,6 +32,7 @@ set(EDITOR_SOURCES
     ${SRC_DIR}/inspectors/animatorInspector.cpp
     ${SRC_DIR}/inspectors/uICheckboxInspector.cpp
     ${SRC_DIR}/inspectors/uIDropdownInspector.cpp
+    ${SRC_DIR}/inspectors/uISliderInspector.cpp
     ${SRC_DIR}/ui/propertyDrawer.cpp
 )
 
@@ -63,6 +64,7 @@ set(EDITOR_HEADERS
     ${INC_DIR}/inspectors/animatorInspector.h
     ${INC_DIR}/inspectors/uICheckboxInspector.h
     ${INC_DIR}/inspectors/uIDropdownInspector.h
+    ${INC_DIR}/inspectors/uISliderInspector.h
     ${INC_DIR}/ui/propertyDrawer.h
 )
 
