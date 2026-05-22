@@ -115,6 +115,14 @@ class UIDropdown : public IUIInteractable {
     void applyVisualState();
     void applyOptionButtonColors();
 
+    void updateOptionDataOnly(); 
+    void addOption(const Option& option);
+    void removeOption(std::size_t index);
+    void setOption(std::size_t index, const Option& option);
+    void createOptionButton(std::size_t index);
+    void updateOptionButton(std::size_t index);
+    void refreshOptionLayout();
+
     void selectOption(std::size_t index);
 
     void init(const Style& style, const OptionRender& render, const std::vector<Option>& options,

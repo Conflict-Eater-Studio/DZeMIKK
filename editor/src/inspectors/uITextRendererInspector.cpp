@@ -37,7 +37,7 @@ void editor::UITextRendererInspector::draw(dzemikk::UITextRenderer* textRenderer
             textRenderer->color = glm::vec3(color);
         }
 
-        const char* horizontalItems[] = {"Left", "Center", "Right"};
+        const char* horizontalItems[] = {"Right", "Center", "Left"};
 
         auto horizontal = textRenderer->horizontalAlign;
 

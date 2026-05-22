@@ -126,8 +126,11 @@ inline void from_json(const nlohmann::json& json, UIDropdown& dropdown, AssetMan
 
     std::vector<UIDropdown::Option> opts;
     for (const auto& optionJson : json["options"]) {
-        opts.push_back({.text = optionJson["text"].get<std::string>(),
-                        .value = optionJson["value"].get<std::string>()});
+        UIDropdown::Option opt;
+        opt.text = optionJson["text"].get<std::string>();
+        opt.value = optionJson["value"].get<std::string>();
+
+        opts.push_back(opt);
     }
 
     const std::size_t selectedIndex =

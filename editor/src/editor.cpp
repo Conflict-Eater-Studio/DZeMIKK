@@ -19,12 +19,7 @@
 #include <imgui.h>
 #include <imgui_internal.h>
 
-#include "hierarchyPanel.h"
-#include "inspectorPanel.h"
-#include "assetManagerPanel.h"
 #include "scenePanel.h"
-
-#include "ecs/serialize/sceneSerializer.h"
 
 #include <fstream>
 #include <filesystem>
@@ -35,8 +30,12 @@
 #include <ecs/components/ui/uiBuilder.h>
 #include <iostream>
 #include <renderer/font.h>
-#include <ecs/components/ui/uiBuilder.h>
 #include <ecs/serialize/prefabSerializer.h>
+
+#include <ecs/components/ui/uiButton.h>
+#include <ecs/components/ui/uiCheckbox.h>
+#include <ecs/components/ui/uiDropdown.h>
+#include <ecs/components/ui/uiSlider.h>
 
 namespace editor {
 
@@ -283,7 +282,7 @@ void Editor::setupEditor() {
 
     auto* sceneManager = _engine->getSceneManager();
 
-    auto scene = _engine->getAssetManager()->get<dzemikk::Scene>("scenes/s4.json");
+    auto scene = _engine->getAssetManager()->get<dzemikk::Scene>("scenes/s8.json");
 	
     std::shared_ptr<dzemikk::Scene> sceneShared(scene.get(), [](dzemikk::Scene*) {});
 

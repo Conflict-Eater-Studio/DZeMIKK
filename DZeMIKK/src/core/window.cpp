@@ -39,6 +39,7 @@ namespace dzemikk {
 
             throw std::runtime_error("Failed to create GLFW window");
         }
+        glfwMaximizeWindow(window_);
 
         data_.Title = title;
         data_.Width = width;

@@ -21,6 +21,8 @@
 #include "inspectors/textRendererInspector.h"
 #include "inspectors/skinnedMeshRendererInspector.h"
 #include "inspectors/uIButtonInspector.h"
+#include "inspectors/uICheckboxInspector.h"
+#include "inspectors/uIDropdownInspector.h"
 #include "inspectors/animatorInspector.h"
 
 #include <imgui.h>
@@ -41,6 +43,8 @@
 #include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/components/ui/uiButton.h"
 #include "ecs/components/ui/uiBuilder.h"
+#include "ecs/components/ui/uiCheckbox.h"
+#include "ecs/components/ui/uiDropdown.h"
 #include "ecs/components/animator.h"
 
 editor::InspectorPanel::InspectorPanel() {
@@ -64,6 +68,8 @@ editor::InspectorPanel::InspectorPanel() {
     registerInspector<dzemikk::SkinnedMeshRenderer, SkinnedMeshRendererInspector>("SkinnedMeshRenderer");
     registerInspector<dzemikk::UIButton, UIButtonInspector>("UIButton");
     registerInspector<dzemikk::Animator, AnimatorInspector>("Animator");
+    registerInspector<dzemikk::UICheckbox, UICheckboxInspector>("UICheckbox");
+    registerInspector<dzemikk::UIDropdown, UIDropdownInspector>("UIDropdown");
 
     _factories = {
         {"Transform", [](auto* go) { return go->getComponent<dzemikk::Transform>() != nullptr; },
@@ -280,25 +286,27 @@ void editor::InspectorPanel::drawAddComponent(dzemikk::GameObject* obj) {
         _showComponentList = !_showComponentList;
     }
 
-    if (!_showComponentList)
-        return;
+    if (_showComponentList) {
 
-    ImGui::BeginChild("ComponentList", ImVec2(0, 140), true);
+        ImGui::BeginChild("ComponentList", ImVec2(0, 140), true);
 
-    for (auto& factory : _factories) {
-        bool exists = factory.has(obj);
+        for (auto& factory : _factories) {
+            bool exists = factory.has(obj);
 
-        if (exists) {
-            ImGui::BeginDisabled();
-            ImGui::Selectable(factory.name.c_str());
-            ImGui::EndDisabled();
-        } else {
-            if (ImGui::Selectable(factory.name.c_str())) {
-                factory.create(obj);
-                _showComponentList = false;
+            if (exists) {
+                ImGui::BeginDisabled();
+                ImGui::Selectable(factory.name.c_str());
+                ImGui::EndDisabled();
+            } else {
+                if (ImGui::Selectable(factory.name.c_str())) {
+                    factory.create(obj);
+                    _showComponentList = false;
+                }
             }
         }
+
+        ImGui::EndChild();
     }
 
-    ImGui::EndChild();
+    ImGui::Dummy(ImVec2(0.0f, 300.0f));
 }
