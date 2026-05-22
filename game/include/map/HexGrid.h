@@ -13,8 +13,12 @@ class HexGrid {
   public:
     using HexCellPtr = std::shared_ptr<HexCell>;
 
-    HexGrid() = default;
-    HexGrid(std::mt19937& rng);
+    HexGrid(unsigned int seed = 42);
+    HexGrid(const HexGrid&) = delete;
+    HexGrid(HexGrid&&) = delete;
+    HexGrid& operator=(const HexGrid&) = default;
+    HexGrid& operator=(HexGrid&&) = default;
+    ~HexGrid();
 
     [[nodiscard]] const std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>>&
     getChunks() const {
@@ -31,6 +35,7 @@ class HexGrid {
     static bool isBlockedCell(const HexCellPtr& cell);
     static bool isWalkableCell(const HexCellPtr& cell);
     std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>> _chunks;
+    unsigned int _seed;
     std::mt19937 _rng;
     boost::uuids::uuid _rootChunkId;
 

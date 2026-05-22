@@ -12,10 +12,40 @@
 #include <random>
 
 namespace game {
-World::World(int seed) : _rng(seed) {}
+World::World(unsigned int seed) : _rng(seed), _perlin(seed), _grid(seed) {
+    _worldDefinition.seed = seed;
+    _worldDefinition.chunks = {};
+    _generators["default"] = [](int step, int maxSteps) {
+        return 1.0F - (static_cast<float>(step) / static_cast<float>(maxSteps));
+    };
+}
 
-void World::start() {
-    _grid = HexGrid();
+void World::load(const nlohmann::json& def) {
+    // Override default rng and perlin
+    WorldDefinition wd = def["world"].get<WorldDefinition>();
+    _worldDefinition.seed = wd.seed;
+    _rng = std::mt19937(_worldDefinition.seed);
+    _perlin = Perlin(_worldDefinition.seed);
+
+    // Clear existing grid and visuals if any
+    if (!_grid.getChunks().empty()) {
+        for (auto* trs : _hexTransforms) {
+            _owner->destroyChild(trs->getOwner());
+        }
+        _hexTransforms.clear();
+        _spawnedHexes.clear();
+    }
+
+    _grid = HexGrid(_worldDefinition.seed);
+
+    // Create chunks from definitions
+    for (const auto& chunkDef : wd.chunks) {
+        addChunk(chunkDef);
+    }
+}
+
+nlohmann::json World::save() {
+    return nlohmann::json{{"world", _worldDefinition}};
 }
 
 void World::update(double dt) {
@@ -46,6 +76,27 @@ void World::update(double dt) {
     }
 }
 
+boost::uuids::uuid World::addChunk(const ChunkDefinition& config) {
+    _worldDefinition.chunks.push_back(config);
+    auto g = _generators.at(config.generatorId);
+
+    if (g == nullptr) {
+        throw std::runtime_error(
+            std::format("Generator with id '{}' not found", config.generatorId));
+    }
+
+    auto id = _grid.makeChunk({.parentChunkId = config.parentChunkId,
+                               .chunkId = config.chunkId,
+                               .steps = config.steps,
+                               .generator = g,
+                               .dirFromParent = config.dirFromParent});
+
+    _worldDefinition.chunks.back().chunkId = id;
+    renderChunk(id);
+
+    return id;
+}
+
 void World::renderChunk(boost::uuids::uuid id) {
     for (const auto& hex : _grid.getChunks().at(id)->getHexes()) {
         auto cell = hex.second;
@@ -72,9 +123,8 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
     auto height = _perlin.noise(static_cast<float>(cell->getCoord().q()) * 0.1F,
                                 static_cast<float>(cell->getCoord().r()) * 0.1F) *
                   3.0F;
-    std::mt19937 rng(std::random_device{}());
     std::uniform_real_distribution<float> dist(-0.2F, 0.2F);
-    cell->getCoord().setHeight(height + dist(rng));
+    cell->getCoord().setHeight(height + dist(_rng));
     auto worldPos = cell->getCoord().toWorldPosition(1.0F, 0.1F);
     obj->transform()->setPosition(worldPos);
     obj->transform()->setScale({1.0F, 1.0F, 1.0F});

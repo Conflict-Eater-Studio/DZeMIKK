@@ -18,13 +18,19 @@ class HexChunk {
 
     struct Config {
         boost::uuids::uuid parentChunkId{boost::uuids::nil_uuid()};
+        boost::uuids::uuid chunkId{boost::uuids::nil_uuid()};
         int steps{0};
-        std::function<float(int)> generator;
+        std::function<float(int, int)> generator;
         HexCoord::Direction dirFromParent{HexCoord::Direction::R180};
     };
 
-    HexChunk(Config config, HexChunk* parent);
-    HexChunk(Config config);
+    HexChunk(Config config, HexChunk* parent, unsigned int seed = 42);
+    HexChunk(Config config, unsigned int seed = 42);
+    HexChunk(const HexChunk&) = delete;
+    HexChunk(HexChunk&&) = delete;
+    HexChunk& operator=(const HexChunk&) = delete;
+    HexChunk& operator=(HexChunk&&) = delete;
+    ~HexChunk();
 
     [[nodiscard]] const std::unordered_map<HexCoord, HexCellPtr>& getHexes() const;
     std::unordered_map<HexCoord, HexCellPtr>& getHexes();
@@ -51,7 +57,7 @@ class HexChunk {
     HexCoord _origin{0, 0};
     Config _config{};
 
-    std::mt19937 _rng{1};
+    std::mt19937 _rng;
     std::uniform_real_distribution<float> _chanceDist{0.0F, 1.0F};
 
     void generateHexes();

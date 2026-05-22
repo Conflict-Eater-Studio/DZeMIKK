@@ -11,7 +11,11 @@
 #include <vector>
 
 namespace game {
-HexGrid::HexGrid(std::mt19937& rng) : _rng(rng) {}
+HexGrid::HexGrid(unsigned int seed) : _rng(seed), _seed(seed) {}
+
+HexGrid::~HexGrid() {
+    _chunks.clear();
+}
 
 bool HexGrid::isBlockedCell(const HexGrid::HexCellPtr& cell) {
     return cell != nullptr && cell->getGenState() == HexCell::GenState::Blocked;
@@ -198,13 +202,13 @@ boost::uuids::uuid HexGrid::makeChunk(const HexChunk::Config& config) {
 
     std::unique_ptr<HexChunk> chunk = nullptr;
     if (!hasParent) {
-        chunk = std::make_unique<HexChunk>(config);
+        chunk = std::make_unique<HexChunk>(config, _seed);
     } else {
         auto parentIt = _chunks.find(parentChunkId);
         if (parentIt == _chunks.end()) {
             return boost::uuids::nil_uuid();
         }
-        chunk = std::make_unique<HexChunk>(config, parentIt->second.get());
+        chunk = std::make_unique<HexChunk>(config, parentIt->second.get(), _seed);
     }
 
     if (chunk == nullptr || chunk->getHexes().empty()) {

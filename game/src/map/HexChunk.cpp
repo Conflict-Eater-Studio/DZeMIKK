@@ -11,34 +11,51 @@
 #include <vector>
 
 namespace game {
-HexChunk::HexChunk(HexChunk::Config config, HexChunk* parent)
-    : _parent(parent), _config(std::move(config)), _id(boost::uuids::random_generator_mt19937()()) {
+HexChunk::HexChunk(HexChunk::Config config, HexChunk* parent, unsigned int seed)
+    : _parent(parent), _config(std::move(config)), _rng(seed) {
+    if (config.chunkId != boost::uuids::nil_uuid()) {
+        _id = config.chunkId;
+    } else {
+        _id = boost::uuids::random_generator()();
+    }
 
     auto dist = ((parent->getConfig().steps + _config.steps) / 2) + 2;
     _origin = parent->getOrigin() + HexCoord::dir(_config.dirFromParent) * dist;
 
     if (!_config.generator) {
-        _config.generator = [steps = _config.steps](int x) {
-            if (steps <= 0) {
+        _config.generator = [](int x, int maxSteps) {
+            if (maxSteps <= 0) {
                 return 0.0F;
             }
-            return x % 2 == 0 ? 1.0F : 1.0F - (static_cast<float>(x) / static_cast<float>(steps));
+            return x % 2 == 0 ? 1.0F
+                              : 1.0F - (static_cast<float>(x) / static_cast<float>(maxSteps));
         };
     }
     generateHexes();
 }
 
-HexChunk::HexChunk(HexChunk::Config config)
-    : _config(std::move(config)), _id(boost::uuids::random_generator_mt19937()()) {
+HexChunk::HexChunk(HexChunk::Config config, unsigned int seed)
+    : _config(std::move(config)), _rng(seed) {
+    if (config.chunkId != boost::uuids::nil_uuid()) {
+        _id = config.chunkId;
+    } else {
+        _id = boost::uuids::random_generator()();
+    }
+
     if (!_config.generator) {
-        _config.generator = [steps = _config.steps](int x) {
-            if (steps <= 0) {
+        _config.generator = [](int x, int maxSteps) {
+            if (maxSteps <= 0) {
                 return 0.0F;
             }
-            return x % 2 == 0 ? 1.0F : 1.0F - (static_cast<float>(x) / static_cast<float>(steps));
+            return x % 2 == 0 ? 1.0F
+                              : 1.0F - (static_cast<float>(x) / static_cast<float>(maxSteps));
         };
     }
     generateHexes();
+}
+
+HexChunk::~HexChunk() {
+    _hexes.clear();
 }
 
 void HexChunk::generateHexes() {
@@ -98,7 +115,7 @@ void HexChunk::generateHexCells() {
                     continue;
                 }
                 visited.insert(neighbor);
-                if (_chanceDist(_rng) < _config.generator(i + 1)) {
+                if (_chanceDist(_rng) < _config.generator(i + 1, _config.steps)) {
                     nextFrontier.insert(neighbor);
                     _hexes.insert(
                         {neighbor, std::make_shared<HexCell>(neighbor, HexCell::State::Empty,
