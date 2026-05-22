@@ -26,9 +26,21 @@ bool HexGrid::isWalkableCell(const HexGrid::HexCellPtr& cell) {
 }
 
 std::pair<HexCoord, HexCoord> HexGrid::closestPair(HexChunk* chunk1, HexChunk* chunk2) {
-    std::pair<HexCoord, HexCoord> closest{chunk1->getHexes().begin()->first,
-                                          chunk2->getHexes().begin()->first};
-    bool found = false;
+    auto pickFallbackCoord = [](HexChunk* chunk) {
+        bool hasAny = false;
+        HexCoord fallback(0, 0);
+
+        for (const auto& [coord, cell] : chunk->getHexes()) {
+            if (!hasAny || coord < fallback) {
+                fallback = coord;
+                hasAny = true;
+            }
+        }
+
+        return fallback;
+    };
+
+    std::pair<HexCoord, HexCoord> closest{pickFallbackCoord(chunk1), pickFallbackCoord(chunk2)};
     int minDist = std::numeric_limits<int>::max();
 
     for (const auto& [coord1, cell1] : chunk1->getHexes()) {
@@ -42,16 +54,13 @@ std::pair<HexCoord, HexCoord> HexGrid::closestPair(HexChunk* chunk1, HexChunk* c
             }
 
             auto dist = HexCoord::distance(coord1, coord2);
-            if (dist < minDist) {
+            if (dist < minDist ||
+                (dist == minDist &&
+                 (coord1 < closest.first || (coord1 == closest.first && coord2 < closest.second)))) {
                 minDist = dist;
                 closest = {coord1, coord2};
-                found = true;
             }
         }
-    }
-
-    if (!found) {
-        closest = {chunk1->getHexes().begin()->first, chunk2->getHexes().begin()->first};
     }
 
     return closest;
@@ -238,14 +247,22 @@ boost::uuids::uuid HexGrid::makeChunk(const HexChunk::Config& config) {
 }
 
 HexGrid::HexCellPtr HexGrid::getCell(const HexCoord& coord) const {
+    HexCellPtr selectedCell = nullptr;
+    boost::uuids::uuid selectedChunkId = boost::uuids::nil_uuid();
+
     for (const auto& [chunkId, chunk] : _chunks) {
         auto cell = chunk->getCell(coord);
-        if (cell != nullptr) {
-            return cell;
+        if (cell == nullptr) {
+            continue;
+        }
+
+        if (selectedCell == nullptr || chunkId < selectedChunkId) {
+            selectedCell = std::move(cell);
+            selectedChunkId = chunkId;
         }
     }
 
-    return nullptr;
+    return selectedCell;
 }
 
 HexGrid::HexCellPtr HexGrid::at(const HexCoord& coord) const {

@@ -51,6 +51,12 @@ class HexCoord {
     constexpr bool operator==(const HexCoord& other) const {
         return _q == other._q && _r == other._r;
     }
+    constexpr bool operator<(const HexCoord& other) const {
+        if (_q != other._q) {
+            return _q < other._q;
+        }
+        return _r < other._r;
+    }
     constexpr bool operator!=(const HexCoord& other) const {
         return !(*this == other);
     }

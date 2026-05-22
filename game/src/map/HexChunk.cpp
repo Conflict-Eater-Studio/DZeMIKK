@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <limits>
 #include <queue>
+#include <set>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -105,10 +106,10 @@ void HexChunk::generateHexCells() {
         {_origin, std::make_shared<HexCell>(_origin, HexCell::State::Empty, HexCell::Type::Normal,
                                             HexCell::GenState::Protected)});
 
-    std::unordered_set<HexCoord> visited{_origin};
-    std::unordered_set<HexCoord> frontier{_origin};
+    std::set<HexCoord> visited{_origin};
+    std::set<HexCoord> frontier{_origin};
     for (int i = 0; i < _config.steps; i++) {
-        std::unordered_set<HexCoord> nextFrontier;
+        std::set<HexCoord> nextFrontier;
         for (const auto& coord : frontier) {
             for (const auto& neighbor : HexCoord::getNeighbors(coord)) {
                 if (visited.contains(neighbor)) {

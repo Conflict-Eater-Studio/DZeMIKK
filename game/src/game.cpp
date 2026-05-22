@@ -292,41 +292,41 @@ void Game::start() {
 
     world->registerGenerator("full", [](int step, int maxSteps) { return 1.0F; });
 
-    // auto c1 = world->addChunk({.steps = 4});
-    //
-    // auto c2 = world->addChunk(
-    //     {.parentChunkId = c1, .steps = 8, .dirFromParent = game::HexCoord::Direction::R0});
-    // auto c3 = world->addChunk(
-    //     {.parentChunkId = c2, .steps = 12, .dirFromParent = game::HexCoord::Direction::R0});
-    // auto c4 = world->addChunk(
-    //     {.parentChunkId = c3, .steps = 16, .dirFromParent = game::HexCoord::Direction::R0});
-    // auto c5 = world->addChunk(
-    //     {.parentChunkId = c4, .steps = 10, .dirFromParent = game::HexCoord::Direction::R0});
-    //
-    // auto c6 = world->addChunk(
-    //     {.parentChunkId = c5, .steps = 12, .dirFromParent = game::HexCoord::Direction::R0});
-    //
-    // auto c7 = world->addChunk(
-    //     {.parentChunkId = c6, .steps = 14, .dirFromParent = game::HexCoord::Direction::R0});
-    //
-    // auto c8 = world->addChunk(
-    //     {.parentChunkId = c7, .steps = 16, .dirFromParent = game::HexCoord::Direction::R0});
-    //
-    // auto c3s1 = world->addChunk(
-    //     {.parentChunkId = c3, .steps = 26, .dirFromParent = game::HexCoord::Direction::R60});
-    // auto c3s2 = world->addChunk(
-    //     {.parentChunkId = c3, .steps = 8, .dirFromParent = game::HexCoord::Direction::R300});
-    //
-    // auto c3s2s1 = world->addChunk(
-    //     {.parentChunkId = c3s2, .steps = 12, .dirFromParent = game::HexCoord::Direction::R300});
-    //
-    // std::ofstream out("./world.json");
-    // out << world->save().dump(4);
-    // out.close();
+    auto c1 = world->addChunk({.steps = 4});
 
-    std::ifstream in("./world.json");
-    nlohmann::json worldData = nlohmann::json::parse(in);
-    world->load(worldData);
+    auto c2 = world->addChunk(
+        {.parentChunkId = c1, .steps = 8, .dirFromParent = game::HexCoord::Direction::R0});
+    auto c3 = world->addChunk(
+        {.parentChunkId = c2, .steps = 12, .dirFromParent = game::HexCoord::Direction::R0});
+    auto c4 = world->addChunk(
+        {.parentChunkId = c3, .steps = 16, .dirFromParent = game::HexCoord::Direction::R0});
+    auto c5 = world->addChunk(
+        {.parentChunkId = c4, .steps = 10, .dirFromParent = game::HexCoord::Direction::R0});
+
+    auto c6 = world->addChunk(
+        {.parentChunkId = c5, .steps = 12, .dirFromParent = game::HexCoord::Direction::R0});
+
+    auto c7 = world->addChunk(
+        {.parentChunkId = c6, .steps = 14, .dirFromParent = game::HexCoord::Direction::R0});
+
+    auto c8 = world->addChunk(
+        {.parentChunkId = c7, .steps = 16, .dirFromParent = game::HexCoord::Direction::R0});
+
+    auto c3s1 = world->addChunk(
+        {.parentChunkId = c3, .steps = 26, .dirFromParent = game::HexCoord::Direction::R60});
+    auto c3s2 = world->addChunk(
+        {.parentChunkId = c3, .steps = 8, .dirFromParent = game::HexCoord::Direction::R300});
+
+    auto c3s2s1 = world->addChunk(
+        {.parentChunkId = c3s2, .steps = 12, .dirFromParent = game::HexCoord::Direction::R300});
+
+    std::ofstream out("./world.json");
+    out << world->save().dump(4);
+    out.close();
+
+    // std::ifstream in("./world.json");
+    // nlohmann::json worldData = nlohmann::json::parse(in);
+    // world->load(worldData);
 
     _playerEntity->tryMove(world->getGrid()->at({0, 0}));
 

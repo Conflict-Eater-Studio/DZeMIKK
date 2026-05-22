@@ -21,25 +21,23 @@ World::World(unsigned int seed) : _rng(seed), _perlin(seed), _grid(seed) {
 }
 
 void World::load(const nlohmann::json& def) {
-    // Override default rng and perlin
-    WorldDefinition wd = def["world"].get<WorldDefinition>();
-    _worldDefinition.seed = wd.seed;
+    const WorldDefinition wd = def["world"].get<WorldDefinition>();
+    _worldDefinition = wd;
+
     _rng = std::mt19937(_worldDefinition.seed);
     _perlin = Perlin(_worldDefinition.seed);
 
-    // Clear existing grid and visuals if any
-    if (!_grid.getChunks().empty()) {
-        for (auto* trs : _hexTransforms) {
-            _owner->destroyChild(trs->getOwner());
-        }
-        _hexTransforms.clear();
-        _spawnedHexes.clear();
+    for (auto* trs : _hexTransforms) {
+        _owner->destroyChild(trs->getOwner());
     }
+    _hexTransforms.clear();
+    _spawnedHexes.clear();
 
     _grid = HexGrid(_worldDefinition.seed);
 
-    // Create chunks from definitions
-    for (const auto& chunkDef : wd.chunks) {
+    const auto chunksToBuild = _worldDefinition.chunks;
+    _worldDefinition.chunks.clear();
+    for (const auto& chunkDef : chunksToBuild) {
         addChunk(chunkDef);
     }
 }
