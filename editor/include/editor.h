@@ -130,11 +130,6 @@ class Editor {
     void setupEditor();
     void renderDockspace();
     void renderBottomBar();
-    static void setupDockspaceWindow();
-    void renderMainMenuBar();
-    void handleSaveScenePopup();
-    static void renderDockspaceArea();
-    static void setupInitialLayout();
 
     /**
      * @brief Opens a native save-file dialog.

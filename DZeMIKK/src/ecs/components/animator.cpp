@@ -121,5 +121,3 @@ namespace dzemikk {
         return false;
     }
 }
-
-

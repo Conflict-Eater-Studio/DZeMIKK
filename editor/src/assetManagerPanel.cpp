@@ -105,6 +105,7 @@ void editor::AssetManagerPanel::insert(Node& root, const std::string& path) {
 void editor::AssetManagerPanel::drawNode(const Node& node, const std::string& path) {
     for (const auto& [folder, child] : node.children) {
 
+        handlePrefabDrop();
         std::string fullPath = path;
         fullPath += "/";
         fullPath += folder;
@@ -216,8 +217,6 @@ void editor::AssetManagerPanel::drawFolderPanel(const Node& root) {
         drawNode(root, "Assets");
         ImGui::TreePop();
     }
-
-    handlePrefabDrop();
 
     ImGui::EndChild();
 }
