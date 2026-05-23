@@ -12,18 +12,16 @@ void editor::HierarchyPanel::draw(dzemikk::Scene* scene, dzemikk::GameObject*& s
     ImGui::Begin("Hierarchy");
 
     if (ImGui::BeginPopupContextWindow("HierarchyContext", ImGuiPopupFlags_MouseButtonRight)) {
-
         if (_editor) {
             if (ImGui::MenuItem("Create Empty")) {
                 _editor->createEmptyObject("Empty", nullptr);
             }
         }
-
         ImGui::EndPopup();
     }
 
     if (!scene) {
-        ImGui::Text("No scene");
+        ImGui::TextUnformatted("No scene");
         ImGui::End();
         return;
     }
@@ -40,12 +38,11 @@ void editor::HierarchyPanel::draw(dzemikk::Scene* scene, dzemikk::GameObject*& s
         }
     }
 
-    ImGui::Dummy(ImVec2(ImGui::GetContentRegionAvail().x, 30.0f));
+    ImGui::Dummy(ImVec2(ImGui::GetContentRegionAvail().x, 30.0F));
 
     if (ImGui::BeginDragDropTarget()) {
 
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("GAMEOBJECT")) {
-
             auto* dragged = *static_cast<dzemikk::GameObject**>(payload->Data);
 
             if (dragged && _editor) {
@@ -61,22 +58,20 @@ void editor::HierarchyPanel::draw(dzemikk::Scene* scene, dzemikk::GameObject*& s
     if (ImGui::BeginDragDropTarget()) {
 
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PREFAB")) {
-
-            std::string path = (const char*)payload->Data;
+            std::string path = static_cast<const char*>(payload->Data);
 
             if (_editor) {
                 _editor->instantiatePrefab(path, nullptr); 
             }
         }
-
         ImGui::EndDragDropTarget();
     }
-
     ImGui::End();
 }
 
 void editor::HierarchyPanel::drawNode(dzemikk::GameObject* gameObject,
                                       dzemikk::GameObject*& selectedObject) {
+
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 
     if (selectedObject == gameObject) {
@@ -87,90 +82,16 @@ void editor::HierarchyPanel::drawNode(dzemikk::GameObject* gameObject,
         flags |= ImGuiTreeNodeFlags_Leaf;
     }
 
-    bool opened = ImGui::TreeNodeEx((void*)gameObject, flags, "%s", gameObject->getName().c_str());
+    bool opened = ImGui::TreeNodeEx(static_cast<void*>(gameObject), flags, "%s",
+                                    gameObject->getName().c_str());
 
     if (ImGui::IsItemClicked()) {
         selectedObject = gameObject;
     }
 
-    if (ImGui::BeginDragDropSource()) {
-
-        ImGui::SetDragDropPayload("GAMEOBJECT", &gameObject, sizeof(dzemikk::GameObject*));
-
-        ImGui::Text("%s", gameObject->getName().c_str());
-
-        ImGui::EndDragDropSource();
-    }
-
-    if (ImGui::BeginDragDropTarget()) {
-
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_GAMEOBJECT")) {
-
-            auto* dragged = *static_cast<dzemikk::GameObject**>(payload->Data);
-
-            if (dragged && dragged != gameObject && _editor) {
-
-                _editor->reparentObject(dragged, gameObject);
-            }
-        }
-
-        ImGui::EndDragDropTarget();
-    }
-
-    if (ImGui::BeginDragDropTarget()) {
-
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PREFAB")) {
-
-            const char* path = (const char*)payload->Data;
-
-            if (_editor) {
-                _editor->instantiatePrefab(path, gameObject); 
-            }
-        }
-
-        ImGui::EndDragDropTarget();
-    }
-
-    if (ImGui::BeginDragDropSource()) {
-
-        dzemikk::GameObject* ptr = gameObject;
-
-        ImGui::SetDragDropPayload("HIERARCHY_GAMEOBJECT", &ptr, sizeof(dzemikk::GameObject*));
-
-        ImGui::Text("%s", gameObject->getName().c_str());
-
-        ImGui::EndDragDropSource();
-    }
-
-    if (ImGui::BeginPopupContextItem("NodeContext")) {
-        if (_editor) {
-            if (ImGui::MenuItem("Create Child")) {
-                _editor->createEmptyObject("Empty", gameObject);
-            }
-
-            if (ImGui::MenuItem("CreateButton")) {
-                _editor->createUIButton(gameObject);
-            }
-
-            if (ImGui::MenuItem("CreateCheckbox")) {
-                _editor->createUICheckbox(gameObject);
-            }
-
-            if (ImGui::MenuItem("CreateSlider")) {
-                _editor->createUISlider(gameObject);
-            }
-
-            if (ImGui::MenuItem("CreateDropdown")) {
-                _editor->createUIDropdown(gameObject);
-            }
-
-            if (ImGui::MenuItem("Delete")) {
-                _editor->deleteObject(gameObject);
-            }
-        }
-        ImGui::EndPopup();
-    }
-
+    drawDragSource(gameObject);
+    drawDragTarget(gameObject);
+    drawContextMenu(gameObject);
 
     if (opened) {
         for (auto* child : gameObject->getChildren()) {
@@ -179,3 +100,81 @@ void editor::HierarchyPanel::drawNode(dzemikk::GameObject* gameObject,
         ImGui::TreePop();
     }
 }
+
+void editor::HierarchyPanel::drawDragSource(dzemikk::GameObject* gameObject) {
+    if (!ImGui::BeginDragDropSource()) {
+        return;
+    }
+
+    dzemikk::GameObject* ptr = gameObject;
+    ImGui::SetDragDropPayload("HIERARCHY_GAMEOBJECT", static_cast<const void*>(&ptr),
+                              sizeof(dzemikk::GameObject*));
+
+    ImGui::TextUnformatted(gameObject->getName().c_str());
+
+    ImGui::EndDragDropSource();
+}
+
+void editor::HierarchyPanel::drawDragTarget(dzemikk::GameObject* gameObject) {
+    if (!ImGui::BeginDragDropTarget()) {
+        return;
+    }
+
+    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_GAMEOBJECT")) {
+
+        auto* dragged = *static_cast<dzemikk::GameObject**>(payload->Data);
+
+        if (dragged && dragged != gameObject && _editor) {
+            _editor->reparentObject(dragged, gameObject);
+        }
+    }
+
+    if (const ImGuiPayload* prefabPayload = ImGui::AcceptDragDropPayload("ASSET_PREFAB")) {
+
+        const char* path = static_cast<const char*>(prefabPayload->Data);
+
+        if (_editor) {
+            _editor->instantiatePrefab(path, gameObject);
+        }
+    }
+
+    ImGui::EndDragDropTarget();
+}
+
+void editor::HierarchyPanel::drawContextMenu(dzemikk::GameObject* gameObject) {
+    if (!ImGui::BeginPopupContextItem("NodeContext")) {
+        return;
+    }
+
+    if (!_editor) {
+        ImGui::EndPopup();
+        return;
+    }
+
+    if (ImGui::MenuItem("Create Child")) {
+        _editor->createEmptyObject("Empty", gameObject);
+    }
+
+    if (ImGui::MenuItem("Create Button")) {
+        _editor->createUIButton(gameObject);
+    }
+
+    if (ImGui::MenuItem("Create Checkbox")) {
+        _editor->createUICheckbox(gameObject);
+    }
+
+    if (ImGui::MenuItem("Create Slider")) {
+        _editor->createUISlider(gameObject);
+    }
+
+    if (ImGui::MenuItem("Create Dropdown")) {
+        _editor->createUIDropdown(gameObject);
+    }
+
+    if (ImGui::MenuItem("Delete")) {
+        _editor->deleteObject(gameObject);
+    }
+
+    ImGui::EndPopup();
+}
+

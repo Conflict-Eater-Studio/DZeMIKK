@@ -1,20 +1,18 @@
 #include "inspectors/textRendererInspector.h"
 #include "inspectors/inspectorRegistry.h"
-
-#include "ecs/components/textRenderer.h"
 #include "ui/propertyDrawer.h"
+
+#include <ecs/components/textRenderer.h>
 
 #include <imgui.h>
 
 void editor::TextRendererInspector::draw(dzemikk::TextRenderer* textRenderer,
                                          const InspectorContext& ctx) {
-
     if (!textRenderer) {
         return;
     }
 
     if (ImGui::CollapsingHeader("TextRenderer", ImGuiTreeNodeFlags_DefaultOpen)) {
-
         char buffer[1024];
 
         std::snprintf(buffer, sizeof(buffer), "%s", textRenderer->text.c_str());

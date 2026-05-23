@@ -15,7 +15,7 @@ void editor::ScenePanel::draw(dzemikk::Renderer* renderer) {
 
     ImVec2 available = ImGui::GetContentRegionAvail();
 
-    constexpr float aspectRatio = 16.0f / 9.0f;
+    constexpr float aspectRatio = 16.0F / 9.0F;
 
     ImVec2 viewportSize;
 
@@ -23,19 +23,17 @@ void editor::ScenePanel::draw(dzemikk::Renderer* renderer) {
     viewportSize.y = viewportSize.x / aspectRatio;
 
     if (viewportSize.y > available.y) {
-
         viewportSize.y = available.y;
         viewportSize.x = viewportSize.y * aspectRatio;
     }
 
-    float offsetX = (available.x - viewportSize.x) * 0.5f;
-    float offsetY = (available.y - viewportSize.y) * 0.5f;
+    float offsetX = (available.x - viewportSize.x) * 0.5F;
+    float offsetY = (available.y - viewportSize.y) * 0.5F;
 
     ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offsetX);
     ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
 
     if (_viewportSize.x != viewportSize.x || _viewportSize.y != viewportSize.y) {
-
         _viewportSize.x = viewportSize.x;
         _viewportSize.y = viewportSize.y;
 
@@ -46,9 +44,7 @@ void editor::ScenePanel::draw(dzemikk::Renderer* renderer) {
     auto* framebuffer = renderer->getSceneFramebuffer();
 
     if (framebuffer) {
-
         uint32_t textureID = framebuffer->getColorAttachmentRendererID();
-
         ImGui::Image((ImTextureID)(uintptr_t)textureID, viewportSize, ImVec2(0, 1), ImVec2(1, 0));
     }
 

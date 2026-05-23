@@ -1,19 +1,16 @@
 #include "inspectors/meshRendererInspector.h"
-
-#include "ecs/gameobject.h"
-#include "renderer/material.h"
-#include "renderer/model.h"
-#include "renderer/shader.h"
+#include "inspectors/inspectorRegistry.h"
 #include "ui/propertyDrawer.h"
 
-#include "ecs/components/meshRenderer.h"
-#include "inspectors/inspectorRegistry.h"
+#include <ecs/gameobject.h>
+#include <ecs/components/meshRenderer.h>
+#include <renderer/material.h>
+#include <renderer/model.h>
+#include <renderer/shader.h>
 
 #include <imgui.h>
 
-using namespace dzemikk;
-
-void editor::MeshRendererInspector::draw(MeshRenderer* renderer, const InspectorContext& ctx) {
+void editor::MeshRendererInspector::draw(dzemikk::MeshRenderer* renderer, const InspectorContext& ctx) {
     if (!renderer) {
         return;
     }

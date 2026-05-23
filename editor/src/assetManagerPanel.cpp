@@ -11,7 +11,6 @@
 #include <ecs/gameobject.h>
 #include <ecs/serialize/prefabSerializer.h>
 
-
 static std::string normalizeAssetPath(std::string path) {
     constexpr std::string_view prefix = "Assets/";
     if (path.starts_with(prefix)) {
@@ -32,23 +31,29 @@ static std::string normalizeAssetPath(std::string path) {
 }
 
 static const char* getAssetDragType(const std::string& path) {
-    if (path.ends_with(".ttf") || path.ends_with(".otf"))
+    if (path.ends_with(".ttf") || path.ends_with(".otf")) {
         return "ASSET_FONT";
+    }
 
-    if (path.ends_with(".png") || path.ends_with(".jpg") || path.ends_with(".jpng"))
+    if (path.ends_with(".png") || path.ends_with(".jpg") || path.ends_with(".jpng")) {
         return "ASSET_TEXTURE";
+    }
 
-    if (path.ends_with(".obj") || path.ends_with(".fbx"))
+    if (path.ends_with(".obj") || path.ends_with(".fbx")) {
         return "ASSET_MODEL";
+    }
 
-    if (path.ends_with(".vert") || path.ends_with(".frag") || path.ends_with(".glsl"))
+    if (path.ends_with(".vert") || path.ends_with(".frag") || path.ends_with(".glsl")) {
         return "ASSET_SHADER";
+    }
 
-    if (path.ends_with(".wav"))
+    if (path.ends_with(".wav")) {
         return "ASSET_AUDIO";
+    }
 
-    if (path.ends_with(".prefab"))
+    if (path.ends_with(".prefab")) {
         return "ASSET_PREFAB";
+    }
 
     return "ASSET_PATH";
 }
@@ -56,140 +61,24 @@ static const char* getAssetDragType(const std::string& path) {
 void editor::AssetManagerPanel::draw(dzemikk::AssetManager* assetManager) {
     ImGui::Begin("Asset Manager");
 
-    char buffer[256];
-    std::memset(buffer, 0, sizeof(buffer));
-    std::strncpy(buffer, _search.c_str(), sizeof(buffer) - 1);
-
-    if (ImGui::InputText("Search", buffer, sizeof(buffer))) {
-        _search = buffer;
-    }
-
+    drawSearchBar();
     ImGui::Separator();
 
     if (!assetManager) {
-        ImGui::Text("No AssetManager");
+        ImGui::TextUnformatted("No AssetManager");
         ImGui::End();
         return;
     }
 
     auto assets = assetManager->getAllAssets();
-
-    std::vector<std::string> filtered;
-    filtered.reserve(assets.size());
-
-    for (const auto& a : assets) {
-        if (_search.empty() || a.find(_search) != std::string::npos) {
-            filtered.push_back(a);
-        }
-    }
-
-    Node root;
-    for (const auto& a : filtered) {
-        insert(root, a);
-    }
+    auto root = buildAssetTree(assets);
 
     ImGui::Columns(2, "AssetColumns");
 
-    ImGui::BeginChild("FolderPanel", ImVec2(0, 0), true);
-
-    if (ImGui::TreeNode("Assets")) {
-        drawNode(root, "Assets");
-        ImGui::TreePop();
-    }
-
-    ImGui::EndChild();
-
-    if (ImGui::BeginDragDropTarget()) {
-
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_GAMEOBJECT")) {
-
-            auto* gameObject = *static_cast<dzemikk::GameObject**>(payload->Data);
-
-            if (gameObject) {
-
-                auto json = dzemikk::PrefabSerializer::serialize(*gameObject);
-
-                std::string path = openSavePrefabDialog();
-
-                if (!path.empty()) {
-                    std::ofstream file(path);
-
-                    if (file.is_open()) {
-                        file << json.dump(4);
-                        file.close();
-                    }
-                }
-            }
-        }
-
-        ImGui::EndDragDropTarget();
-    }
-
-    ImGui::NextColumn();
-
-    ImGui::BeginChild("FilePanel", ImVec2(0, 0), true);
-
-    const Node* currentFolder = findNode(root, _selectedPath);
-
-    if (currentFolder) {
-
-        const float cellSize = 80.0f;
-        const float iconSize = 48.0f;
-        int columnCount = std::max(1, (int)(ImGui::GetContentRegionAvail().x / cellSize));
-
-        ImGui::Columns(columnCount, nullptr, false);
-
-        for (const auto& file : currentFolder->files) {
-            if (!_search.empty() && file.find(_search) == std::string::npos)
-                continue;
-
-            ImGui::PushID(file.c_str());
-
-            ImGui::BeginGroup();
-
-            ImGui::Button("[FILE]", ImVec2(iconSize, iconSize));
-
-            if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
-
-                std::string fullPath;
-
-                if (_selectedPath.empty()) {
-                    fullPath = file;
-                } else {
-                    fullPath = _selectedPath + "/" + file;
-                }
-
-                const char* type = getAssetDragType(fullPath);
-                
-                fullPath = normalizeAssetPath(fullPath);
-
-                ImGui::SetDragDropPayload(type, fullPath.c_str(), fullPath.size() + 1);
-
-                ImGui::TextUnformatted(fullPath.c_str());
-
-                ImGui::EndDragDropSource();
-            }
-
-            float textWidth = ImGui::CalcTextSize(file.c_str()).x;
-            float offset = (iconSize - textWidth) * 0.5f;
-            if (offset > 0.0f)
-                ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
-
-            ImGui::TextWrapped("%s", file.c_str());
-
-            ImGui::EndGroup();
-
-            ImGui::NextColumn();
-            ImGui::PopID();
-        }
-
-        ImGui::Columns(1);
-    }
-
-    ImGui::EndChild();
+    drawFolderPanel(root);
+    drawFilePanel(root);
 
     ImGui::Columns(1);
-
     ImGui::End();
 }
 
@@ -216,7 +105,9 @@ void editor::AssetManagerPanel::insert(Node& root, const std::string& path) {
 void editor::AssetManagerPanel::drawNode(const Node& node, const std::string& path) {
     for (const auto& [folder, child] : node.children) {
 
-        std::string fullPath = path + "/" + folder;
+        std::string fullPath = path;
+        fullPath += "/";
+        fullPath += folder;
 
         if (ImGui::TreeNode(folder.c_str())) {
 
@@ -275,12 +166,12 @@ editor::AssetManagerPanel::findNode(const editor::AssetManagerPanel::Node& node,
 }
 
 std::string editor::AssetManagerPanel::openSavePrefabDialog() {
-    char fileName[MAX_PATH] = "";
+    std::array<char, MAX_PATH> fileName{};
 
     OPENFILENAMEA ofn{};
     ofn.lStructSize = sizeof(OPENFILENAMEA);
     ofn.hwndOwner = nullptr;
-    ofn.lpstrFile = fileName;
+    ofn.lpstrFile = fileName.data();
     ofn.nMaxFile = MAX_PATH;
 
     ofn.lpstrFilter = "Prefab Files (*.prefab)\0*.prefab\0All Files (*.*)\0*.*\0";
@@ -289,8 +180,150 @@ std::string editor::AssetManagerPanel::openSavePrefabDialog() {
     ofn.lpstrDefExt = "prefab";
 
     if (GetSaveFileNameA(&ofn)) {
-        return fileName;
+        return fileName.data();
     }
 
     return {};
+}
+
+void editor::AssetManagerPanel::drawSearchBar() {
+    std::array<char, 256> buffer{};
+
+    std::strncpy(buffer.data(), _search.c_str(), buffer.size() - 1);
+
+    if (ImGui::InputText("Search", buffer.data(), buffer.size())) {
+        _search = buffer.data();
+    }
+}
+
+editor::AssetManagerPanel::Node
+editor::AssetManagerPanel::buildAssetTree(const std::vector<std::string>& assets) {
+    Node root;
+
+    for (const auto& a : assets) {
+        if (_search.empty() || a.find(_search) != std::string::npos) {
+            insert(root, a);
+        }
+    }
+
+    return root;
+}
+
+void editor::AssetManagerPanel::drawFolderPanel(const Node& root) {
+    ImGui::BeginChild("FolderPanel", ImVec2(0, 0), true);
+
+    if (ImGui::TreeNode("Assets")) {
+        drawNode(root, "Assets");
+        ImGui::TreePop();
+    }
+
+    handlePrefabDrop();
+
+    ImGui::EndChild();
+}
+
+void editor::AssetManagerPanel::drawFilePanel(const Node& root) {
+    ImGui::NextColumn();
+    ImGui::BeginChild("FilePanel", ImVec2(0, 0), true);
+
+    const Node* current = findNode(root, _selectedPath);
+
+    if (current) {
+        drawFileGrid(*current);
+    }
+
+    ImGui::EndChild();
+}
+
+void editor::AssetManagerPanel::drawFileGrid(const Node& node) {
+    const float cellSize = 80.0F;
+    const float iconSize = 48.0F;
+
+    int columnCount = std::max(1, (int)(ImGui::GetContentRegionAvail().x / cellSize));
+
+    ImGui::Columns(columnCount, nullptr, false);
+
+    for (const auto& file : node.files) {
+        const bool searchActive = !_search.empty();
+        const bool notFound = file.find(_search) == std::string::npos;
+
+        if (searchActive && notFound) {
+            continue;
+        }
+
+        drawFileItem(file, iconSize);
+    }
+
+    ImGui::Columns(1);
+}
+
+void editor::AssetManagerPanel::drawFileItem(const std::string& file, float iconSize) {
+    ImGui::PushID(file.c_str());
+    ImGui::BeginGroup();
+
+    ImGui::Button("[FILE]", ImVec2(iconSize, iconSize));
+
+    handleFileDrag(file);
+
+    float textWidth = ImGui::CalcTextSize(file.c_str()).x;
+    float offset = (iconSize - textWidth) * 0.5F;
+
+    if (offset > 0.0F) {
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
+    }
+
+    ImGui::TextUnformatted(file.c_str());
+
+    ImGui::EndGroup();
+    ImGui::NextColumn();
+    ImGui::PopID();
+}
+
+void editor::AssetManagerPanel::handleFileDrag(const std::string& file) {
+    if (!ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+        return;
+    }
+
+    std::string fullPath;
+
+    if (_selectedPath.empty()) {
+        fullPath = file;
+    } else {
+        fullPath = _selectedPath + "/" + file;
+    }
+
+    const char* type = getAssetDragType(fullPath);
+
+    fullPath = normalizeAssetPath(fullPath);
+
+    ImGui::SetDragDropPayload(type, fullPath.c_str(), fullPath.size() + 1);
+
+    ImGui::TextUnformatted(fullPath.c_str());
+
+    ImGui::EndDragDropSource();
+}
+
+void editor::AssetManagerPanel::handlePrefabDrop() {
+    if (!ImGui::BeginDragDropTarget()) {
+        return;
+    }
+
+    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("HIERARCHY_GAMEOBJECT")) {
+
+        auto* go = *static_cast<dzemikk::GameObject**>(payload->Data);
+
+        if (go) {
+            auto json = dzemikk::PrefabSerializer::serialize(*go);
+            std::string path = openSavePrefabDialog();
+
+            if (!path.empty()) {
+                std::ofstream file(path);
+                if (file.is_open()) {
+                    file << json.dump(4);
+                }
+            }
+        }
+    }
+
+    ImGui::EndDragDropTarget();
 }

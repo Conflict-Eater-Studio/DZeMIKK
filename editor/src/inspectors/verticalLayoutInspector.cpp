@@ -1,7 +1,7 @@
 #include "inspectors/verticalLayoutInspector.h"
-
-#include "ecs/components/ui/verticalLayout.h"
 #include "ui/propertyDrawer.h"
+
+#include <ecs/components/ui/verticalLayout.h>
 
 #include <imgui.h>
 
@@ -12,7 +12,6 @@ void editor::VerticalLayoutInspector::draw(dzemikk::VerticalLayout* layout,
     }
 
     if (ImGui::CollapsingHeader("VerticalLayout", ImGuiTreeNodeFlags_DefaultOpen)) {
-
         float spacing = layout->getSpacing();
         bool expandWidth = layout->getChildForceExpandWidth();
         bool expandHeight = layout->getChildForceExpandHeight();

@@ -1,10 +1,8 @@
 #include "ui/propertyDrawer.h"
 
-#include "renderer/material.h"
-
+#include <renderer/material.h>
 
 namespace {
-
 const char* toString(dzemikk::UIEventType type) {
     switch (type) {
     case dzemikk::UIEventType::Click:
@@ -87,7 +85,7 @@ bool editor::PropertyDrawer::drawShader(const std::string& label,
 
     if (ImGui::BeginDragDropTarget()) {
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_SHADER")) {
-            const char* droppedPath = (const char*)payload->Data;
+            const char* droppedPath = static_cast<const char*>(payload->Data);
 
             auto newHandle = ctx.assetManager->get<dzemikk::Shader>(droppedPath);
 
@@ -124,14 +122,13 @@ bool editor::PropertyDrawer::drawMaterials(const std::string& label, dzemikk::Me
         return false;
     }
 
-    auto& materials = renderer->getMaterials();
+    const auto &materials = renderer->getMaterials();
 
     bool changed = false;
 
-    ImGui::Text("Materials: %zu", materials.size());
+    ImGui::TextUnformatted(("Materials: " + std::to_string(materials.size())).c_str());
 
     for (size_t i = 0; i < materials.size(); i++) {
-
         ImGui::PushID(static_cast<int>(i));
 
         auto material = materials[i];
@@ -139,15 +136,13 @@ bool editor::PropertyDrawer::drawMaterials(const std::string& label, dzemikk::Me
         std::string header = "Material " + std::to_string(i);
 
         if (!material) {
-
-            ImGui::Text("Material %zu: null", i);
+            ImGui::TextUnformatted(("Material " + std::to_string(i) + ": null").c_str());
 
             ImGui::SameLine();
 
             std::string createButton = "Create##" + std::to_string(i);
 
             if (ImGui::Button(createButton.c_str())) {
-
                 auto newMaterial = std::make_shared<dzemikk::Material>();
                 renderer->setMaterial(i, newMaterial);
 
@@ -159,7 +154,6 @@ bool editor::PropertyDrawer::drawMaterials(const std::string& label, dzemikk::Me
         }
 
         if (ImGui::TreeNode(header.c_str())) {
-
             auto shaderHandle = material->getShaderHandle();
 
             if (PropertyDrawer::drawShader("Shader", shaderHandle, ctx)) {
@@ -170,7 +164,6 @@ bool editor::PropertyDrawer::drawMaterials(const std::string& label, dzemikk::Me
             std::string removeButton = "Remove##" + std::to_string(i);
 
             if (ImGui::Button(removeButton.c_str())) {
-
                 renderer->setMaterial(i, nullptr);
 
                 ImGui::TreePop();
@@ -186,7 +179,6 @@ bool editor::PropertyDrawer::drawMaterials(const std::string& label, dzemikk::Me
     }
 
     if (ImGui::Button("Add Material")) {
-
         auto material = std::make_shared<dzemikk::Material>();
         renderer->setMaterial(materials.size(), material);
 
@@ -199,7 +191,7 @@ bool editor::PropertyDrawer::drawMaterials(const std::string& label, dzemikk::Me
 bool editor::PropertyDrawer::drawModel(const std::string& label,
                                        dzemikk::AssetHandle<dzemikk::Model>& handle,
                                        const InspectorContext& ctx) {
-    enum class ModelSource { Primitive, Custom };
+    enum class ModelSource : std::uint8_t { Primitive, Custom };
 
     constexpr std::string_view prefix = "primitive/";
 
@@ -223,28 +215,26 @@ bool editor::PropertyDrawer::drawModel(const std::string& label,
     auto& source = sourceStates[label];
     auto& primitiveIndex = primitiveStates[label];
 
-    const char* sourceItems[] = {"Primitive", "Custom"};
+    const std::array<const char*, 2> sourceItems = {"Primitive", "Custom"};
 
     int current = static_cast<int>(source);
-    if (ImGui::Combo("Source", &current, sourceItems, IM_ARRAYSIZE(sourceItems))) {
+    if (ImGui::Combo("Source", &current, sourceItems.data(), static_cast<int>(sourceItems.size()))) {
         source = static_cast<ModelSource>(current);
     }
 
     bool changed = false;
 
     if (source == ModelSource::Primitive) {
-        const char* primitives[] = {"Cube", "Quad", "Sphere", "Capsule"};
+        const std::array<const char*, 4> primitives = {"Cube", "Quad", "Sphere", "Capsule"};
 
-        if (ImGui::Combo("Primitive", &primitiveIndex, primitives, IM_ARRAYSIZE(primitives))) {
+        if (ImGui::Combo("Primitive", &primitiveIndex, primitives.data(), static_cast<int>(primitives.size()))) {
             auto primitive =
                 static_cast<dzemikk::PrimitiveMeshLibrary::PrimitiveMesh>(primitiveIndex);
 
             handle = ctx.assetManager->getPrimitiveModel(primitive);
             changed = true;
         }
-    }
-
-    else {
+    } else {
         static std::unordered_map<std::string, std::array<char, 256>> buffers;
         auto& buffer = buffers[label];
 
@@ -255,7 +245,7 @@ bool editor::PropertyDrawer::drawModel(const std::string& label,
 
         if (ImGui::BeginDragDropTarget()) {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_MODEL")) {
-                const char* droppedPath = (const char*)payload->Data;
+                const char* droppedPath = static_cast<const char*>(payload->Data);
 
                 auto newHandle = ctx.assetManager->get<dzemikk::Model>(droppedPath);
 
@@ -292,7 +282,9 @@ bool editor::PropertyDrawer::drawTexture(const std::string& label,
     static std::unordered_map<std::string, std::array<char, 256>> buffers;
     auto& buffer = buffers[label];
 
-    std::snprintf(buffer.data(), buffer.size(), "%s", path.c_str());
+    const auto length = std::min(path.size(), buffer.size() - 1);
+    std::memcpy(buffer.data(), path.data(), length);
+    buffer[length] = '\0';
 
     bool changed = false;
 
@@ -301,7 +293,7 @@ bool editor::PropertyDrawer::drawTexture(const std::string& label,
 
     if (ImGui::BeginDragDropTarget()) {
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_TEXTURE")) {
-            const char* droppedPath = (const char*)payload->Data;
+            const char* droppedPath = static_cast<const char*>(payload->Data);
 
             auto newHandle = ctx.assetManager->get<dzemikk::Texture>(droppedPath);
 
@@ -309,7 +301,10 @@ bool editor::PropertyDrawer::drawTexture(const std::string& label,
                 handle = newHandle;
                 changed = true;
 
-                std::snprintf(buffer.data(), buffer.size(), "%s", droppedPath);
+                const std::string_view path = droppedPath;
+                const auto length = std::min(path.size(), buffer.size() - 1);
+                std::memcpy(buffer.data(), path.data(), length);
+                buffer[length] = '\0';
             }
         }
 
@@ -348,7 +343,7 @@ bool editor::PropertyDrawer::drawFont(const std::string& label,
 
         if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_FONT")) {
 
-            const char* droppedPath = (const char*)payload->Data;
+            const char* droppedPath = static_cast<const char*>(payload->Data);
 
             auto newHandle = ctx.assetManager->get<dzemikk::Font>(droppedPath);
 
@@ -378,33 +373,30 @@ bool editor::PropertyDrawer::drawFont(const std::string& label,
 bool editor::PropertyDrawer::drawUIEvents(const std::string& label,
                                           dzemikk::IUIInteractable* interactable,
                                           const InspectorContext&) {
-    if (!interactable)
+    if (!interactable) {
         return false;
+    }
 
     bool changed = false;
 
-    ImGui::Text("%s", label.c_str());
+    ImGui::TextUnformatted(label.c_str());
     ImGui::Separator();
 
     auto& eventMap = interactable->getEventActionsRef();
 
     for (auto& [eventType, actions] : eventMap) {
-
         ImGui::PushID(static_cast<int>(eventType));
 
         if (ImGui::TreeNode(toString(eventType))) {
-
             for (int i = 0; i < (int)actions.size(); ++i) {
-
                 ImGui::PushID(i);
 
-                char buffer[128];
-                std::snprintf(buffer, sizeof(buffer), "%s", actions[i].c_str());
+                std::array<char, 128> buffer;
+                std::snprintf(buffer.data(), sizeof(buffer), "%s", actions[i].c_str());
 
-                if (ImGui::InputText("Action ID", buffer, sizeof(buffer))) {
-
+                if (ImGui::InputText("Action ID", buffer.data(), sizeof(buffer))) {
                     std::string old = actions[i];
-                    std::string now = buffer;
+                    std::string now = buffer.data();
 
                     interactable->removeEventListener(eventType, old);
                     interactable->addEventListener(eventType, now);
@@ -423,21 +415,19 @@ bool editor::PropertyDrawer::drawUIEvents(const std::string& label,
                 ImGui::PopID();
             }
 
-            static char newAction[128] = "";
+            static std::array<char, 128> newAction{};
 
-            ImGui::InputText("New Action", newAction, sizeof(newAction));
+            ImGui::InputText("New Action", newAction.data(), sizeof(newAction));
 
             if (ImGui::Button("Add")) {
                 if (newAction[0] != '\0') {
-                    interactable->addEventListener(eventType, newAction);
+                    interactable->addEventListener(eventType, newAction.data());
                     newAction[0] = '\0';
                     changed = true;
                 }
             }
-
             ImGui::TreePop();
         }
-
         ImGui::PopID();
     }
 
@@ -445,16 +435,16 @@ bool editor::PropertyDrawer::drawUIEvents(const std::string& label,
     ImGui::Separator();
 
     static int selectedEvent = 0;
-    const char* items[] = {"Click", "Enter", "Exit", "ValueChanged"};
+    const std::array<const char*, 4> items = {"Click", "Enter", "Exit", "ValueChanged"};
 
-    ImGui::Combo("Add Event Type", &selectedEvent, items, IM_ARRAYSIZE(items));
+    ImGui::Combo("Add Event Type", &selectedEvent, items.data(), static_cast<int>(items.size()));
 
-    static char newEventAction[128] = "";
-    ImGui::InputText("Action ID (new event)", newEventAction, sizeof(newEventAction));
+    static std::array<char, 128> newEventAction{};
+    ImGui::InputText("Action ID (new event)", newEventAction.data(), newEventAction.size());
 
     if (ImGui::Button("Add Event Binding")) {
         if (newEventAction[0] != '\0') {
-            interactable->addEventListener(fromIndex(selectedEvent), newEventAction);
+            interactable->addEventListener(fromIndex(selectedEvent), newEventAction.data());
             newEventAction[0] = '\0';
             changed = true;
         }

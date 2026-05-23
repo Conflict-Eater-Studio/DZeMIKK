@@ -1,9 +1,8 @@
 #include "inspectors/imageRendererInspector.h"
-
-#include "renderer/material.h"
 #include "ui/propertyDrawer.h"
 
-#include "ecs/components/ui/imageRenderer.h"
+#include <renderer/material.h>
+#include <ecs/components/ui/imageRenderer.h>
 
 #include <imgui.h>
 
@@ -14,7 +13,6 @@ void editor::ImageRendererInspector::draw(dzemikk::ImageRenderer* renderer,
     }
 
     if (ImGui::CollapsingHeader("ImageRenderer", ImGuiTreeNodeFlags_DefaultOpen)) {
-
         glm::vec4 color = renderer->getColor();
 
         if (PropertyDrawer::drawColor("Color", color)) {
@@ -24,7 +22,6 @@ void editor::ImageRendererInspector::draw(dzemikk::ImageRenderer* renderer,
         auto material = renderer->getMaterial();
 
         if (!material) {
-
             ImGui::TextColored(ImVec4(1, 0, 0, 1), "Material is null!");
 
             if (ImGui::Button("Create Material")) {

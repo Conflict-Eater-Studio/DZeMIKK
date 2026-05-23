@@ -87,7 +87,7 @@ class InspectorPanel {
     /**
      * @brief Draws the header section of the inspector (name, enabled state, etc.).
      */
-    void drawHeader(dzemikk::GameObject* obj);
+    static void drawHeader(dzemikk::GameObject* obj);
 
     /**
      * @brief Draws all components attached to the GameObject.

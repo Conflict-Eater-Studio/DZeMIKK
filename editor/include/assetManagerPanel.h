@@ -76,15 +76,78 @@ class AssetManagerPanel {
      * @param path Target path.
      * @return Pointer to node if found, otherwise nullptr.
      */
-    const Node* findNode(const Node& node, const std::string& path);
+    static const Node* findNode(const Node& node, const std::string& path);
 
     /**
      * @brief Opens a native dialog to save a prefab asset.
      *
      * @return Path of the created prefab.
      */
-    std::string openSavePrefabDialog();
+    static std::string openSavePrefabDialog();
 
+    /**
+     * @brief Renders the search bar used to filter assets.
+     *
+     * Synchronizes UI buffer with internal search string.
+     */
+    void drawSearchBar();
+
+    /**
+     * @brief Builds a hierarchical asset tree from a flat list of asset paths.
+     *
+     * @param assets Flat list of asset paths from AssetManager.
+     * @return Root node representing the full folder structure.
+     */
+    Node buildAssetTree(const std::vector<std::string>& assets);
+
+    /**
+     * @brief Renders the folder tree panel (left side of the UI).
+     *
+     * @param root Root node of the asset hierarchy.
+     */
+    void drawFolderPanel(const Node& root);
+
+    /**
+     * @brief Renders the file grid panel (right side of the UI).
+     *
+     * Displays assets inside the currently selected folder.
+     *
+     * @param root Root node of the asset hierarchy.
+     */
+    void drawFilePanel(const Node& root);
+
+    /**
+     * @brief Renders a grid view of files inside a folder node.
+     *
+     * @param node Folder node containing files.
+     */
+    void drawFileGrid(const Node& node);
+
+    /**
+     * @brief Renders a single file item inside the grid view.
+     *
+     * Handles icon rendering, selection, and drag & drop source.
+     *
+     * @param file File name to render.
+     * @param iconSize Size of the file icon in pixels.
+     */
+    void drawFileItem(const std::string& file, float iconSize);
+
+    /**
+     * @brief Handles drag & drop source for asset files.
+     *
+     * Sets appropriate payload type depending on asset type.
+     *
+     * @param file File name used to build full asset path.
+     */
+    void handleFileDrag(const std::string& file);
+
+    /**
+     * @brief Handles drag & drop target for prefab creation.
+     *
+     * Accepts GameObject payload and serializes it into a prefab file.
+     */
+    static void handlePrefabDrop();
 #pragma endregion
 };
 

@@ -1,7 +1,7 @@
 #include "inspectors/gridLayoutInspector.h"
-
-#include "ecs/components/ui/gridLayout.h"
 #include "ui/propertyDrawer.h"
+
+#include <ecs/components/ui/gridLayout.h>
 
 #include <imgui.h>
 
@@ -11,7 +11,6 @@ void editor::GridLayoutInspector::draw(dzemikk::GridLayout* layout, const Inspec
     }
 
     if (ImGui::CollapsingHeader("GridLayout", ImGuiTreeNodeFlags_DefaultOpen)) {
-
         glm::vec2 cellSize = layout->getCellSize();
         glm::vec2 spacing = layout->getSpacing();
 
@@ -34,18 +33,14 @@ void editor::GridLayoutInspector::draw(dzemikk::GridLayout* layout, const Inspec
 
         if (PropertyDrawer::drawInt("Columns", columns, 1)) {
             columns = std::max(1, columns);
-
             layout->setColumns(columns);
-
             changed = true;
         }
 
         const char* corners[] = {"Upper Left", "Upper Right", "Lower Left", "Lower Right"};
 
         if (PropertyDrawer::drawEnum("Start Corner", startCorner, corners, IM_ARRAYSIZE(corners))) {
-
             layout->setStartCorner(startCorner);
-
             changed = true;
         }
     }

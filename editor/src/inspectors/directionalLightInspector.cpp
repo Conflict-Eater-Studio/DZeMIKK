@@ -1,8 +1,8 @@
 #include "inspectors/directionalLightInspector.h"
-#include "ecs/components/light/directionalLight.h"
 #include "inspectors/inspectorRegistry.h"
-
 #include "ui/propertyDrawer.h"
+
+#include <ecs/components/light/directionalLight.h>
 
 #include <imgui.h>
 
@@ -15,7 +15,6 @@ void editor::DirectionalLightInspector::draw(dzemikk::DirectionalLight* light,
     }
 
     if (ImGui::CollapsingHeader("DirectionalLight", ImGuiTreeNodeFlags_DefaultOpen)) {
-
         glm::vec3 direction = light->getDirection();
         glm::vec4 color = glm::vec4(light->getColor().x, light->getColor().y, light->getColor().z, 1);
         float intensity = light->getIntensity();

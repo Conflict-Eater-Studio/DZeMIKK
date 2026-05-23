@@ -28,6 +28,9 @@ class CameraInspector {
     static void draw(dzemikk::Camera* camera, const InspectorContext& ctx);
 
 #pragma endregion
+  private:
+    static void drawPerspective(dzemikk::Camera* camera);
+    static void drawOrthographic(dzemikk::Camera* camera);
 };
 
 } // namespace editor

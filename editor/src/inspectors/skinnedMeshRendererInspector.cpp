@@ -1,18 +1,15 @@
 #include "inspectors/skinnedMeshRendererInspector.h"
 #include "inspectors/inspectorRegistry.h"
-#include "ecs/components/skinnedMeshRenderer.h"
-#include "ecs/gameobject.h"
-#include "renderer/material.h"
 #include "ui/propertyDrawer.h"
 
+#include <ecs/components/skinnedMeshRenderer.h>
+#include <ecs/gameobject.h>
+#include <renderer/material.h>
 
 #include <imgui.h>
 
-using namespace dzemikk;
-
-void editor::SkinnedMeshRendererInspector::draw(SkinnedMeshRenderer* renderer,
+void editor::SkinnedMeshRendererInspector::draw(dzemikk::SkinnedMeshRenderer* renderer,
                                                 const InspectorContext& ctx) {
-
     if (!renderer) {
         return;
     }
@@ -24,24 +21,21 @@ void editor::SkinnedMeshRendererInspector::draw(SkinnedMeshRenderer* renderer,
     auto modelHandle = renderer->getModel();
 
     if (PropertyDrawer::drawModel(renderer->getOwner()->getName(), modelHandle, ctx)) {
-
         renderer->setModel(modelHandle);
     }
 
-    auto& materials = renderer->getMaterials();
+    const auto& materials = renderer->getMaterials();
 
     ImGui::Text("Materials: %zu", materials.size());
 
     for (size_t i = 0; i < materials.size(); i++) {
-
         ImGui::PushID(static_cast<int>(i));
 
-        Material* material = materials[i];
+        dzemikk::Material* material = materials[i];
 
         std::string header = "Material " + std::to_string(i);
 
         if (!material) {
-
             ImGui::Text("Material %zu: null", i);
 
             ImGui::SameLine();
@@ -49,9 +43,7 @@ void editor::SkinnedMeshRendererInspector::draw(SkinnedMeshRenderer* renderer,
             std::string createButton = "Create##" + std::to_string(i);
 
             if (ImGui::Button(createButton.c_str())) {
-
-                material = new Material();
-
+                material = new dzemikk::Material();
                 renderer->setMaterial(i, material);
             }
 
@@ -60,18 +52,15 @@ void editor::SkinnedMeshRendererInspector::draw(SkinnedMeshRenderer* renderer,
         }
 
         if (ImGui::TreeNode(header.c_str())) {
-
             auto shaderHandle = material->getShaderHandle();
 
             if (PropertyDrawer::drawShader("Shader", shaderHandle, ctx)) {
-
                 material->setShader(shaderHandle);
             }
 
             std::string removeButton = "Remove##" + std::to_string(i);
 
             if (ImGui::Button(removeButton.c_str())) {
-
                 renderer->setMaterial(i, nullptr);
 
                 ImGui::TreePop();
@@ -82,12 +71,10 @@ void editor::SkinnedMeshRendererInspector::draw(SkinnedMeshRenderer* renderer,
 
             ImGui::TreePop();
         }
-
         ImGui::PopID();
     }
 
     if (ImGui::Button("Add Material")) {
-
-        renderer->setMaterial(materials.size(), new Material());
+        renderer->setMaterial(materials.size(), new dzemikk::Material());
     }
 }

@@ -1,7 +1,8 @@
 #include "inspectors/uiDropdownInspector.h"
 #include "inspectors/inspectorRegistry.h"
-#include "ecs/components/ui/uiDropdown.h"
 #include "ui/propertyDrawer.h"
+
+#include <ecs/components/ui/uiDropdown.h>
 
 #include <imgui.h>
 
@@ -11,7 +12,6 @@ void editor::UIDropdownInspector::draw(dzemikk::UIDropdown* dropdown, const Insp
     }
 
     if (ImGui::CollapsingHeader("UI Dropdown", ImGuiTreeNodeFlags_DefaultOpen)) {
-
         auto style = dropdown->getStyle();
         bool styleChanged = false;
 
@@ -23,8 +23,7 @@ void editor::UIDropdownInspector::draw(dzemikk::UIDropdown* dropdown, const Insp
         styleChanged |= PropertyDrawer::drawColor("Normal Option Color", style.normalOptColor);
         styleChanged |= PropertyDrawer::drawColor("Hover Option Color", style.hoverOptColor);
         styleChanged |= PropertyDrawer::drawColor("Pressed Option Color", style.pressedOptColor);
-        styleChanged |=
-            PropertyDrawer::drawColor("Highlight Option Color", style.highlightOptColor);
+        styleChanged |= PropertyDrawer::drawColor("Highlight Option Color", style.highlightOptColor);
 
         if (styleChanged) {
             dropdown->setStyle(style);
@@ -67,7 +66,6 @@ void editor::UIDropdownInspector::draw(dzemikk::UIDropdown* dropdown, const Insp
         auto options = dropdown->getOptions();
 
         if (ImGui::TreeNode("Options")) {
-
             bool optionsChanged = false;
             int removeIndex = -1;
 
@@ -75,13 +73,11 @@ void editor::UIDropdownInspector::draw(dzemikk::UIDropdown* dropdown, const Insp
             static std::unordered_map<std::string, std::array<char, 256>> valueBuffers;
 
             for (std::size_t i = 0; i < options.size(); ++i) {
-
                 ImGui::PushID((int)i);
 
                 auto& option = options[i];
 
                 if (ImGui::TreeNode(("Option " + std::to_string(i)).c_str())) {
-
                     const std::string textKey = "dropdown_text_" + std::to_string(i);
                     const std::string valueKey = "dropdown_value_" + std::to_string(i);
 
@@ -131,7 +127,6 @@ void editor::UIDropdownInspector::draw(dzemikk::UIDropdown* dropdown, const Insp
             }
 
             if (optionsChanged) {
-
                 dropdown->setOptions(options);
                 dropdown->updateOptionDataOnly();
                 dropdown->applyOptionButtonColors();
@@ -142,7 +137,6 @@ void editor::UIDropdownInspector::draw(dzemikk::UIDropdown* dropdown, const Insp
         }
 
         dropdown->refreshOptionLayout();
-
         
         ImGui::Spacing();
         ImGui::Separator();

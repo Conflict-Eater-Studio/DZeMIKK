@@ -1,20 +1,18 @@
 #include "inspectors/transformInspector.h"
 #include "inspectors/inspectorRegistry.h"
 #include "ui/propertyDrawer.h"
-#include "ecs/components/transform.h"
+
+#include <ecs/components/transform.h>
 
 #include <imgui.h>
 
-using namespace dzemikk;
-
-void editor::TransformInspector::draw(Transform* transform, const InspectorContext& ctx) {
+void editor::TransformInspector::draw(dzemikk::Transform* transform, const InspectorContext& ctx) {
 
     if (!transform) {
         return;
     }
 
     if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
-
         glm::vec3 position = transform->getPosition();
         glm::vec3 rotation = transform->getEulerAngles();
         glm::vec3 scale = transform->getScale();

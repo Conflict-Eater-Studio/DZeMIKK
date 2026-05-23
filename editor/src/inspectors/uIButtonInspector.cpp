@@ -1,9 +1,10 @@
 #include "inspectors/uIButtonInspector.h"
 #include "inspectors/inspectorRegistry.h"
-#include "ecs/components/ui/imageRenderer.h"
-#include "ecs/components/ui/uiButton.h"
-#include "ecs/gameObject.h"
 #include "ui/propertyDrawer.h"
+
+#include <ecs/components/ui/imageRenderer.h>
+#include <ecs/components/ui/uiButton.h>
+#include <ecs/gameObject.h>
 
 #include <imgui.h>
 
@@ -13,7 +14,6 @@ void editor::UIButtonInspector::draw(dzemikk::UIButton* uiButton, const Inspecto
     }
 
     if (ImGui::CollapsingHeader("UIButton", ImGuiTreeNodeFlags_DefaultOpen)) {
-
         bool changed = false;
 
         auto style = uiButton->getStyle();
@@ -21,9 +21,7 @@ void editor::UIButtonInspector::draw(dzemikk::UIButton* uiButton, const Inspecto
         ImGui::SeparatorText("Style");
 
         changed |= editor::PropertyDrawer::drawColor("Normal Color", style.normalColor);
-
         changed |= editor::PropertyDrawer::drawColor("Hover Color", style.hoverColor);
-
         changed |= editor::PropertyDrawer::drawColor("Pressed Color", style.pressedColor);
 
         if (changed) {
@@ -44,7 +42,6 @@ void editor::UIButtonInspector::draw(dzemikk::UIButton* uiButton, const Inspecto
             ImGui::Text("Text GameObject: null");
         }
 
-        
         ImGui::Spacing();
         ImGui::Separator();
 

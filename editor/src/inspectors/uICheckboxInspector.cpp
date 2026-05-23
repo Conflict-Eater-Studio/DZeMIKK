@@ -1,12 +1,11 @@
 #include "inspectors/uiCheckboxInspector.h"
 #include "inspectors/inspectorRegistry.h"
-#include "ecs/components/ui/uiCheckbox.h"
-#include "ecs/components/ui/iUIInteractable.h" 
 #include "ui/propertyDrawer.h"
 
-#include <imgui.h>
+#include <ecs/components/ui/uiCheckbox.h>
+#include <ecs/components/ui/iUIInteractable.h> 
 
-using namespace dzemikk;
+#include <imgui.h>
 
 void editor::UICheckboxInspector::draw(dzemikk::UICheckbox* checkbox, const InspectorContext& ctx) {
     if (!checkbox) {
@@ -14,7 +13,6 @@ void editor::UICheckboxInspector::draw(dzemikk::UICheckbox* checkbox, const Insp
     }
 
     if (ImGui::CollapsingHeader("UI Checkbox", ImGuiTreeNodeFlags_DefaultOpen)) {
-
         auto style = checkbox->getStyle();
         bool changed = false;
 
@@ -32,7 +30,6 @@ void editor::UICheckboxInspector::draw(dzemikk::UICheckbox* checkbox, const Insp
         if (ImGui::Checkbox("Value", &value)) {
             checkbox->setValue(value);
         }
-
 
         ImGui::Spacing();
         ImGui::Separator();

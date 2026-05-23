@@ -1,7 +1,8 @@
 #include "inspectors/rectTransformInspector.h"
 #include "ui/propertyDrawer.h"
-#include "ecs/components/ui/rectTransform.h"
 #include "inspectors/inspectorRegistry.h"
+
+#include <ecs/components/ui/rectTransform.h>
 
 #include <imgui.h>
 
@@ -67,6 +68,5 @@ void editor::RectTransformInspector::draw(dzemikk::RectTransform* transform,
         if (PropertyDrawer::drawInt("Z Index", zIndex)) {
             transform->setZIndex(static_cast<unsigned int>(zIndex));
         }
-
     }
 }

@@ -1,16 +1,12 @@
 #include "inspectors/inspectorRegistry.h"
 
-#include "ecs/component.h"
+#include <ecs/component.h>
 
-using namespace editor;
-using namespace dzemikk;
-
-void InspectorRegistry::registerInspector(const std::string& type, DrawFunction function) {
+void editor::InspectorRegistry::registerInspector(const std::string& type, DrawFunction function) {
     _inspectors[type] = std::move(function);
 }
 
-void InspectorRegistry::drawInspector(Component* component, const InspectorContext& context) {
-
+void editor::InspectorRegistry::drawInspector(dzemikk::Component* component, const InspectorContext& context) {
     if (!component) {
         return;
     }

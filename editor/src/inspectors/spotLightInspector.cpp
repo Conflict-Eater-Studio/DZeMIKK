@@ -1,7 +1,9 @@
 #include "inspectors/spotLightInspector.h"
-#include "ui/propertyDrawer.h"
-#include "ecs/components/light/spotLight.h"
 #include "inspectors/inspectorRegistry.h"
+#include "ui/propertyDrawer.h"
+
+#include <ecs/components/light/spotLight.h>
+
 #include <imgui.h>
 
 void editor::SpotLightInspector::draw(dzemikk::SpotLight* light, const InspectorContext& ctx) {
@@ -21,7 +23,6 @@ void editor::SpotLightInspector::draw(dzemikk::SpotLight* light, const Inspector
         if (PropertyDrawer::drawVec3("Direction", direction)) {
             light->setDirection(direction);
         }
-
 
         if (PropertyDrawer::drawColor("Color", color)) {
             light->setColor(color);

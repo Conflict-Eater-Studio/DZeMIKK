@@ -1,7 +1,8 @@
 #include "inspectors/uiSliderInspector.h"
 #include "inspectors/inspectorRegistry.h"
-#include "ecs/components/ui/uiSlider.h"
 #include "ui/propertyDrawer.h"
+
+#include <ecs/components/ui/uiSlider.h>
 
 #include <imgui.h>
 
@@ -11,7 +12,6 @@ void editor::UISliderInspector::draw(dzemikk::UISlider* slider, const InspectorC
     }
 
     if (ImGui::CollapsingHeader("UI Slider", ImGuiTreeNodeFlags_DefaultOpen)) {
-
         auto style = slider->getStyle();
 
         bool changed = false;
@@ -28,9 +28,9 @@ void editor::UISliderInspector::draw(dzemikk::UISlider* slider, const InspectorC
         float step = slider->getStep();
 
         changed |= ImGui::DragFloat("Value", &value, step, minValue, maxValue);
-        changed |= ImGui::DragFloat("Min Value", &minValue, 0.1f);
-        changed |= ImGui::DragFloat("Max Value", &maxValue, 0.1f);
-        changed |= ImGui::DragFloat("Step", &step, 0.001f, 0.0001f, 1.0f);
+        changed |= ImGui::DragFloat("Min Value", &minValue, 0.1F);
+        changed |= ImGui::DragFloat("Max Value", &maxValue, 0.1F);
+        changed |= ImGui::DragFloat("Step", &step, 0.001F, 0.0001F, 1.0F);
 
         if (changed) {
             slider->setStyle(style);
@@ -43,7 +43,6 @@ void editor::UISliderInspector::draw(dzemikk::UISlider* slider, const InspectorC
 
             slider->applyVisualState();
         }
-
         
         ImGui::Spacing();
         ImGui::Separator();

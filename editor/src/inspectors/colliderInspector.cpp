@@ -1,7 +1,7 @@
 #include "inspectors/colliderInspector.h"
 
-#include "ecs/components/collider.h"
-#include "ui/propertyDrawer.h"
+#include <ecs/components/collider.h>
+#include <ui/propertyDrawer.h>
 
 #include <imgui.h>
 
