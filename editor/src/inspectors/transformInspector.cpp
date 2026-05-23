@@ -1,5 +1,5 @@
 #include "inspectors/transformInspector.h"
-
+#include "inspectors/inspectorRegistry.h"
 #include "ui/propertyDrawer.h"
 #include "ecs/components/transform.h"
 

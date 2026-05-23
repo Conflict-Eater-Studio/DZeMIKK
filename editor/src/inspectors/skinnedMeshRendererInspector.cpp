@@ -1,9 +1,10 @@
 #include "inspectors/skinnedMeshRendererInspector.h"
-
+#include "inspectors/inspectorRegistry.h"
 #include "ecs/components/skinnedMeshRenderer.h"
 #include "ecs/gameobject.h"
 #include "renderer/material.h"
 #include "ui/propertyDrawer.h"
+
 
 #include <imgui.h>
 

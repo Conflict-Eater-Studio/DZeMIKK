@@ -1,5 +1,5 @@
 #include "inspectors/uiCheckboxInspector.h"
-
+#include "inspectors/inspectorRegistry.h"
 #include "ecs/components/ui/uiCheckbox.h"
 #include "ecs/components/ui/iUIInteractable.h" 
 #include "ui/propertyDrawer.h"

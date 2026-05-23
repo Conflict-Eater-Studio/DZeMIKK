@@ -1,6 +1,7 @@
 #include "inspectors/uIButtonInspector.h"
-
+#include "inspectors/inspectorRegistry.h"
 #include "ecs/components/ui/imageRenderer.h"
+#include "ecs/components/ui/uiButton.h"
 #include "ecs/gameObject.h"
 #include "ui/propertyDrawer.h"
 

@@ -1,5 +1,7 @@
 #include "inspectors/rectTransformInspector.h"
 #include "ui/propertyDrawer.h"
+#include "ecs/components/ui/rectTransform.h"
+#include "inspectors/inspectorRegistry.h"
 
 #include <imgui.h>
 

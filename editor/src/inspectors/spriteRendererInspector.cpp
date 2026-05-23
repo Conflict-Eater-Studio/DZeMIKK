@@ -3,7 +3,7 @@
 #include "ecs/components/spriteRenderer.h"
 #include "renderer/material.h"
 #include "ui/propertyDrawer.h"
-
+#include "inspectors/inspectorRegistry.h"
 #include <imgui.h>
 
 void editor::SpriteRendererInspector::draw(dzemikk::SpriteRenderer* spriteRenderer,

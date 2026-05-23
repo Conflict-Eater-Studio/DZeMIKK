@@ -1,5 +1,5 @@
 #include "inspectors/uiDropdownInspector.h"
-
+#include "inspectors/inspectorRegistry.h"
 #include "ecs/components/ui/uiDropdown.h"
 #include "ui/propertyDrawer.h"
 

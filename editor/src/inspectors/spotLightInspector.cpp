@@ -1,6 +1,7 @@
 #include "inspectors/spotLightInspector.h"
 #include "ui/propertyDrawer.h"
-
+#include "ecs/components/light/spotLight.h"
+#include "inspectors/inspectorRegistry.h"
 #include <imgui.h>
 
 void editor::SpotLightInspector::draw(dzemikk::SpotLight* light, const InspectorContext& ctx) {

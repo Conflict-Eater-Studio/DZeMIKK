@@ -1,4 +1,5 @@
 #include "inspectors/textRendererInspector.h"
+#include "inspectors/inspectorRegistry.h"
 
 #include "ecs/components/textRenderer.h"
 #include "ui/propertyDrawer.h"

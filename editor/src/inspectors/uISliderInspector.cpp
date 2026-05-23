@@ -1,5 +1,5 @@
 #include "inspectors/uiSliderInspector.h"
-
+#include "inspectors/inspectorRegistry.h"
 #include "ecs/components/ui/uiSlider.h"
 #include "ui/propertyDrawer.h"
 

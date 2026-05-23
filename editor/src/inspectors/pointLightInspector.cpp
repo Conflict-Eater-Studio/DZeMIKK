@@ -1,5 +1,7 @@
 #include "inspectors/pointLightInspector.h"
 #include "ui/propertyDrawer.h"
+#include "ecs/components/light/pointLight.h"
+#include "inspectors/inspectorRegistry.h"
 
 #include <imgui.h>
 

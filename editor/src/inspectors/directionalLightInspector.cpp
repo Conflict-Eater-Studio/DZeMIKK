@@ -1,4 +1,6 @@
 #include "inspectors/directionalLightInspector.h"
+#include "ecs/components/light/directionalLight.h"
+#include "inspectors/inspectorRegistry.h"
 
 #include "ui/propertyDrawer.h"
 

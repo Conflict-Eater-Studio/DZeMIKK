@@ -6,6 +6,9 @@
 #include "renderer/shader.h"
 #include "ui/propertyDrawer.h"
 
+#include "ecs/components/meshRenderer.h"
+#include "inspectors/inspectorRegistry.h"
+
 #include <imgui.h>
 
 using namespace dzemikk;
