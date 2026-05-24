@@ -3,7 +3,9 @@ project(Game LANGUAGES CXX)
 add_executable(game
                 src/main.cpp
                 src/map/HexChunk.cpp
-                src/map/grid.cpp
+                src/map/HexGrid.cpp
+                src/map/PlayerEntity.cpp
+                src/map/HexPattern.cpp
                 src/scripts/world/world.cpp
                 src/main.cpp
                 src/game.cpp

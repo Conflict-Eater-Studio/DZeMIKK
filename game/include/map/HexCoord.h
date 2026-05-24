@@ -3,13 +3,14 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <cstdint>
 #include <glm/glm.hpp>
 #include <numbers>
 #include <optional>
 #include <queue>
-#include <ranges>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #ifdef DZEMIKK_DEV_TOOLS
@@ -50,6 +51,12 @@ class HexCoord {
     constexpr bool operator==(const HexCoord& other) const {
         return _q == other._q && _r == other._r;
     }
+    constexpr bool operator<(const HexCoord& other) const {
+        if (_q != other._q) {
+            return _q < other._q;
+        }
+        return _r < other._r;
+    }
     constexpr bool operator!=(const HexCoord& other) const {
         return !(*this == other);
     }
@@ -69,6 +76,14 @@ class HexCoord {
         _r *= scalar;
         return *this;
     }
+
+    static constexpr std::array<Direction, 6> kDiagonals = {Direction::R0,   Direction::R60,
+                                                            Direction::R120, Direction::R180,
+                                                            Direction::R240, Direction::R300};
+
+    static constexpr std::array<Direction, 6> kAxes = {Direction::R30,  Direction::R90,
+                                                       Direction::R150, Direction::R210,
+                                                       Direction::R270, Direction::R330};
 
     static const HexCoord& dir(Direction d) {
         // R0 -> R330, @30deg step, start -> Pointing RIGHT
@@ -136,11 +151,21 @@ class HexCoord {
         float z =
             s * ((std::numbers::sqrt3_v<float> / 2.0F * qF) + (std::numbers::sqrt3_v<float> * rF));
 
-        return {x, _height, z};
+        return {z, _height, x};
     }
 
     [[nodiscard]] HexCoord opposite() const {
         return {-_q, -_r};
+    }
+
+    [[nodiscard]] static HexCoord::Direction opposite(HexCoord::Direction d) {
+        // R0 -> R330, @30deg step, start -> Pointing RIGHT
+        static constexpr std::array<HexCoord::Direction, 12> Opposites = {
+            HexCoord::Direction::R180, HexCoord::Direction::R210, HexCoord::Direction::R240,
+            HexCoord::Direction::R270, HexCoord::Direction::R300, HexCoord::Direction::R330,
+            HexCoord::Direction::R0,   HexCoord::Direction::R30,  HexCoord::Direction::R60,
+            HexCoord::Direction::R90,  HexCoord::Direction::R120, HexCoord::Direction::R150};
+        return Opposites.at(static_cast<std::size_t>(d));
     }
 
     void setHeight(float height) {
@@ -154,7 +179,7 @@ class HexCoord {
         std::vector<HexCoord> neighbors;
         neighbors.reserve(6);
         for (int i = 0; i < 6; ++i) {
-            neighbors.push_back(coord + dir(static_cast<Direction>(i * 2)));
+            neighbors.push_back(coord + dir(static_cast<Direction>(1 + (i * 2))));
         }
         return neighbors;
     }
@@ -182,66 +207,54 @@ class HexCoord {
     }
 
     [[nodiscard]] static std::vector<HexCoord> hexesOnLine(const HexCoord& a, const HexCoord& b) {
-        if (a == b) {
-            return {a};
+        int n = distance(a, b);
+        std::vector<HexCoord> results;
+        results.reserve(n + 1);
+
+        if (n == 0) {
+            results.emplace_back(a);
+            return results;
         }
 
-        auto keyFor = [](const HexCoord& coord) {
-            return (static_cast<std::int64_t>(coord.q()) << 32) |
-                   static_cast<std::uint32_t>(coord.r());
-        };
+        constexpr double kEpsilonQ = 1e-6;
+        constexpr double kEpsilonR = 2e-6;
+        constexpr double kEpsilonS = -3e-6;
 
-        auto coordFromKey = [](std::int64_t key) {
-            int q = static_cast<int>(key >> 32);
-            int r = static_cast<int>(static_cast<std::uint32_t>(key));
-            return HexCoord{q, r};
-        };
+        const double aQ = static_cast<double>(a.q()) + kEpsilonQ;
+        const double aR = static_cast<double>(a.r()) + kEpsilonR;
+        const double aS = static_cast<double>(a.s()) + kEpsilonS;
 
-        const auto startKey = keyFor(a);
-        const auto targetKey = keyFor(b);
+        const double bQ = static_cast<double>(b.q()) + kEpsilonQ;
+        const double bR = static_cast<double>(b.r()) + kEpsilonR;
+        const double bS = static_cast<double>(b.s()) + kEpsilonS;
 
-        std::queue<HexCoord> frontier;
-        std::unordered_map<std::int64_t, std::int64_t> parent;
+        for (int i = 0; i <= n; i++) {
+            const double t = static_cast<double>(i) / static_cast<double>(n);
 
-        frontier.push(a);
-        parent.emplace(startKey, startKey);
+            const double fQ = aQ + ((bQ - aQ) * t);
+            const double fR = aR + ((bR - aR) * t);
+            const double fS = aS + ((bS - aS) * t);
 
-        bool found = false;
-        while (!frontier.empty() && !found) {
-            const HexCoord current = frontier.front();
-            frontier.pop();
-            const auto currentKey = keyFor(current);
+            double q = std::round(fQ);
+            double r = std::round(fR);
+            double s = std::round(fS);
 
-            for (const auto& neighbor : getNeighbors(current)) {
-                const auto neighborKey = keyFor(neighbor);
-                if (parent.contains(neighborKey)) {
-                    continue;
-                }
+            const double qDiff = std::abs(q - fQ);
+            const double rDiff = std::abs(r - fR);
+            const double sDiff = std::abs(s - fS);
 
-                parent.emplace(neighborKey, currentKey);
-
-                if (neighborKey == targetKey) {
-                    found = true;
-                    break;
-                }
-
-                frontier.push(neighbor);
+            if (qDiff > rDiff && qDiff > sDiff) {
+                q = -r - s;
+            } else if (rDiff > sDiff) {
+                r = -q - s;
+            } else {
+                s = -q - r;
             }
+
+            results.emplace_back(static_cast<int>(q), static_cast<int>(r));
         }
 
-        if (!found) {
-            return {a, b};
-        }
-
-        std::vector<HexCoord> path;
-        for (auto currentKey = targetKey; currentKey != startKey;
-             currentKey = parent.at(currentKey)) {
-            path.push_back(coordFromKey(currentKey));
-        }
-        path.push_back(a);
-        std::ranges::reverse(path);
-
-        return path;
+        return results;
     }
 
   private:

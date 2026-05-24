@@ -147,7 +147,7 @@ void dzemikk::UITextRenderPass::execute(RenderContext& ctx) {
 
 void dzemikk::UITextRenderPass::initTextShader() {
     const char* vertexSrc = R"(
-    #version 330 core
+    #version 460 core
     layout (location = 0) in vec4 vertex; // pos.xy, uv.xy
 
     out vec2 TexCoords;
@@ -161,7 +161,7 @@ void dzemikk::UITextRenderPass::initTextShader() {
     )";
 
     const char* fragmentSrc = R"(
-    #version 330 core
+    #version 460 core
     in vec2 TexCoords;
     out vec4 color;
 
