@@ -36,6 +36,7 @@ class HexCoord {
         R330
     };
 
+    constexpr HexCoord() : _q(0), _r(0) {}
     constexpr HexCoord(int q, int r) : _q(q), _r(r) {}
 
     constexpr HexCoord operator+(const HexCoord& other) const {

@@ -4,8 +4,8 @@
 #include "Entity.h"
 
 namespace game {
-class PlayerEntity : public Entity {
-  public:
+    class PlayerEntity : public Entity {
+    public:
     PlayerEntity() = default;
 
     void onEnter(HexCellPtr cell) override;

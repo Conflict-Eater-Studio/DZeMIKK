@@ -35,6 +35,7 @@
 #include "input/input.h"
 #include "map/HexCoord.h"
 #include "map/PlayerEntity.h"
+#include "playerMovement.h"
 #include "renderer/cameraSystem.h"
 #include "renderer/font.h"
 #include "renderer/material.h"
@@ -190,7 +191,6 @@ void Game::newModels(const std::shared_ptr<dzemikk::Material>& m, dzemikk::Scene
 Game::Game(dzemikk::Engine* engine) : _engine(engine) {}
 
 void Game::start() {
-
     game::Perlin perlin(1);
 
     auto* assetManager = _engine->getAssetManager();
@@ -256,13 +256,16 @@ void Game::start() {
     auto* playerGO = scene->createGameObject("Player", worldGO);
     auto* playerMesh = playerGO->addComponent<dzemikk::MeshRenderer>();
     _playerEntity = playerGO->addComponent<game::PlayerEntity>();
+    _playerMovement = playerGO->addComponent<game::PlayerMovement>();
+    _playerMovement->setPlayerEntity(_playerEntity);
+
     playerMesh->setModel(enemyModel);
     playerMesh->setMaterial(0, material);
     playerMesh->setTransform(playerGO->transform());
     playerGO->transform()->setPosition({0.0F, 2.5F, 0.0F});
 
+    _worldGO = worldGO;
     auto* world = worldGO->addComponent<game::World>(1);
-
     world->setModel(model);
     world->setMaterial(material);
     world->setMaterial2(material2);
@@ -308,7 +311,9 @@ void Game::start() {
     // nlohmann::json worldData = nlohmann::json::parse(in);
     // world->load(worldData);
 
-    _playerEntity->tryMove(world->getGrid()->at({0, 0}));
+    _hexGrid = world->getGrid();
+
+    _playerMovement->setHexGrid(_hexGrid);
 
     auto* uiRootGO = scene->createGameObject("UI Root");
     auto* canvas = uiRootGO->addComponent<dzemikk::Canvas>();
@@ -592,9 +597,32 @@ void Game::setupAudio() {
 }
 
 void Game::setupInputCallbacks() {
-
     static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
     static auto lastHitColor = glm::vec4(1.0F);
+
+    _engine->getInput()->OnMouseButtonPressed.addListener([this](dzemikk::MouseButtonPressedEvent& event) {
+        if (event.GetMouseButton() != GLFW_MOUSE_BUTTON_LEFT) {
+            return;
+        }
+
+        int windowWidth = 0;
+        int windowHeight = 0;
+        glfwGetWindowSize(_engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
+
+        dzemikk::Collider* collider = _engine->getCollisions()->raycast(
+        _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
+        _engine->getInput()->GetMousePosition(), static_cast<float>(windowWidth),
+        static_cast<float>(windowHeight));
+
+        if (collider) {
+            if (_engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+                auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
+                if (wh != nullptr && wh->getHexCell() != nullptr) {
+                    _playerMovement->moveTo(wh->getHexCell());
+                }
+            }
+        }
+});
 
     _engine->SetUserUpdateCallback([this]() {
         if (!_engine || !_engine->getInput()) {
@@ -642,17 +670,9 @@ void Game::setupInputCallbacks() {
 
         if (collider) {
             currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
-
-            if (_engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-                auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
-                if (wh != nullptr && wh->getHexCell() != nullptr) {
-                    _playerEntity->tryMove(wh->getHexCell());
-                }
-            }
         }
 
         if (currentRenderer != lastHitRenderer) {
-
             if (lastHitRenderer && lastHitRenderer->isValid()) {
                 lastHitRenderer->setColor(lastHitColor);
             }

@@ -3,6 +3,7 @@
 #include "core/engine.h"
 #include "glad/glad.h"
 #include "map/PlayerEntity.h"
+#include "scripts/world/world.h"
 
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -12,11 +13,14 @@ namespace dzemikk {
 class Material;
 class GameObject;
 } // namespace dzemikk
+namespace game {
+class PlayerMovement;
+}
 class Game {
   public:
     Game(const Game&) = default;
     Game(Game&&) = delete;
-    Game& operator=(const Game&) = default;
+    Game& operator=(const Game&) = delete;
     Game& operator=(Game&&) = delete;
     explicit Game(dzemikk::Engine* engine);
     ~Game() = default;
@@ -46,12 +50,15 @@ class Game {
 
     dzemikk::Engine* _engine;
     std::shared_ptr<dzemikk::Scene> _mainScene;
+    game::HexGrid* _hexGrid = nullptr;
+    dzemikk::GameObject* _worldGO = nullptr;
     dzemikk::GameObject* _playerGO = nullptr;
     dzemikk::GameObject* _enemyGO = nullptr;
     dzemikk::Material* _materialA = nullptr;
     dzemikk::Material* _materialB = nullptr;
     dzemikk::Material* _quadMaterial = nullptr;
     game::PlayerEntity* _playerEntity = nullptr;
+    game::PlayerMovement* _playerMovement = nullptr;
 };
 
 #endif

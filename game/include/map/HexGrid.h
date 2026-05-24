@@ -29,6 +29,7 @@ class HexGrid {
     [[nodiscard]] HexCellPtr getCell(const HexCoord& coord) const;
     [[nodiscard]] HexCellPtr at(const HexCoord& coord) const;
     [[nodiscard]] bool contains(const HexCoord& coord) const;
+    [[nodiscard]] std::vector<HexCellPtr> findPath(const HexCellPtr& startCell, const HexCellPtr& targetCell) const;
     bool moveCell(const HexCoord& from, const HexCoord& to);
 
   private:

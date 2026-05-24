@@ -7,6 +7,9 @@
 #include <queue>
 #include <stdexcept>
 #include <unordered_set>
+#include <unordered_map>
+#include <algorithm>
+
 #include <utility>
 #include <vector>
 
@@ -276,6 +279,97 @@ HexGrid::HexCellPtr HexGrid::at(const HexCoord& coord) const {
 
 bool HexGrid::contains(const HexCoord& coord) const {
     return getCell(coord) != nullptr;
+}
+
+std::vector<HexGrid::HexCellPtr> HexGrid::findPath(const HexCellPtr& startCell, const HexCellPtr& targetCell) const {
+    if (startCell == nullptr || targetCell == nullptr) {
+        return {};
+    }
+
+    const HexCoord start = startCell->getCoord();
+    const HexCoord target = targetCell->getCoord();
+
+    if (!isWalkableCell(startCell) || !isWalkableCell(targetCell)) {
+        return {};
+    }
+
+    struct PathNode {
+        HexCoord coord;
+        int fScore;
+
+        bool operator<(const PathNode& other) const {
+            return fScore > other.fScore;
+        }
+    };
+
+    std::priority_queue<PathNode> frontier;
+    frontier.push({start, HexCoord::distance(start, target)});
+    std::unordered_map<HexCoord, HexCoord> cameFrom;
+
+    std::unordered_map<HexCoord, int> gScore;
+    std::unordered_set<HexCoord> closedSet;
+
+    gScore[start] = 0;
+
+    while (!frontier.empty()) {
+        const HexCoord current = frontier.top().coord;
+        frontier.pop();
+
+        if (closedSet.contains(current)) {
+            continue;
+        }
+
+        if (current == target) {
+            std::vector<HexCellPtr> path;
+            HexCoord pathCoord = target;
+
+            while (pathCoord != start) {
+                auto cell = getCell(pathCoord);
+                if (cell == nullptr) {
+                    return {};
+                }
+
+                path.push_back(cell);
+                pathCoord = cameFrom.at(pathCoord);
+            }
+
+            path.push_back(startCell);
+            std::reverse(path.begin(), path.end());
+            return path;
+        }
+
+        closedSet.insert(current);
+
+        for (const auto& neighbor : HexCoord::getNeighbors(current)) {
+            if (closedSet.contains(neighbor)) {
+                continue;
+            }
+
+            auto neighborCell = getCell(neighbor);
+            if (!isWalkableCell(neighborCell)) {
+                continue;
+            }
+
+            if (neighborCell->getEntity() != nullptr && neighbor != target) {
+                continue;
+            }
+
+            const int neighbourGScore = gScore.at(current) + 1;
+            auto neighborGScoreIt = gScore.find(neighbor);
+
+            if (neighborGScoreIt != gScore.end() && neighbourGScore >= neighborGScoreIt->second) {
+                continue;
+            }
+
+            cameFrom[neighbor] = current;
+            gScore[neighbor] = neighbourGScore;
+
+            const int fScore = neighbourGScore + HexCoord::distance(neighbor, target);
+            frontier.push({neighbor, fScore});
+        }
+    }
+
+    return {};
 }
 
 bool HexGrid::moveCell(const HexCoord& from, const HexCoord& to) {

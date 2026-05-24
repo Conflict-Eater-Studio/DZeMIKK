@@ -9,6 +9,8 @@ add_executable(game
                 src/scripts/world/world.cpp
                 src/main.cpp
                 src/game.cpp
+        include/playerMovement.h
+        src/playerMovement.cpp
 )
 target_include_directories(game
         PUBLIC
