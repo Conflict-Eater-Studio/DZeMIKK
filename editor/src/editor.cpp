@@ -2,6 +2,7 @@
 
 #if DZEMIKK_DEV_TOOLS
 
+#include "core/engine.h"
 #include "assetManager/assetmanager.h"
 #include "assetManagerPanel.h"
 #include "ecs/components/camera.h"
@@ -9,8 +10,10 @@
 #include "ecs/components/transform.h"
 #include "ecs/scenemanager.h"
 #include "ecs/serialize/sceneSerializer.h"
+#include "ecs/components/animator.h"
 #include "hierarchyPanel.h"
 #include "inspectorPanel.h"
+#include "animatorStateMachinePanel.h"
 #include "renderer/material.h"
 #include "renderer/renderer.h"
 #include "scenePanel.h"
@@ -42,6 +45,7 @@ Editor::Editor(dzemikk::Engine* engine) : _engine(engine) {
     _inspectorPanel = std::make_unique<InspectorPanel>();
     _assetManagerPanel = std::make_unique<AssetManagerPanel>();
     _scenePanel = std::make_unique<ScenePanel>();
+    _animatorSMPanel = std::make_unique<AnimatorStateMachinePanel>();
 }
 
 Editor::~Editor() = default;
@@ -63,11 +67,16 @@ void Editor::start() {
         if (_showInspector) {
             InspectorContext context;
             context.assetManager = _engine->getAssetManager();
+            context.editor = this;
             _inspectorPanel->draw(_selectedObject, context);
         }
 
         if (_showAssetManager) {
             _assetManagerPanel->draw(_engine->getAssetManager());
+        }
+
+        if (_animatorSMPanel->isOpen()) {
+            _animatorSMPanel->draw(nullptr);
         }
 
         _scenePanel->draw(_engine->getRenderer());
@@ -269,6 +278,15 @@ void Editor::instantiatePrefab(const std::string& path, dzemikk::GameObject* par
     });
 }
 
+void Editor::openAnimatorStateMachine(dzemikk::Animator* animator) {
+
+    if (!_animatorSMPanel) {
+        return;
+    }
+
+    _animatorSMPanel->open(animator);
+}
+
 void Editor::setupEditor() {
 
     if (!_engine) {
@@ -396,6 +414,7 @@ void Editor::renderDockspace() {
         ImGui::DockBuilderDockWindow("Inspector", dockRight);
         ImGui::DockBuilderDockWindow("Asset Manager", dockBottom);
         ImGui::DockBuilderDockWindow("Scene", dockMain);
+        ImGui::DockBuilderDockWindow("Animator State Machine", dockMain);
 
         ImGui::DockBuilderFinish(dockspaceID);
     }

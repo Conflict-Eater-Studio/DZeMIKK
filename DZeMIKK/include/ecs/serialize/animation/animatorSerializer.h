@@ -19,6 +19,7 @@ namespace dzemikk {
 
 inline void to_json(nlohmann::json& json, const Condition& c) {
     json["parameter"] = c.parameter;
+    json["type"] = c.type;
     json["op"] = c.op;
     json["value"] = c.value;
 }
@@ -27,6 +28,7 @@ inline void from_json(const nlohmann::json& json, Condition& c) {
     c.parameter = json.at("parameter").get<std::string>();
     c.op = static_cast<Operator>(json.at("op").get<int>());
     c.value = json.at("value");
+    c.type = static_cast<ParamType>(json.at("type").get<int>());
 }
 
 inline void to_json(nlohmann::json& json, const Transition& t) {

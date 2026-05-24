@@ -39,7 +39,8 @@ class AnimatorInspector {
      *
      * @param animator Pointer to the Animator component.
      */
-    static void drawAnimationStateMachineSection(dzemikk::Animator* animator);
+    static void drawAnimationStateMachineSection(dzemikk::Animator* animator,
+                                                 const InspectorContext& ctx);
 
     /**
      * @brief Draws the current playback state information.

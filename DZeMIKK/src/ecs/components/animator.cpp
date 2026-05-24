@@ -107,17 +107,57 @@ namespace dzemikk {
         return "Animator";
     }
     bool Animator::evaluate(const Condition& c) const {
-        float param = getFloat(c.parameter);
 
-        switch (c.op) {
-            case Greater: return param > c.value;
-            case Less: return param < c.value;
-            case Equal: return param == c.value;
-            case NotEqual: return param != c.value;
-            default:
-                return false;
+        switch (c.type) {
+
+        case ParamType::Float: {
+            float param = getFloat(c.parameter);
+
+            switch (c.op) {
+            case Greater:
+                return param > c.value;
+            case Less:
+                return param < c.value;
+            case Equal:
+                return param == c.value;
+            case NotEqual:
+                return param != c.value;
             }
+            break;
+        }
+
+        case ParamType::Int: {
+            int param = getInt(c.parameter);
+            int v = static_cast<int>(c.value);
+
+            switch (c.op) {
+            case Greater:
+                return param > v;
+            case Less:
+                return param < v;
+            case Equal:
+                return param == v;
+            case NotEqual:
+                return param != v;
+            }
+            break;
+        }
+
+        case ParamType::Bool: {
+            bool param = getBool(c.parameter);
+            bool v = (c.value != 0.0f);
+
+            switch (c.op) {
+            case Equal:
+                return param == v;
+            case NotEqual:
+                return param != v;
+            default:
+                return false; 
+            }
+        }
+        }
 
         return false;
     }
-}
+    }

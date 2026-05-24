@@ -15,12 +15,17 @@
 #include <imgui_internal.h>
 #endif
 
+namespace dzemikk {
+    class Animator;
+}
+
 namespace editor {
 
 class HierarchyPanel;
 class InspectorPanel;
 class AssetManagerPanel;
 class ScenePanel;
+class AnimatorStateMachinePanel;
 
 /**
  * @brief Main editor controller managing all editor panels and scene editing state.
@@ -122,6 +127,8 @@ class Editor {
      */
     void instantiatePrefab(const std::string& path, dzemikk::GameObject* parent);
 
+    void openAnimatorStateMachine(dzemikk::Animator* animator);
+
 #pragma endregion
 
   private:
@@ -168,6 +175,7 @@ class Editor {
     std::unique_ptr<InspectorPanel> _inspectorPanel;
     std::unique_ptr<AssetManagerPanel> _assetManagerPanel;
     std::unique_ptr<ScenePanel> _scenePanel;
+    std::unique_ptr<AnimatorStateMachinePanel> _animatorSMPanel;
 
 #pragma endregion
 

@@ -12,6 +12,8 @@ class Component;
 
 namespace editor {
 
+class Editor;
+
 /**
  * @brief Shared context passed to all inspector UI drawers.
  *
@@ -19,6 +21,7 @@ namespace editor {
  */
 struct InspectorContext {
     dzemikk::AssetManager* assetManager = nullptr;
+    Editor* editor = nullptr;
 };
 
 /**

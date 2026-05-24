@@ -1,4 +1,5 @@
 #include "inspectors/animatorInspector.h"
+#include "editor.h"
 
 #include "ecs/components/animator.h"
 #include "animation/animationstatemachine.h"
@@ -12,14 +13,15 @@ void editor::AnimatorInspector::draw(dzemikk::Animator* animator, const Inspecto
         return;
     }
 
-    drawAnimationStateMachineSection(animator);
+    drawAnimationStateMachineSection(animator, ctx);
     drawCurrentState(animator);
     drawAddParameter(animator);
     drawParameters(animator);
     drawDebug(animator);
 }
 
-void editor::AnimatorInspector::drawAnimationStateMachineSection(dzemikk::Animator* animator) {
+void editor::AnimatorInspector::drawAnimationStateMachineSection(dzemikk::Animator* animator,
+                                                                 const InspectorContext& ctx) {
     auto stateMachine = animator->getStateMachine();
 
     ImGui::SeparatorText("State Machine");
@@ -46,14 +48,7 @@ void editor::AnimatorInspector::drawAnimationStateMachineSection(dzemikk::Animat
     ImGui::SameLine();
 
     if (ImGui::Button("Edit State Machine")) {
-        // placeholder for later editor
-        // np. open node graph window
-        ImGui::OpenPopup("SM_EDITOR_NOT_READY");
-    }
-
-    if (ImGui::BeginPopup("SM_EDITOR_NOT_READY")) {
-        ImGui::Text("State Machine editor coming soon.");
-        ImGui::EndPopup();
+        ctx.editor->openAnimatorStateMachine(animator);
     }
 
     ImGui::Spacing();

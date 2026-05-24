@@ -1,4 +1,5 @@
 #include "inspectors/inspectorRegistry.h"
+#include "editor.h"
 
 #include <ecs/component.h>
 

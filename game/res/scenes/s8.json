@@ -1137,7 +1137,7 @@
                                                         0.0,
                                                         0.0
                                                     ],
-                                                    "id": "20d22bf7-76fe-4cba-b1b6-f6721cff1438",
+                                                    "id": "bf4190c0-838b-47ff-ba04-79b96f9873b1",
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -1166,7 +1166,7 @@
                                                     ],
                                                     "font": "fonts/Arima-VariableFont_wght.ttf",
                                                     "horizontalAlign": 1,
-                                                    "id": "4b18fbc8-b789-48e8-84af-8ce78b77eea1",
+                                                    "id": "ba40ce0c-3a44-4d25-b0f5-82f444e2ce86",
                                                     "scale": 1.0,
                                                     "text": "Option 1",
                                                     "type": "UITextRenderer",
@@ -1174,7 +1174,7 @@
                                                 }
                                             ],
                                             "enabled": false,
-                                            "id": "8a0fbaa9-7b65-40a8-a573-22bc5bfafecc",
+                                            "id": "003bd93f-cca1-4234-b7b0-e43efc408408",
                                             "name": "Dropdown_Option_0_Text"
                                         }
                                     ],
@@ -1188,7 +1188,7 @@
                                                 0.0,
                                                 1.0
                                             ],
-                                            "id": "bd19b913-4332-4651-b06d-ed26e99dd5d2",
+                                            "id": "c83c70c9-67ec-4ed8-a484-915f4fd391ef",
                                             "pivot": [
                                                 0.0,
                                                 1.0
@@ -1212,7 +1212,7 @@
                                         {
                                             "events": {
                                                 "click": [
-                                                    "2e1f4636-4311-4f5a-8fa4-f6dc97a09e02"
+                                                    "5141058f-dc2d-4a49-a303-b5a8af3d366b"
                                                 ]
                                             },
                                             "hoverColor": [
@@ -1221,7 +1221,7 @@
                                                 0.0,
                                                 1.0
                                             ],
-                                            "id": "ae5dc262-ee3c-45fe-92b5-78f0185c63e0",
+                                            "id": "796e8d97-1d43-4f36-9302-77eec4819cc1",
                                             "normalColor": [
                                                 1.0,
                                                 0.0,
@@ -1243,13 +1243,13 @@
                                                 0.0,
                                                 1.0
                                             ],
-                                            "id": "1e32df7f-5959-4f91-add5-0eb8ef2ee973",
+                                            "id": "893ec969-d40a-4902-a83d-2979f2549bc3",
                                             "materialPath": "shaders/quad",
                                             "type": "ImageRenderer"
                                         }
                                     ],
                                     "enabled": false,
-                                    "id": "8deba3d8-1546-45f5-9611-ac467eecd475",
+                                    "id": "b34b01b4-ff4a-43f3-83ed-75e4782de3f8",
                                     "name": "Dropdown_Option_0"
                                 },
                                 {
@@ -1266,7 +1266,7 @@
                                                         0.0,
                                                         0.0
                                                     ],
-                                                    "id": "f4e543c2-b05c-4569-ab29-230b11d6a290",
+                                                    "id": "1c848646-f55c-4c65-a465-a6928834bba5",
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -1295,7 +1295,7 @@
                                                     ],
                                                     "font": "fonts/Arima-VariableFont_wght.ttf",
                                                     "horizontalAlign": 1,
-                                                    "id": "1897631b-73dc-4bb8-a6d9-949871f314d3",
+                                                    "id": "6dd151d7-8553-4c3e-b0b0-2ca7b17566ea",
                                                     "scale": 1.0,
                                                     "text": "Option 2",
                                                     "type": "UITextRenderer",
@@ -1303,7 +1303,7 @@
                                                 }
                                             ],
                                             "enabled": false,
-                                            "id": "a0f8b5e4-03d6-4d89-8da6-e9c905baa436",
+                                            "id": "fe88a5d8-898d-4e73-828c-df7785415806",
                                             "name": "Dropdown_Option_1_Text"
                                         }
                                     ],
@@ -1317,7 +1317,7 @@
                                                 0.0,
                                                 1.0
                                             ],
-                                            "id": "52af4140-e861-4e7e-b9ce-135f417e173c",
+                                            "id": "68035240-417b-436d-8540-5ea77b54fcd0",
                                             "pivot": [
                                                 0.0,
                                                 1.0
@@ -1341,7 +1341,7 @@
                                         {
                                             "events": {
                                                 "click": [
-                                                    "d247ad3f-2430-4e5e-b469-73d0e0e94889"
+                                                    "f71db720-db71-4089-a92d-043af9e778c6"
                                                 ]
                                             },
                                             "hoverColor": [
@@ -1350,7 +1350,7 @@
                                                 0.0,
                                                 1.0
                                             ],
-                                            "id": "728d4a08-9977-40e2-8f8b-4d038c767d19",
+                                            "id": "82184b36-37db-4cd4-a73f-ade8d5227be6",
                                             "normalColor": [
                                                 1.0,
                                                 0.0,
@@ -1372,13 +1372,13 @@
                                                 0.0,
                                                 1.0
                                             ],
-                                            "id": "076d2fd7-3f46-4877-94fb-f29b1c2d7b40",
+                                            "id": "81ce4537-7a3e-473a-8a23-d2a5a4ae821f",
                                             "materialPath": "shaders/quad",
                                             "type": "ImageRenderer"
                                         }
                                     ],
                                     "enabled": false,
-                                    "id": "4a09e61a-6e3e-42e0-bdef-4b950e075686",
+                                    "id": "e09309d6-62c2-4da2-aec6-fcc7c6e49f03",
                                     "name": "Dropdown_Option_1"
                                 },
                                 {
@@ -1395,7 +1395,7 @@
                                                         0.0,
                                                         0.0
                                                     ],
-                                                    "id": "42d77cc3-6f15-4901-8d53-13d13d8a6ee4",
+                                                    "id": "a59f601b-cc2c-401a-9272-f01c92982bf2",
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -1424,7 +1424,7 @@
                                                     ],
                                                     "font": "fonts/Arima-VariableFont_wght.ttf",
                                                     "horizontalAlign": 1,
-                                                    "id": "4079d020-a105-435c-9235-b56ebc9e8c89",
+                                                    "id": "050d55e0-34ce-47b7-b844-3261d4bec31c",
                                                     "scale": 1.0,
                                                     "text": "Option3",
                                                     "type": "UITextRenderer",
@@ -1432,7 +1432,7 @@
                                                 }
                                             ],
                                             "enabled": false,
-                                            "id": "e446b803-e7a5-4f89-a60c-81c909d7a652",
+                                            "id": "700ff7d2-de59-4ceb-a2a3-f6f568922c97",
                                             "name": "Dropdown_Option_2_Text"
                                         }
                                     ],
@@ -1446,7 +1446,7 @@
                                                 0.0,
                                                 1.0
                                             ],
-                                            "id": "79e0cf79-d908-407f-bd9d-e9e0d7b313d9",
+                                            "id": "b34bf333-e55d-46bb-9781-c23d43a80412",
                                             "pivot": [
                                                 0.0,
                                                 1.0
@@ -1470,7 +1470,7 @@
                                         {
                                             "events": {
                                                 "click": [
-                                                    "0b9f7850-aadc-4379-8212-856fa7642516"
+                                                    "b9f4e676-4304-4443-ad82-29d7356b9df1"
                                                 ]
                                             },
                                             "hoverColor": [
@@ -1479,7 +1479,7 @@
                                                 0.0,
                                                 1.0
                                             ],
-                                            "id": "aa415bd8-c1fa-4252-b335-015993db1341",
+                                            "id": "197e5a7c-2129-4687-b112-489a5cbb369f",
                                             "normalColor": [
                                                 1.0,
                                                 0.0,
@@ -1501,13 +1501,13 @@
                                                 0.0,
                                                 1.0
                                             ],
-                                            "id": "81dba1bf-380e-4f19-8b07-5ed044572de3",
+                                            "id": "a0200f94-a158-4370-b491-c331f5b2efc0",
                                             "materialPath": "shaders/quad",
                                             "type": "ImageRenderer"
                                         }
                                     ],
                                     "enabled": false,
-                                    "id": "b2a7fe56-7b7a-4fd3-871b-e4c3bbef5cde",
+                                    "id": "4c7f66a2-dde4-4fd7-ab77-685443cb51f2",
                                     "name": "Dropdown_Option_2"
                                 }
                             ],
@@ -1953,11 +1953,27 @@
                     "currentTime": 0.0,
                     "id": "2fdc22cf-17ba-491b-94c2-9a8cfd000cb2",
                     "parameters": {
+                        "cos2": false,
                         "dupa": 1.0
                     },
                     "stateMachine": [
                         {
                             "name": "Idle",
+                            "transitions": [
+                                {
+                                    "condition": {
+                                        "op": 2,
+                                        "parameter": "cos2",
+                                        "type": 2,
+                                        "value": 1.0
+                                    },
+                                    "duration": 0.25,
+                                    "to": "Walk"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Walk",
                             "transitions": []
                         }
                     ],
