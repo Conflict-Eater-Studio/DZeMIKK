@@ -1,0 +1,130 @@
+{
+    "id": "97e02499-727d-4861-a4ff-735f14784b43",
+    "roots": [
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "4cf49041-6a12-4c32-a82e-ba23d3cf31a0",
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "castsShadows": false,
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "direction": [
+                        -0.4319342076778412,
+                        -0.8638684153556824,
+                        -0.2591605484485626
+                    ],
+                    "intensity": 1.0,
+                    "type": "DirectionalLight"
+                }
+            ],
+            "enabled": true,
+            "id": "06c01715-5e6d-4905-9f90-2bca8b8a4244",
+            "name": "Directional Light"
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "391ad0d9-9743-422b-96b8-c2f30aa20479",
+                    "position": [
+                        0.0,
+                        3.0,
+                        11.600000381469727
+                    ],
+                    "rotation": [
+                        0.9839535355567932,
+                        -0.17842482030391693,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "aspect": 1.7699999809265137,
+                    "bottom": -1.0,
+                    "far": 1000.0,
+                    "fov": 60.0,
+                    "id": 0,
+                    "left": -1.0,
+                    "near": 0.10000000149011612,
+                    "projectionType": 0,
+                    "right": 1.0,
+                    "top": 1.0,
+                    "type": "Camera"
+                }
+            ],
+            "enabled": true,
+            "id": "f596f462-d3bf-40aa-bb65-9db746fb5a56",
+            "name": "Editor Camera"
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "22edec92-75a2-4d25-8988-08e7545e1df9",
+                    "position": [
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "rotation": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "aspect": 1.7699999809265137,
+                    "bottom": 0.0,
+                    "far": 1.0,
+                    "fov": 60.0,
+                    "id": 1,
+                    "left": 0.0,
+                    "near": -1.0,
+                    "projectionType": 1,
+                    "right": 1920.0,
+                    "top": 1080.0,
+                    "type": "Camera"
+                }
+            ],
+            "enabled": true,
+            "id": "1ba86b50-ba7c-4968-a838-fef96e8f472f",
+            "name": "UICamera"
+        }
+    ]
+}
