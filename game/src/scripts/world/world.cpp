@@ -44,9 +44,6 @@ void World::load(const nlohmann::json& def) {
 
 nlohmann::json World::save() {
     return nlohmann::json{{"world", _worldDefinition}};
-
-void World::start() {
-
 }
 
 void World::update(double dt) {
