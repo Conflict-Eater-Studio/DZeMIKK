@@ -11,7 +11,7 @@ void dzemikk::SkyboxRenderPass::execute(RenderContext& ctx) {
             glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), time * 0.1f, glm::vec3(0, 1, 0));
             glm::mat4 viewNoTrans = ctx.sceneCamera->getView() * rotation;
 
-            _skybox.get()->render(viewNoTrans, ctx.sceneCamera->getProjection());
+            _skybox.get()->render(ctx.sceneCamera->getView(), ctx.sceneCamera->getProjection());
 
             Profiler::Get().stats.drawCalls++;
             Profiler::Get().stats.renderedObjects++;

@@ -125,6 +125,100 @@
             "enabled": true,
             "id": "1ba86b50-ba7c-4968-a838-fef96e8f472f",
             "name": "UICamera"
+        },
+        {
+            "children": [
+                {
+                    "children": [
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "id": "d2905642-eb9e-4b77-8da1-789f8b1ea745",
+                                    "position": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": [
+                                        1.0,
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "scale": [
+                                        0.009999999776482582,
+                                        0.009999999776482582,
+                                        0.009999999776482582
+                                    ],
+                                    "type": "Transform"
+                                },
+                                {
+                                    "id": "0bbe1960-aa35-4554-a263-67a5d31740b4",
+                                    "materials": [
+                                        "shaders/skinned"
+                                    ],
+                                    "model": "models/Baba.fbx",
+                                    "type": "SkinnedMeshRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "e815e11b-a05c-498a-b4c9-786cda0bd6ff",
+                            "name": "Player"
+                        }
+                    ],
+                    "components": [
+                        {
+                            "id": "88e468de-8b17-4223-a4bd-25732cce53bf",
+                            "position": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": [
+                                1.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "type": "Transform"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "123ced04-5ba2-4ea9-a8b1-373e0886d447",
+                    "name": "World"
+                }
+            ],
+            "components": [
+                {
+                    "id": "e5db8108-43ce-4b58-afdc-74979e70bb7d",
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                }
+            ],
+            "enabled": true,
+            "id": "1cb575b2-38bb-4f81-9648-9934ca8961c6",
+            "name": "Root"
         }
     ]
 }

@@ -8,7 +8,7 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
     cell->setState(HexCell::State::Player);
     setCell(cell);
     getOwner()->transform()->setPosition(cell->getCoord().toWorldPosition(1.0F, 0.1F) +
-                                         glm::vec3(0.0F, 1.5F, 0.0F));
+                                         glm::vec3(0.0F, 0.4F, 0.0F));
 }
 
 void PlayerEntity::onExit() {

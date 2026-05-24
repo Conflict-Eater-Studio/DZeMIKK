@@ -30,30 +30,16 @@ class Game {
   private:
     void setupSkybox();
     void setupMainCamera();
-    void setupMaterials();
     void setupWorld();
-    void setupPlayer();
-    void setupChest();
-    void setupEnemy();
     void setupUICamera();
-    void setupUI();
-    void setupButton(dzemikk::GameObject* canvasGo);
-    void setupSlider(dzemikk::GameObject* canvasGo);
-    void setupCheckbox(dzemikk::GameObject* canvasGo);
-    void setupAudio();
     void setupInputCallbacks();
-    void newModels(const std::shared_ptr<dzemikk::Material>& m, dzemikk::Scene* scene);
-    void spawnModel(dzemikk::Scene* scene, std::shared_ptr<dzemikk::Material> material,
-                    const std::string& modelPath, const glm::vec3& position,
-                    const glm::vec3& scale = glm::vec3(1.0F),
-                    const glm::quat& rotation = glm::quat(glm::vec3(0.0F)));
+    void setupPlayer();
 
     dzemikk::Engine* _engine;
-    std::shared_ptr<dzemikk::Scene> _mainScene;
+    dzemikk::AssetHandle<dzemikk::Scene> _mainScene;
     game::HexGrid* _hexGrid = nullptr;
     dzemikk::GameObject* _worldGO = nullptr;
     dzemikk::GameObject* _playerGO = nullptr;
-    dzemikk::GameObject* _enemyGO = nullptr;
     dzemikk::Material* _materialA = nullptr;
     dzemikk::Material* _materialB = nullptr;
     dzemikk::Material* _quadMaterial = nullptr;

@@ -66,6 +66,7 @@ class Scene {
     void removeActive(MonoBehaviour* mono);
     void processDelete();
     void clearAllObjects();
+    GameObject* findGameObjectByName(const std::string& name);
 
     [[nodiscard]] boost::uuids::uuid getId() const;
     [[nodiscard]] const std::vector<std::unique_ptr<dzemikk::GameObject>>& getObjects() const;

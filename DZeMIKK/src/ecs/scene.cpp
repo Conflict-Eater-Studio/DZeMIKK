@@ -194,4 +194,12 @@ void Scene::clearAllObjects() {
 
     processDelete();
 }
+
+GameObject* Scene::findGameObjectByName(const std::string& name) {
+    auto it = std::ranges::find_if(
+        _objects, [&name](const auto& obj) { return obj && obj->getName() == name; });
+
+    return (it != _objects.end()) ? it->get() : nullptr;
+}
+
 } // namespace dzemikk

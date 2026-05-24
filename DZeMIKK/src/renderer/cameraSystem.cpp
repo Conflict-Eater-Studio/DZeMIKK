@@ -1,6 +1,8 @@
 #include "renderer/cameraSystem.h"
 
+#include "ecs/gameobject.h"
 #include "ecs/components/camera.h"
+#include "ecs/components/transform.h"
 #include "ecs/componentRegistry.h"
 
 #include <iostream>
@@ -18,9 +20,7 @@ void dzemikk::CameraSystem::update(dzemikk::RenderContext& ctx) {
     dzemikk::ComponentRegistry::get().getComponents<Camera>(_cameras);
 
     if (_sceneCamera) {
-        if (_sceneCamera->isDirty()) {
-            ctx.frustum->update(_sceneCamera->getViewProjection());
-        }
+        ctx.frustum->update(_sceneCamera->getViewProjection());
 
         ctx.view = _sceneCamera->getView();
         ctx.projection = _sceneCamera->getProjection();
