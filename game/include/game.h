@@ -24,7 +24,6 @@ class Game {
     void start();
 
   private:
-    void setupScene();
     void setupSkybox();
     void setupMainCamera();
     void setupMaterials();
