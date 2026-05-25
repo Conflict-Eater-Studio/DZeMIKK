@@ -15,7 +15,7 @@ void RectTransform::setPosition(const glm::vec2& position) {
     markDirty();
 }
 
-void RectTransform::setSize(const glm::vec2& size) {
+void RectTransform::setBaseSize(const glm::vec2& size) {
     _size = size;
     _localDirty = true;
     markDirty();
@@ -99,6 +99,10 @@ glm::vec2 RectTransform::getSize() const {
         _sizeDirty = false;
     }
     return _cachedSize;
+}
+
+glm::vec2 RectTransform::getBaseSize() const {
+    return _size;
 }
 
 glm::vec2 RectTransform::getScale() const {

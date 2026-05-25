@@ -93,8 +93,18 @@ void GridLayout::rebuild() {
         (static_cast<float>(rows) * cellHeight) + (static_cast<float>(rows - 1) * _spacing[1]);
     const float left = (-rectPivot[0] * rectSize[0]) + offsetMin[0];
     const float bottom = (-rectPivot[1] * rectSize[1]) + offsetMin[1];
-    float startX = left + ((availableWidth - totalChildrenWidth) / 2.0F);
-    float startY = bottom + ((availableHeight - totalChildrenHeight) / 2.0F);
+
+    float startX = left;
+    if (_startCorner == LayoutStartCorner::UpperRight ||
+        _startCorner == LayoutStartCorner::LowerRight) {
+        startX = left + availableWidth - totalChildrenWidth;
+    }
+
+    float startY = bottom;
+    if (_startCorner == LayoutStartCorner::UpperLeft ||
+        _startCorner == LayoutStartCorner::UpperRight) {
+        startY = bottom + availableHeight - totalChildrenHeight;
+    }
 
     for (size_t i = 0; i < childCount; ++i) {
         auto* child = children[i];
@@ -126,7 +136,7 @@ void GridLayout::rebuild() {
                      (effectiveCellSize[1] * childPivot[1]);
 
         childRect->setPosition(glm::vec2(posX, posY));
-        childRect->setSize(effectiveCellSize);
+        childRect->setBaseSize(effectiveCellSize - childRect->getStretchSize());
     }
 }
 } // namespace dzemikk

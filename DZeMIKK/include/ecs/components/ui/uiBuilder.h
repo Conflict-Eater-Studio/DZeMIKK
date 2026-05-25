@@ -123,7 +123,7 @@ class UIBuilder {
 
         auto* btnGO = scene->createGameObject(params.name, parent);
         btnGO->rectTransform()->setPosition(params.position);
-        btnGO->rectTransform()->setSize(params.size);
+        btnGO->rectTransform()->setBaseSize(params.size);
         btnGO->rectTransform()->setAnchorMin(params.anchorMin);
         btnGO->rectTransform()->setAnchorMax(params.anchorMax);
         btnGO->rectTransform()->setPivot(params.pivot);
@@ -143,7 +143,7 @@ class UIBuilder {
 
         auto* textGO = scene->createGameObject(params.name + "_Text", btnGO);
         auto* textRect = textGO->rectTransform();
-        textRect->setSize({0, 0});
+        textRect->setBaseSize({0, 0});
         textRect->setAnchorMin({0.0F, 0.0F});
         textRect->setAnchorMax({1.0F, 1.0F});
         textRect->setPivot({0.5F, 0.5F});
@@ -168,7 +168,7 @@ class UIBuilder {
         }
 
         auto* sliderGO = scene->createGameObject(params.name, parent);
-        sliderGO->rectTransform()->setSize(params.size);
+        sliderGO->rectTransform()->setBaseSize(params.size);
         sliderGO->rectTransform()->setPosition(params.position);
         sliderGO->rectTransform()->setAnchorMin(params.anchorMin);
         sliderGO->rectTransform()->setAnchorMax(params.anchorMax);
@@ -185,7 +185,7 @@ class UIBuilder {
 
         auto* fillGO = scene->createGameObject(params.name + "_Fill", sliderGO);
         auto* fillRect = fillGO->rectTransform();
-        fillRect->setSize({0.0F, 0.0F});
+        fillRect->setBaseSize({0.0F, 0.0F});
         fillRect->setAnchorMin({0.0F, 0.0F});
         fillRect->setAnchorMax({1.0F, 1.0F});
         fillRect->setPivot({0.5F, 0.5F});
@@ -199,7 +199,7 @@ class UIBuilder {
 
         auto* handleGO = scene->createGameObject(params.name + "_Handle", sliderGO);
         auto* handleRect = handleGO->rectTransform();
-        handleRect->setSize(params.handleSize);
+        handleRect->setBaseSize(params.handleSize);
         handleRect->setAnchorMin({0.5F, 0.5F});
         handleRect->setAnchorMax({0.5F, 0.5F});
         handleRect->setPivot({0.5F, 0.5F});
@@ -229,7 +229,7 @@ class UIBuilder {
 
         auto* go = scene->createGameObject(params.name, parent);
         auto* crect = go->rectTransform();
-        crect->setSize(params.size);
+        crect->setBaseSize(params.size);
         crect->setPosition(params.position);
         crect->setAnchorMin(params.anchorMin);
         crect->setAnchorMax(params.anchorMax);
@@ -246,7 +246,7 @@ class UIBuilder {
 
         auto* checkmarkGO = scene->createGameObject(params.name + "_Checkmark", go);
         auto* checkmarkRect = checkmarkGO->rectTransform();
-        checkmarkRect->setSize({0.0F, 0.0F});
+        checkmarkRect->setBaseSize({0.0F, 0.0F});
         checkmarkRect->setAnchorMin({0.1F, 0.1F});
         checkmarkRect->setAnchorMax({0.9F, 0.9F});
         checkmarkRect->setPivot({0.5F, 0.5F});
@@ -318,7 +318,7 @@ class UIBuilder {
         // --- Construct background for options ---
         auto* optsBgGo = scene->createGameObject(params.name + "_OptionsBG", go);
         auto* optsBgGoRect = optsBgGo->rectTransform();
-        optsBgGoRect->setSize({
+        optsBgGoRect->setBaseSize({
             params.size[0],
             params.optionHeight *
                 static_cast<float>(std::min(params.maxVisibleOptions, params.options.size())),
