@@ -20,6 +20,13 @@ inline void to_json(nlohmann::json& j, const ImageRenderer& renderer) {
     if (renderer.getMaterial()) {
         j["materialPath"] = renderer.getMaterial()->getShaderHandle().getAssetPath();
     }
+
+    if (renderer.getTextureHandle().get() != nullptr) {
+        j["texture"] = renderer.getTextureHandle().getAssetPath();
+    } else {
+        j["texture"] = "";
+    }
+
 }
 
 inline void from_json(const nlohmann::json& json, ImageRenderer& renderer,
@@ -37,6 +44,11 @@ inline void from_json(const nlohmann::json& json, ImageRenderer& renderer,
     const auto& c = json["color"];
     renderer.setColor(
         glm::vec4(c[0].get<float>(), c[1].get<float>(), c[2].get<float>(), c[3].get<float>()));
+
+    std::string texturePath = json.value("texture", "");
+    if (!texturePath.empty()) {
+        renderer.setTexture(assetManager->get<Texture>(texturePath));
+    }
 
     renderer.setMesh(assetManager->getPrimitiveMesh(PrimitiveMeshLibrary::PrimitiveMesh::Quad));
 

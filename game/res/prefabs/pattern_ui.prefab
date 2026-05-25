@@ -1,0 +1,246 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "635633d0-9bfb-4184-b396-cf701675206e",
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            0.0,
+                            -40.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            0.0,
+                            0.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 0
+                    },
+                    {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "font": "fonts/Lato-Regular.ttf",
+                        "horizontalAlign": 1,
+                        "id": "2be50842-e7f0-4c5a-b693-365550241c25",
+                        "scale": 0.30000001192092896,
+                        "text": "atk1",
+                        "type": "UITextRenderer",
+                        "verticalAlign": 1
+                    }
+                ],
+                "enabled": true,
+                "id": "b9c27f50-7a78-4fda-8990-6e87e6ffbd3d",
+                "name": "Text"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "c9009cdb-533a-41d1-934f-24ca4427653d",
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    40.0,
+                                    20.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 0
+                            },
+                            {
+                                "color": [
+                                    0.970588207244873,
+                                    1.0,
+                                    0.0
+                                ],
+                                "font": "fonts/Lato-Regular.ttf",
+                                "horizontalAlign": 1,
+                                "id": "35c8bff7-6d38-46d0-8fe2-dc7859a86c33",
+                                "scale": 0.30000001192092896,
+                                "text": "x-1",
+                                "type": "UITextRenderer",
+                                "verticalAlign": 1
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "e4d1e9b2-a4d8-4180-ac06-fee97a4f374f",
+                        "name": "Text_Count"
+                    }
+                ],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "2978134e-7215-4b5b-adde-e1eec65ea5eb",
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            30.0,
+                            40.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            40.0,
+                            20.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 0
+                    },
+                    {
+                        "color": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            0.3137255012989044
+                        ],
+                        "id": "275f1c5a-9df8-4e88-b930-c6f2a5a3af74",
+                        "materialPath": "shaders/quad",
+                        "texture": "",
+                        "type": "ImageRenderer"
+                    }
+                ],
+                "enabled": true,
+                "id": "611db82f-ee83-415d-a679-746d12070ba5",
+                "name": "Count"
+            },
+            {
+                "children": [],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "cb9c14f3-90f7-4861-b74e-f3e4059048b2",
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            0.0,
+                            0.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 0
+                    }
+                ],
+                "enabled": true,
+                "id": "d81dbc16-5394-4096-b40f-5b44341f7b66",
+                "name": "HexHolder"
+            }
+        ],
+        "components": [
+            {
+                "anchorMax": [
+                    0.5,
+                    0.5
+                ],
+                "anchorMin": [
+                    0.5,
+                    0.5
+                ],
+                "id": "14f74a18-6dae-484a-8c1e-bec04bab3927",
+                "pivot": [
+                    0.5,
+                    0.5
+                ],
+                "position": [
+                    -70.0,
+                    140.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                    1.0,
+                    1.0
+                ],
+                "size": [
+                    120.0,
+                    120.0
+                ],
+                "type": "RectTransform",
+                "zIndex": 0
+            },
+            {
+                "color": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "id": "95e8f3c2-c9af-408d-a996-c2b868fe92d3",
+                "materialPath": "shaders/quad",
+                "texture": "",
+                "type": "ImageRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "ac1107e7-68c1-49b4-8173-1dc824b51cff",
+        "name": "Pattern_UI"
+    }
+}

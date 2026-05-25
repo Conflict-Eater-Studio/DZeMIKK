@@ -7,6 +7,7 @@
 #include "ecs/components/ui/imageRenderer.h"
 #include "ecs/components/ui/rectTransform.h"
 #include "ecs/gameobject.h"
+#include "renderer/texture.h"
 
 #include "core/profiler.h"
 
@@ -14,6 +15,10 @@ void dzemikk::ImageRenderPass::execute(RenderContext& ctx) {
     if (ctx.uiCamera)
         ctx.uiProjection = ctx.uiCamera->getProjection();
     glDisable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     std::vector<ImageRenderer*> uiSprites;
     ComponentRegistry::get().getEnabledComponents<ImageRenderer>(uiSprites);
@@ -38,13 +43,16 @@ void dzemikk::ImageRenderPass::execute(RenderContext& ctx) {
 
             shader->bind();
 
+            if (r->hasTexture()) {
+                r->getTexture()->bind(0);
+                shader->setInt("spriteTexture", 0);
+                shader->setBool("useTexture", true);
+            } else {
+                shader->setBool("useTexture", false);
+            }
+
             shader->setMat4("model", r->getRectTransform()->getWorldMatrix());
             shader->setMat4("projection", ctx.uiProjection);
-
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, r->getTexture());
-            //shader->setInt("spriteTexture", 0);
-            shader->setBool("useTexture", false);
             shader->setVec4("spriteColor", r->getColor());
 
             r->getMesh()->draw();

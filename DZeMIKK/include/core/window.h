@@ -9,6 +9,8 @@
 struct GLFWwindow;
 
 namespace dzemikk {
+    enum class EngineMode;
+
     class Window : public IEngineModule {
     public:
         using EventCallbackFn = std::function<void(Event&)>;
@@ -25,7 +27,7 @@ namespace dzemikk {
         WindowData data_;
     public:
         Window();
-        Window(int width, int height, const char* title);
+        Window(int width, int height, const char* title, EngineMode mode);
         ~Window();
         bool shouldClose() const;
         void pollEvents() const;

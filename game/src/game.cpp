@@ -61,11 +61,12 @@ void Game::start() {
 
     setupSkybox();
 
-    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay.json");
+    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay2.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
     sceneManager->setActiveScene(sceneShared);
+
 
     setupMainCamera();
     setupUICamera();
@@ -141,8 +142,8 @@ void Game::setupWorld() {
     // world->setEnemyModel(enemyModel);
     world->setResourceModel(resourceModel);
     world->setPlayer(_playerEntity);
-
     world->registerGenerator("full", [](int step, int maxSteps) { return 1.0F; });
+
 
     auto c1 = world->addChunk({.steps = 4});
 

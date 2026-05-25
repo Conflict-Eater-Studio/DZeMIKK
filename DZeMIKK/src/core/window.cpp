@@ -13,10 +13,13 @@
 #include "events/key_event.h"
 #include "events/mouse_event.h"
 
-namespace dzemikk {
-    Window::Window() : Window(1920, 1080, "DZeMIKK") {}
+#include "core/engine.h"
 
-    Window::Window(const int width, const int height, const char* title) : window_(nullptr) {
+namespace dzemikk {
+    Window::Window() : Window(1920, 1080, "DZeMIKK", EngineMode::Game) {}
+
+    Window::Window(const int width, const int height, const char* title, EngineMode modeE)
+        : window_(nullptr) {
         if (!glfwInit()) {
 #if DZEMIKK_DEV_TOOLS
             spdlog::critical("Failed to initialize GLFW");
@@ -25,12 +28,22 @@ namespace dzemikk {
             throw std::runtime_error("Failed to initialize GLFW");
         }
 
+        GLFWmonitor* primary = glfwGetPrimaryMonitor();
+        const GLFWvidmode* mode = glfwGetVideoMode(primary);
+
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_SAMPLES, 4);
 
-        window_ = glfwCreateWindow(width, height, title, nullptr, nullptr);
+        if (modeE == EngineMode::Game) {
+            window_ = glfwCreateWindow(mode->width, mode->height, title, primary, nullptr);
+            glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+            glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+        } else {
+            window_ = glfwCreateWindow(width, height, title, nullptr, nullptr);
+        }
+
         if (!window_) {
             glfwTerminate();
 #if DZEMIKK_DEV_TOOLS
