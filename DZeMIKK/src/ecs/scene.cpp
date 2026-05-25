@@ -99,7 +99,7 @@ void Scene::update(double deltaTime) {
         if (mono == nullptr || !_activeSet.contains(mono)) {
             continue;
         }
-        mono->lateUpdate();
+        mono->lateUpdate(deltaTime);
     }
 
     processDelete();

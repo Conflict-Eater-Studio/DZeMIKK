@@ -14,7 +14,7 @@ void PlayerMovement::update(double deltaTime) {
 
     _duration += deltaTime;
 
-    if (_duration > 0.1f && _step < _path.size()) {
+    if (_duration > _speed && _step < _path.size()) {
         HexGrid::HexCellPtr ptr = _path[_step % _path.size()];
         _playerEntity->tryMove(ptr);
         _duration = 0.0f;

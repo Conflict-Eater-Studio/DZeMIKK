@@ -40,7 +40,7 @@ class World : public dzemikk::MonoBehaviour {
 
     void start() override {};
     void update(double dt) override;
-    void lateUpdate() override {};
+    void lateUpdate(double dt) override {};
     void fixedUpdate(double dt) override {};
     void onDestroy() override {};
 

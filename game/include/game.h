@@ -12,6 +12,7 @@
 namespace dzemikk {
 class Material;
 class GameObject;
+class Camera;
 } // namespace dzemikk
 namespace game {
 class PlayerMovement;
@@ -40,6 +41,7 @@ class Game {
     game::HexGrid* _hexGrid = nullptr;
     dzemikk::GameObject* _worldGO = nullptr;
     dzemikk::GameObject* _playerGO = nullptr;
+    dzemikk::Camera* _mainCamera = nullptr;
     dzemikk::Material* _materialA = nullptr;
     dzemikk::Material* _materialB = nullptr;
     dzemikk::Material* _quadMaterial = nullptr;

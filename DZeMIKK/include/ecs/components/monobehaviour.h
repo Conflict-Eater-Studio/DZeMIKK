@@ -22,7 +22,7 @@ class MonoBehaviour : public Component, public ISerializedRefRegistrar {
 
     virtual void start() {};
     virtual void update(double deltaTime) {};
-    virtual void lateUpdate() {};
+    virtual void lateUpdate(double deltaTime) {};
     virtual void fixedUpdate(double deltaTime) {};
     virtual void onDestroy() {};
 

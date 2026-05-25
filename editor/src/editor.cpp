@@ -125,7 +125,7 @@ void Editor::createUIButton(dzemikk::GameObject* parent) {
         auto quadMat = std::make_shared<dzemikk::Material>();
         quadMat->setShader(quadShader);
 
-        dzemikk::UIBuilder::UIButtonParams params{.name = "Checkbox",
+        dzemikk::UIBuilder::UIButtonParams params{.name = "Button",
                                                   .size = {200.0F, 60.0F},
                                                   .text = "Button",
                                                   .textFont = font,

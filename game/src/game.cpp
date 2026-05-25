@@ -25,6 +25,8 @@
 #include "scripts/world/world.h"
 #include "scripts/world/worldHex.h"
 #include "utils/perlin.h"
+#include "camera/cameraController.h"
+#include "ecs/components/ui/uiActionRegistry.h"
 
 #include <GLFW/glfw3.h>
 #include <memory>
@@ -67,6 +69,24 @@ void Game::start() {
     setupWorld();
     setupPlayer();
 
+
+    auto cameraController = _mainCamera->getOwner()->addComponent<game::CameraController>();
+    cameraController->setPlayerTransform(_playerEntity->getOwner()->transform());
+    cameraController->setMode(game::CameraController::Mode::Exploration);
+
+    
+    dzemikk::UIActionRegistry::get().registerAction(
+        [cameraController](const dzemikk::UIEvent&) {
+            cameraController->setMode(game::CameraController::Mode::Exploration);
+        },
+        "E");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [cameraController](const dzemikk::UIEvent&) {
+            cameraController->setMode(game::CameraController::Mode::Combat);
+        },
+        "C");
+
     setupInputCallbacks();
 
     _engine->start();
@@ -84,10 +104,10 @@ void Game::setupSkybox() {
 
 void Game::setupMainCamera() {
     auto* cameraGO = _mainScene.get()->createGameObject("Camera");
-    cameraGO->transform()->setPosition({0.0F, 7.0F, 10.0F});
-    auto* camera = cameraGO->addComponent<dzemikk::Camera>();
-    camera->lookAt({0.0F, 2.0F, 0.0F});
-    _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(camera);
+
+    _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
+
+    _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(_mainCamera);
 }
 
 void Game::setupWorld() {
@@ -249,6 +269,7 @@ void Game::setupPlayer() {
     _playerEntity = playerGO->addComponent<game::PlayerEntity>();
     _playerMovement = playerGO->addComponent<game::PlayerMovement>();
     _playerMovement->setPlayerEntity(_playerEntity);
+    _playerMovement->setSpeed(0.25F);
 
     _hexGrid = _worldGO->getComponent<game::World>()->getGrid();
     _playerMovement->setHexGrid(_hexGrid);

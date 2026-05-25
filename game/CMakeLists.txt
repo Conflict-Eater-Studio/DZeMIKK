@@ -1,21 +1,51 @@
 project(Game LANGUAGES CXX)
 
+set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+set(GAME_SOURCES
+    ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/map/HexChunk.cpp
+    ${SRC_DIR}/map/HexGrid.cpp
+    ${SRC_DIR}/map/PlayerEntity.cpp
+    ${SRC_DIR}/map/HexPattern.cpp
+    ${SRC_DIR}/scripts/world/world.cpp
+    ${SRC_DIR}/game.cpp
+    ${SRC_DIR}/playerMovement.cpp
+    ${SRC_DIR}/camera/cameraController.cpp
+)
+
+set(GAME_HEADERS
+    ${INC_DIR}/map/Entity.h
+    ${INC_DIR}/map/HexCell.h
+    ${INC_DIR}/map/HexChunk.h
+    ${INC_DIR}/map/HexCoord.h
+    ${INC_DIR}/map/HexGrid.h
+    ${INC_DIR}/map/HexPattern.h
+    ${INC_DIR}/map/PlayerEntity.h
+    ${INC_DIR}/scripts/world/world.h
+    ${INC_DIR}/scripts/world/worldHex.h
+    ${INC_DIR}/utils/perlin.h
+    ${INC_DIR}/game.h
+    ${INC_DIR}/playerMovement.h
+    ${INC_DIR}/spriteupdater.h
+    ${INC_DIR}/textupdater.h
+    ${INC_DIR}/camera/cameraController.h
+
+)
+
 add_executable(game
-                src/main.cpp
-                src/map/HexChunk.cpp
-                src/map/HexGrid.cpp
-                src/map/PlayerEntity.cpp
-                src/map/HexPattern.cpp
-                src/scripts/world/world.cpp
-                src/main.cpp
-                src/game.cpp
-        include/playerMovement.h
-        src/playerMovement.cpp
+    ${GAME_SOURCES}
+    ${GAME_HEADERS}
 )
+
 target_include_directories(game
-        PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC
+    ${INC_DIR}
 )
+
+source_group(TREE ${SRC_DIR} PREFIX "Source" FILES ${GAME_SOURCES})
+source_group(TREE ${INC_DIR} PREFIX "Include" FILES ${GAME_HEADERS})
 
 target_link_libraries(game
         PUBLIC
