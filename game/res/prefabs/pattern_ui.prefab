@@ -13,14 +13,14 @@
                             0.5,
                             0.5
                         ],
-                        "id": "635633d0-9bfb-4184-b396-cf701675206e",
+                        "id": "2c8a479a-92bf-4cf9-ae0b-8ae4b81366d2",
                         "pivot": [
                             0.5,
                             0.5
                         ],
                         "position": [
                             0.0,
-                            -40.0
+                            10.0
                         ],
                         "rotation": 0.0,
                         "scale": [
@@ -28,11 +28,11 @@
                             1.0
                         ],
                         "size": [
-                            0.0,
-                            0.0
+                            120.0,
+                            120.0
                         ],
                         "type": "RectTransform",
-                        "zIndex": 0
+                        "zIndex": 2
                     },
                     {
                         "color": [
@@ -42,16 +42,16 @@
                         ],
                         "font": "fonts/Lato-Regular.ttf",
                         "horizontalAlign": 1,
-                        "id": "2be50842-e7f0-4c5a-b693-365550241c25",
+                        "id": "5cbdb198-fa7c-4b3b-8d1a-a0317fcef0ff",
                         "scale": 0.30000001192092896,
                         "text": "atk1",
                         "type": "UITextRenderer",
-                        "verticalAlign": 1
+                        "verticalAlign": 0
                     }
                 ],
                 "enabled": true,
-                "id": "b9c27f50-7a78-4fda-8990-6e87e6ffbd3d",
-                "name": "Text"
+                "id": "cff61a87-fe40-480b-8675-d0a2fa47c2d0",
+                "name": "Button_Text"
             },
             {
                 "children": [
@@ -137,7 +137,7 @@
                             20.0
                         ],
                         "type": "RectTransform",
-                        "zIndex": 0
+                        "zIndex": 2
                     },
                     {
                         "color": [
@@ -146,7 +146,7 @@
                             0.0,
                             0.3137255012989044
                         ],
-                        "id": "275f1c5a-9df8-4e88-b930-c6f2a5a3af74",
+                        "id": "bee9988a-2d5f-4dda-aed9-ccd79c8404c8",
                         "materialPath": "shaders/quad",
                         "texture": "",
                         "type": "ImageRenderer"
@@ -205,14 +205,14 @@
                     0.5,
                     0.5
                 ],
-                "id": "14f74a18-6dae-484a-8c1e-bec04bab3927",
+                "id": "947be52a-44b3-493c-ab9a-bda6e6968d3e",
                 "pivot": [
                     0.5,
                     0.5
                 ],
                 "position": [
-                    -70.0,
-                    140.0
+                    50.0,
+                    440.0
                 ],
                 "rotation": 0.0,
                 "scale": [
@@ -224,7 +224,29 @@
                     120.0
                 ],
                 "type": "RectTransform",
-                "zIndex": 0
+                "zIndex": 1
+            },
+            {
+                "hoverColor": [
+                    0.6666666865348816,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "id": "6cab12ee-c458-428e-a83d-d427e026573d",
+                "normalColor": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "pressedColor": [
+                    0.23529411852359772,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "type": "UIButton"
             },
             {
                 "color": [
@@ -233,14 +255,14 @@
                     0.0,
                     1.0
                 ],
-                "id": "95e8f3c2-c9af-408d-a996-c2b868fe92d3",
+                "id": "f82a73f6-7523-418e-af2c-aa0821a5494f",
                 "materialPath": "shaders/quad",
                 "texture": "",
                 "type": "ImageRenderer"
             }
         ],
         "enabled": true,
-        "id": "ac1107e7-68c1-49b4-8173-1dc824b51cff",
+        "id": "92133871-2060-43f2-bf5f-d352663c0842",
         "name": "Pattern_UI"
     }
 }

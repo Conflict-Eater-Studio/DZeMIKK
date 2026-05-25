@@ -61,12 +61,12 @@ void Game::start() {
 
     setupSkybox();
 
+
     _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay2.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
     sceneManager->setActiveScene(sceneShared);
-
 
     setupMainCamera();
     setupUICamera();
