@@ -35,6 +35,9 @@
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
 #endif
+#include <gameStateMachine.h>
+#include "stateMachine/explorationState.h"
+#include "stateMachine/combatState.h"
 
 struct SkyboxInitContext {
     dzemikk::AssetHandle<dzemikk::Shader> shader;
@@ -69,27 +72,33 @@ void Game::start() {
     setupWorld();
     setupPlayer();
 
+    auto root = _mainScene.get()->findGameObjectByName("Root");
+    _stateMachine = root->addComponent<game::GameStateMachine>();
 
-    auto cameraController = _mainCamera->getOwner()->addComponent<game::CameraController>();
-    cameraController->setPlayerTransform(_playerEntity->getOwner()->transform());
-    cameraController->setMode(game::CameraController::Mode::Exploration);
+    _cameraController = _mainCamera->getOwner()->addComponent<game::CameraController>();
+    _cameraController->setPlayerTransform(_playerEntity->getOwner()->transform());
 
-    
+    _stateMachine->setState(std::make_unique<game::ExplorationState>(this));
+
     dzemikk::UIActionRegistry::get().registerAction(
-        [cameraController](const dzemikk::UIEvent&) {
-            cameraController->setMode(game::CameraController::Mode::Exploration);
+        [this](const dzemikk::UIEvent&) {
+            _stateMachine->setState(std::make_unique<game::ExplorationState>(this));
         },
         "E");
 
     dzemikk::UIActionRegistry::get().registerAction(
-        [cameraController](const dzemikk::UIEvent&) {
-            cameraController->setMode(game::CameraController::Mode::Combat);
+        [this](const dzemikk::UIEvent&) {
+            _stateMachine->setState(std::make_unique<game::CombatState>(this));
         },
         "C");
 
     setupInputCallbacks();
 
     _engine->start();
+}
+
+game::CameraController* Game::getCameraController() {
+    return _cameraController;
 }
 
 void Game::setupSkybox() {

@@ -13,6 +13,9 @@ set(GAME_SOURCES
     ${SRC_DIR}/game.cpp
     ${SRC_DIR}/playerMovement.cpp
     ${SRC_DIR}/camera/cameraController.cpp
+    ${SRC_DIR}/stateMachine/gameStateMachine.cpp
+    ${SRC_DIR}/stateMachine/explorationState.cpp
+    ${SRC_DIR}/stateMachine/combatState.cpp
 )
 
 set(GAME_HEADERS
@@ -31,7 +34,10 @@ set(GAME_HEADERS
     ${INC_DIR}/spriteupdater.h
     ${INC_DIR}/textupdater.h
     ${INC_DIR}/camera/cameraController.h
-
+    ${INC_DIR}/stateMachine/iGameState.h
+    ${INC_DIR}/stateMachine/gameStateMachine.h
+    ${INC_DIR}/stateMachine/explorationState.h
+    ${INC_DIR}/stateMachine/combatState.h
 )
 
 add_executable(game

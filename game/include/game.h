@@ -16,6 +16,9 @@ class Camera;
 } // namespace dzemikk
 namespace game {
 class PlayerMovement;
+class CameraController;
+class GameStateMachine;
+
 }
 class Game {
   public:
@@ -27,6 +30,8 @@ class Game {
     ~Game() = default;
 
     void start();
+
+    game::CameraController* getCameraController();
 
   private:
     void setupSkybox();
@@ -47,6 +52,8 @@ class Game {
     dzemikk::Material* _quadMaterial = nullptr;
     game::PlayerEntity* _playerEntity = nullptr;
     game::PlayerMovement* _playerMovement = nullptr;
+    game::CameraController* _cameraController = nullptr;
+    game::GameStateMachine* _stateMachine = nullptr;
 };
 
 #endif
