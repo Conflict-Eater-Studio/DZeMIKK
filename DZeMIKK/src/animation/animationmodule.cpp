@@ -6,6 +6,7 @@
 
 namespace dzemikk {
     void AnimationModule::update(float deltaTime)  {
+        ComponentRegistry::get().getEnabledComponents<Animator>(_animators);
         for (const auto& element : _animators) {
             element->update(deltaTime);
         }

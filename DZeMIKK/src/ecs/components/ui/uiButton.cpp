@@ -1,8 +1,11 @@
 #include "ecs/components/ui/uiButton.h"
 
+#include "assetManager/primitiveMeshLibrary.h"
 #include "ecs/components/ui/imageRenderer.h"
 #include "ecs/components/ui/rectTransform.h"
+#include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
+#include "ecs/scene.h"
 
 #include <glm/matrix.hpp>
 
@@ -23,11 +26,6 @@ void UIButton::processPointer(const glm::vec2& point, bool isDown, bool pressedT
     applyVisualState();
 }
 
-void UIButton::setSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _spriteRenderer = spriteRenderer;
-    applyVisualState();
-}
-
 void UIButton::setStyle(const Style& style) {
     _style = style;
     applyVisualState();
@@ -38,7 +36,7 @@ UIButton::Style UIButton::getStyle() const {
 }
 
 void UIButton::applyVisualState() {
-    if (_spriteRenderer == nullptr) {
+    if (getSpriteRenderer() == nullptr) {
         return;
     }
 
@@ -51,11 +49,25 @@ void UIButton::applyVisualState() {
     }
 }
 
-void UIButton::setTextGO(GameObject* textGO) {
-    _textGO = textGO;
+GameObject* UIButton::getTextGO() const {
+    if (_owner == nullptr || _owner->getChildren().empty()) {
+        return nullptr;
+    }
+    return _owner->getChildren().front();
 }
 
-GameObject* UIButton::getTextGO() const {
-    return _textGO;
+ImageRenderer* UIButton::getSpriteRenderer() const {
+    if (_spriteRenderer == nullptr && _owner != nullptr) {
+        _spriteRenderer = _owner->getComponent<ImageRenderer>();
+    }
+
+    return _spriteRenderer;
+}
+
+void UIButton::init(Style style, std::vector<std::pair<UIEventType, std::string>> events) {
+    _style = style;
+    for (const auto& [eventType, actionId] : events) {
+        addEventListener(eventType, actionId);
+    }
 }
 } // namespace dzemikk

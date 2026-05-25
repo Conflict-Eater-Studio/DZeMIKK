@@ -1,3 +1,5 @@
+#pragma once
+
 #include "audio/audioManager.h"
 
 #include "fmod/fmod.hpp"

@@ -11,6 +11,8 @@
 #include "assetManager/soundHandler.h"
 #include "assetManager/textureHandler.h"
 #include "assetManager/modelHandler.h"
+#include "assetManager/sceneHandler.h"
+#include "assetManager/prefabHandler.h"
 
 #include "audio/sound.h"
 
@@ -142,8 +144,31 @@ void dzemikk::AssetManager::registerHandlers() {
     _loaders.registerHandler<Font>(std::make_unique<FontHandler>());
     _loaders.registerHandler<Sound>(std::make_unique<SoundHandler>());
     _loaders.registerHandler<Model>(std::make_unique<ModelHandler>());
+    _loaders.registerHandler<Scene>(std::make_unique<SceneHandler>(this));
+    _loaders.registerHandler<nlohmann::json>(std::make_unique<PrefabHandler>(this));
 }
 
 void dzemikk::AssetManager::update() {
     processGpuUploads();
+}
+
+dzemikk::AssetHandle<dzemikk::Mesh> dzemikk::AssetManager::getPrimitiveMesh(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh type) {
+    const std::string key = "primitive_mesh/" + std::to_string(static_cast<int>(type));
+
+    if (auto cached = _database.get<Mesh>(key)) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[AssetManager] Primitive mesh from cache: {}", key);
+#endif
+        return AssetHandle<Mesh>(cached, key);
+    }
+
+    auto mesh = _primitiveMeshLibrary.get(type);
+
+    if (!mesh) {
+        return {};
+    }
+
+    _database.store<Mesh>(key, mesh);
+
+    return AssetHandle<Mesh>(mesh, key);
 }

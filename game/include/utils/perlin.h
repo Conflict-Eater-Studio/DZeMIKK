@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <fstream>
 #include <numeric>
 #include <random>
 
@@ -45,6 +46,37 @@ class Perlin {
         // NOTE: May not be perfectly normalized
         return (rawNoise + 0.707F) / 1.141F; // Normalize to roughly [0, 1]
     }
+
+#ifdef DZEMIKK_DEV_TOOLS
+    void savePerlinPPM(const std::string& filename, int width, int height, float scale) const {
+        std::fstream ofs(filename, std::ios::binary | std::ios::out);
+        if (!ofs) {
+            return;
+        }
+
+        // PPM Header: P6 means binary, then width, height, and max color value (255)
+        ofs << "P6\n" << width << " " << height << "\n255\n";
+
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                // Map pixel coordinates to noise coordinates
+                float nx = static_cast<float>(x) * scale / static_cast<float>(width);
+                float ny = static_cast<float>(y) * scale / static_cast<float>(height);
+
+                // Get noise value and clamp it to [0, 1]
+                float val = noise(nx, ny);
+                val = std::clamp(val, 0.0F, 1.0F);
+
+                // Convert to grayscale byte (0-255)
+                auto color = static_cast<unsigned char>(val * 255.0F);
+
+                // Write R, G, and B components
+                ofs << color << color << color;
+            }
+        }
+        ofs.close();
+    }
+#endif
 
   private:
     std::array<int, 512> _p{};

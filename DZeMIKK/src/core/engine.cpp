@@ -19,6 +19,7 @@
 #include "core/profiler.h"
 #include "core/time.h"
 #include "core/window.h"
+#include "core/windowContext.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
@@ -34,7 +35,7 @@
 
 namespace dzemikk {
 
-Engine::Engine() {
+Engine::Engine(EngineMode mode) : _mode(mode) {
     init();
 }
 
@@ -45,7 +46,7 @@ Engine::~Engine() {
 void Engine::init() {
     _mainWindow = std::make_unique<Window>(1920, 1080, "DZeMIKK");
     _assetManager = std::make_unique<AssetManager>();
-    _renderer = std::make_unique<Renderer>();
+    _renderer = std::make_unique<Renderer>(_mode);
     _sceneManager = std::make_unique<SceneManager>();
     _time = std::make_unique<Time>();
     _animationModule = std::make_unique<AnimationModule>();
@@ -75,6 +76,8 @@ void Engine::init() {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     ImGui_ImplGlfw_InitForOpenGL(_mainWindow->nativeHandle(), true);
     ImGui_ImplOpenGL3_Init("#version 330");
@@ -85,7 +88,8 @@ void Engine::init() {
 }
 
 void Engine::shutdown() {
-    if (!_mainWindow) return;
+    if (!_mainWindow)
+        return;
 
     _input->uninitialize();
     _animationModule->uninitialize();
@@ -116,6 +120,10 @@ void Engine::start() {
         _time->update();
         _audioManager->update(_time->getDeltaTime());
 
+        if (_input) {
+            _input->Update();
+        }
+
         float deltaTime = _time->getDeltaTime();
         Profiler::Get().BeginFrame(deltaTime);
 
@@ -138,19 +146,16 @@ void Engine::start() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("Debug Panel");
-        ImGui::Text("Background");
-        ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
-        ImGui::End();
-
         _mainWindow->clear(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
 #else
         _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
-        updateCameraWASD(1.f);
-        updateCameraArrows(1.1f);
-        updateMouseUI(deltaTime);
+        if (_mode == EngineMode::Game) {
+            updateCameraWASD(.3f);
+            updateCameraArrows(0.3f);
+            updateMouseUI(deltaTime);
+        }
 
         if (m_UserUpdateCallback) {
             m_UserUpdateCallback();
@@ -164,7 +169,9 @@ void Engine::start() {
         _assetManager->update();
 
 #if DZEMIKK_DEV_TOOLS
-        Profiler::Get().DrawImGui();
+        if (_mode == EngineMode::Game) {
+            Profiler::Get().DrawImGui();
+        }
         glDisable(GL_DEPTH_TEST);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -188,7 +195,7 @@ Time* Engine::getTime() const {
     return _time.get();
 }
 
-AnimationModule* Engine::getAnimationModule() const{
+AnimationModule* Engine::getAnimationModule() const {
     return _animationModule.get();
 }
 
@@ -209,7 +216,7 @@ AudioManager* Engine::getAudioManager() const {
 }
 
 void Engine::updateCameraWASD(float speed) {
-    auto* transform = _renderer->getActiveSceneCamera()->getOwner()->transform();
+    auto* transform = _renderer->getCameraSystem().getActiveSceneCamera()->getOwner()->transform();
 
     glm::vec3 move(0.0f);
 
@@ -238,7 +245,7 @@ void Engine::updateCameraWASD(float speed) {
 }
 
 void Engine::updateCameraArrows(float speed) {
-    auto* camera = _renderer->getActiveSceneCamera();
+    auto* camera = _renderer->getCameraSystem().getActiveSceneCamera();
     if (!camera)
         return;
     auto* transform = camera->getOwner()->transform();
@@ -284,7 +291,7 @@ void Engine::updateCameraArrows(float speed) {
 void Engine::updateMouseUI(float deltaTime) {
     (void)deltaTime;
 
-    auto* camera = _renderer->getActiveUICamera();
+    auto* camera = _renderer->getCameraSystem().getActiveUICamera();
     if (!camera) {
         return;
     }
@@ -295,6 +302,7 @@ void Engine::updateMouseUI(float deltaTime) {
     int width = 0;
     int height = 0;
     glfwGetWindowSize(_mainWindow->nativeHandle(), &width, &height);
+    WindowContext::get().setWindowSize({width, height});
 
     const glm::vec2 pointerPos(static_cast<float>(mouseX),
                                static_cast<float>(height) - static_cast<float>(mouseY));
@@ -305,7 +313,7 @@ void Engine::updateMouseUI(float deltaTime) {
     const bool releasedThisFrame = !isLeftDown && _wasLeftMouseDown;
 
     std::vector<IUIInteractable*> uiElements;
-    ComponentRegistry::get().getComponents<IUIInteractable>(uiElements);
+    ComponentRegistry::get().getEnabledComponents<IUIInteractable>(uiElements);
     for (auto* element : uiElements) {
         element->processPointer(pointerPos, isLeftDown, pressedThisFrame, releasedThisFrame,
                                 _scrollDelta);

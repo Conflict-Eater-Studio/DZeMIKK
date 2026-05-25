@@ -48,10 +48,28 @@ namespace dzemikk {
         }
 
         renderer.setId(uuidGenerator(json["id"].get<std::string>()));
+
         std::string modelPath = json.value("model", "");
 
         if (!modelPath.empty()) {
-            renderer.setModel(assetManager->get<Model>(modelPath));
+
+            constexpr std::string_view primitivePrefix = "primitive/";
+
+            if (modelPath.starts_with(primitivePrefix)) {
+
+                std::string primitiveIndexString = modelPath.substr(primitivePrefix.size());
+
+                int primitiveIndex = std::stoi(primitiveIndexString);
+
+                renderer.setModel(assetManager->getPrimitiveModel(
+                    static_cast<PrimitiveMeshLibrary::PrimitiveMesh>(primitiveIndex)));
+
+            }
+
+            else {
+
+                renderer.setModel(assetManager->get<Model>(modelPath));
+            }
         }
 
         if (json.contains("materials") && json["materials"].is_array()) {
@@ -67,6 +85,8 @@ namespace dzemikk {
                     }
                 }
             }
+
+        renderer.setTransform(renderer.getOwner()->transform());
     }
 
     inline void registerSkinnedMeshRendererSerializer(ComponentSerializerRegistry& registry) {

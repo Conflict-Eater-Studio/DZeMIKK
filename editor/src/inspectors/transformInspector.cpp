@@ -1,0 +1,32 @@
+#include "inspectors/transformInspector.h"
+#include "inspectors/inspectorRegistry.h"
+#include "ui/propertyDrawer.h"
+
+#include <ecs/components/transform.h>
+
+#include <imgui.h>
+
+void editor::TransformInspector::draw(dzemikk::Transform* transform, const InspectorContext& ctx) {
+
+    if (!transform) {
+        return;
+    }
+
+    if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
+        glm::vec3 position = transform->getPosition();
+        glm::vec3 rotation = transform->getEulerAngles();
+        glm::vec3 scale = transform->getScale();
+
+        if (PropertyDrawer::drawVec3("Position", position)) {
+            transform->setPosition(position);
+        }
+
+        if (PropertyDrawer::drawVec3("Rotation", rotation)) {
+            transform->setEulerAngles(rotation);
+        }
+
+        if (PropertyDrawer::drawVec3("Scale", scale, 1.0F)) {
+            transform->setScale(scale);
+        }
+    }
+}

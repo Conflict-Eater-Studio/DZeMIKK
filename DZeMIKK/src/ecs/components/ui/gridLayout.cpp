@@ -58,6 +58,7 @@ void GridLayout::rebuild() {
     }
 
     const glm::vec2 rectSize = rect->getSize();
+    const glm::vec2 rectPivot = rect->getPivot();
     const glm::vec2 offsetMin = rect->getOffsetMin();
     const glm::vec2 offsetMax = rect->getOffsetMax();
 
@@ -86,8 +87,14 @@ void GridLayout::rebuild() {
         return;
     }
 
-    float startX = offsetMin[0];
-    float startY = offsetMin[1];
+    float totalChildrenWidth =
+        (static_cast<float>(columns) * cellWidth) + (static_cast<float>(columns - 1) * _spacing[0]);
+    float totalChildrenHeight =
+        (static_cast<float>(rows) * cellHeight) + (static_cast<float>(rows - 1) * _spacing[1]);
+    const float left = (-rectPivot[0] * rectSize[0]) + offsetMin[0];
+    const float bottom = (-rectPivot[1] * rectSize[1]) + offsetMin[1];
+    float startX = left + ((availableWidth - totalChildrenWidth) / 2.0F);
+    float startY = bottom + ((availableHeight - totalChildrenHeight) / 2.0F);
 
     for (size_t i = 0; i < childCount; ++i) {
         auto* child = children[i];
@@ -101,9 +108,21 @@ void GridLayout::rebuild() {
         int row = static_cast<int>(i) / columns;
         int col = static_cast<int>(i) % columns;
 
-        float posX = startX + (static_cast<float>(col) * cellFull[0]) +
+        int effectiveCol = col;
+        int effectiveRow = row;
+
+        if (_startCorner == LayoutStartCorner::UpperRight ||
+            _startCorner == LayoutStartCorner::LowerRight) {
+            effectiveCol = columns - 1 - col;
+        }
+        if (_startCorner == LayoutStartCorner::UpperLeft ||
+            _startCorner == LayoutStartCorner::UpperRight) {
+            effectiveRow = rows - 1 - row;
+        }
+
+        float posX = startX + (static_cast<float>(effectiveCol) * cellFull[0]) +
                      (effectiveCellSize[0] * childPivot[0]);
-        float posY = startY + (static_cast<float>(row) * cellFull[1]) +
+        float posY = startY + (static_cast<float>(effectiveRow) * cellFull[1]) +
                      (effectiveCellSize[1] * childPivot[1]);
 
         childRect->setPosition(glm::vec2(posX, posY));

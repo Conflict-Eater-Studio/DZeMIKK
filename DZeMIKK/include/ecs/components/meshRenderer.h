@@ -46,8 +46,8 @@ class MeshRenderer : public Component {
      *
      * @return Model* Pointer to the mesh.
      */
-    [[nodiscard]] Model* getModel() const {
-        return _model.get();
+    [[nodiscard]] AssetHandle<Model> getModel() const {
+        return _model;
     }
     [[nodiscard]] AssetHandle<Model> getModelHandle() const {
         return _model;
@@ -58,7 +58,7 @@ class MeshRenderer : public Component {
      *
      * @return const std::vector<Material*>& Reference to material list.
      */
-    [[nodiscard]] const std::vector<Material*>& getMaterials() const {
+    [[nodiscard]] const std::vector<std::shared_ptr<Material>>& getMaterials() const {
         return _materials;
     }
 
@@ -73,7 +73,7 @@ class MeshRenderer : public Component {
             return nullptr;
         }
 
-        return _materials[index];
+        return _materials[index].get();
     }
 
     /**
@@ -104,7 +104,7 @@ class MeshRenderer : public Component {
      *
      * @param materials Vector of material pointers.
      */
-    void setMaterials(const std::vector<Material*>& materials) {
+    void setMaterials(const std::vector<std::shared_ptr<Material>>& materials) {
         _materials = materials;
     }
 
@@ -116,7 +116,7 @@ class MeshRenderer : public Component {
      * @param index Material slot index.
      * @param material Pointer to material.
      */
-    void setMaterial(size_t index, Material* material) {
+    void setMaterial(size_t index, std::shared_ptr<Material> material) {
         if (index >= _materials.size()) {
             _materials.resize(index + 1, nullptr);
         }
@@ -194,7 +194,7 @@ class MeshRenderer : public Component {
 #pragma region References
 
     AssetHandle<Model> _model;
-    std::vector<Material*> _materials;
+    std::vector<std::shared_ptr<Material>> _materials;
     Transform* _transform = nullptr;
     glm::vec4 _color = glm::vec4(1.0f);
 

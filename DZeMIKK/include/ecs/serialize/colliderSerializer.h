@@ -24,13 +24,6 @@ inline void to_json(nlohmann::json& json, const Collider& collider) {
     } else {
         json["model"] = "";
     }
-    const auto& pos = collider.getTransform()->getPosition();
-    const auto& scale = collider.getTransform()->getScale();
-    const auto& rot = collider.getTransform()->getRotation();
-
-    json["position"] = { pos.x, pos.y, pos.z };
-    json["rotation"] = { rot.w, rot.x, rot.y, rot.z };
-    json["scale"] = { scale.x, scale.y, scale.z };
 }
 
 inline void from_json(const nlohmann::json& json, Collider& collider, AssetManager* assetManager) {
@@ -47,13 +40,28 @@ inline void from_json(const nlohmann::json& json, Collider& collider, AssetManag
     collider.setId(uuidGenerator(json["id"].get<std::string>()));
 
     std::string modelPath = json.value("model", "");
+
     if (!modelPath.empty()) {
-        collider.setModel(assetManager->get<Model>(modelPath));
-    } else {
-#if DZEMIKK_DEV_TOOLS
-        spdlog::debug("Collider initialized without a model path.");
-#endif
+
+        constexpr std::string_view primitivePrefix = "primitive/";
+
+        if (modelPath.starts_with(primitivePrefix)) {
+
+            std::string primitiveIndexString = modelPath.substr(primitivePrefix.size());
+
+            int primitiveIndex = std::stoi(primitiveIndexString);
+
+            collider.setModel(assetManager->getPrimitiveModel(
+                static_cast<PrimitiveMeshLibrary::PrimitiveMesh>(primitiveIndex)));
+
+        }
+        else {
+
+            collider.setModel(assetManager->get<Model>(modelPath));
+        }
     }
+
+    collider.setTransform(collider.getOwner()->transform());
 }
 
 inline void registerColliderSerializer(ComponentSerializerRegistry& registry) {

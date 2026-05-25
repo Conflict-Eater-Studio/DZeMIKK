@@ -1,5 +1,6 @@
 #include "ecs/serialize/componentSerializerRegistry.h"
 
+#include "ecs/gameobject.h"
 #include "ecs/serialize/animation/animatorSerializer.h"
 #include "ecs/serialize/cameraSerializer.h"
 #include "ecs/serialize/colliderSerializer.h"
@@ -10,9 +11,18 @@
 #include "ecs/serialize/textRendererSerializer.h"
 #include "ecs/serialize/transformSerializer.h"
 #include "ecs/serialize/ui/canvasSerializer.h"
+#include "ecs/serialize/ui/gridLayoutSerializer.h"
+#include "ecs/serialize/ui/horizontalLayoutSerializer.h"
+#include "ecs/serialize/ui/imageRendererSerializer.h"
+#include "ecs/serialize/ui/uiButtonSerializer.h"
 #include "ecs/serialize/ui/uiCheckboxSerializer.h"
-#include "ecs/serialize/uiButtonSerializer.h"
-#include "ecs/serialize/uiSliderSerializer.h"
+#include "ecs/serialize/ui/uiSliderSerializer.h"
+#include "ecs/serialize/ui/uiDropdownSerializer.h"
+#include "ecs/serialize/directionalLightSerializer.h"
+#include "ecs/serialize/pointLightSerializer.h"
+#include "ecs/serialize/spotLightSerializer.h"
+#include "ecs/serialize/ui/UITextRendererSerializer.h"
+#include "ecs/serialize/ui/verticalLayoutSerializer.h"
 
 #include <stdexcept>
 #include <utility>
@@ -36,6 +46,15 @@ ComponentSerializerRegistry buildDefaultRegistry() {
     registerRectTransformSerializer(registry);
     registerUICheckboxSerializer(registry);
     registerAnimatorSerializer(registry);
+    registerDirectionalLightSerializer(registry);
+    registerPointLightSerializer(registry);
+    registerSpotLightSerializer(registry);
+    registerImageRendererSerializer(registry);
+    registerGridLayoutSerializer(registry);
+    registerHorizontalLayoutSerializer(registry);
+    registerVerticalLayoutSerializer(registry);
+    registerUITextRendererSerializer(registry);
+    registerUIDropdownSerializer(registry);
 
     return registry;
 }
@@ -46,10 +65,13 @@ ComponentSerializerRegistry& ComponentSerializerRegistry::get() {
     return kRegistry;
 }
 
-void ComponentSerializerRegistry::registerType(std::string typeName, SerializeFn serializeFn,
-                                               DeserializeIntoGameObjectFn deserializeFn) {
-    _entries[std::move(typeName)] = Entry{.serialize = std::move(serializeFn),
-                                          .deserializeIntoGameObject = std::move(deserializeFn)};
+void ComponentSerializerRegistry::registerType(
+    std::string typeName, SerializeFn serializeFn, DeserializeIntoGameObjectFn deserializeFn,
+    PostDeserializeComponentFn postDeserializeComponentFn) {
+    _entries[std::move(typeName)] =
+        Entry{.serialize = std::move(serializeFn),
+              .deserializeIntoGameObject = std::move(deserializeFn),
+              .postDeserializeComponent = std::move(postDeserializeComponentFn)};
 }
 
 nlohmann::json ComponentSerializerRegistry::serialize(const Component& component) const {
@@ -64,7 +86,8 @@ nlohmann::json ComponentSerializerRegistry::serialize(const Component& component
 
     return iter->second.serialize(component);
 }
-void ComponentSerializerRegistry::deserializeIntoGameObject(const DeserializationContext& context) const {
+void ComponentSerializerRegistry::deserializeIntoGameObject(
+    const DeserializationContext& context) const {
     nlohmann::json json = context.json;
     if (!json.contains("type") || !json["type"].is_string()) {
 #if DZEMIKK_DEV_TOOLS
@@ -83,5 +106,18 @@ void ComponentSerializerRegistry::deserializeIntoGameObject(const Deserializatio
     }
 
     iter->second.deserializeIntoGameObject(context);
+}
+
+void ComponentSerializerRegistry::postDeserializeComponents(GameObject* obj) const {
+    for (const auto& comp : obj->getAllComponents()) {
+        if (comp == nullptr) {
+            continue;
+        }
+
+        const auto iter = _entries.find(comp->typeName());
+        if (iter != _entries.end()) {
+            iter->second.postDeserializeComponent(*(comp.get()));
+        }
+    }
 }
 } // namespace dzemikk

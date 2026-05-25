@@ -42,6 +42,8 @@ class ResourceIndex {
      */
     [[nodiscard]] std::string getRoot();
 
+    std::vector<std::string> getAllPaths() const;
+
   private:
     /**
      * @brief Mapping of virtual paths to real filesystem paths.

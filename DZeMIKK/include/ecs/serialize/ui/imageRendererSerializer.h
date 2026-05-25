@@ -10,34 +10,38 @@
 #include <nlohmann/json.hpp>
 
 namespace dzemikk {
+// NOLINTBEGIN(readability-identifier-naming)
 inline void to_json(nlohmann::json& j, const ImageRenderer& renderer) {
     j["type"] = renderer.typeName();
     j["id"] = boost::uuids::to_string(renderer.getId());
-    j["color"] = {renderer.getColor().r, renderer.getColor().g, renderer.getColor().b, renderer.getColor().a};
+    j["color"] = {renderer.getColor()[0], renderer.getColor()[1], renderer.getColor()[2],
+                  renderer.getColor()[3]};
 
-    if (renderer.getMesh()) {
-        j["meshPath"] = renderer.getMeshHandle().getAssetPath();
-    }
     if (renderer.getMaterial()) {
         j["materialPath"] = renderer.getMaterial()->getShaderHandle().getAssetPath();
     }
 }
 
-inline void from_json(const nlohmann::json& json, ImageRenderer& renderer, AssetManager* assetManager) {
-    if (!json.contains("type") || !json["type"].is_string() || json["type"] != renderer.typeName()) {
+inline void from_json(const nlohmann::json& json, ImageRenderer& renderer,
+                      AssetManager* assetManager) {
+    if (!json.contains("type") || !json["type"].is_string() ||
+        json["type"] != renderer.typeName()) {
         throw std::runtime_error("Invalid component type for ImageRenderer deserialization");
     }
-    if (!json.contains("id") || !json.contains("color") || !json["color"].is_array() || !json.contains("meshPath")  || !json.contains("materialPath")) {
-        throw std::runtime_error("Missing fields for UICheckbox deserialization");
-        }
+    if (!json.contains("id") || !json.contains("color") || !json["color"].is_array() ||
+        json["color"].size() < 4 || !json.contains("materialPath") ||
+        !json["materialPath"].is_string() || json["materialPath"].get<std::string>().empty()) {
+        throw std::runtime_error("Missing fields for ImageRenderer deserialization");
+    }
     renderer.setId(boost::uuids::string_generator()(json["id"].get<std::string>()));
-    renderer.setColor(glm::vec4(json["color"][0], json["color"][1], json["color"][2], json["color"][3]));
+    const auto& c = json["color"];
+    renderer.setColor(
+        glm::vec4(c[0].get<float>(), c[1].get<float>(), c[2].get<float>(), c[3].get<float>()));
 
-    std::string meshPath = json.value("meshPath", "");
-    renderer.setMesh(assetManager->get<Mesh>(meshPath));
+    renderer.setMesh(assetManager->getPrimitiveMesh(PrimitiveMeshLibrary::PrimitiveMesh::Quad));
 
     std::string shaderPath = json.value("materialPath", "");
-    Material* material = nullptr;
+    auto material = std::make_shared<dzemikk::Material>();
     material->setShader(assetManager->get<Shader>(shaderPath));
     renderer.setMaterial(material);
 }
@@ -47,7 +51,9 @@ inline void registerImageRendererSerializer(ComponentSerializerRegistry& registr
         "ImageRenderer",
         [](const Component& component) {
             const auto* renderer = dynamic_cast<const ImageRenderer*>(&component);
-            if (!renderer) throw std::runtime_error("Type mismatch in ImageRenderer serialization");
+            if (!renderer) {
+                throw std::runtime_error("Type mismatch in ImageRenderer serialization");
+            }
 
             nlohmann::json j;
             to_json(j, *renderer);
@@ -58,8 +64,8 @@ inline void registerImageRendererSerializer(ComponentSerializerRegistry& registr
             renderer->setRectTransform(context.gameObject.getComponent<RectTransform>());
 
             from_json(context.json, *renderer, context.assetManager);
-        }
-    );
+        });
 }
-}
-#endif //DZEMIKK_IMAGERENDERERSERIALIZER_H
+// NOLINTEND(readability-identifier-naming)
+} // namespace dzemikk
+#endif // DZEMIKK_IMAGERENDERERSERIALIZER_H

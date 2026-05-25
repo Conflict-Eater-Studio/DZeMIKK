@@ -10,6 +10,7 @@ message(FMOD_LIBS_PATH: "${FMOD_LIBS_PATH}")
 
 add_subdirectory(DZeMIKK)
 add_subdirectory(game)
+add_subdirectory(editor)
 add_subdirectory(tests)
 
 enable_testing()

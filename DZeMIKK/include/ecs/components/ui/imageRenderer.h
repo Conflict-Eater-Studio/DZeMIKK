@@ -27,11 +27,7 @@ class ImageRenderer : public Component {
         return _mesh.get();
     }
 
-    [[nodiscard]] AssetHandle<Mesh> getMeshHandle() const {
-        return _mesh;
-    }
-
-    [[nodiscard]] Material* getMaterial() const {
+    [[nodiscard]] std::shared_ptr<dzemikk::Material> getMaterial() const {
         return _material;
     }
 
@@ -47,11 +43,11 @@ class ImageRenderer : public Component {
         return _color;
     }
 
-    void setMesh(const AssetHandle<Mesh>& mesh) {
+    void setMesh(AssetHandle<Mesh> mesh) {
         _mesh = mesh;
     }
 
-    void setMaterial(Material* material) {
+    void setMaterial(std::shared_ptr<dzemikk::Material> material) {
         _material = material;
     }
 
@@ -78,7 +74,7 @@ class ImageRenderer : public Component {
   private:
     AssetHandle<Mesh> _mesh;
 
-    Material* _material = nullptr;
+    std::shared_ptr<dzemikk::Material> _material = nullptr;
 
     RectTransform* _rectTransform = nullptr;
 

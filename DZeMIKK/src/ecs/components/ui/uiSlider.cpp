@@ -44,8 +44,8 @@ void UISlider::processPointer(const glm::vec2& point, bool isDown, bool pressedT
                               bool releasedThisFrame, double scrollDelta) {
     setPointerDown(isDown);
 
-    setPointerInside(_handleSpriteRenderer->getRectTransform() != nullptr
-                         ? _handleSpriteRenderer->getRectTransform()->containsPoint(point)
+    setPointerInside(getHandleSpriteRenderer()->getRectTransform() != nullptr
+                         ? getHandleSpriteRenderer()->getRectTransform()->containsPoint(point)
                          : _owner->rectTransform()->containsPoint(point));
     updateHoverState();
 
@@ -132,6 +132,21 @@ void UISlider::onValueChanged(float newValue) {
     const float maxBound = std::max(_minValue, _maxValue);
     _value = std::clamp(newValue, minBound, maxBound);
 
+    auto* fillRect = _fillSpriteRenderer->getRectTransform();
+    fillRect->setPivot({0.0f, 0.5f});
+    fillRect->setPosition(
+        {-_backgroundSpriteRenderer->getOwner()->rectTransform()->getSize().x / 2,
+         fillRect->getPosition().y});
+
+    if (fillRect != nullptr) {
+        float t = (_value - _minValue) / (_maxValue - _minValue);
+        t = glm::clamp(t, 0.0f, 1.0f);
+
+        glm::vec2 scale = fillRect->getScale();
+        scale.x = t;
+        fillRect->setScale(scale);
+    }
+
     auto slideArea = _fillSpriteRenderer->getRectTransform()->getSize();
     auto handleProgress = (_value - _minValue) / (_maxValue - _minValue);
     auto handlePosX = (handleProgress * slideArea[0]) - (slideArea[0] * 0.5F);
@@ -144,19 +159,48 @@ float UISlider::getValue() const {
     return _value;
 }
 
-void UISlider::setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _backgroundSpriteRenderer = spriteRenderer;
-    applyVisualState();
+ImageRenderer* UISlider::getBackgroundSpriteRenderer() const {
+    if (_backgroundSpriteRenderer == nullptr) {
+        _backgroundSpriteRenderer = _owner->getComponent<ImageRenderer>();
+    }
+
+    return _backgroundSpriteRenderer;
 }
 
-void UISlider::setFillSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _fillSpriteRenderer = spriteRenderer;
-    applyVisualState();
+ImageRenderer* UISlider::getFillSpriteRenderer() const {
+    if (_fillSpriteRenderer == nullptr) {
+        for (const auto& child : _owner->getChildren()) {
+            if (child == nullptr || child->getName().find("_Fill") == std::string::npos) {
+                continue;
+            }
+
+            auto* img = child->getComponent<ImageRenderer>();
+            if (img != nullptr) {
+                _fillSpriteRenderer = img;
+                break;
+            }
+        }
+    }
+
+    return _fillSpriteRenderer;
 }
 
-void UISlider::setHandleSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _handleSpriteRenderer = spriteRenderer;
-    applyVisualState();
+ImageRenderer* UISlider::getHandleSpriteRenderer() const {
+    if (_handleSpriteRenderer == nullptr) {
+        for (const auto& child : _owner->getChildren()) {
+            if (child == nullptr || child->getName().find("_Handle") == std::string::npos) {
+                continue;
+            }
+
+            auto* img = child->getComponent<ImageRenderer>();
+            if (img != nullptr) {
+                _handleSpriteRenderer = img;
+                break;
+            }
+        }
+    }
+
+    return _handleSpriteRenderer;
 }
 
 void UISlider::setStyle(const Style& style) {
@@ -165,15 +209,30 @@ void UISlider::setStyle(const Style& style) {
 }
 
 void UISlider::applyVisualState() {
-    if (_backgroundSpriteRenderer != nullptr) {
+    if (getBackgroundSpriteRenderer() != nullptr) {
         _backgroundSpriteRenderer->setColor(_style.backgroundColor);
     }
 
-    if (_fillSpriteRenderer != nullptr) {
+    if (getFillSpriteRenderer() != nullptr) {
         _fillSpriteRenderer->setColor(_style.fillColor);
+
+        auto* fillRect = _fillSpriteRenderer->getRectTransform();
+        fillRect->setPivot({0.0f, 0.5f});
+        fillRect->setPosition(
+            {-_backgroundSpriteRenderer->getOwner()->rectTransform()->getSize().x / 2,
+             fillRect->getPosition().y});
+
+        if (fillRect != nullptr) {
+            float t = (_value - _minValue) / (_maxValue - _minValue);
+            t = glm::clamp(t, 0.0f, 1.0f);
+
+            glm::vec2 scale = fillRect->getScale();
+            scale.x = t;
+            fillRect->setScale(scale);
+        }
     }
 
-    if (_handleSpriteRenderer == nullptr) {
+    if (getHandleSpriteRenderer() == nullptr) {
         return;
     }
 
@@ -183,6 +242,18 @@ void UISlider::applyVisualState() {
         _handleSpriteRenderer->setColor(_style.handleHoverColor);
     } else {
         _handleSpriteRenderer->setColor(_style.handleColor);
+    }
+}
+
+void UISlider::init(Style style, float value, float minValue, float maxValue, float step,
+                    std::vector<std::pair<UIEventType, std::string>> events) {
+    _style = style;
+    _value = std::clamp(value, std::min(minValue, maxValue), std::max(minValue, maxValue));
+    _minValue = minValue;
+    _maxValue = maxValue;
+    _step = step;
+    for (const auto& [eventType, actionId] : events) {
+        addEventListener(eventType, actionId);
     }
 }
 } // namespace dzemikk

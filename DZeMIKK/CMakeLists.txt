@@ -14,7 +14,11 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebIn
   set(DZEMIKK_DEV_TOOLS ON)
 endif()
 
-add_library(DZeMIKK STATIC)
+add_library(DZeMIKK STATIC
+        include/ecs/serialize/ui/gridLayoutSerializer.h
+        include/ecs/serialize/ui/horizontalLayoutSerializer.h
+        include/ecs/serialize/ui/verticalLayoutSerializer.h
+        include/ecs/serialize/ui/uiDropdownSerializer.h)
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"
@@ -24,16 +28,26 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/input/input.cpp"
         "${SRC_DIR}/collisions/collisions.cpp"
         "${SRC_DIR}/renderer/renderer.cpp"
-    	"${SRC_DIR}/renderer/mesh.cpp"
-    	"${SRC_DIR}/renderer/staticMesh.cpp"
-    	"${SRC_DIR}/renderer/skinnedMesh.cpp"
-    	"${SRC_DIR}/renderer/shader.cpp"
-    	"${SRC_DIR}/renderer/material.cpp"
-    	"${SRC_DIR}/renderer/frustum.cpp"
-    	"${SRC_DIR}/renderer/skybox.cpp"
-    	"${SRC_DIR}/renderer/font.cpp"
-    	"${SRC_DIR}/renderer/texture.cpp"
-    	"${SRC_DIR}/renderer/model.cpp"
+     "${SRC_DIR}/renderer/mesh.cpp"
+     "${SRC_DIR}/renderer/staticMesh.cpp"
+     "${SRC_DIR}/renderer/skinnedMesh.cpp"
+     "${SRC_DIR}/renderer/shader.cpp"
+     "${SRC_DIR}/renderer/material.cpp"
+     "${SRC_DIR}/renderer/frustum.cpp"
+     "${SRC_DIR}/renderer/skybox.cpp"
+     "${SRC_DIR}/renderer/font.cpp"
+     "${SRC_DIR}/renderer/texture.cpp"
+     "${SRC_DIR}/renderer/model.cpp"
+        "${SRC_DIR}/renderer/cameraSystem.cpp"
+        "${SRC_DIR}/renderer/framebuffer.cpp"
+        "${SRC_DIR}/renderer/renderPasses/imageRenderPass.cpp"
+        "${SRC_DIR}/renderer/renderPasses/IRenderPass.cpp"
+        "${SRC_DIR}/renderer/renderPasses/meshRenderPass.cpp"
+        "${SRC_DIR}/renderer/renderPasses/skinnedRenderPass.cpp"
+        "${SRC_DIR}/renderer/renderPasses/skyboxRenderPass.cpp"
+        "${SRC_DIR}/renderer/renderPasses/spriteRenderPass.cpp"
+        "${SRC_DIR}/renderer/renderPasses/textRenderPass.cpp"
+        "${SRC_DIR}/renderer/renderPasses/uITextRenderPass.cpp"
         "${SRC_DIR}/ecs/components/monobehaviour.cpp"
         "${SRC_DIR}/ecs/components/transform.cpp"
         "${SRC_DIR}/ecs/components/meshRenderer.cpp"
@@ -59,6 +73,7 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/serialize/gameobjectSerializer.cpp"
         "${SRC_DIR}/ecs/serialize/sceneSerializer.cpp"
         "${SRC_DIR}/ecs/serialize/prefabSerializer.cpp"
+        "${SRC_DIR}/ecs/serialize/directionalLightSerializer.cpp"
         "${SRC_DIR}/assetManager/assetManager.cpp"
         "${SRC_DIR}/assetManager/iAssetHandler.cpp"
         "${SRC_DIR}/assetManager/fontHandler.cpp"
@@ -78,6 +93,8 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/assetManager/animationLoader.cpp"
         "${SRC_DIR}/assetManager/threadPool.cpp"
         "${SRC_DIR}/assetManager/iGpuUploadable.cpp"
+        "${SRC_DIR}/assetManager/prefabHandler.cpp"
+        "${SRC_DIR}/assetManager/sceneHandler.cpp"
         "${SRC_DIR}/audio/sound.cpp"
         "${SRC_DIR}/ecs/components/ui/rectTransform.cpp"
         "${SRC_DIR}/ecs/components/ui/verticalLayout.cpp"
@@ -87,6 +104,9 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/components/ui/uiSlider.cpp"
         "${SRC_DIR}/ecs/components/ui/uiCheckbox.cpp"
         "${SRC_DIR}/ecs/components/ui/uiDropdown.cpp"
+        "${SRC_DIR}/ecs/components/light/directionalLight.cpp"
+        "${SRC_DIR}/ecs/components/light/pointLight.cpp"
+        "${SRC_DIR}/ecs/components/light/spotLight.cpp"
         "${SRC_DIR}/audio/audioManager.cpp"
 )
 
@@ -112,13 +132,24 @@ set(ENGINE_HEADERS
         "${INC_DIR}/renderer/font.h"
         "${INC_DIR}/renderer/texture.h"
         "${INC_DIR}/renderer/model.h"
+        "${INC_DIR}/renderer/cameraSystem.h"
+        "${INC_DIR}/renderer/framebuffer.h"
+        "${INC_DIR}/renderer/renderPasses/imageRenderPass.h"
+        "${INC_DIR}/renderer/renderPasses/IRenderPass.h"
+        "${INC_DIR}/renderer/renderPasses/meshRenderPass.h"
+        "${INC_DIR}/renderer/renderPasses/skinnedRenderPass.h"
+        "${INC_DIR}/renderer/renderPasses/skyboxRenderPass.h"
+        "${INC_DIR}/renderer/renderPasses/spriteRenderPass.h"
+        "${INC_DIR}/renderer/renderPasses/textRenderPass.h"
+        "${INC_DIR}/renderer/renderPasses/uITextRenderPass.h"
+        "${INC_DIR}/renderer/lightUtils.h"
         "${INC_DIR}/ecs/components/monobehaviour.h"
         "${INC_DIR}/ecs/components/transform.h"
-	    "${INC_DIR}/ecs/components/meshRenderer.h"
+     "${INC_DIR}/ecs/components/meshRenderer.h"
         "${INC_DIR}/ecs/components/collider.h"
-	    "${INC_DIR}/ecs/components/skinnedMeshRenderer.h"
-    	"${INC_DIR}/ecs/components/spriteRenderer.h"
-    	"${INC_DIR}/ecs/components/textRenderer.h"
+     "${INC_DIR}/ecs/components/skinnedMeshRenderer.h"
+     "${INC_DIR}/ecs/components/spriteRenderer.h"
+     "${INC_DIR}/ecs/components/textRenderer.h"
         "${INC_DIR}/ecs/components/camera.h"
         "${INC_DIR}/ecs/component.h"
         "${INC_DIR}/ecs/gameobject.h"
@@ -148,8 +179,17 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/serializedRef.h"
         "${INC_DIR}/ecs/serialize/monoBehaviourSerializer.h"
         "${INC_DIR}/ecs/serialize/transformSerializer.h"
-        "${INC_DIR}/ecs/serialize/uiButtonSerializer.h"
-        "${INC_DIR}/ecs/serialize/uiSliderSerializer.h"
+        "${INC_DIR}/ecs/serialize/directionalLightSerializer.h"
+        "${INC_DIR}/ecs/serialize/pointLightSerializer.h"
+        "${INC_DIR}/ecs/serialize/spotLightSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/uiButtonSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/uiSliderSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/gridLayoutSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/horizontalLayoutSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/uiCheckboxSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/uiDropdownSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/verticalLayoutSerializer.h"
+        "${INC_DIR}/ecs/serialize/animation/animatorSerializer.h"
         "${INC_DIR}/ecs/serialize/uuid.h"
         "${INC_DIR}/assetManager/assetManager.h"
         "${INC_DIR}/assetManager/assetError.h"
@@ -172,6 +212,8 @@ set(ENGINE_HEADERS
         "${INC_DIR}/assetManager/animationLoader.h"
         "${INC_DIR}/assetManager/threadPool.h"
         "${INC_DIR}/assetManager/iGpuUploadable.h"
+        "${INC_DIR}/assetManager/prefabHandler.h"
+        "${INC_DIR}/assetManager/sceneHandler.h"
         "${INC_DIR}/audio/sound.h"
         "${INC_DIR}/ecs/components/ui/imageRenderer.h"
         "${INC_DIR}/ecs/components/ui/uiTextRenderer.h"
@@ -195,7 +237,11 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/serialize/cameraSerializer.h"
         "${INC_DIR}/ecs/serialize/ui/canvasSerializer.h"
         "${INC_DIR}/ecs/serialize/ui/imageRendererSerializer.h"
+        "${INC_DIR}/ecs/serialize/ui/uITextRendererSerializer.h"
         "${INC_DIR}/ecs/components/ui/uiDropdown.h"
+        "${INC_DIR}/ecs/components/light/directionalLight.h"
+        "${INC_DIR}/ecs/components/light/pointLight.h"
+        "${INC_DIR}/ecs/components/light/spotLight.h"
         "${INC_DIR}/audio/audioManager.h"
 )
 
@@ -254,7 +300,7 @@ FetchContent_MakeAvailable(glm)
 FetchContent_Declare(
         glfw
         GIT_REPOSITORY https://github.com/glfw/glfw.git
-        GIT_TAG 3.3.9
+        GIT_TAG 3.4
 )
 FetchContent_MakeAvailable(glfw)
 

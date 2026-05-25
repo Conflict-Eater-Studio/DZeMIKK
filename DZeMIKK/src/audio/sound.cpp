@@ -5,8 +5,8 @@
 namespace dzemikk {
 Sound::~Sound() {
     if (_sound) {
-        _sound->release();
-        _sound = nullptr;
+        //_sound->release();
+        //_sound = nullptr;
     }
 }
 

@@ -129,6 +129,8 @@ class AssetManager : public IEngineModule {
      */
     Mesh* getPrimitive(PrimitiveMeshLibrary::PrimitiveMesh type);
 
+    AssetHandle<Mesh> getPrimitiveMesh(PrimitiveMeshLibrary::PrimitiveMesh type);
+
     // FOR TEST ONLY
     /**
      * @brief Sets FMOD system (temporary / testing).
@@ -139,6 +141,10 @@ class AssetManager : public IEngineModule {
      * @brief Gets FMOD system.
      */
     [[nodiscard]] FMOD::System* getFMODSystem() const;
+
+    std::vector<std::string> getAllAssets() const {
+        return _resources.getAllPaths();
+    }
 
 #pragma endregion
 

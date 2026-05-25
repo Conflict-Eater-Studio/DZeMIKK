@@ -5,6 +5,7 @@
 
 #include <boost/uuid/uuid.hpp>
 #include <memory>
+#include <unordered_set>
 #include <vector>
 
 namespace dzemikk {
@@ -64,6 +65,8 @@ class Scene {
     void addPending(MonoBehaviour* mono);
     void removeActive(MonoBehaviour* mono);
     void processDelete();
+    void clearAllObjects();
+    GameObject* findGameObjectByName(const std::string& name);
 
     [[nodiscard]] boost::uuids::uuid getId() const;
     [[nodiscard]] const std::vector<std::unique_ptr<dzemikk::GameObject>>& getObjects() const;
@@ -74,6 +77,7 @@ class Scene {
     std::vector<std::unique_ptr<dzemikk::GameObject>> _objects;
     std::vector<MonoBehaviour*> _pendingStart;
     std::vector<MonoBehaviour*> _active;
+    std::unordered_set<MonoBehaviour*> _activeSet;
     std::vector<GameObject*> _pendingDestroy;
 };
 } // namespace dzemikk

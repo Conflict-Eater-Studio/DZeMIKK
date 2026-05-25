@@ -78,6 +78,31 @@ const RectTransform* GameObject::rectTransform() const {
     return _rectTransform;
 }
 
+dzemikk::RectTransform* dzemikk::GameObject::replaceTransformWithRectTransform() {
+    if (_rectTransform) {
+        return _rectTransform;
+    }
+
+    if (_transform) {
+        removeComponent(_transform);
+        _transform = nullptr;
+    }
+
+    auto* rect = addComponent<RectTransform>();
+    _rectTransform = rect;
+
+    for (auto* child : _children) {
+
+        if (!child) {
+            continue;
+        }
+
+        child->replaceTransformWithRectTransform();
+    }
+
+    return rect;
+}
+
 // --- Getters
 GameObject* GameObject::getParent() const {
     return _parent;
@@ -109,6 +134,10 @@ bool GameObject::hasStarted() const {
 
 Scene* GameObject::getScene() {
     return _scene;
+}
+
+bool GameObject::isEnabled() const {
+    return _isEnabled;
 }
 
 // --- Setters

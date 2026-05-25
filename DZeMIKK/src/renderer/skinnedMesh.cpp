@@ -18,6 +18,7 @@ void dzemikk::SkinnedMesh::create(const std::vector<SkinnedVertex>& vertices,
                  GL_STATIC_DRAW);
 
     if (_useIndices) {
+
         setupIndexBuffer(indices.data(), _indexCount);
     }
 

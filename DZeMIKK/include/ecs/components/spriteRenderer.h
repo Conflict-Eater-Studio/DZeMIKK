@@ -123,6 +123,10 @@ class SpriteRenderer : public Component {
         return _useTexture;
     }
 
+    void setUseTexture(bool useTexture) {
+        _useTexture = useTexture;
+    }
+
 #pragma endregion
 
 #pragma region State

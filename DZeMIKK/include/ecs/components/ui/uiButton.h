@@ -1,7 +1,11 @@
 #ifndef DZEMIKK_UIBUTTON_H
 #define DZEMIKK_UIBUTTON_H
 
+#include "assetManager/assetHandle.h"
 #include "ecs/components/ui/iUIInteractable.h"
+#include "ecs/components/ui/uiTextRenderer.h"
+#include "renderer/material.h"
+#include "renderer/mesh.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
@@ -35,19 +39,16 @@ class UIButton : public IUIInteractable {
     void processPointer(const glm::vec2& point, bool isDown, bool pressedThisFrame,
                         bool releasedThisFrame, double scrollDelta) override;
 
-    void setSpriteRenderer(ImageRenderer* spriteRenderer);
-
     void setStyle(const Style& style);
     Style getStyle() const;
 
-    void setTextGO(GameObject* textGO);
     [[nodiscard]] GameObject* getTextGO() const;
+    [[nodiscard]] ImageRenderer* getSpriteRenderer() const;
+
+    void applyVisualState();
+    void init(Style style, std::vector<std::pair<UIEventType, std::string>> events);
 
   private:
-    void applyVisualState();
-
-    GameObject* _textGO = nullptr;
-
     Style _style{.normalColor = glm::vec4(1.0F),
                  .hoverColor = glm::vec4(0.9F, 0.9F, 0.9F, 1.0F),
                  .pressedColor = glm::vec4(0.8F, 0.8F, 0.8F, 1.0F)};

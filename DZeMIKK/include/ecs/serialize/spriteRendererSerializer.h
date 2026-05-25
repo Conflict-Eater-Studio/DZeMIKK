@@ -24,6 +24,20 @@ namespace dzemikk {
         } else {
             json["texture"] = "";
         }
+
+        if (spriteRenderer.getMaterial() != nullptr) {
+
+            auto shaderHandle = spriteRenderer.getMaterial()->getShaderHandle();
+
+            if (shaderHandle.get() != nullptr) {
+                json["shader"] = shaderHandle.getAssetPath();
+            } else {
+                json["shader"] = "";
+            }
+
+        } else {
+            json["shader"] = "";
+        }
     }
 
     inline void from_json(const nlohmann::json& json, SpriteRenderer& spriteRenderer, AssetManager* assetManager) {
@@ -51,6 +65,22 @@ namespace dzemikk {
         if (!texturePath.empty()) {
             spriteRenderer.setTexture(assetManager->get<Texture>(texturePath));
         }
+
+        spriteRenderer.setMesh(
+            assetManager->getPrimitive(PrimitiveMeshLibrary::PrimitiveMesh::Quad));
+
+            std::string shaderPath = json.value("shader", "");
+
+        if (!shaderPath.empty()) {
+
+            auto* material = new Material();
+
+            material->setShader(assetManager->get<Shader>(shaderPath));
+
+            spriteRenderer.setMaterial(material);
+        }
+
+        spriteRenderer.setTransform(spriteRenderer.getOwner()->transform());
     }
 
     inline void registerSpriteRendererSerializer(ComponentSerializerRegistry& registry) {
