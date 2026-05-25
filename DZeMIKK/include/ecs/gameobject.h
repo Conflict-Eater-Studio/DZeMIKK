@@ -223,6 +223,9 @@ class GameObject {
     void addScenePending(MonoBehaviour* mono);
     void removeSceneActive(MonoBehaviour* mono);
 
+    [[nodiscard]] uint32_t getLastRaycastQueryId() const { return _lastRaycastQueryId; }
+    void setLastRaycastQueryId(uint32_t queryId) { _lastRaycastQueryId = queryId; }
+
   private:
     boost::uuids::uuid _id;
     std::string _name;
@@ -238,6 +241,8 @@ class GameObject {
 
     std::vector<std::unique_ptr<Component>> _components;
     std::vector<MonoBehaviour*> _monoBehaviours;
+
+    uint32_t _lastRaycastQueryId = 0;
 };
 } // namespace dzemikk
 

@@ -19,6 +19,7 @@ namespace dzemikk {
         void loadScene(const std::shared_ptr<Scene>& scene);
         void unloadScene(const std::shared_ptr<Scene>& scene);
         void setActiveScene(const std::shared_ptr<Scene>& scene);
+        std::shared_ptr<Scene> getActiveScene() const;
         void update(float deltaTime) const;
         void fixedUpdate(float deltaTime) const;
 

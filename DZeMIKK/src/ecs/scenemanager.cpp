@@ -18,6 +18,11 @@ void SceneManager::unloadScene(const std::shared_ptr<Scene>& scene) {
 void SceneManager::setActiveScene(const std::shared_ptr<Scene>& scene) {
     _activeScene = scene;
 }
+
+std::shared_ptr<Scene> SceneManager::getActiveScene() const {
+    return _activeScene;
+}
+
 void SceneManager::update(float deltaTime) const {
     _activeScene->update(deltaTime);
 }
