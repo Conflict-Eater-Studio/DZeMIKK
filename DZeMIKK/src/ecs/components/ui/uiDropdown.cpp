@@ -76,9 +76,8 @@ void UIDropdown::updateOptionVisuals() {
                 .textFont = _optionRender.font,
                 .textVAlign = _optionRender.textVAlign,
                 .textHAlign = _optionRender.textHAlign,
-                .normalColor =
-                    hasSelection(*this) && i == _selectedIndex ? _style.highlightOptColor
-                                                                : _style.normalOptColor,
+                .normalColor = hasSelection(*this) && i == _selectedIndex ? _style.highlightOptColor
+                                                                          : _style.normalOptColor,
                 .hoverColor = _style.hoverOptColor,
                 .pressedColor = _style.pressedOptColor,
                 .mesh = _optionRender.mesh,
@@ -116,7 +115,7 @@ void UIDropdown::applyOptionButtonColors() {
 
         auto style = btn->getStyle();
         style.normalColor = hasSelection(*this) && i == _selectedIndex ? _style.highlightOptColor
-                                                                        : _style.normalOptColor;
+                                                                       : _style.normalOptColor;
         btn->setStyle(style);
         auto* textRenderer = btn->getTextGO()->getComponent<UITextRenderer>();
         if (textRenderer) {
@@ -326,7 +325,7 @@ void UIDropdown::refreshOptionLayout() {
 
     container->rectTransform()->setPosition({0.0F, -mainHeight});
 
-    container->rectTransform()->setSize(
+    container->rectTransform()->setBaseSize(
         {width, _optionRender.height * static_cast<float>(_options.size())});
 
     for (std::size_t i = 0; i < _optionButtons.size(); i++) {
@@ -337,7 +336,7 @@ void UIDropdown::refreshOptionLayout() {
 
         auto* rect = btn->getOwner()->rectTransform();
 
-        rect->setSize({width, _optionRender.height});
+        rect->setBaseSize({width, _optionRender.height});
 
         rect->setPosition({0.0F, -static_cast<float>(i) * _optionRender.height});
 

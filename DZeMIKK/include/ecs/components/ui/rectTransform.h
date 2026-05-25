@@ -52,7 +52,7 @@ class RectTransform : public Component {
      * @brief Sets the size
      * @param size New size
      */
-    void setSize(const glm::vec2& size);
+    void setBaseSize(const glm::vec2& size);
 
     /**
      * @brief Sets the scale
@@ -138,6 +138,12 @@ class RectTransform : public Component {
      * @return Current size
      */
     [[nodiscard]] glm::vec2 getSize() const;
+
+    /**
+     * @brief Gets the base size (the size without stretch)
+     * @return Base size
+     */
+    [[nodiscard]] glm::vec2 getBaseSize() const;
 
     /**
      * @brief Gets the scale

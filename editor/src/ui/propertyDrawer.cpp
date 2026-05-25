@@ -64,6 +64,12 @@ bool editor::PropertyDrawer::drawVec3(const std::string& label, glm::vec3& value
     return ImGui::DragFloat3(label.c_str(), &value.x, 0.1F);
 }
 
+void editor::PropertyDrawer::drawVec2ReadOnly(const std::string& label, const glm::vec2& value) {
+    ImGui::BeginDisabled();
+    ImGui::DragFloat2(label.c_str(), const_cast<float*>(&value.x), 0.0F);
+    ImGui::EndDisabled();
+}
+
 bool editor::PropertyDrawer::drawBool(const std::string& label, bool& value) {
     return ImGui::Checkbox(label.c_str(), &value);
 }

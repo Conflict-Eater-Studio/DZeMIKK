@@ -34,12 +34,7 @@ inline void to_json(nlohmann::json& json, const RectTransform& trs) {
 
     const glm::vec2 anchorSpan = glm::abs(anchorMax - anchorMin);
     const bool hasStretch = anchorSpan[0] > 0.0F || anchorSpan[1] > 0.0F;
-    if (hasStretch) {
-        json["size"] = {0.0F, 0.0F};
-    } else {
-        auto rawSize = trs.getSize();
-        json["size"] = {rawSize[0], rawSize[1]};
-    }
+    json["size"] = {trs.getBaseSize()[0], trs.getBaseSize()[1]};
 }
 
 inline void from_json(const nlohmann::json& json, RectTransform& trs) {
@@ -79,11 +74,7 @@ inline void from_json(const nlohmann::json& json, RectTransform& trs) {
 
     const glm::vec2 anchorSpan = glm::abs(storedAnchorMax - storedAnchorMin);
     const bool hasStretch = anchorSpan[0] > 0.0F || anchorSpan[1] > 0.0F;
-    if (hasStretch) {
-        trs.setSize({0.0F, 0.0F});
-    } else {
-        trs.setSize({size[0].get<float>(), size[1].get<float>()});
-    }
+    trs.setBaseSize({size[0].get<float>(), size[1].get<float>()});
 
     trs.setZIndex(zIndex.get<unsigned int>());
 }

@@ -1,9 +1,9 @@
 #include "inspectors/rectTransformInspector.h"
-#include "ui/propertyDrawer.h"
+
 #include "inspectors/inspectorRegistry.h"
+#include "ui/propertyDrawer.h"
 
 #include <ecs/components/ui/rectTransform.h>
-
 #include <imgui.h>
 
 void editor::RectTransformInspector::draw(dzemikk::RectTransform* transform,
@@ -14,7 +14,8 @@ void editor::RectTransformInspector::draw(dzemikk::RectTransform* transform,
 
     if (ImGui::CollapsingHeader("RectTransform", ImGuiTreeNodeFlags_DefaultOpen)) {
         glm::vec2 position = transform->getPosition();
-        glm::vec2 size = transform->getSize();
+        glm::vec2 size = transform->getBaseSize();
+        glm::vec2 totalSize = transform->getSize();
         glm::vec2 scale = transform->getScale();
 
         float rotation = transform->getRotation();
@@ -28,13 +29,17 @@ void editor::RectTransformInspector::draw(dzemikk::RectTransform* transform,
         glm::vec2 offsetMax = transform->getOffsetMax();
 
         int zIndex = transform->getZIndex();
-        
+
         if (PropertyDrawer::drawVec2("Position", position)) {
             transform->setPosition(position);
         }
 
         if (PropertyDrawer::drawVec2("Size", size)) {
-            transform->setSize(size);
+            transform->setBaseSize(size);
+        }
+
+        if (glm::any(glm::notEqual(totalSize, size))) {
+            PropertyDrawer::drawVec2ReadOnly("Total Size", totalSize);
         }
 
         if (PropertyDrawer::drawVec2("Scale", scale)) {
