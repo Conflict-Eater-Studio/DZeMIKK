@@ -76,10 +76,10 @@ void Game::start() {
     auto root = _mainScene.get()->findGameObjectByName("Root");
     _stateMachine = root->addComponent<game::GameStateMachine>();
 
-    //_cameraController = _mainCamera->getOwner()->addComponent<game::CameraController>();
-    //_cameraController->setPlayerTransform(_playerEntity->getOwner()->transform());
+    _cameraController = _mainCamera->getOwner()->addComponent<game::CameraController>();
+    _cameraController->setPlayerTransform(_playerEntity->getOwner()->transform());
 
-    //_stateMachine->setState(std::make_unique<game::ExplorationState>(this));
+    _stateMachine->setState(std::make_unique<game::ExplorationState>(this));
 
     dzemikk::UIActionRegistry::get().registerAction(
         [this](const dzemikk::UIEvent&) {
@@ -148,46 +148,46 @@ void Game::setupWorld() {
     auto c1 = world->addChunk({.steps = 7});
 
     auto c2 = world->addChunk(
-        {.parentChunkId = c1, .steps = 10, .dirFromParent = game::HexCoord::Direction::R0}); //connect chunk
+        {.parentChunkId = c1, .steps = 12, .dirFromParent = game::HexCoord::Direction::R0}); //connect chunk
 
     auto c3 = world->addChunk(
-        {.parentChunkId = c2, .steps = 13, .dirFromParent = game::HexCoord::Direction::R330});
+        {.parentChunkId = c2, .steps = 15, .dirFromParent = game::HexCoord::Direction::R330});
 
     auto c4 = world->addChunk(
-        {.parentChunkId = c3, .steps = 9, .dirFromParent = game::HexCoord::Direction::R330});
+        {.parentChunkId = c3, .steps = 11, .dirFromParent = game::HexCoord::Direction::R330});
 
     auto c5 = world->addChunk(
-        {.parentChunkId = c4, .steps = 7, .dirFromParent = game::HexCoord::Direction::R0});
+        {.parentChunkId = c4, .steps = 9, .dirFromParent = game::HexCoord::Direction::R0});
 
     auto c6 = world->addChunk(
-        {.parentChunkId = c2, .steps = 15, .dirFromParent = game::HexCoord::Direction::R30});
+        {.parentChunkId = c2, .steps = 17, .dirFromParent = game::HexCoord::Direction::R30});
 
     auto c7 = world->addChunk(
-        {.parentChunkId = c6, .steps = 13, .dirFromParent = game::HexCoord::Direction::R30}); //connect chunk
+        {.parentChunkId = c6, .steps = 15, .dirFromParent = game::HexCoord::Direction::R30}); //connect chunk
 
     auto c8 = world->addChunk(
-        {.parentChunkId = c7, .steps = 17, .dirFromParent = game::HexCoord::Direction::R330});
+        {.parentChunkId = c7, .steps = 19, .dirFromParent = game::HexCoord::Direction::R330});
 
     auto c9 = world->addChunk(
-        {.parentChunkId = c8, .steps = 13, .dirFromParent = game::HexCoord::Direction::R30});
+        {.parentChunkId = c8, .steps = 15, .dirFromParent = game::HexCoord::Direction::R30});
 
     auto c10 = world->addChunk(
-        {.parentChunkId = c9, .steps = 22, .dirFromParent = game::HexCoord::Direction::R0}); //connect chunk
+        {.parentChunkId = c9, .steps = 24, .dirFromParent = game::HexCoord::Direction::R0}); //connect chunk
 
     auto c11 = world->addChunk(
-        {.parentChunkId = c7, .steps = 12, .dirFromParent = game::HexCoord::Direction::R30});
+        {.parentChunkId = c7, .steps = 14, .dirFromParent = game::HexCoord::Direction::R30});
 
     auto c12 = world->addChunk(
-        {.parentChunkId = c10, .steps = 20, .dirFromParent = game::HexCoord::Direction::R330});
+        {.parentChunkId = c10, .steps = 22, .dirFromParent = game::HexCoord::Direction::R330});
 
     auto c13 = world->addChunk(
-        {.parentChunkId = c12, .steps = 13, .dirFromParent = game::HexCoord::Direction::R0});
+        {.parentChunkId = c12, .steps = 15, .dirFromParent = game::HexCoord::Direction::R0});
 
     auto c14 = world->addChunk(
-        {.parentChunkId = c13, .steps = 15, .dirFromParent = game::HexCoord::Direction::R330});
+        {.parentChunkId = c13, .steps = 17, .dirFromParent = game::HexCoord::Direction::R330});
 
     auto c15 = world->addChunk(
-        {.parentChunkId = c10, .steps = 15, .dirFromParent = game::HexCoord::Direction::R30});
+        {.parentChunkId = c10, .steps = 17, .dirFromParent = game::HexCoord::Direction::R30});
 
     auto c16 = world->addChunk(
         {.parentChunkId = c15, .steps = 22, .dirFromParent = game::HexCoord::Direction::R0});

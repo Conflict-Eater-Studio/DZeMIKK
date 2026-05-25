@@ -16,7 +16,7 @@ World::World(unsigned int seed) : _rng(seed), _perlin(seed), _grid(seed) {
     _worldDefinition.seed = seed;
     _worldDefinition.chunks = {};
     _generators["default"] = [](int step, int maxSteps) {
-        return 1.0F - (static_cast<float>(step) / static_cast<float>(maxSteps) / 2);
+        return 1.0F - (static_cast<float>(step) / static_cast<float>(maxSteps));
     };
 }
 
