@@ -64,7 +64,7 @@ void World::update(double dt) {
             color = glm::vec4(1.0F, 1.0F, 1.0F, 1.0F);
 
             if (cell->getHexCell()->getType() == HexCell::Type::EnemyBattleHex) {
-                color = glm::vec4(0.0F, 1.0F, 0.0F, 1.0F);
+                color = glm::vec4(0.0F, 0.0F, 0.5F, 1.0F);
             }
 
             /*

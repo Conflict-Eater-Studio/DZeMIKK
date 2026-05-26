@@ -126,40 +126,48 @@ void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnC
 }
 
 void game::EnemyManager::assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPtr centerCell,
-                                   const TerritoryPattern& pattern) {
+                                         const TerritoryPattern& pattern) {
     auto* grid = _world->getGrid();
-    auto* ownerChunk = centerCell->getChunk();
-
-    if (ownerChunk) {
-        std::cout << "I have a owner";
-    }
-
-    return;
+    const HexCoord center = centerCell->getCoord();
+    HexChunk* chunk = findChunkForCoord(center);
 
     for (const auto& offset : pattern.offsets) {
-        HexCoord coord = centerCell->getCoord() + offset;
+        HexCoord coord = center + offset;
 
         auto targetCell = grid->getCell(coord);
+        bool hasVisual = _world->hasHexVisual(coord);
 
-        if (!targetCell) {
-            std::cout << "Dupa1";
-            continue;
-        }
+        if (!targetCell || !hasVisual) {
+            std::cout << "dupa";
+            auto newCell =
+                std::make_shared<HexCell>(coord, HexCell::State::Empty,
+                                          HexCell::Type::EnemyBattleHex, HexCell::GenState::Normal);
 
-        if (!_world->hasHexVisual(coord)) {
-            std::cout << "Dupa2";
-            auto newCell = std::make_shared<HexCell>(
-                coord, HexCell::State::Empty, HexCell::Type::Normal, HexCell::GenState::Normal);
+            if (!chunk) {
+                chunk = _world->getGrid()->getChunks().begin()->second.get();
+            }
 
-            //ownerChunk->insertCell(coord, newCell);
+            chunk->insertCell(coord, newCell);
 
-            //targetCell = newCell;
+            targetCell = newCell;
 
-            //_world->ensureHexExists(targetCell);
+            _world->ensureHexExists(newCell);
         }
 
         enemy->addTerritoryCell(targetCell.get());
+
         targetCell->setType(HexCell::Type::EnemyBattleHex);
         targetCell->setDirty(true);
     }
+}
+
+game::HexChunk* game::EnemyManager::findChunkForCoord(const game::HexCoord& coord) {
+    auto& chunks = _world->getGrid()->getChunks();
+
+    for (auto& [id, chunkPtr] : chunks) {
+        if (chunkPtr->contains(coord)) {
+            return chunkPtr.get();
+        }
+    }
+    return nullptr;
 }

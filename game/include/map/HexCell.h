@@ -78,15 +78,6 @@ class HexCell {
         return _coord == other._coord && _state == other._state;
     }
 
-    [[nodiscard]]
-    HexChunk* getChunk() const {
-        return _chunk;
-    }
-
-    void setChunk(HexChunk* chunk) {
-        _chunk = chunk;
-    }
-
   private:
 
     void setCoord(const HexCoord& coord) {
@@ -99,7 +90,6 @@ class HexCell {
     GenState _genState{GenState::Normal};
 
     Entity* _entity = nullptr;
-    HexChunk* _chunk = nullptr;
 
     bool _dirty = false;
 };

@@ -253,8 +253,15 @@ void Game::setupUICamera() {
 
 void Game::setupInputCallbacks() {
     static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
+    static std::unordered_map<dzemikk::MeshRenderer*, glm::vec4> baseColors;
     
     _engine->SetUserUpdateCallback([this]() {
+        auto ensureBase = [&](dzemikk::MeshRenderer* r) {
+            if (!baseColors.contains(r)) {
+                baseColors[r] = r->getColor();
+            }
+        };
+
         if (!_engine || !_engine->getInput()) {
             return;
         }
@@ -270,6 +277,7 @@ void Game::setupInputCallbacks() {
 
         dzemikk::MeshRenderer* currentRenderer = nullptr;
 
+
         if (collider) {
             currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
         }
@@ -279,28 +287,15 @@ void Game::setupInputCallbacks() {
         if (currentRenderer != lastHitRenderer) {
 
             if (lastHitRenderer && lastHitRenderer->isValid()) {
-
-                glm::vec4 color = lastHitRenderer->getColor();
-
-                color.r += hoverStrength;
-                color.g += hoverStrength;
-                color.b += hoverStrength;
-
-                color = glm::clamp(color, 0.0f, 1.0f);
-
-                lastHitRenderer->setColor(color);
+                auto base = baseColors[lastHitRenderer];
+                lastHitRenderer->setColor(base);
             }
 
             if (currentRenderer && currentRenderer->isValid()) {
+                ensureBase(currentRenderer);
 
-                glm::vec4 color = currentRenderer->getColor();
-                color.r -= hoverStrength;
-                color.g -= hoverStrength;
-                color.b -= hoverStrength;
-
-                color = glm::clamp(color, 0.0f, 1.0f);
-
-                currentRenderer->setColor(color);
+                auto base = baseColors[currentRenderer];
+                currentRenderer->setColor(base * 0.5f);
             }
 
             lastHitRenderer = currentRenderer;
@@ -366,76 +361,76 @@ void Game::setupEnemies() {
     enemyManager->setAssetManager(_engine->getAssetManager());
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c1Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 15, "flowerSmall"}};
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 15, "1"}};
     enemyManager->setSpawnConfig(_chunkIds["c1"], c1Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c2Config = {
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 20, "flowerSmall"}};
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 20, "2"}};
     enemyManager->setSpawnConfig(_chunkIds["c2"], c2Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c3Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Special, 1, 30, "flowerSmall"},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Special, 1, 30, "3"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c3"], c3Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c4Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20, "flowerSmall"},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20, "2"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c4"], c4Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c6Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20, "flowerSmall"},
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "flowerSmall"},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20, "2"},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "3"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c6"], c6Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c7Config = {
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "flowerSmall"},
-        {game::EnemyPersonality::Balanced, game::EnemyType::Special, 1, 35, "flowerSmall"},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "3"},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Special, 1, 35, "4"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c7"], c7Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c8Config = {
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 30, "flowerSmall"},
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 25, "flowerSmall"},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 30, "3"},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 25, "3"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c8"], c8Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c9Config = {
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35, "flowerSmall"},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35, "4"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c9"], c9Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c10Config = {
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "flowerSmall"},
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 30, "flowerSmall"},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "3"},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 30, "3"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c10"], c10Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c12Config = {
-        {game::EnemyPersonality::Defensive, game::EnemyType::Special, 1, 40, "flowerSmall"},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Special, 1, 40, "5"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c12"], c12Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c13Config = {
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 35, "flowerSmall"},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 35, "4"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c13"], c13Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c15Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 35, "flowerSmall"},
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 40, "flowerSmall"},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 35, "4"},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 40, "5"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c15"], c15Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c16Config = {
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35, "flowerSmall"},
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 30, "flowerSmall"},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35, "4"},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 30, "1"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c16"], c16Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c17Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 50, "flowerSmall"},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 50, "6"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c17"], c17Config);
 
@@ -443,13 +438,119 @@ void Game::setupEnemies() {
 }
 
 void Game::registerDefaultTerritories() {
-    game::TerritoryPatternRegistry::instance().registerPattern({"flowerSmall",
+    game::TerritoryPatternRegistry::instance().registerPattern({"1",
                                                           {{1, 0},
                                                            {1, -1},
                                                            {0, -1},
 
                                                            {-1, 0},
                                                            {-1, 1},
-
                                                            {0, 1}}});
+
+    game::TerritoryPatternRegistry::instance().registerPattern({"2",
+                                                            {{1, 0},
+                                                            {1, -1},
+                                                            {0, -1},
+
+                                                            {-1, 0},
+                                                            {-1, 1},
+                                                            {0, 1},
+
+                                                            {1, 1},
+                                                            {-1, -1}}});
+
+    game::TerritoryPatternRegistry::instance().registerPattern({"3",
+                                                            {
+                                                                {1, 0},
+                                                                {1, -1},
+                                                                {0, -1},
+                                                                {-1, 0},
+                                                                {-1, 1},
+                                                                {0, 1},
+
+                                                                {2, 0},
+                                                                {0, -2},
+                                                                {-2, 0},
+                                                                {0, 2},
+                                                                {2, -2},
+                                                                {-2, 2},
+                                                            }});
+
+    game::TerritoryPatternRegistry::instance().registerPattern({"4",
+                                                            {
+                                                                {1, 0},
+                                                                {1, -1},
+                                                                {0, -1},
+                                                                {-1, 0},
+                                                                {-1, 1},
+                                                                {0, 1},
+
+                                                                {2, 0},
+                                                                {2, -1},
+                                                                {1, -2},
+                                                                {-1, -1},
+                                                                {-2, 0},
+                                                                {-2, 1},
+                                                                {-1, 2},
+                                                                {1, 1},
+                                                                {2, -2},
+                                                                {-2, 2},
+                                                            }});
+
+    game::TerritoryPatternRegistry::instance().registerPattern({"5",
+                                                            {
+                                                                {1, 0},
+                                                                {1, -1},
+                                                                {0, -1},
+                                                                {-1, 0},
+                                                                {-1, 1},
+                                                                {0, 1},
+
+                                                                {2, 0},
+                                                                {2, -1},
+                                                                {1, -2},
+                                                                {0, -2},
+                                                                {-1, -1},
+                                                                {-2, 0},
+                                                                {-2, 1},
+                                                                {-1, 2},
+                                                                {0, 2},
+                                                                {1, 1},
+                                                                {2, -2},
+                                                                {-2, 2},
+                                                            }});
+
+    game::TerritoryPatternRegistry::instance().registerPattern({"6", 
+                                                            {
+                                                                {1, 0}, 
+                                                                {1, -1}, 
+                                                                {0, -1}, 
+                                                                {-1, 0}, 
+                                                                {-1, 1}, 
+                                                                {0, 1},
+
+                                                                {2, 0}, 
+                                                                {2, -1}, 
+                                                                {1, -2}, 
+                                                                {0, -2}, 
+                                                                {-1, -1}, 
+                                                                {-2, 0}, 
+                                                                {-2, 1}, 
+                                                                {-1, 2}, 
+                                                                {0, 2},
+                                                                {1, 1}, 
+                                                                {2, -2}, 
+                                                                {-2, 2},
+
+                                                                {3, 0}, 
+                                                                {3, -1},
+                                                                {2, -3}, 
+                                                                {1, -3},
+                                                                {-2, -1}, 
+                                                                {-3, 0},
+                                                                {-3,1},
+                                                                {-2, 3}, 
+                                                                {-1, 3},
+                                                                {2, 1}, 
+                                                            }});
 }
