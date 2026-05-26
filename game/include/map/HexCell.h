@@ -11,9 +11,13 @@
 namespace game {
 
 class Entity;
+class EnemyEntity;
+
 class HexCell {
 
   public:
+    friend class HexChunk;
+
     enum class State : uint8_t { Prop, Item, Player, Enemy, Empty };
     enum class Type : uint8_t { Normal, PlayerBattleHex, EnemyBattleHex, Bridge };
     enum class GenState : uint8_t { Normal, Blocked, Protected };
@@ -41,6 +45,7 @@ class HexCell {
     [[nodiscard]] Entity* getEntity() const {
         return _entity;
     }
+
     [[nodiscard]] bool isDirty() const {
         return _dirty;
     }
@@ -73,8 +78,16 @@ class HexCell {
         return _coord == other._coord && _state == other._state;
     }
 
+    [[nodiscard]]
+    HexChunk* getChunk() const {
+        return _chunk;
+    }
+
+    void setChunk(HexChunk* chunk) {
+        _chunk = chunk;
+    }
+
   private:
-    friend class HexChunk;
 
     void setCoord(const HexCoord& coord) {
         _coord = coord;
@@ -86,6 +99,7 @@ class HexCell {
     GenState _genState{GenState::Normal};
 
     Entity* _entity = nullptr;
+    HexChunk* _chunk = nullptr;
 
     bool _dirty = false;
 };

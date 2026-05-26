@@ -13,6 +13,7 @@ class AssetManager;
 namespace game {
 
 class World;
+class TerritoryPattern;
 
 class EnemyManager : public dzemikk::MonoBehaviour {
   public:
@@ -21,6 +22,7 @@ class EnemyManager : public dzemikk::MonoBehaviour {
         EnemyType type;
         int count;
         int hp;
+        std::string territoryPattern;
     };
 
     EnemyManager(unsigned int seed = 1);
@@ -44,6 +46,8 @@ class EnemyManager : public dzemikk::MonoBehaviour {
     std::unordered_map<boost::uuids::uuid, std::vector<EnemySpawnConfig>> _spawnRules;
 
     void spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnConfig& cfg);
+    void assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPtr centerCell,
+                                       const TerritoryPattern& pattern);
 };
 
 } // namespace game

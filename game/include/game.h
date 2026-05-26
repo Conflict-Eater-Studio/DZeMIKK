@@ -41,6 +41,7 @@ class Game {
     void setupInputCallbacks();
     void setupPlayer();
     void setupEnemies();
+    void registerDefaultTerritories();
 
     dzemikk::Engine* _engine;
     dzemikk::AssetHandle<dzemikk::Scene> _mainScene;

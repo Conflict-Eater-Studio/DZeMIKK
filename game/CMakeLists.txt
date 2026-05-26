@@ -18,6 +18,7 @@ set(GAME_SOURCES
     ${SRC_DIR}/stateMachine/combatState.cpp
     ${SRC_DIR}/enemySystem/enemyEntity.cpp
     ${SRC_DIR}/enemySystem/enemyManager.cpp
+    ${SRC_DIR}/enemySystem/territoryPatternRegistry.cpp
 )
 
 set(GAME_HEADERS
@@ -43,6 +44,8 @@ set(GAME_HEADERS
     ${INC_DIR}/enemySystem/enemyEntity.h
     ${INC_DIR}/enemySystem/enemyManager.h
     ${INC_DIR}/enemySystem/enemyTypes.h
+    ${INC_DIR}/enemySystem/territoryPattern.h
+    ${INC_DIR}/enemySystem/territoryPatternRegistry.h
 )
 
 add_executable(game

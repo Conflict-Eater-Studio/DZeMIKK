@@ -86,6 +86,9 @@ class World : public dzemikk::MonoBehaviour {
         _generators.erase(id);
     }
 
+    void ensureHexExists(const std::shared_ptr<HexCell>& cell);
+    [[nodiscard]] bool hasHexVisual(const HexCoord& coord) const;
+
   private:
     void spawnHexVisual(const std::shared_ptr<HexCell>& cell);
 

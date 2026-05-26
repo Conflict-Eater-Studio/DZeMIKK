@@ -43,6 +43,7 @@
 #include <ecs/components/skinnedMeshRenderer.h>
 #include <ecs/components/animator.h>
 #include <animation/animationstatemachine.h>
+#include "enemySystem/territoryPatternRegistry.h"
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
@@ -91,6 +92,7 @@ void Game::start() {
     setupUICamera();
     setupWorld();
     setupPlayer();
+    registerDefaultTerritories();
     setupEnemies();
 
     auto root = _mainScene.get()->findGameObjectByName("Root");
@@ -364,77 +366,90 @@ void Game::setupEnemies() {
     enemyManager->setAssetManager(_engine->getAssetManager());
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c1Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 15}};
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 15, "flowerSmall"}};
     enemyManager->setSpawnConfig(_chunkIds["c1"], c1Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c2Config = {
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 20}};
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 20, "flowerSmall"}};
     enemyManager->setSpawnConfig(_chunkIds["c2"], c2Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c3Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Special, 1, 30},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Special, 1, 30, "flowerSmall"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c3"], c3Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c4Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20},};
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20, "flowerSmall"},
+    };
     enemyManager->setSpawnConfig(_chunkIds["c4"], c4Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c6Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20},
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20, "flowerSmall"},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "flowerSmall"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c6"], c6Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c7Config = {
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25},
-        {game::EnemyPersonality::Balanced, game::EnemyType::Special, 1, 35},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "flowerSmall"},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Special, 1, 35, "flowerSmall"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c7"], c7Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c8Config = {
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 30},
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 25},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 30, "flowerSmall"},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 25, "flowerSmall"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c8"], c8Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c9Config = {
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35, "flowerSmall"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c9"], c9Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c10Config = {
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25},
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 30},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "flowerSmall"},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 30, "flowerSmall"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c10"], c10Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c12Config = {
-        {game::EnemyPersonality::Defensive, game::EnemyType::Special, 1, 40},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Special, 1, 40, "flowerSmall"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c12"], c12Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c13Config = {
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 35},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 35, "flowerSmall"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c13"], c13Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c15Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 35},
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 40},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 35, "flowerSmall"},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 40, "flowerSmall"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c15"], c15Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c16Config = {
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35},
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 30},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35, "flowerSmall"},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 30, "flowerSmall"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c16"], c16Config);
 
     std::vector<game::EnemyManager::EnemySpawnConfig> c17Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 50},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 50, "flowerSmall"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c17"], c17Config);
 
     enemyManager->spawnEnemiesPerChunk();
+}
+
+void Game::registerDefaultTerritories() {
+    game::TerritoryPatternRegistry::instance().registerPattern({"flowerSmall",
+                                                          {{1, 0},
+                                                           {1, -1},
+                                                           {0, -1},
+
+                                                           {-1, 0},
+                                                           {-1, 1},
+
+                                                           {0, 1}}});
 }

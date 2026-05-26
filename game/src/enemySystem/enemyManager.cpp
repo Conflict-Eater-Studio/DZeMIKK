@@ -1,5 +1,6 @@
 #include "enemySystem/enemyManager.h"
 #include "enemySystem/enemyEntity.h"
+#include "enemySystem/territoryPatternRegistry.h"
 #include "scripts/world/world.h"
 
 #include <ecs/gameobject.h>
@@ -109,7 +110,6 @@ void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnC
 
     auto* enemy = enemyGO->addComponent<EnemyEntity>();
 
-
     //enemy->setHP(cfg.hp);
     //enemy->setType(cfg.type);
 
@@ -117,4 +117,49 @@ void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnC
 
     cell->setEntity(enemy);
     cell->setState(HexCell::State::Enemy);
+
+    auto* pattern = TerritoryPatternRegistry::instance().get(cfg.territoryPattern);
+
+    if (pattern) {
+        assignTerritory(enemy, cell, *pattern);
+    }
+}
+
+void game::EnemyManager::assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPtr centerCell,
+                                   const TerritoryPattern& pattern) {
+    auto* grid = _world->getGrid();
+    auto* ownerChunk = centerCell->getChunk();
+
+    if (ownerChunk) {
+        std::cout << "I have a owner";
+    }
+
+    return;
+
+    for (const auto& offset : pattern.offsets) {
+        HexCoord coord = centerCell->getCoord() + offset;
+
+        auto targetCell = grid->getCell(coord);
+
+        if (!targetCell) {
+            std::cout << "Dupa1";
+            continue;
+        }
+
+        if (!_world->hasHexVisual(coord)) {
+            std::cout << "Dupa2";
+            auto newCell = std::make_shared<HexCell>(
+                coord, HexCell::State::Empty, HexCell::Type::Normal, HexCell::GenState::Normal);
+
+            //ownerChunk->insertCell(coord, newCell);
+
+            //targetCell = newCell;
+
+            //_world->ensureHexExists(targetCell);
+        }
+
+        enemy->addTerritoryCell(targetCell.get());
+        targetCell->setType(HexCell::Type::EnemyBattleHex);
+        targetCell->setDirty(true);
+    }
 }

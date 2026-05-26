@@ -63,6 +63,10 @@ void World::update(double dt) {
             auto color = glm::vec4(1.0F);
             color = glm::vec4(1.0F, 1.0F, 1.0F, 1.0F);
 
+            if (cell->getHexCell()->getType() == HexCell::Type::EnemyBattleHex) {
+                color = glm::vec4(0.0F, 1.0F, 0.0F, 1.0F);
+            }
+
             /*
             if (cell->getHexCell()->getGenState() == HexCell::GenState::Normal) {
                 color = glm::vec4(1.0F, 1.0F, 1.0F, 1.0F);
@@ -112,6 +116,17 @@ void World::renderChunk(boost::uuids::uuid id) {
     }
 }
 
+void World::ensureHexExists(const std::shared_ptr<HexCell>& cell) {
+    if (!cell)
+        return;
+
+    spawnHexVisual(cell);
+}
+
+bool World::hasHexVisual(const HexCoord& coord) const {
+    return _spawnedHexes.contains(coord);
+}
+
 void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
     if (_spawnedHexes.contains(cell->getCoord())) {
         return;
@@ -152,6 +167,9 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
     }
     if (cell->getType() == HexCell::Type::Bridge) {
         meshRenderer->setColor(glm::vec4(0.0F, 1.0F, 0.0F, 1.0F));
+    }
+    if (cell->getType() == HexCell::Type::EnemyBattleHex) {
+        meshRenderer->setColor(glm::vec4(1.0F, 0.0F, 0.0F, 1.0F));
     }
     meshRenderer->setTransform(obj->transform());
     auto* worldHex = obj->addComponent<WorldHex>();

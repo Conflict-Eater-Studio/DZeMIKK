@@ -295,6 +295,7 @@ bool HexChunk::insertCell(const HexCoord& coord, HexCellPtr cell) {
     }
 
     cell->setCoord(coord);
+    cell->setChunk(this);
     _hexes.emplace(coord, std::move(cell));
     return true;
 }
@@ -353,6 +354,7 @@ void HexChunk::shift(HexCoord::Direction dir, int times) {
 }
 
 void HexChunk::assignCell(HexCellPtr cell) {
+    cell->setChunk(this);
     _hexes[cell->getCoord()] = std::move(cell);
 }
 

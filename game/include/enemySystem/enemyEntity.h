@@ -13,8 +13,22 @@ class EnemyEntity : public Entity {
         return "EnemyEntity";
     }
 
+    void addTerritoryCell(HexCell* cell) {
+        if (!cell)
+            return;
+
+        _territory.insert(cell);
+    }
+
+    const auto& getTerritory() const {
+        return _territory;
+    }
+
     void onEnter(HexCellPtr cell) override;
     void onExit() override;
+
+  private:
+    std::unordered_set<HexCell*> _territory;
 };
 
 } // namespace game
