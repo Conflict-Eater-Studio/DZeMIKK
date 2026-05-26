@@ -137,6 +137,11 @@ void Game::setupMainCamera() {
 
     _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
 
+    int windowWidth = 0;
+    int windowHeight = 0;
+    glfwGetWindowSize(_engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
+    _mainCamera->setViewportSize(static_cast<float>(windowWidth), static_cast<float>(windowHeight));
+
     _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(_mainCamera);
 }
 

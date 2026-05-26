@@ -25,6 +25,7 @@
 #include "ecs/gameobject.h"
 #include "ecs/scenemanager.h"
 #include "input/input.h"
+#include "events/application_event.h"
 #include "renderer/Model.h"
 #include "renderer/font.h"
 #include "renderer/renderer.h"
@@ -324,6 +325,27 @@ void Engine::updateMouseUI(float deltaTime) {
 }
 
 void Engine::OnEvent(Event& e) {
+    EventDispatcher dispatcher(e);
+    dispatcher.Dispatch<WindowResizeEvent>([this](WindowResizeEvent& event) {
+        unsigned int width = event.GetWidth();
+        unsigned int height = event.GetHeight();
+
+        glViewport(0, 0, width, height);
+
+        if (_renderer) {
+            _renderer->setViewportSize(width, height);
+        }
+
+        if (_renderer) {
+            auto* sceneCamera = const_cast<Camera*>(_renderer->getCameraSystem().getActiveSceneCamera());
+            if (sceneCamera) {
+                sceneCamera->setViewportSize(static_cast<float>(width), static_cast<float>(height));
+            }
+        }
+
+        return false;
+    });
+
     if (_input) {
         _input->OnEvent(e);
     }

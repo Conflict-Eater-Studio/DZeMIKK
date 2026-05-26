@@ -37,9 +37,9 @@ namespace dzemikk {
         glfwWindowHint(GLFW_SAMPLES, 4);
 
         if (modeE == EngineMode::Game) {
-            window_ = glfwCreateWindow(mode->width, mode->height, title, primary, nullptr);
             glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
             glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+            window_ = glfwCreateWindow(mode->width, mode->height, title, primary, nullptr);
         } else {
             window_ = glfwCreateWindow(width, height, title, nullptr, nullptr);
         }
@@ -54,9 +54,13 @@ namespace dzemikk {
         }
         glfwMaximizeWindow(window_);
 
+        int actualWidth = width;
+        int actualHeight = height;
+        glfwGetWindowSize(window_, &actualWidth, &actualHeight);
+
         data_.Title = title;
-        data_.Width = width;
-        data_.Height = height;
+        data_.Width = actualWidth;
+        data_.Height = actualHeight;
 
         glfwMakeContextCurrent(window_);
         glfwSetWindowUserPointer(window_, &data_);
@@ -71,13 +75,21 @@ namespace dzemikk {
             throw std::runtime_error("Failed to initialize GLAD");
         }
 
-        glViewport(0, 0, width, height);
+        int fbWidth = actualWidth;
+        int fbHeight = actualHeight;
+        glfwGetFramebufferSize(window_, &fbWidth, &fbHeight);
+        glViewport(0, 0, fbWidth, fbHeight);
 
         // GLFW Callbacks
         glfwSetWindowSizeCallback(window_, [](GLFWwindow* window, int width, int height) {
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
             data.Width = width;
             data.Height = height;
+
+            int fbWidth = width;
+            int fbHeight = height;
+            glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+            glViewport(0, 0, fbWidth, fbHeight);
 
             WindowResizeEvent event(width, height);
             data.EventCallback(event);
