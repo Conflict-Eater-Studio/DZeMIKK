@@ -38,6 +38,26 @@
 #include <gameStateMachine.h>
 #include "stateMachine/explorationState.h"
 #include "stateMachine/combatState.h"
+#include "enemySystem/enemyManager.h"
+#include <iostream>
+#include <ecs/components/skinnedMeshRenderer.h>
+#include <ecs/components/animator.h>
+#include <animation/animationstatemachine.h>
+
+void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
+    if (!obj)
+        return;
+
+    for (int i = 0; i < depth; i++) {
+        std::cout << "  ";
+    }
+
+    std::cout << obj->getName() << "\n";
+
+    for (auto* child : obj->getChildren()) {
+        printHierarchy(child, depth + 1);
+    }
+}
 
 struct SkyboxInitContext {
     dzemikk::AssetHandle<dzemikk::Shader> shader;
@@ -61,7 +81,6 @@ void Game::start() {
 
     setupSkybox();
 
-
     _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay2.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
@@ -72,6 +91,7 @@ void Game::start() {
     setupUICamera();
     setupWorld();
     setupPlayer();
+    setupEnemies();
 
     auto root = _mainScene.get()->findGameObjectByName("Root");
     _stateMachine = root->addComponent<game::GameStateMachine>();
@@ -146,64 +166,72 @@ void Game::setupWorld() {
 
 
     auto c1 = world->addChunk({.steps = 7});
+    _chunkIds["c1"] = c1;
 
     auto c2 = world->addChunk(
         {.parentChunkId = c1, .steps = 12, .dirFromParent = game::HexCoord::Direction::R0}); //connect chunk
+    _chunkIds["c2"] = c2;
 
     auto c3 = world->addChunk(
         {.parentChunkId = c2, .steps = 15, .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["c3"] = c3;
 
     auto c4 = world->addChunk(
         {.parentChunkId = c3, .steps = 11, .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["c4"] = c4;
 
     auto c5 = world->addChunk(
         {.parentChunkId = c4, .steps = 9, .dirFromParent = game::HexCoord::Direction::R0});
+    _chunkIds["c5"] = c5;
 
     auto c6 = world->addChunk(
         {.parentChunkId = c2, .steps = 17, .dirFromParent = game::HexCoord::Direction::R30});
+    _chunkIds["c6"] = c6;
 
     auto c7 = world->addChunk(
         {.parentChunkId = c6, .steps = 15, .dirFromParent = game::HexCoord::Direction::R30}); //connect chunk
+    _chunkIds["c7"] = c7;
 
     auto c8 = world->addChunk(
         {.parentChunkId = c7, .steps = 19, .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["c8"] = c8;
 
     auto c9 = world->addChunk(
         {.parentChunkId = c8, .steps = 15, .dirFromParent = game::HexCoord::Direction::R30});
+    _chunkIds["c9"] = c9;
 
     auto c10 = world->addChunk(
         {.parentChunkId = c9, .steps = 24, .dirFromParent = game::HexCoord::Direction::R0}); //connect chunk
+    _chunkIds["c10"] = c10;
 
     auto c11 = world->addChunk(
         {.parentChunkId = c7, .steps = 14, .dirFromParent = game::HexCoord::Direction::R30});
+    _chunkIds["c11"] = c11;
 
     auto c12 = world->addChunk(
         {.parentChunkId = c10, .steps = 22, .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["c12"] = c12;
 
     auto c13 = world->addChunk(
         {.parentChunkId = c12, .steps = 15, .dirFromParent = game::HexCoord::Direction::R0});
+    _chunkIds["c13"] = c13;
 
     auto c14 = world->addChunk(
         {.parentChunkId = c13, .steps = 17, .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["c14"] = c14;
 
     auto c15 = world->addChunk(
         {.parentChunkId = c10, .steps = 17, .dirFromParent = game::HexCoord::Direction::R30});
+    _chunkIds["c15"] = c15;
 
     auto c16 = world->addChunk(
         {.parentChunkId = c15, .steps = 22, .dirFromParent = game::HexCoord::Direction::R0});
+    _chunkIds["c16"] = c16;
 
     auto c17 = world->addChunk(
         {.parentChunkId = c16, .steps = 30, .dirFromParent = game::HexCoord::Direction::R0});
+    _chunkIds["c17"] = c17;
 
-    /*
-
-    auto c3s2 = world->addChunk(
-        {.parentChunkId = c3, .steps = 8, .dirFromParent = game::HexCoord::Direction::R300});
-
-    auto c3s2s1 = world->addChunk(
-        {.parentChunkId = c3s2, .steps = 12, .dirFromParent = game::HexCoord::Direction::R300});
-
-    */
     std::ofstream out("./world.json");
     out << world->save().dump(4);
     out.close();
@@ -307,11 +335,106 @@ void Game::setupInputCallbacks() {
 
 void Game::setupPlayer() {
     auto playerGO = _mainScene.get()->findGameObjectByName("Player");
+
+    dzemikk::AnimationClip* clip = nullptr;
+    auto skeleton =
+        playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
+    clip = skeleton->getClip("mixamo.com");
+    auto animator = playerGO->getComponent<dzemikk::Animator>();
+    animator->getStateMachine()->getState("Idle")->setClip(clip);
+
     _playerEntity = playerGO->addComponent<game::PlayerEntity>();
     _playerMovement = playerGO->addComponent<game::PlayerMovement>();
     _playerMovement->setPlayerEntity(_playerEntity);
     _playerMovement->setSpeed(0.25F);
 
+    animator->play("Idle");
+
     _hexGrid = _worldGO->getComponent<game::World>()->getGrid();
     _playerMovement->setHexGrid(_hexGrid);
+
+}
+
+void Game::setupEnemies() {
+    auto* enemyManagerGO = _mainScene.get()->findGameObjectByName("EnemyManager");
+
+    auto* enemyManager = enemyManagerGO->addComponent<game::EnemyManager>();
+
+    enemyManager->setWorld(_worldGO->getComponent<game::World>());
+    enemyManager->setAssetManager(_engine->getAssetManager());
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c1Config = {
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 15}};
+    enemyManager->setSpawnConfig(_chunkIds["c1"], c1Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c2Config = {
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 20}};
+    enemyManager->setSpawnConfig(_chunkIds["c2"], c2Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c3Config = {
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Special, 1, 30},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c3"], c3Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c4Config = {
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20},};
+    enemyManager->setSpawnConfig(_chunkIds["c4"], c4Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c6Config = {
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c6"], c6Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c7Config = {
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Special, 1, 35},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c7"], c7Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c8Config = {
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 30},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 25},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c8"], c8Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c9Config = {
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c9"], c9Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c10Config = {
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 30},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c10"], c10Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c12Config = {
+        {game::EnemyPersonality::Defensive, game::EnemyType::Special, 1, 40},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c12"], c12Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c13Config = {
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 35},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c13"], c13Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c15Config = {
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 35},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 40},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c15"], c15Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c16Config = {
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 30},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c16"], c16Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c17Config = {
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 50},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c17"], c17Config);
+
+    enemyManager->spawnEnemiesPerChunk();
 }

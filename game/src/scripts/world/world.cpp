@@ -61,6 +61,9 @@ void World::update(double dt) {
         auto* cell = trs->getOwner()->getComponent<game::WorldHex>();
         if (cell->getHexCell()->isDirty()) {
             auto color = glm::vec4(1.0F);
+            color = glm::vec4(1.0F, 1.0F, 1.0F, 1.0F);
+
+            /*
             if (cell->getHexCell()->getGenState() == HexCell::GenState::Normal) {
                 color = glm::vec4(1.0F, 1.0F, 1.0F, 1.0F);
             } else if (cell->getHexCell()->getGenState() == HexCell::GenState::Blocked) {
@@ -68,6 +71,8 @@ void World::update(double dt) {
             } else if (cell->getHexCell()->getGenState() == HexCell::GenState::Protected) {
                 color = glm::vec4(0.2F, 0.5F, 1.0F, 1.0F);
             }
+            */
+
             cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setColor(color);
             cell->getHexCell()->setDirty(false);
         }
@@ -130,6 +135,7 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
         glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
     auto* meshRenderer = obj->addComponent<dzemikk::MeshRenderer>();
     meshRenderer->setModel(_model);
+
     switch (cell->getGenState()) {
     case HexCell::GenState::Blocked:
         meshRenderer->setMaterial(0, _material);

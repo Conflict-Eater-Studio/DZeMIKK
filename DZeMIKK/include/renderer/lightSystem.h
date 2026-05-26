@@ -26,7 +26,7 @@ class LightSystem {
     std::vector<SpotLight*> _spotComponents;
 
     static constexpr int MAX_DIR_LIGHTS = 8;
-    static constexpr int MAX_POINT_LIGHTS = 16;
+    static constexpr int MAX_POINT_LIGHTS = 50;
     static constexpr int MAX_SPOT_LIGHTS = 8;
 
     const GPUDirectionalLight* dirData() const {
@@ -73,8 +73,10 @@ class LightSystem {
 
         for (int i = 0; i < pcount; i++) {
             auto* t = _pointComponents[i]->getOwner()->transform();
+            glm::vec3 pos = glm::vec3(t->getWorldMatrix()[3]);
 
-            _point.push_back({glm::vec4(t->getPosition(), 1.0f),
+            _point.push_back(
+                {glm::vec4(pos, 1.0f),
                  glm::vec4(_pointComponents[i]->getColor(), _pointComponents[i]->getIntensity()),
                  glm::vec4(_pointComponents[i]->getRange(), 0, 0, 0)});
         }

@@ -36,7 +36,7 @@
                         -0.8638684153556824,
                         -0.2591605484485626
                     ],
-                    "intensity": 1.0,
+                    "intensity": 0.5590000152587891,
                     "type": "DirectionalLight"
                 }
             ],
@@ -51,14 +51,14 @@
                     "id": "391ad0d9-9743-422b-96b8-c2f30aa20479",
                     "position": [
                         0.0,
-                        3.0,
-                        11.600000381469727
+                        3.5999999046325684,
+                        5.599999904632568
                     ],
                     "rotation": [
-                        0.9839535355567932,
-                        -0.17842482030391693,
-                        0.0,
-                        0.0
+                        0.9834831357002258,
+                        -0.18099981546401978,
+                        -5.267820207821572e-11,
+                        2.862330095165788e-10
                     ],
                     "scale": [
                         1.0,
@@ -158,8 +158,21 @@
                                     "materials": [
                                         "shaders/skinned"
                                     ],
-                                    "model": "models/Baba.fbx",
+                                    "model": "models/Idle.fbx",
                                     "type": "SkinnedMeshRenderer"
+                                },
+                                {
+                                    "currentStateName": "Idle",
+                                    "currentTime": 0.0,
+                                    "id": "af81862b-8e42-45a7-b6bb-93f859af6a78",
+                                    "parameters": {},
+                                    "stateMachine": [
+                                        {
+                                            "name": "Idle",
+                                            "transitions": []
+                                        }
+                                    ],
+                                    "type": "Animator"
                                 }
                             ],
                             "enabled": true,
@@ -192,6 +205,34 @@
                     "enabled": true,
                     "id": "123ced04-5ba2-4ea9-a8b1-373e0886d447",
                     "name": "World"
+                },
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "id": "6ccfd250-7169-4fb1-b198-306af2586743",
+                            "position": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": [
+                                1.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "type": "Transform"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "71331b7f-d7e8-49ac-be35-98b315b240a2",
+                    "name": "EnemyManager"
                 }
             ],
             "components": [

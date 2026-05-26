@@ -192,9 +192,6 @@ namespace dzemikk {
         template <typename T, typename... Args> T* addPass(Args&&... args);
 
 #pragma endregion
-
-
-        void drawDebugUI();
     };
 
 // ================================== IMPLEMENTATION ==================================

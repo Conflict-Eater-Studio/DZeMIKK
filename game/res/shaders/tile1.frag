@@ -16,7 +16,7 @@ uniform int pointLightCount;
 uniform int spotLightCount;
 
 #define MAX_DIR_LIGHTS 8
-#define MAX_POINT_LIGHTS 16
+#define MAX_POINT_LIGHTS 50
 #define MAX_SPOT_LIGHTS 8
 
 uniform vec3 dirDirection[MAX_DIR_LIGHTS];
