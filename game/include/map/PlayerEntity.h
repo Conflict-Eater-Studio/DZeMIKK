@@ -4,6 +4,7 @@
 #include "Entity.h"
 
 namespace game {
+class HexCell;
 class PlayerEntity : public Entity {
   public:
     PlayerEntity() = default;
