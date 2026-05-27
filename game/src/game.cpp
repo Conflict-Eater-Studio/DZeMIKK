@@ -44,6 +44,7 @@
 #include <ecs/components/animator.h>
 #include <animation/animationstatemachine.h>
 #include "enemySystem/territoryPatternRegistry.h"
+#include "player/playerPatternComponent.h"
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
@@ -122,6 +123,11 @@ void Game::start() {
 
 game::CameraController* Game::getCameraController() {
     return _cameraController;
+}
+
+void Game::enableCombatUI(bool enable) {
+    auto combatUI = _mainScene.get()->findGameObjectByName("Combat");
+    combatUI->enabled(enable);
 }
 
 void Game::setupSkybox() {
@@ -303,7 +309,8 @@ void Game::setupInputCallbacks() {
     });
 
     _engine->getInput()->OnMouseButtonPressed.addListener([this](dzemikk::MouseButtonPressedEvent& event) {
-        if (event.GetMouseButton() != GLFW_MOUSE_BUTTON_LEFT) {
+        if (event.GetMouseButton() != GLFW_MOUSE_BUTTON_LEFT ||
+            !_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
             return;
         }
 
@@ -344,12 +351,20 @@ void Game::setupPlayer() {
     _playerMovement = playerGO->addComponent<game::PlayerMovement>();
     _playerMovement->setPlayerEntity(_playerEntity);
     _playerMovement->setSpeed(0.25F);
+    _playerMovement->setGame(this);
 
     animator->play("Idle");
 
     _hexGrid = _worldGO->getComponent<game::World>()->getGrid();
     _playerMovement->setHexGrid(_hexGrid);
 
+    auto patternConponent = playerGO->addComponent<game::PlayerPatternComponent>();
+    patternConponent->setPlayer(_playerEntity);
+    patternConponent->setGrid(_hexGrid);
+    patternConponent->setPlayerPatternsCanvas(
+        _mainScene.get()->findGameObjectByName("Player_Panel"));
+    patternConponent->setAssetManager(_engine->getAssetManager());
+    patternConponent->setupUI();
 }
 
 void Game::setupEnemies() {

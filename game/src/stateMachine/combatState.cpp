@@ -5,10 +5,9 @@
 
 void game::CombatState::onEnter() {
     _game->getCameraController()->setMode(game::CameraController::Mode::Combat);
-    //_game->enableWorldInput(false);
-    //_game->enterCombatUI();
+    _game->enableCombatUI(true);
 }
 
 void game::CombatState::onExit() {
-    //_game->exitCombatUI();
+    _game->enableCombatUI(false);
 }

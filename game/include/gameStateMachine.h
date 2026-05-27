@@ -35,6 +35,15 @@ class GameStateMachine : public dzemikk::MonoBehaviour {
         return "GameStateMachine";
     }
 
+    
+    [[nodiscard]] IGameState* getCurrentState() const {
+        return _current.get();
+    }
+
+    template <typename T> [[nodiscard]] T* getCurrentStateAs() const {
+        return dynamic_cast<T*>(_current.get());
+    }
+
   private:
     std::unique_ptr<IGameState> _current;
 };

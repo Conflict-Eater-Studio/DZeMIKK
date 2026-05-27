@@ -5,7 +5,9 @@
 #include "map/HexGrid.h"
 #include "map/PlayerEntity.h"
 
+class Game;
 namespace game {
+
     class PlayerMovement : public dzemikk::MonoBehaviour {
         public:
         PlayerMovement() = default;
@@ -21,6 +23,8 @@ namespace game {
         void setPlayerEntity(PlayerEntity* playerEntity);
         void setHexGrid(HexGrid* hexGrid);
         void moveTo(HexGrid::HexCellPtr cell);
+
+        void setGame(Game* game);
     private:
         PlayerEntity* _playerEntity = nullptr;
         HexGrid* _hexGrid = nullptr;
@@ -28,6 +32,8 @@ namespace game {
         float _speed = 1.0f;
         int _step = 1;
         float _duration = 0.0f;
+
+        Game* _game = nullptr;
 
     };
 }

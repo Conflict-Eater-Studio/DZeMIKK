@@ -32,6 +32,10 @@ class Game {
     void start();
 
     game::CameraController* getCameraController();
+    void enableCombatUI(bool enable);
+    game::GameStateMachine* getStateMachine() {
+        return _stateMachine;
+    }
 
   private:
     void setupSkybox();

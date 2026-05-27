@@ -313,7 +313,7 @@
                                     "verticalAlign": 1
                                 }
                             ],
-                            "enabled": false,
+                            "enabled": true,
                             "id": "f505fc1d-34bb-481a-98df-bc03caa0aa03",
                             "name": "Button_Text"
                         }
@@ -335,7 +335,7 @@
                             ],
                             "position": [
                                 -50.0,
-                                0.0
+                                400.0
                             ],
                             "rotation": 0.0,
                             "scale": [
@@ -389,7 +389,7 @@
                             "type": "ImageRenderer"
                         }
                     ],
-                    "enabled": false,
+                    "enabled": true,
                     "id": "a42d09e8-dbdc-48e9-a522-7dd813235428",
                     "name": "Button"
                 },
@@ -443,7 +443,7 @@
                                     "verticalAlign": 1
                                 }
                             ],
-                            "enabled": false,
+                            "enabled": true,
                             "id": "a0f934a0-d56a-4d29-b361-09bca244b01a",
                             "name": "Button_Text"
                         }
@@ -465,7 +465,7 @@
                             ],
                             "position": [
                                 50.0,
-                                0.0
+                                400.0
                             ],
                             "rotation": 0.0,
                             "scale": [
@@ -519,7 +519,7 @@
                             "type": "ImageRenderer"
                         }
                     ],
-                    "enabled": false,
+                    "enabled": true,
                     "id": "7e831a92-afbb-43af-8ee6-053f1239aa22",
                     "name": "Button2"
                 },
@@ -577,7 +577,7 @@
                                                     "verticalAlign": 1
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "ef9dbf46-af9f-4209-b300-c1196c952157",
                                             "name": "Text"
                                         },
@@ -629,7 +629,7 @@
                                                     "type": "GridLayout"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "4bc14c0d-c6fb-49c0-9a04-7b4e561d31e5",
                                             "name": "Patterns"
                                         }
@@ -673,7 +673,7 @@
                                             "type": "VerticalLayout"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "c4d8e2c1-f870-4edf-8eab-a5887bfedf89",
                                     "name": "VerticaLayout"
                                 }
@@ -722,7 +722,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "f7c98ef8-d246-4da9-8dcc-1fd525967a00",
                             "name": "Player_Panel"
                         },
@@ -778,7 +778,7 @@
                                                     "verticalAlign": 1
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "3d0c0f83-acd6-43e3-afca-2bb35c3e680c",
                                             "name": "Text"
                                         },
@@ -830,7 +830,7 @@
                                                     "type": "GridLayout"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "67fb4997-c245-4c1b-ae54-5871f9397f44",
                                             "name": "Patterns"
                                         }
@@ -874,7 +874,7 @@
                                             "type": "VerticalLayout"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "b918f52c-ac07-4070-aed8-37cf9d62c5fd",
                                     "name": "VerticaLayout"
                                 }
@@ -923,7 +923,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "115d0278-709b-423a-8c9d-ab85095f1893",
                             "name": "Enemy_Panel"
                         },
@@ -977,7 +977,7 @@
                                             "verticalAlign": 1
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "0fae032d-3cf9-4d0c-b979-9902f734c785",
                                     "name": "Text"
                                 },
@@ -1031,7 +1031,7 @@
                                                             "type": "ImageRenderer"
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "b0bab6db-6c54-4fdf-93aa-7970219981cc",
                                                     "name": "Image"
                                                 },
@@ -1083,7 +1083,7 @@
                                                             "verticalAlign": 0
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "6ef73dc3-eda7-43dc-b919-5414e1b01d95",
                                                     "name": "Text"
                                                 },
@@ -1135,7 +1135,7 @@
                                                             "verticalAlign": 0
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "82003211-515b-4cce-9059-3c739f435185",
                                                     "name": "Text2"
                                                 }
@@ -1179,7 +1179,7 @@
                                                     "type": "VerticalLayout"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "08d57639-6cae-4c43-963d-1dbd3b76295b",
                                             "name": "1"
                                         },
@@ -1231,7 +1231,7 @@
                                                             "type": "ImageRenderer"
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "6ad688b7-40f7-4e69-98a1-c0dca0cbbf3a",
                                                     "name": "Image"
                                                 },
@@ -1283,7 +1283,7 @@
                                                             "verticalAlign": 0
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "9ac83f25-2ab0-486e-a393-00b29b851ac0",
                                                     "name": "Text"
                                                 }
@@ -1327,7 +1327,7 @@
                                                     "type": "VerticalLayout"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "51348623-a38e-46ab-8a8d-ab38f2b29ee9",
                                             "name": "2"
                                         },
@@ -1379,7 +1379,7 @@
                                                             "type": "ImageRenderer"
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "e65821cd-7ad0-496a-a5c2-92e3e3a0a34a",
                                                     "name": "Image"
                                                 },
@@ -1431,7 +1431,7 @@
                                                             "verticalAlign": 0
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "8ad51458-d886-4dbf-83cf-605765ca0759",
                                                     "name": "Text"
                                                 }
@@ -1475,7 +1475,7 @@
                                                     "type": "VerticalLayout"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "1fae89e1-e36e-46b1-9488-f0bcd6626fd0",
                                             "name": "3"
                                         },
@@ -1527,7 +1527,7 @@
                                                             "type": "ImageRenderer"
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "56e9bd77-1995-45f2-b086-fd965f728bb7",
                                                     "name": "Image"
                                                 },
@@ -1579,7 +1579,7 @@
                                                             "verticalAlign": 0
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "b1a9cd9c-56c4-4811-a3df-7793df19ef48",
                                                     "name": "Text"
                                                 }
@@ -1623,7 +1623,7 @@
                                                     "type": "VerticalLayout"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "e2126334-f18e-4053-ac5e-b4fe20dd8b5a",
                                             "name": "4"
                                         }
@@ -1660,7 +1660,7 @@
                                             "zIndex": 0
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "59fed4a6-2b51-4c36-9e4f-ec0290f7381c",
                                     "name": "Items_container"
                                 }
@@ -1709,7 +1709,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "7e6b2156-1a50-4867-9e92-5dd5a337b3e2",
                             "name": "Actions_Panel"
                         }
@@ -1746,7 +1746,7 @@
                             "zIndex": 0
                         }
                     ],
-                    "enabled": true,
+                    "enabled": false,
                     "id": "9c97366d-f255-4050-9dac-297eee08f3cd",
                     "name": "Combat"
                 }

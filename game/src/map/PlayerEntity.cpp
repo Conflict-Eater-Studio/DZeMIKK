@@ -30,6 +30,7 @@ void PlayerEntity::tryMove(const HexCellPtr& targetCell) {
             getCell()->setState(HexCell::State::Empty);
         }
         onEnter(targetCell);
+
         break;
     }
 }
