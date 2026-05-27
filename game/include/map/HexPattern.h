@@ -14,6 +14,7 @@ class HexPattern {
 
     [[nodiscard]] const std::vector<HexCoord>& getHexes() const;
     [[nodiscard]] const std::vector<HexCoord>& rotate(Rotation rotation = Rotation::Clockwise);
+    [[nodiscard]] const Type getType() const;
 
   private:
     std::vector<HexCoord> _hexes;

@@ -364,7 +364,6 @@ void Game::setupPlayer() {
     patternConponent->setPlayerPatternsCanvas(
         _mainScene.get()->findGameObjectByName("Player_Panel"));
     patternConponent->setAssetManager(_engine->getAssetManager());
-    patternConponent->setupUI();
 }
 
 void Game::setupEnemies() {

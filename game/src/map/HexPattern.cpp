@@ -34,4 +34,7 @@ const std::vector<HexCoord>& HexPattern::rotate(Rotation rotation) {
     _hexes = std::move(rotatedHexes);
     return _hexes;
 }
+const game::HexPattern::Type HexPattern::getType() const {
+    return _type;
+}
 } // namespace game
