@@ -165,6 +165,7 @@ void game::EnemyManager::assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPt
         }
 
         enemy->addTerritoryCell(targetCell.get());
+        _cellToEnemy[targetCell->getCoord()] = enemy;
 
         targetCell->setType(HexCell::Type::EnemyBattleHex);
         _world->reserveTerritory(targetCell->getCoord());
@@ -193,4 +194,15 @@ bool game::EnemyManager::canPlacePattern(game::HexCoord center, const game::Terr
             return false;
     }
     return true;
+}
+
+game::EnemyEntity* game::EnemyManager::getEnemyByCell(game::HexCell* cell) const {
+    if (!cell)
+        return nullptr;
+
+    auto it = _cellToEnemy.find(cell->getCoord());
+    if (it != _cellToEnemy.end())
+        return it->second;
+
+    return nullptr;
 }

@@ -401,4 +401,15 @@ bool HexGrid::moveCell(const HexCoord& from, const HexCoord& to) {
 
     return true;
 }
+
+HexGrid::HexCellPtr HexGrid::findCellByEntity(Entity* entity) const {
+    for (const auto& [chunkId, chunk] : _chunks) {
+        for (const auto& [coord, cell] : chunk->getHexes()) {
+            if (cell && cell->getEntity() == entity) {
+                return cell;
+            }
+        }
+    }
+    return nullptr;
+}
 } // namespace game

@@ -130,6 +130,14 @@ void Game::enableCombatUI(bool enable) {
     combatUI->enabled(enable);
 }
 
+dzemikk::AssetHandle<dzemikk::Scene> Game::getCurrentScene() {
+    return _mainScene;
+}
+
+game::HexGrid* Game::getHexGrid() {
+    return _hexGrid;
+}
+
 void Game::setupSkybox() {
     auto skyboxShader = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox");
 

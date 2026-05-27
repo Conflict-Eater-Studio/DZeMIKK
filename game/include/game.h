@@ -37,6 +37,9 @@ class Game {
         return _stateMachine;
     }
 
+    dzemikk::AssetHandle<dzemikk::Scene> getCurrentScene();
+    game::HexGrid* getHexGrid();
+
   private:
     void setupSkybox();
     void setupMainCamera();

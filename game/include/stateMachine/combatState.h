@@ -15,7 +15,7 @@ class CombatState : public IGameState {
 
     void onExit() override;
 
-    void onUpdate(float dt) override {};
+    void onUpdate(float dt) override;
 
   private:
     Game* _game;

@@ -33,6 +33,7 @@ class EnemyManager : public dzemikk::MonoBehaviour {
                         const std::vector<EnemySpawnConfig>& config);
 
     void spawnEnemiesPerChunk();
+    EnemyEntity* getEnemyByCell(HexCell* cell) const;
 
     [[nodiscard]] std::string typeName() const override {
         return "EnemyManager";
@@ -44,6 +45,7 @@ class EnemyManager : public dzemikk::MonoBehaviour {
     std::mt19937 _rng;
 
     std::unordered_map<boost::uuids::uuid, std::vector<EnemySpawnConfig>> _spawnRules;
+    std::unordered_map<HexCoord, EnemyEntity*> _cellToEnemy;
 
     void spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnConfig& cfg);
     void assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPtr centerCell,

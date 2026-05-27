@@ -31,6 +31,7 @@ class HexGrid {
     [[nodiscard]] bool contains(const HexCoord& coord) const;
     [[nodiscard]] std::vector<HexCellPtr> findPath(const HexCellPtr& startCell, const HexCellPtr& targetCell) const;
     bool moveCell(const HexCoord& from, const HexCoord& to);
+    HexCellPtr findCellByEntity(Entity* entity) const;
 
   private:
     static bool isBlockedCell(const HexCellPtr& cell);
