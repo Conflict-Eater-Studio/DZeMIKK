@@ -57,13 +57,23 @@ void game::EnemyManager::spawnEnemiesPerChunk() {
 
         for (const auto& cfg : configs) {
 
+            auto* pattern = TerritoryPatternRegistry::instance().get(cfg.territoryPattern);
+
+            if (!pattern)
+                continue;
+
             for (int i = 0; i < cfg.count; i++) {
 
-                if (cursor >= availableCells.size())
-                    break;
+                while (cursor < availableCells.size()) {
 
-                auto cell = availableCells[cursor++];
-                spawnEnemy(cell, cfg);
+                    auto cell = availableCells[cursor++];
+
+                    if (!canPlacePattern(cell->getCoord(), *pattern))
+                        continue;
+
+                    spawnEnemy(cell, cfg);
+                    break;
+                }
             }
         }
     }
@@ -110,8 +120,9 @@ void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnC
 
     auto* enemy = enemyGO->addComponent<EnemyEntity>();
 
-    //enemy->setHP(cfg.hp);
-    //enemy->setType(cfg.type);
+    enemy->setHp(cfg.hp);
+    enemy->setEnemyType(cfg.type);
+    enemy->setEnemyPersonality(cfg.personality);
 
     enemy->onEnter(cell);
 
@@ -138,7 +149,6 @@ void game::EnemyManager::assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPt
         bool hasVisual = _world->hasHexVisual(coord);
 
         if (!targetCell || !hasVisual) {
-            std::cout << "dupa";
             auto newCell =
                 std::make_shared<HexCell>(coord, HexCell::State::Empty,
                                           HexCell::Type::EnemyBattleHex, HexCell::GenState::Normal);
@@ -157,6 +167,7 @@ void game::EnemyManager::assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPt
         enemy->addTerritoryCell(targetCell.get());
 
         targetCell->setType(HexCell::Type::EnemyBattleHex);
+        _world->reserveTerritory(targetCell->getCoord());
         targetCell->setDirty(true);
     }
 }
@@ -170,4 +181,16 @@ game::HexChunk* game::EnemyManager::findChunkForCoord(const game::HexCoord& coor
         }
     }
     return nullptr;
+}
+
+bool game::EnemyManager::canPlacePattern(game::HexCoord center, const game::TerritoryPattern& pattern) {
+    auto* grid = _world->getGrid();
+
+    for (const auto& offset : pattern.offsets) {
+        HexCoord c = center + offset;
+
+        if (_world->isTerritoryReserved(c))
+            return false;
+    }
+    return true;
 }

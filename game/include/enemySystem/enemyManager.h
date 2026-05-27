@@ -49,6 +49,7 @@ class EnemyManager : public dzemikk::MonoBehaviour {
     void assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPtr centerCell,
                                        const TerritoryPattern& pattern);
     HexChunk* findChunkForCoord(const HexCoord& coord);
+    bool canPlacePattern(HexCoord center, const TerritoryPattern& pattern);
 };
 
 } // namespace game

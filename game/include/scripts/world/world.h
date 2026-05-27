@@ -89,6 +89,15 @@ class World : public dzemikk::MonoBehaviour {
     void ensureHexExists(const std::shared_ptr<HexCell>& cell);
     [[nodiscard]] bool hasHexVisual(const HexCoord& coord) const;
 
+    bool reserveTerritory(const HexCoord& coord) {
+        return _reservedTerritory.insert(coord).second;
+    }
+
+    bool isTerritoryReserved(const HexCoord& coord) const {
+        return _reservedTerritory.contains(coord);
+    }
+
+
   private:
     void spawnHexVisual(const std::shared_ptr<HexCell>& cell);
 
@@ -106,6 +115,7 @@ class World : public dzemikk::MonoBehaviour {
     std::shared_ptr<dzemikk::Material> _material2;
     std::unordered_set<dzemikk::Transform*> _hexTransforms;
     std::unordered_set<HexCoord> _spawnedHexes;
+    std::unordered_set<HexCoord> _reservedTerritory;
 
     PlayerEntity* _player{nullptr};
 };
