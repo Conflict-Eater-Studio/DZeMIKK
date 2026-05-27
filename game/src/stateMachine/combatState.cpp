@@ -3,6 +3,7 @@
 #include "map/HexGrid.h"
 #include "map/HexCell.h"
 #include "enemySystem/enemyManager.h"
+#include "playerMovement.h"
 
 #include "game.h"
 #include "camera/cameraController.h"
@@ -13,45 +14,88 @@
 
 
 void game::CombatState::onEnter() {
-    _game->getCameraController()->setMode(game::CameraController::Mode::Combat);
+    _game->getCameraController()->setMode(CameraController::Mode::Combat);
     _game->enableCombatUI(true);
 
     auto scene = _game->getCurrentScene();
 
     auto playerGO = scene.get()->findGameObjectByName("Player");
-    auto* player = playerGO->getComponent<game::PlayerEntity>();
+    player = playerGO->getComponent<game::PlayerEntity>();
 
-    if (!player) {
-        spdlog::info("Player not found in scene!");
+    if (!player)
         return;
-    }
 
     auto* grid = _game->getHexGrid();
-    if (!grid) {
-        spdlog::info("HexGrid not found!");
+
+    if (!grid)
         return;
-    }
 
     auto playerCell = grid->findCellByEntity(player);
-    if (!playerCell) {
-        spdlog::info("Player is not assigned to any HexCell!");
+
+    if (!playerCell)
         return;
-    }
 
     if (playerCell->getType() != HexCell::Type::EnemyBattleHex)
         return;
 
     auto* enemyManagerGO = scene.get()->findGameObjectByName("EnemyManager");
-
     auto* enemyManager = enemyManagerGO->getComponent<game::EnemyManager>();
 
-    auto enemy = enemyManager->getEnemyByCell(playerCell.get());
+    _currentEnemy = enemyManager->getEnemyByCell(playerCell.get());
 
-    if (!enemy)
+    if (!_currentEnemy)
         return;
 
-    HexCoord center = playerCell->getCoord();
-    center += HexCoord::dir(HexCoord::Direction::R0) * 3;
+    const auto& territory = _currentEnemy->getTerritory();
+
+    if (territory.empty())
+        return;
+
+    std::vector<HexCoord> copiedCoords;
+    copiedCoords.reserve(territory.size());
+
+    for (auto* cell : territory) {
+        if (cell)
+            copiedCoords.push_back(cell->getCoord());
+    }
+
+    std::unordered_set<HexCoord> blocked;
+
+    for (auto* cell : territory) {
+        if (!cell)
+            continue;
+
+        HexCoord c = cell->getCoord();
+
+        blocked.insert(c);
+
+        for (const auto& n : HexCoord::getNeighbors(c)) {
+            blocked.insert(n);
+        }
+    }
+
+    bool overlaps = true;
+
+    HexCoord shiftLeft(-1, 1);
+
+    while (overlaps) {
+
+        overlaps = false;
+
+        for (const auto& coord : copiedCoords) {
+
+            if (blocked.contains(coord)) {
+                overlaps = true;
+                break;
+            }
+        }
+
+        if (overlaps) {
+            for (auto& coord : copiedCoords) {
+                coord += shiftLeft;
+            }
+        }
+    }
 
     auto* worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
     auto* world = worldGO->getComponent<game::World>();
@@ -59,65 +103,126 @@ void game::CombatState::onEnter() {
     HexChunk* chunk = nullptr;
     auto& chunks = world->getGrid()->getChunks();
 
-    for (auto& [id, chunkPtr] : chunks) {
-        if (chunkPtr->contains(center)) {
-            chunk = chunkPtr.get();
+    if (!chunks.empty()) {
+        chunk = chunks.begin()->second.get();
+    }
+
+    if (!chunk)
+        return;
+
+    for (const auto& coord : copiedCoords) {
+
+        auto cell = grid->getCell(coord);
+        bool hasVisual = world->hasHexVisual(coord);
+
+        if (!cell || !hasVisual) {
+
+            auto newCell = std::make_shared<HexCell>(
+                coord, HexCell::State::Empty, HexCell::Type::PlayerBattleHex, HexCell::GenState::Normal);
+
+            chunk->insertCell(coord, newCell);
+            world->ensureHexExists(newCell);
+
+            cell = newCell;
         }
+
+        cell->setType(HexCell::Type::PlayerBattleHex);
+        player->addTerritoryCell(cell.get());
+        cell->setDirty(true);
     }
 
-    std::vector<HexCoord> offsets;
-    offsets.reserve(enemy->getTerritory().size());
+    int sumQ = 0;
+    int sumR = 0;
 
-    for (auto* cell : enemy->getTerritory()) {
-        offsets.push_back(cell->getCoord());
+    for (const auto& coord : copiedCoords) {
+        sumQ += coord.q();
+        sumR += coord.r();
     }
 
-    assignPlayerTerritory(player, chunk, grid, offsets, center);
+    HexCoord centerCoord(sumQ / static_cast<int>(copiedCoords.size()),
+                         sumR / static_cast<int>(copiedCoords.size()));
 
-    spdlog::info("Combat layout initialized vs enemy");
+    auto centerCell = grid->getCell(centerCoord);
+
+    bool hasVisual = world->hasHexVisual(centerCoord);
+
+    if (!centerCell || !hasVisual) {
+
+        auto newCenterCell =
+            std::make_shared<HexCell>(centerCoord, HexCell::State::Empty,
+                                      HexCell::Type::Normal, HexCell::GenState::Normal);
+
+        chunk->insertCell(centerCoord, newCenterCell);
+
+        world->ensureHexExists(newCenterCell);
+
+        centerCell = newCenterCell;
+    }
+
+    centerCell->setDirty(true);
+
+    auto* playerMovement = player->getOwner()->getComponent<game::PlayerMovement>();
+    playerMovement->stopMovement();
+    player->teleportTo(centerCell);
 }
 
 void game::CombatState::onExit() {
+
     _game->enableCombatUI(false);
+
+    auto scene = _game->getCurrentScene();
+
+    auto* grid = _game->getHexGrid();
+
+    if (!grid || !_currentEnemy || !player)
+        return;
+
+    for (auto* cell : player->getTerritory()) {
+
+        if (!cell)
+            continue;
+
+        cell->setType(HexCell::Type::Normal);
+        cell->setDirty(true);
+    }
+
+
+    player->clearTerritory();
+
+    const auto& enemyTerritory = _currentEnemy->getTerritory();
+
+    for (auto* cell : enemyTerritory) {
+
+        if (!cell)
+            continue;
+
+        cell->setType(HexCell::Type::Normal);
+        cell->setDirty(true);
+    }
+
+
+    auto enemyCell = grid->findCellByEntity(_currentEnemy);
+
+    if (enemyCell) {
+
+        auto* playerMovement = player->getOwner()->getComponent<PlayerMovement>();
+
+        if (playerMovement) {
+            playerMovement->stopMovement();
+        }
+
+        player->teleportTo(enemyCell);
+    }
+
+    auto* enemyGO = _currentEnemy->getOwner();
+
+    if (enemyGO) {
+        _game->getCurrentScene().get()->destroyGameObject(enemyGO);
+    }
+
+    _currentEnemy = nullptr;
 }
 
 void game::CombatState::onUpdate(float dt) {
 
-}
-
-void game::CombatState::assignPlayerTerritory(game::PlayerEntity* player, HexChunk* chunk,
-                                              HexGrid* grid, const std::vector<HexCoord>& offsets,
-                                              const HexCoord& center) {
-    for (const auto& offset : offsets) {
-
-        HexCoord coord = center + offset;
-
-        auto targetCell = grid->getCell(coord);
-
-        auto* worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
-        auto* world = worldGO->getComponent<game::World>();
-        bool hasVisual = world->hasHexVisual(coord);
-
-        if (!targetCell || !hasVisual) {
-            auto newCell = std::make_shared<HexCell>(coord, HexCell::State::Empty,
-                                                     HexCell::Type::PlayerBattleHex,
-                                                     HexCell::GenState::Normal);
-
-            if (!chunk) {
-                chunk = grid->getChunks().begin()->second.get();
-            }
-
-            chunk->insertCell(coord, newCell);
-
-            targetCell = newCell;
-
-            world->ensureHexExists(newCell);
-        }
-
-        targetCell->setType(HexCell::Type::PlayerBattleHex);
-        targetCell->setEntity(player);
-        targetCell->setDirty(true);
-
-        player->addTerritoryCell(targetCell.get());
-    }
 }

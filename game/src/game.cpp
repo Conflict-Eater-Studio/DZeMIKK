@@ -270,10 +270,8 @@ void Game::setupInputCallbacks() {
     static std::unordered_map<dzemikk::MeshRenderer*, glm::vec4> baseColors;
     
     _engine->SetUserUpdateCallback([this]() {
-        auto ensureBase = [&](dzemikk::MeshRenderer* r) {
-            if (!baseColors.contains(r)) {
-                baseColors[r] = r->getColor();
-            }
+        auto ensureBase = [&](dzemikk::MeshRenderer* r) { 
+            baseColors[r] = r->getColor();
         };
 
         if (!_engine || !_engine->getInput()) {

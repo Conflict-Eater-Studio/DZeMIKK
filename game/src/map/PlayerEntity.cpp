@@ -34,4 +34,22 @@ void PlayerEntity::tryMove(const HexCellPtr& targetCell) {
         break;
     }
 }
+void PlayerEntity::teleportTo(const HexCellPtr& targetCell) {
+
+    if (!targetCell)
+        return;
+
+    if (getCell()) {
+        getCell()->setEntity(nullptr);
+        getCell()->setState(HexCell::State::Empty);
+    }
+
+    targetCell->setEntity(this);
+    targetCell->setState(HexCell::State::Player);
+
+    setCell(targetCell);
+
+    getOwner()->transform()->setPosition(targetCell->getCoord().toWorldPosition(1.0F, 0.1F) +
+                                         glm::vec3(0.0F, 0.4F, 0.0F));
+}
 } // namespace game

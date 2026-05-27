@@ -16,6 +16,7 @@ class PlayerEntity : public Entity {
     }
 
     void tryMove(const HexCellPtr& targetCell);
+    void teleportTo(const HexCellPtr& targetCell);
 
     void addTerritoryCell(HexCell* cell) {
         if (!cell)
@@ -26,6 +27,10 @@ class PlayerEntity : public Entity {
 
     const auto& getTerritory() const {
         return _territory;
+    }
+
+    void clearTerritory() {
+        _territory.clear();
     }
 
   private:

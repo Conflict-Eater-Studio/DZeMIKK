@@ -25,6 +25,7 @@ namespace game {
         void moveTo(HexGrid::HexCellPtr cell);
 
         void setGame(Game* game);
+        void stopMovement();
     private:
         PlayerEntity* _playerEntity = nullptr;
         HexGrid* _hexGrid = nullptr;

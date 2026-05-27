@@ -52,4 +52,10 @@ void PlayerMovement::setGame(Game* game) {
     _game = game;
 }
 
+void PlayerMovement::stopMovement() {
+    _path.clear();
+    _step = 0;
+    _duration = 0.0;
+}
+
 } // namespace game
