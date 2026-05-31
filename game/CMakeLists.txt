@@ -20,6 +20,8 @@ set(GAME_SOURCES
     ${SRC_DIR}/enemySystem/enemyManager.cpp
     ${SRC_DIR}/enemySystem/territoryPatternRegistry.cpp
     ${SRC_DIR}/player/playerPatternComponent.cpp
+    ${SRC_DIR}/ui/combatUIPanel.cpp
+    ${SRC_DIR}/enemySystem/combatArenaBuilder.cpp
 )
 
 set(GAME_HEADERS
@@ -48,6 +50,8 @@ set(GAME_HEADERS
     ${INC_DIR}/enemySystem/territoryPattern.h
     ${INC_DIR}/enemySystem/territoryPatternRegistry.h
     ${INC_DIR}/player/playerPatternComponent.h
+    ${INC_DIR}/ui/combatUIPanel.h
+    ${INC_DIR}/enemySystem/combatArenaBuilder.h
 )
 
 add_executable(game

@@ -45,6 +45,7 @@
 #include <animation/animationstatemachine.h>
 #include "enemySystem/territoryPatternRegistry.h"
 #include "player/playerPatternComponent.h"
+#include "ui/combatUIPanel.h"
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
@@ -365,11 +366,18 @@ void Game::setupPlayer() {
     _playerMovement->setHexGrid(_hexGrid);
 
     auto patternConponent = playerGO->addComponent<game::PlayerPatternComponent>();
-    patternConponent->setPlayer(_playerEntity);
-    patternConponent->setGrid(_hexGrid);
-    patternConponent->setPlayerPatternsCanvas(
-        _mainScene.get()->findGameObjectByName("Player_Panel"));
-    patternConponent->setAssetManager(_engine->getAssetManager());
+
+    auto playerPanel = _mainScene.get()->findGameObjectByName("Player_Panel");
+    auto combatPlayerPanel = playerPanel->addComponent<game::CombatUIPanel>();
+    combatPlayerPanel->setPlayerPatterns(patternConponent);
+    combatPlayerPanel->setAssetManager(_engine->getAssetManager());
+    combatPlayerPanel->setCanvas(playerPanel);
+
+    //patternConponent->setPlayer(_playerEntity);
+    //patternConponent->setGrid(_hexGrid);
+    //patternConponent->setPlayerPatternsCanvas(
+    //    _mainScene.get()->findGameObjectByName("Player_Panel"));
+    //patternConponent->setAssetManager(_engine->getAssetManager());
 }
 
 void Game::setupEnemies() {

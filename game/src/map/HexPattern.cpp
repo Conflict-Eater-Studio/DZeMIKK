@@ -37,4 +37,12 @@ const std::vector<HexCoord>& HexPattern::rotate(Rotation rotation) {
 const game::HexPattern::Type HexPattern::getType() const {
     return _type;
 }
+bool game::HexPattern::operator==(const HexPattern& other) const {
+    return _hexes == other._hexes && _type == other._type &&
+           _effectStrength == other._effectStrength;
+}
+
+bool game::HexPattern::operator!=(const HexPattern& other) const {
+    return !(*this == other);
+}
 } // namespace game

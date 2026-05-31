@@ -1,22 +1,17 @@
-#include "ecs/components/monobehaviour.h"
-#include <assetManager/assetHandle.h>
+#pragma once
+
+#include <optional>
+#include <vector>
+
 #include "map/HexPattern.h"
-#include "map/HexCell.h"
-
-#include "nlohmann/json.hpp"
-
-using namespace dzemikk;
-
-namespace dzemikk {
-class GameObject;
-class AssetManager;
-}
+#include <ecs/components/monobehaviour.h>
 
 namespace game {
+
 class PlayerEntity;
 class HexGrid;
 
-class PlayerPatternComponent : public MonoBehaviour {
+class PlayerPatternComponent : public dzemikk::MonoBehaviour {
   public:
     struct PatternEntry {
         HexPattern pattern;
@@ -28,35 +23,43 @@ class PlayerPatternComponent : public MonoBehaviour {
 
     void addPattern(const HexPattern& pattern, int count = 1);
 
+    void insertPattern(size_t index, const HexPattern& pattern, int count = 1);
+
+
+    bool removePattern(size_t index);
+
+    bool removePattern(const HexPattern& pattern);
+
+    void clearPatterns();
+
+
+    bool addCount(size_t index, int amount);
+
+    bool removeCount(size_t index, int amount);
+
+    bool setCount(size_t index, int count);
+
+
     bool canUsePattern(size_t index) const;
 
-    std::vector<HexCell*> getAffectedCells(size_t index, HexPattern::Rotation rotation) const;
+    bool usePattern(size_t index);
 
-    void usePattern(size_t index);
 
-    void setPlayer(PlayerEntity* player);
-    [[nodiscard]] PlayerEntity* getPlayer() const;
+    size_t getPatternCount() const;
 
-    void setGrid(HexGrid* grid);
-    [[nodiscard]] HexGrid* getGrid() const;
+    PatternEntry* getPattern(size_t index);
+    const PatternEntry* getPattern(size_t index) const;
 
-    void setPlayerPatternsCanvas(GameObject* playerPatternsCanvas);
-    [[nodiscard]] GameObject* getPlayerPatternsCanvas() const;
+    const std::vector<PatternEntry>& getPatterns() const;
 
-    void setAssetManager(AssetManager* assetManager);
 
-    std::string typeName() const override;
-
-    void setupUI();
+    int findPattern(const HexPattern& pattern) const;
 
   private:
     std::vector<PatternEntry> _patterns;
-    PlayerEntity* _player = nullptr;
-    HexGrid* _grid = nullptr;
-    GameObject* _playerPatternsCanvas = nullptr;
-    dzemikk::AssetHandle<nlohmann::json> _patternSlotPrefab;
-    dzemikk::AssetHandle<nlohmann::json> _hexUIPrefab;
-    AssetManager* _assetManager = nullptr;
+
+    // Odziedziczono za poœrednictwem elementu MonoBehaviour
+    std::string typeName() const override;
 };
 
 } // namespace game

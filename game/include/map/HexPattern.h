@@ -16,6 +16,9 @@ class HexPattern {
     [[nodiscard]] const std::vector<HexCoord>& rotate(Rotation rotation = Rotation::Clockwise);
     [[nodiscard]] const Type getType() const;
 
+    bool operator==(const HexPattern& other) const;
+    bool operator!=(const HexPattern& other) const;
+
   private:
     std::vector<HexCoord> _hexes;
     Type _type{Type::ATK};
