@@ -30,8 +30,6 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
     void setAssetManager(dzemikk::AssetManager* assetManager);
     void setCanvas(dzemikk::GameObject* canvas);
 
-    void setPatternSelectedCallback(std::function<void(size_t)> callback);
-
   private:
     void buildUI();
 
@@ -60,9 +58,6 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
 
     std::vector<PatternUIEntry> _uiEntries;
 
-    std::function<void(size_t)> _onPatternSelected;
-
-    // Odziedziczono za poœrednictwem elementu MonoBehaviour
     std::string typeName() const override;
 };
 

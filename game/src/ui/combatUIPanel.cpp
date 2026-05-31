@@ -5,6 +5,7 @@
 #include <ecs/components/ui/gridLayout.h>
 #include <ecs/serialize/prefabSerializer.h>
 #include <ecs/components/ui/uiActionRegistry.h>
+#include <iostream>
 
 void game::CombatUIPanel::start() {
     _patternSlotPrefab = _assetManager->get<nlohmann::json>("prefabs/pattern_ui.prefab");
@@ -72,10 +73,15 @@ void game::CombatUIPanel::createPatternSlot(const PlayerPatternComponent::Patter
     std::string actionId = "pattern_" + std::to_string(index);
 
     dzemikk::UIActionRegistry::get().registerAction(
-        [this, index](const dzemikk::UIEvent&) {
-            if (_onPatternSelected) {
-                _onPatternSelected(index);
-            }
+        [this, index, actionId](const dzemikk::UIEvent&) {
+            if (!_patterns)
+                return;
+
+            _patterns->usePattern(index);
+
+            refreshCounts();
+
+            std::cout << "[CombatUI:Panel] Click " << actionId << std::endl;
         },
         actionId);
 
@@ -262,8 +268,3 @@ void game::CombatUIPanel::setAssetManager(dzemikk::AssetManager* assetManager) {
 void game::CombatUIPanel::setCanvas(dzemikk::GameObject* canvas) {
     _canvas = canvas;
 }
-
-void game::CombatUIPanel::setPatternSelectedCallback(std::function<void(size_t)> callback) {
-    _onPatternSelected = std::move(callback);
-}
-

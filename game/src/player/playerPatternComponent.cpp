@@ -1,8 +1,9 @@
 #include "player/playerPatternComponent.h"
+#include <iostream>
 
 void game::PlayerPatternComponent::start() {
     // atk1
-    addPattern(HexPattern({{0, 0}, {1, -1}, {2, -2}}, HexPattern::Type::ATK), -1);
+    addPattern(HexPattern({{0, 0}, {1, -1}, {2, -2}}, HexPattern::Type::ATK), 1);
 
     // atk2
     addPattern(HexPattern({{0, 0}, {1, 0}, {2, -1}}, HexPattern::Type::ATK), -1);

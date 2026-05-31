@@ -275,7 +275,8 @@ void Game::setupInputCallbacks() {
             baseColors[r] = r->getColor();
         };
 
-        if (!_engine || !_engine->getInput()) {
+        if (!_engine || !_engine->getInput() ||
+            !_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
             return;
         }
 
@@ -372,12 +373,6 @@ void Game::setupPlayer() {
     combatPlayerPanel->setPlayerPatterns(patternConponent);
     combatPlayerPanel->setAssetManager(_engine->getAssetManager());
     combatPlayerPanel->setCanvas(playerPanel);
-
-    //patternConponent->setPlayer(_playerEntity);
-    //patternConponent->setGrid(_hexGrid);
-    //patternConponent->setPlayerPatternsCanvas(
-    //    _mainScene.get()->findGameObjectByName("Player_Panel"));
-    //patternConponent->setAssetManager(_engine->getAssetManager());
 }
 
 void Game::setupEnemies() {
