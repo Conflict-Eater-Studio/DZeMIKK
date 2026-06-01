@@ -349,7 +349,14 @@ std::vector<HexGrid::HexCellPtr> HexGrid::findPath(const HexCellPtr& startCell, 
             if (!isWalkableCell(neighborCell)) {
                 continue;
             }
-
+            if (targetCell->getType() != HexCell::Type::EnemyBattleHex) {
+                if (neighborCell.get()->getType() == HexCell::Type::EnemyBattleHex) {
+                    continue;
+                }
+            }
+            if (neighborCell->getState() == HexCell::State::Prop) {
+                continue;
+            }
             if (neighborCell->getEntity() != nullptr && neighbor != target) {
                 continue;
             }
