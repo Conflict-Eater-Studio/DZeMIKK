@@ -2835,7 +2835,7 @@
                                             "childForceExpandHeight": false,
                                             "childForceExpandWidth": false,
                                             "id": "d57ead3c-76ad-4099-8681-728647b8468c",
-                                            "spacing": 0.0,
+                                            "spacing": 12.017999649047852,
                                             "type": "HorizontalLayout"
                                         }
                                     ],
@@ -3081,7 +3081,7 @@
                                     ],
                                     "enabled": true,
                                     "id": "1f133e34-4c7b-48dc-b5bc-fb861b81232b",
-                                    "name": "Slider"
+                                    "name": "PlayerSlider"
                                 },
                                 {
                                     "children": [],
@@ -3215,7 +3215,7 @@
                                         100.0
                                     ],
                                     "type": "RectTransform",
-                                    "zIndex": 0
+                                    "zIndex": 10
                                 },
                                 {
                                     "color": [
