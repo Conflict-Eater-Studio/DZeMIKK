@@ -20,7 +20,7 @@ void Collisions::uninitialize() {
 }
 
 Collider* Collisions::raycast(const Camera* camera, const glm::vec2& screenPos, float screenWidth, float screenHeight) {
-    if (!camera) return nullptr;
+    if (!camera || screenWidth <= 0.0f || screenHeight <= 0.0f) return nullptr;
 
     // Convert screen pos to NDC
     float x = (2.0f * screenPos.x) / screenWidth - 1.0f;

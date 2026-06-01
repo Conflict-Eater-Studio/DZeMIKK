@@ -135,6 +135,9 @@ void dzemikk::Camera::lookAt(const glm::vec3& target) {
 }
 
 void dzemikk::Camera::setViewportSize(float width, float height) {
+    if (width <= 0.0f || height <= 0.0f) {
+        return;
+    }
     _aspect = width / height;
     if (_projectionType == ProjectionType::Perspective)
         recalcProjection();

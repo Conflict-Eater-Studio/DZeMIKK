@@ -131,5 +131,7 @@ void dzemikk::Renderer::setViewportSize(uint32_t width, uint32_t height) {
     _viewportWidth = width;
     _viewportHeight = height;
 
-    _sceneFramebuffer->resize(width, height);
+    if (_sceneFramebuffer) {
+        _sceneFramebuffer->resize(width, height);
+    }
 }

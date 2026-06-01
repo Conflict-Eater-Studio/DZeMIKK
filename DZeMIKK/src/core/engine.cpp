@@ -330,6 +330,10 @@ void Engine::OnEvent(Event& e) {
         unsigned int width = event.GetWidth();
         unsigned int height = event.GetHeight();
 
+        if (width == 0 || height == 0) {
+            return false;
+        }
+
         glViewport(0, 0, width, height);
 
         if (_renderer) {

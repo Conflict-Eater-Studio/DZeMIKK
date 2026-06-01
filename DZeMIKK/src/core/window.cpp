@@ -86,6 +86,10 @@ namespace dzemikk {
             data.Width = width;
             data.Height = height;
 
+            if (width == 0 || height == 0) {
+                return;
+            }
+
             int fbWidth = width;
             int fbHeight = height;
             glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
