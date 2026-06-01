@@ -76,8 +76,10 @@ class PlayerPatternComponent : public dzemikk::MonoBehaviour {
     dzemikk::Engine* _engine = nullptr;
     ListenerID _cancelPatternListenerID = -1;
     dzemikk::GameObject* _previewObject = nullptr;
+    std::vector<dzemikk::GameObject*> _previewHexes;
 
     void cancelPattern();
+    glm::vec3 axialToWorld(const HexCoord& coord, float hexSize);
 };
 
 } // namespace game

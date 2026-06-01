@@ -105,10 +105,14 @@ void game::PlayerPatternComponent::update(double deltaTime) {
             _previewObject->transform()->setPosition({transform->getPosition().x,
                                                       transform->getPosition().y + 0.1F,
                                                       transform->getPosition().z});
-            auto* renderer = _previewObject->getComponent<dzemikk::MeshRenderer>();
+            
+            for (auto* hex : _previewHexes) {
+                auto* renderer = hex->getComponent<dzemikk::MeshRenderer>();
 
-            if (renderer)
-                renderer->setColor(color);
+                if (renderer) {
+                    renderer->setColor(color);
+                }
+            }
         }
     }
 }
@@ -210,8 +214,23 @@ bool game::PlayerPatternComponent::usePattern(size_t index) {
     auto previewPrefab =
         _engine->getAssetManager()->get<nlohmann::json>("prefabs/battle_hex.prefab");
 
-    _previewObject = dzemikk::PrefabSerializer::instantiate(
-        *getOwner()->getScene(), *previewPrefab.get(), _engine->getAssetManager());
+    _previewObject = getOwner()->getScene()->createGameObject();
+    _previewObject->setName("PatternPreview");
+
+    const auto& pattern = entry.pattern;
+    for (const auto& hex : pattern.getHexes()) {
+        auto previewPrefab =
+            _engine->getAssetManager()->get<nlohmann::json>("prefabs/battle_hex.prefab");
+
+        auto* hexObject = dzemikk::PrefabSerializer::instantiate(
+            *getOwner()->getScene(), *previewPrefab.get(), _engine->getAssetManager());
+
+        hexObject->setParent(_previewObject);
+
+        hexObject->transform()->setPosition(axialToWorld(hex, 1.0f));
+
+        _previewHexes.push_back(hexObject);
+    }
 
     return true;
 }
@@ -276,4 +295,12 @@ const game::PlayerPatternComponent::PatternEntry* game::PlayerPatternComponent::
     }
 
     return &_patterns[_activePatternIndex];
+}
+
+glm::vec3 game::PlayerPatternComponent::axialToWorld(const HexCoord& coord, float hexSize) {
+    float x = hexSize * std::sqrt(3.0f) * (coord.q() + coord.r() * 0.5f);
+
+    float z = hexSize * 1.5f * coord.r();
+
+    return {x, 0.0f, z};
 }
