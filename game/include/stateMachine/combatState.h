@@ -12,6 +12,7 @@ class HexChunk;
 class HexGrid;
 class HexCoord;
 class EnemyEntity;
+class PlayerPatternComponent;
 
 class CombatState : public IGameState {
   public:
@@ -25,8 +26,9 @@ class CombatState : public IGameState {
 
   private:
     Game* _game = nullptr;
-    PlayerEntity* player = nullptr;
+    PlayerEntity* _player = nullptr;
     EnemyEntity* _currentEnemy = nullptr;
+    PlayerPatternComponent* _playerPatternComponent = nullptr;
 };
 
 } // namespace game

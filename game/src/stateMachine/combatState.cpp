@@ -5,6 +5,7 @@
 #include "enemySystem/enemyManager.h"
 #include "playerMovement.h"
 #include "enemySystem/combatArenaBuilder.h"
+#include "player/playerPatternComponent.h"
 
 #include "game.h"
 #include "camera/cameraController.h"
@@ -23,7 +24,7 @@ void game::CombatState::onEnter() {
     auto scene = _game->getCurrentScene();
 
     auto playerGO = scene.get()->findGameObjectByName("Player");
-    player = playerGO->getComponent<game::PlayerEntity>();
+    _player = playerGO->getComponent<game::PlayerEntity>();
 
     auto* worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
     auto* world = worldGO->getComponent<game::World>();
@@ -31,23 +32,25 @@ void game::CombatState::onEnter() {
     auto* enemyManagerGO = scene.get()->findGameObjectByName("EnemyManager");
     auto* enemyManager = enemyManagerGO->getComponent<game::EnemyManager>();
 
-    auto playerCell = _game->getHexGrid()->findCellByEntity(player);
+    auto playerCell = _game->getHexGrid()->findCellByEntity(_player);
     _currentEnemy = enemyManager->getEnemyByCell(playerCell.get());
 
     CombatArenaBuilder builder;
 
-    auto arena = builder.build(_currentEnemy, player, _game->getHexGrid(), world);
+    auto arena = builder.build(_currentEnemy, _player, _game->getHexGrid(), world);
 
     if (!arena.centerCell)
         return;
 
-    auto* movement = player->getOwner()->getComponent<PlayerMovement>();
+    auto* movement = _player->getOwner()->getComponent<PlayerMovement>();
 
     if (movement) {
         movement->stopMovement();
     }
 
-    player->teleportTo(arena.centerCell);
+    _player->teleportTo(arena.centerCell);
+
+    _playerPatternComponent = playerGO->getComponent<PlayerPatternComponent>();
 }
 
 void game::CombatState::onExit() {
@@ -58,10 +61,10 @@ void game::CombatState::onExit() {
 
     auto* grid = _game->getHexGrid();
 
-    if (!grid || !_currentEnemy || !player)
+    if (!grid || !_currentEnemy || !_player)
         return;
 
-    for (auto* cell : player->getTerritory()) {
+    for (auto* cell : _player->getTerritory()) {
 
         if (!cell)
             continue;
@@ -70,7 +73,10 @@ void game::CombatState::onExit() {
         cell->setDirty(true);
     }
 
-    player->clearTerritory();
+    _player->clearTerritory();
+    _playerPatternComponent->clearActivePattern();
+    _playerPatternComponent->clearPlacedPatterns();
+    _playerPatternComponent->clearPreview();
 
     const auto& enemyTerritory = _currentEnemy->getTerritory();
 
@@ -88,13 +94,13 @@ void game::CombatState::onExit() {
 
     if (enemyCell) {
 
-        auto* playerMovement = player->getOwner()->getComponent<PlayerMovement>();
+        auto* playerMovement = _player->getOwner()->getComponent<PlayerMovement>();
 
         if (playerMovement) {
             playerMovement->stopMovement();
         }
 
-        player->teleportTo(enemyCell);
+        _player->teleportTo(enemyCell);
     }
 
     auto* enemyGO = _currentEnemy->getOwner();

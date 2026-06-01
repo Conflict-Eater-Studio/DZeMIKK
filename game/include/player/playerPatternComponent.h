@@ -77,6 +77,7 @@ class PlayerPatternComponent : public dzemikk::MonoBehaviour {
 
     void setGrid(game::HexGrid* grid);
     void clearPlacedPatterns();
+    void clearPreview();
 
     const std::vector<PlacedPattern>& getPlacedPatterns() const;
 
@@ -100,6 +101,9 @@ class PlayerPatternComponent : public dzemikk::MonoBehaviour {
     void rebuildPreview();
     glm::vec3 axialToWorld(const HexCoord& coord, float hexSize);
     bool confirmPattern();
+    bool isCellOccupiedByPattern(const HexCoord& coord) const;
+    void restartPreview();
+    void destroyPreview();
 };
 
 } // namespace game

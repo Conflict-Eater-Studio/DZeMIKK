@@ -2,6 +2,10 @@
 #include "renderer/model.h"
 
 namespace dzemikk {
+void MeshRenderer::setCullingRadius(float cullingRadius) {
+    _cullingRadius = cullingRadius;
+}
+
 void MeshRenderer::calculateCullingRadius(Model* model) {
     if (!model || model->getSubMeshes().empty()) {
         return;

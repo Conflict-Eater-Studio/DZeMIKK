@@ -142,6 +142,8 @@ class MeshRenderer : public Component {
         _color = color;
     }
 
+    void setCullingRadius(float cullingRadius);
+
     /**
      * @brief Returns the color multiplier.
      *
