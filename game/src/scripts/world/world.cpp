@@ -40,6 +40,9 @@ void World::load(const nlohmann::json& def) {
     for (const auto& chunkDef : chunksToBuild) {
         addChunk(chunkDef);
     }
+
+    // Removes all hexes with gen state Blocked
+    _grid.clean();
 }
 
 nlohmann::json World::save() {
@@ -70,7 +73,6 @@ void World::update(double dt) {
             if (cell->getHexCell()->getType() == HexCell::Type::PlayerBattleHex) {
                 color = glm::vec4(1.0F, 1.0F, 0.0F, 1.0F);
             }
-
 
             /*
             if (cell->getHexCell()->getGenState() == HexCell::GenState::Normal) {
@@ -122,8 +124,9 @@ void World::renderChunk(boost::uuids::uuid id) {
 }
 
 void World::ensureHexExists(const std::shared_ptr<HexCell>& cell) {
-    if (!cell)
+    if (!cell) {
         return;
+    }
 
     spawnHexVisual(cell);
 }

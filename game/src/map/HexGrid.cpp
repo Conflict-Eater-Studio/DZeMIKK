@@ -3,13 +3,12 @@
 #include "boost/uuid/detail/nil_uuid.hpp"
 #include "boost/uuid/uuid.hpp"
 
+#include <algorithm>
 #include <limits>
 #include <queue>
 #include <stdexcept>
-#include <unordered_set>
 #include <unordered_map>
-#include <algorithm>
-
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -58,8 +57,8 @@ std::pair<HexCoord, HexCoord> HexGrid::closestPair(HexChunk* chunk1, HexChunk* c
 
             auto dist = HexCoord::distance(coord1, coord2);
             if (dist < minDist ||
-                (dist == minDist &&
-                 (coord1 < closest.first || (coord1 == closest.first && coord2 < closest.second)))) {
+                (dist == minDist && (coord1 < closest.first ||
+                                     (coord1 == closest.first && coord2 < closest.second)))) {
                 minDist = dist;
                 closest = {coord1, coord2};
             }
@@ -112,20 +111,28 @@ void HexGrid::makeBridge(const boost::uuids::uuid& parentChunkId, const boost::u
     auto hexes = HexCoord::hexesOnLine(closest.first, closest.second);
 
     for (const auto& hex : hexes) {
-        bool inParent = _chunks[parentChunkId]->contains(hex);
-        bool inChild = _chunks[chunkId]->contains(hex);
+        HexChunk* owningChunk = nullptr;
 
-        if (inParent) {
-            _chunks[parentChunkId]->getCell(hex)->setGenState(HexCell::GenState::Protected);
-            _chunks[parentChunkId]->getCell(hex)->setType(HexCell::Type::Bridge);
+        if (_chunks[parentChunkId]->contains(hex)) {
+            owningChunk = _chunks[parentChunkId].get();
+        } else if (_chunks[chunkId]->contains(hex)) {
+            owningChunk = _chunks[chunkId].get();
+        } else {
+            for (const auto& [otherId, otherChunk] : _chunks) {
+                if (otherId == parentChunkId || otherId == chunkId) {
+                    continue;
+                }
+                if (otherChunk->contains(hex)) {
+                    owningChunk = otherChunk.get();
+                    break;
+                }
+            }
         }
 
-        if (inChild) {
-            _chunks[chunkId]->getCell(hex)->setGenState(HexCell::GenState::Protected);
-            _chunks[chunkId]->getCell(hex)->setType(HexCell::Type::Bridge);
-        }
-
-        if (!inParent && !inChild) {
+        if (owningChunk != nullptr) {
+            owningChunk->getCell(hex)->setGenState(HexCell::GenState::Protected);
+            owningChunk->getCell(hex)->setType(HexCell::Type::Bridge);
+        } else {
             _chunks[chunkId]->assignCell(std::make_shared<HexCell>(
                 hex, HexCell::State::Empty, HexCell::Type::Bridge, HexCell::GenState::Protected));
         }
@@ -185,8 +192,16 @@ void HexGrid::removeUnreachableHexes() {
                 continue;
             }
 
-            auto neighborCell = getCell(neighbor);
-            if (!isWalkableCell(neighborCell)) {
+            HexCellPtr neighborCell = nullptr;
+            for (const auto& [chunkId, chunk] : _chunks) {
+                auto cell = chunk->getCell(neighbor);
+                if (isWalkableCell(cell)) {
+                    neighborCell = std::move(cell);
+                    break;
+                }
+            }
+
+            if (neighborCell == nullptr) {
                 continue;
             }
 
@@ -201,6 +216,16 @@ void HexGrid::removeUnreachableHexes() {
                 cell->setGenState(HexCell::GenState::Blocked);
             }
         }
+    }
+}
+
+void HexGrid::clean() {
+    if (_cleaned) {
+        return;
+    }
+    _cleaned = true;
+    for (const auto& [chunkId, chunk] : _chunks) {
+        chunk->clean();
     }
 }
 
@@ -281,7 +306,8 @@ bool HexGrid::contains(const HexCoord& coord) const {
     return getCell(coord) != nullptr;
 }
 
-std::vector<HexGrid::HexCellPtr> HexGrid::findPath(const HexCellPtr& startCell, const HexCellPtr& targetCell) const {
+std::vector<HexGrid::HexCellPtr> HexGrid::findPath(const HexCellPtr& startCell,
+                                                   const HexCellPtr& targetCell) const {
     if (startCell == nullptr || targetCell == nullptr) {
         return {};
     }

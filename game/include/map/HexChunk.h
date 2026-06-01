@@ -49,6 +49,7 @@ class HexChunk {
     void shift(HexCoord::Direction dir, int times = 1);
     void assignCell(HexCellPtr cell);
     bool setEntity(const HexCoord& coord, HexCell::Type entityType, Entity* entity = nullptr);
+    void clean();
 
   private:
     boost::uuids::uuid _id{boost::uuids::nil_uuid()};
