@@ -21,7 +21,7 @@ set(GAME_SOURCES
     ${SRC_DIR}/enemySystem/territoryPatternRegistry.cpp
     ${SRC_DIR}/player/playerPatternComponent.cpp
     ${SRC_DIR}/player/inventory.cpp
-
+    ${SRC_DIR}/healthSystem.cpp
 )
 
 set(GAME_HEADERS
@@ -51,6 +51,7 @@ set(GAME_HEADERS
     ${INC_DIR}/enemySystem/territoryPatternRegistry.h
     ${INC_DIR}/player/playerPatternComponent.h
     ${INC_DIR}/player/inventory.h
+    ${INC_DIR}/healthSystem.h
 )
 
 add_executable(game

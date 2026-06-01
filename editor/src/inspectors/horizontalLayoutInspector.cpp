@@ -2,7 +2,6 @@
 #include "ui/propertyDrawer.h"
 
 #include <ecs/components/ui/horizontalLayout.h>
-
 #include <imgui.h>
 
 void editor::HorizontalLayoutInspector::draw(dzemikk::HorizontalLayout* layout,
