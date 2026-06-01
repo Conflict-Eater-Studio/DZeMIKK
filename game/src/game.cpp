@@ -40,6 +40,7 @@
 #include "ecs/serialize/prefabSerializer.h"
 #include "enemySystem/enemyManager.h"
 #include "enemySystem/territoryPatternRegistry.h"
+#include "healthSystem.h"
 #include "player/inventory.h"
 #include "player/playerPatternComponent.h"
 #include "stateMachine/combatState.h"
@@ -90,17 +91,23 @@ void Game::start() {
 
     _mainScene = assetManager->get<dzemikk::Scene>("scenes/interface2.json");
 
-    auto itemPrefabJson = assetManager->get<nlohmann::json>("prefabs/ItemPrefab.prefab");
+    auto item1PrefabJson = assetManager->get<nlohmann::json>("prefabs/ItemPrefab.prefab");
+    auto item2PrefabJson = assetManager->get<nlohmann::json>("prefabs/ItemPrefab1.prefab");
+    auto item3PrefabJson = assetManager->get<nlohmann::json>("prefabs/ItemPrefab2.prefab");
     auto horizontalGO = _mainScene.get()->findGameObjectByName("Horizontal");
     auto inventory = horizontalGO->addComponent<game::Inventory>();
  
     inventory->setHorizontalLayout(horizontalGO);
+    inventory->setAssetManager(assetManager);
+    inventory->setMainScene(_mainScene.get());
 
-    if (itemPrefabJson.get() != nullptr) {
-        auto* itemInstance = dzemikk::PrefabSerializer::instantiate(
-            *_mainScene.get(), *itemPrefabJson.get(), assetManager);
-        inventory->addItem(itemInstance);
-    }
+    inventory->setItem1Prefab(item1PrefabJson);
+    inventory->setItem2Prefab(item2PrefabJson);
+    inventory->setItem3Prefab(item3PrefabJson);
+
+    inventory->addItem(game::Inventory::Item1);
+    inventory->addItem(game::Inventory::Item2);
+    inventory->addItem(game::Inventory::Item3);
 
     auto tooltip  = _mainScene.get()->findGameObjectByName("Tooltip");
     tooltip->enabled(false);
@@ -115,6 +122,10 @@ void Game::start() {
          },
          "ItemExit");
 
+    auto playerHealthbarGO = _mainScene.get()->findGameObjectByName("PlayerSlider");
+    auto playerHealthSystem = playerHealthbarGO->addComponent<game::HealthSystem>();
+    playerHealthSystem->setSlider(playerHealthbarGO->getComponent<dzemikk::UISlider>());
+    playerHealthSystem->damage(15.0f);
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
     sceneManager->setActiveScene(sceneShared);
