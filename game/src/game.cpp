@@ -2,7 +2,9 @@
 
 #include "game.h"
 
+#include "../include/player/playerMovement.h"
 #include "assetManager/assetmanager.h"
+#include "camera/cameraController.h"
 #include "collisions/collisions.h"
 #include "core/engine.h"
 #include "core/time.h"
@@ -10,13 +12,13 @@
 #include "ecs/components/camera.h"
 #include "ecs/components/collider.h"
 #include "ecs/components/meshRenderer.h"
+#include "ecs/components/ui/uiActionRegistry.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
 #include "input/input.h"
 #include "map/HexCoord.h"
 #include "map/PlayerEntity.h"
-#include "playerMovement.h"
 #include "renderer/cameraSystem.h"
 #include "renderer/material.h"
 #include "renderer/model.h"
@@ -25,8 +27,6 @@
 #include "scripts/world/world.h"
 #include "scripts/world/worldHex.h"
 #include "utils/perlin.h"
-#include "camera/cameraController.h"
-#include "ecs/components/ui/uiActionRegistry.h"
 
 #include <GLFW/glfw3.h>
 #include <memory>
@@ -35,16 +35,21 @@
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
 #endif
-#include <gameStateMachine.h>
-#include "stateMachine/explorationState.h"
-#include "stateMachine/combatState.h"
+#include "ecs/components/ui/horizontalLayout.h"
+#include "ecs/components/ui/uiButton.h"
+#include "ecs/serialize/prefabSerializer.h"
 #include "enemySystem/enemyManager.h"
-#include <iostream>
-#include <ecs/components/skinnedMeshRenderer.h>
-#include <ecs/components/animator.h>
-#include <animation/animationstatemachine.h>
 #include "enemySystem/territoryPatternRegistry.h"
+#include "player/inventory.h"
 #include "player/playerPatternComponent.h"
+#include "stateMachine/combatState.h"
+#include "stateMachine/explorationState.h"
+
+#include <animation/animationstatemachine.h>
+#include <ecs/components/animator.h>
+#include <ecs/components/skinnedMeshRenderer.h>
+#include <gameStateMachine.h>
+#include <iostream>
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
@@ -83,7 +88,32 @@ void Game::start() {
 
     setupSkybox();
 
-    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay2.json");
+    _mainScene = assetManager->get<dzemikk::Scene>("scenes/interface2.json");
+
+    auto itemPrefabJson = assetManager->get<nlohmann::json>("prefabs/ItemPrefab.prefab");
+    auto horizontalGO = _mainScene.get()->findGameObjectByName("Horizontal");
+    auto inventory = horizontalGO->addComponent<game::Inventory>();
+ 
+    inventory->setHorizontalLayout(horizontalGO);
+
+    if (itemPrefabJson.get() != nullptr) {
+        auto* itemInstance = dzemikk::PrefabSerializer::instantiate(
+            *_mainScene.get(), *itemPrefabJson.get(), assetManager);
+        inventory->addItem(itemInstance);
+    }
+
+    auto tooltip  = _mainScene.get()->findGameObjectByName("Tooltip");
+    tooltip->enabled(false);
+    dzemikk::UIActionRegistry::get().registerAction(
+         [tooltip, this](const dzemikk::UIEvent&) {
+             tooltip->enabled(true);
+         },
+         "ItemEnter");
+    dzemikk::UIActionRegistry::get().registerAction(
+         [tooltip](const dzemikk::UIEvent&) {
+             tooltip->enabled(false);
+         },
+         "ItemExit");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);

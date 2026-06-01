@@ -295,7 +295,7 @@ void Editor::setupEditor() {
 
     auto* sceneManager = _engine->getSceneManager();
 
-    auto scene = _engine->getAssetManager()->get<dzemikk::Scene>("scenes/interface.json");
+    auto scene = _engine->getAssetManager()->get<dzemikk::Scene>("scenes/interface2.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(scene.get(), [](dzemikk::Scene*) {});
 

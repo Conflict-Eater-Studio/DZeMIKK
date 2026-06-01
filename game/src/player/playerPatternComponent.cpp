@@ -62,11 +62,9 @@ void game::PlayerPatternComponent::setupUI() {
     dzemikk::GameObject* patternsGO = nullptr;
 
     for (auto* child : _playerPatternsCanvas->getChildren()) {
-        for (auto* grandChild : child->getChildren()) {
-            if (grandChild->getName() == "Patterns") {
-                patternsGO = grandChild;
+            if (child->getName() == "Patterns") {
+                patternsGO = child;
                 break;
-            }
         }
 
         if (patternsGO)

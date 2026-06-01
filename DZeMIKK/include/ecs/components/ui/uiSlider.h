@@ -82,7 +82,7 @@ class UISlider : public IUIInteractable {
     float _minValue = 0.0F;
     float _maxValue = 1.0F;
     float _step = 0.01F;
-
+    bool _isInteractable = false;
     Style _style;
 
     mutable ImageRenderer* _backgroundSpriteRenderer = nullptr;

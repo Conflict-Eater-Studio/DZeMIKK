@@ -42,6 +42,7 @@ constexpr float kValueEpsilon = 1e-6F;
 
 void UISlider::processPointer(const glm::vec2& point, bool isDown, bool pressedThisFrame,
                               bool releasedThisFrame, double scrollDelta) {
+    if (!_isInteractable) return;
     setPointerDown(isDown);
 
     setPointerInside(getHandleSpriteRenderer()->getRectTransform() != nullptr
