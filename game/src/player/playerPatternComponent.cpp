@@ -1,4 +1,5 @@
 #include "player/playerPatternComponent.h"
+#include "player/playerPatternStatsComponent.h"
 #include <iostream>
 #include <core/engine.h>
 #include <game.h>
@@ -31,6 +32,8 @@ void game::PlayerPatternComponent::start() {
 
     // hp1
     addPattern(HexPattern({{0, 0}}, HexPattern::Type::HEAL), -1);
+
+    _playerPatternStats = getOwner()->getComponent<PlayerPatternStatsComponent>();
 
     _cancelPatternListenerID = _engine->getInput()->OnMouseButtonPressed.addListener(
         [this](dzemikk::MouseButtonPressedEvent& e) {
@@ -382,6 +385,10 @@ bool game::PlayerPatternComponent::confirmPattern() {
 
     _placedPatterns.push_back(placed);
 
+    if (_playerPatternStats) {
+        _playerPatternStats->registerPlacement(placed.pattern);
+    }
+
     _previewHexes.clear();
     _previewObject = nullptr;
 
@@ -537,6 +544,10 @@ void game::PlayerPatternComponent::removePlacedPattern(size_t index) {
         return;
 
     auto& placed = _placedPatterns[index];
+    
+    if (_playerPatternStats) {
+        _playerPatternStats->registerRemoval(placed.pattern);
+    }
 
     for (auto* obj : placed.objects) {
         if (obj && obj->getScene())

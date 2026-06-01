@@ -14,6 +14,7 @@ namespace game {
 
 class PlayerEntity;
 class HexGrid;
+class PlayerPatternStatsComponent;
 
 class PlayerPatternComponent : public dzemikk::MonoBehaviour {
   public:
@@ -97,6 +98,8 @@ class PlayerPatternComponent : public dzemikk::MonoBehaviour {
     std::vector<dzemikk::GameObject*> _previewHexes;
     std::vector<dzemikk::GameObject*> _confirmedHexes;
     game::HexGrid* _grid = nullptr;
+
+    PlayerPatternStatsComponent* _playerPatternStats = nullptr;
 
     void cancelPattern();
     void rebuildPreview();
