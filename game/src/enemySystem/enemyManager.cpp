@@ -107,7 +107,7 @@ void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnC
 
     enemyGO->setParent(getOwner());
 
-    enemyGO->transform()->setPosition(cell->getCoord().toWorldPosition(1.0F, 0.1F) +
+    enemyGO->transform()->setPosition(cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
                                       glm::vec3(0.0F, 0.4F, 0.0F));
 
     dzemikk::AnimationClip* clip = nullptr;

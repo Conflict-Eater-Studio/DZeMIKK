@@ -29,9 +29,11 @@ class HexGrid {
     [[nodiscard]] HexCellPtr getCell(const HexCoord& coord) const;
     [[nodiscard]] HexCellPtr at(const HexCoord& coord) const;
     [[nodiscard]] bool contains(const HexCoord& coord) const;
-    [[nodiscard]] std::vector<HexCellPtr> findPath(const HexCellPtr& startCell, const HexCellPtr& targetCell) const;
+    [[nodiscard]] std::vector<HexCellPtr> findPath(const HexCellPtr& startCell,
+                                                   const HexCellPtr& targetCell) const;
     bool moveCell(const HexCoord& from, const HexCoord& to);
     HexCellPtr findCellByEntity(Entity* entity) const;
+    void clean();
 
   private:
     static bool isBlockedCell(const HexCellPtr& cell);
@@ -40,6 +42,7 @@ class HexGrid {
     unsigned int _seed;
     std::mt19937 _rng;
     boost::uuids::uuid _rootChunkId;
+    bool _cleaned{false};
 
     static std::pair<HexCoord, HexCoord> closestPair(HexChunk* chunk1, HexChunk* chunk2);
     [[nodiscard]] bool neighboursChunk(const HexCoord& coord,

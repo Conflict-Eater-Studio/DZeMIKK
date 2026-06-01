@@ -3,6 +3,7 @@
 #include "game.h"
 
 #include "assetManager/assetmanager.h"
+#include "camera/cameraController.h"
 #include "collisions/collisions.h"
 #include "core/engine.h"
 #include "core/time.h"
@@ -10,6 +11,7 @@
 #include "ecs/components/camera.h"
 #include "ecs/components/collider.h"
 #include "ecs/components/meshRenderer.h"
+#include "ecs/components/ui/uiActionRegistry.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
@@ -25,8 +27,6 @@
 #include "scripts/world/world.h"
 #include "scripts/world/worldHex.h"
 #include "utils/perlin.h"
-#include "camera/cameraController.h"
-#include "ecs/components/ui/uiActionRegistry.h"
 
 #include <GLFW/glfw3.h>
 #include <memory>
@@ -35,18 +35,19 @@
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
 #endif
-#include <gameStateMachine.h>
-#include "stateMachine/explorationState.h"
-#include "stateMachine/combatState.h"
 #include "enemySystem/enemyManager.h"
-#include <iostream>
-#include <ecs/components/skinnedMeshRenderer.h>
-#include <ecs/components/animator.h>
-#include <animation/animationstatemachine.h>
 #include "enemySystem/territoryPatternRegistry.h"
 #include "player/playerPatternComponent.h"
 #include "player/playerPatternStatsComponent.h"
+#include "stateMachine/combatState.h"
+#include "stateMachine/explorationState.h"
 #include "ui/combatUIPanel.h"
+
+#include <animation/animationstatemachine.h>
+#include <ecs/components/animator.h>
+#include <ecs/components/skinnedMeshRenderer.h>
+#include <gameStateMachine.h>
+#include <iostream>
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
@@ -182,12 +183,12 @@ void Game::setupWorld() {
     world->setPlayer(_playerEntity);
     world->registerGenerator("full", [](int step, int maxSteps) { return 1.0F; });
 
-
     auto c1 = world->addChunk({.steps = 7});
     _chunkIds["c1"] = c1;
 
-    auto c2 = world->addChunk(
-        {.parentChunkId = c1, .steps = 12, .dirFromParent = game::HexCoord::Direction::R0}); //connect chunk
+    auto c2 = world->addChunk({.parentChunkId = c1,
+                               .steps = 12,
+                               .dirFromParent = game::HexCoord::Direction::R0}); // connect chunk
     _chunkIds["c2"] = c2;
 
     auto c3 = world->addChunk(
@@ -206,8 +207,9 @@ void Game::setupWorld() {
         {.parentChunkId = c2, .steps = 17, .dirFromParent = game::HexCoord::Direction::R30});
     _chunkIds["c6"] = c6;
 
-    auto c7 = world->addChunk(
-        {.parentChunkId = c6, .steps = 15, .dirFromParent = game::HexCoord::Direction::R30}); //connect chunk
+    auto c7 = world->addChunk({.parentChunkId = c6,
+                               .steps = 15,
+                               .dirFromParent = game::HexCoord::Direction::R30}); // connect chunk
     _chunkIds["c7"] = c7;
 
     auto c8 = world->addChunk(
@@ -218,8 +220,9 @@ void Game::setupWorld() {
         {.parentChunkId = c8, .steps = 15, .dirFromParent = game::HexCoord::Direction::R30});
     _chunkIds["c9"] = c9;
 
-    auto c10 = world->addChunk(
-        {.parentChunkId = c9, .steps = 24, .dirFromParent = game::HexCoord::Direction::R0}); //connect chunk
+    auto c10 = world->addChunk({.parentChunkId = c9,
+                                .steps = 24,
+                                .dirFromParent = game::HexCoord::Direction::R0}); // connect chunk
     _chunkIds["c10"] = c10;
 
     auto c11 = world->addChunk(
@@ -250,6 +253,9 @@ void Game::setupWorld() {
         {.parentChunkId = c16, .steps = 30, .dirFromParent = game::HexCoord::Direction::R0});
     _chunkIds["c17"] = c17;
 
+    // Removes all hexes with gen state Blocked
+    world->getGrid()->clean();
+
     std::ofstream out("./world.json");
     out << world->save().dump(4);
     out.close();
@@ -270,11 +276,9 @@ void Game::setupUICamera() {
 void Game::setupInputCallbacks() {
     static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
     static std::unordered_map<dzemikk::MeshRenderer*, glm::vec4> baseColors;
-    
+
     _engine->SetUserUpdateCallback([this]() {
-        auto ensureBase = [&](dzemikk::MeshRenderer* r) { 
-            baseColors[r] = r->getColor();
-        };
+        auto ensureBase = [&](dzemikk::MeshRenderer* r) { baseColors[r] = r->getColor(); };
 
         if (!_engine || !_engine->getInput() ||
             !_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
@@ -291,7 +295,6 @@ void Game::setupInputCallbacks() {
             _engine->getInput()->GetMousePosition(), windowWidth, windowHeight);
 
         dzemikk::MeshRenderer* currentRenderer = nullptr;
-
 
         if (collider) {
             currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
@@ -317,32 +320,33 @@ void Game::setupInputCallbacks() {
         }
     });
 
-    _engine->getInput()->OnMouseButtonPressed.addListener([this](dzemikk::MouseButtonPressedEvent& event) {
-        if (event.GetMouseButton() != GLFW_MOUSE_BUTTON_LEFT ||
-            !_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
-            return;
-        }
+    _engine->getInput()->OnMouseButtonPressed.addListener(
+        [this](dzemikk::MouseButtonPressedEvent& event) {
+            if (event.GetMouseButton() != GLFW_MOUSE_BUTTON_LEFT ||
+                !_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
+                return;
+            }
 
-        int windowWidth = 0;
-        int windowHeight = 0;
-        glfwGetWindowSize(_engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
+            int windowWidth = 0;
+            int windowHeight = 0;
+            glfwGetWindowSize(_engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
 
-        dzemikk::Collider* collider = _engine->getCollisions()->raycast(
-        _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
-        _engine->getInput()->GetMousePosition(), static_cast<float>(windowWidth),
-        static_cast<float>(windowHeight));
+            dzemikk::Collider* collider = _engine->getCollisions()->raycast(
+                _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
+                _engine->getInput()->GetMousePosition(), static_cast<float>(windowWidth),
+                static_cast<float>(windowHeight));
 
-        dzemikk::MeshRenderer* currentRenderer = nullptr;
+            dzemikk::MeshRenderer* currentRenderer = nullptr;
 
-        if (collider) {
-            if (_engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-                currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
-                auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
-                if (wh != nullptr && wh->getHexCell() != nullptr) {
-                    _playerMovement->moveTo(wh->getHexCell());
+            if (collider) {
+                if (_engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+                    currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
+                    auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
+                    if (wh != nullptr && wh->getHexCell() != nullptr) {
+                        _playerMovement->moveTo(wh->getHexCell());
+                    }
                 }
             }
-        }
         });
 }
 
@@ -467,118 +471,96 @@ void Game::setupEnemies() {
 
 void Game::registerDefaultTerritories() {
     game::TerritoryPatternRegistry::instance().registerPattern({"1",
-                                                          {{1, 0},
-                                                           {1, -1},
-                                                           {0, -1},
+                                                                {{1, 0},
+                                                                 {1, -1},
+                                                                 {0, -1},
 
-                                                           {-1, 0},
-                                                           {-1, 1},
-                                                           {0, 1}}});
+                                                                 {-1, 0},
+                                                                 {-1, 1},
+                                                                 {0, 1}}});
 
     game::TerritoryPatternRegistry::instance().registerPattern({"2",
-                                                            {{1, 0},
-                                                            {1, -1},
-                                                            {0, -1},
+                                                                {{1, 0},
+                                                                 {1, -1},
+                                                                 {0, -1},
 
-                                                            {-1, 0},
-                                                            {-1, 1},
-                                                            {0, 1},
+                                                                 {-1, 0},
+                                                                 {-1, 1},
+                                                                 {0, 1},
 
-                                                            {1, 1},
-                                                            {-1, -1}}});
+                                                                 {1, 1},
+                                                                 {-1, -1}}});
 
     game::TerritoryPatternRegistry::instance().registerPattern({"3",
-                                                            {
-                                                                {1, 0},
-                                                                {1, -1},
-                                                                {0, -1},
-                                                                {-1, 0},
-                                                                {-1, 1},
-                                                                {0, 1},
+                                                                {
+                                                                    {1, 0},
+                                                                    {1, -1},
+                                                                    {0, -1},
+                                                                    {-1, 0},
+                                                                    {-1, 1},
+                                                                    {0, 1},
 
-                                                                {2, 0},
-                                                                {0, -2},
-                                                                {-2, 0},
-                                                                {0, 2},
-                                                                {2, -2},
-                                                                {-2, 2},
-                                                            }});
+                                                                    {2, 0},
+                                                                    {0, -2},
+                                                                    {-2, 0},
+                                                                    {0, 2},
+                                                                    {2, -2},
+                                                                    {-2, 2},
+                                                                }});
 
     game::TerritoryPatternRegistry::instance().registerPattern({"4",
-                                                            {
-                                                                {1, 0},
-                                                                {1, -1},
-                                                                {0, -1},
-                                                                {-1, 0},
-                                                                {-1, 1},
-                                                                {0, 1},
+                                                                {
+                                                                    {1, 0},
+                                                                    {1, -1},
+                                                                    {0, -1},
+                                                                    {-1, 0},
+                                                                    {-1, 1},
+                                                                    {0, 1},
 
-                                                                {2, 0},
-                                                                {2, -1},
-                                                                {1, -2},
-                                                                {-1, -1},
-                                                                {-2, 0},
-                                                                {-2, 1},
-                                                                {-1, 2},
-                                                                {1, 1},
-                                                                {2, -2},
-                                                                {-2, 2},
-                                                            }});
+                                                                    {2, 0},
+                                                                    {2, -1},
+                                                                    {1, -2},
+                                                                    {-1, -1},
+                                                                    {-2, 0},
+                                                                    {-2, 1},
+                                                                    {-1, 2},
+                                                                    {1, 1},
+                                                                    {2, -2},
+                                                                    {-2, 2},
+                                                                }});
 
     game::TerritoryPatternRegistry::instance().registerPattern({"5",
-                                                            {
-                                                                {1, 0},
-                                                                {1, -1},
-                                                                {0, -1},
-                                                                {-1, 0},
-                                                                {-1, 1},
-                                                                {0, 1},
+                                                                {
+                                                                    {1, 0},
+                                                                    {1, -1},
+                                                                    {0, -1},
+                                                                    {-1, 0},
+                                                                    {-1, 1},
+                                                                    {0, 1},
 
-                                                                {2, 0},
-                                                                {2, -1},
-                                                                {1, -2},
-                                                                {0, -2},
-                                                                {-1, -1},
-                                                                {-2, 0},
-                                                                {-2, 1},
-                                                                {-1, 2},
-                                                                {0, 2},
-                                                                {1, 1},
-                                                                {2, -2},
-                                                                {-2, 2},
-                                                            }});
+                                                                    {2, 0},
+                                                                    {2, -1},
+                                                                    {1, -2},
+                                                                    {0, -2},
+                                                                    {-1, -1},
+                                                                    {-2, 0},
+                                                                    {-2, 1},
+                                                                    {-1, 2},
+                                                                    {0, 2},
+                                                                    {1, 1},
+                                                                    {2, -2},
+                                                                    {-2, 2},
+                                                                }});
 
-    game::TerritoryPatternRegistry::instance().registerPattern({"6", 
-                                                            {
-                                                                {1, 0}, 
-                                                                {1, -1}, 
-                                                                {0, -1}, 
-                                                                {-1, 0}, 
-                                                                {-1, 1}, 
-                                                                {0, 1},
+    game::TerritoryPatternRegistry::instance().registerPattern(
+        {"6",
+         {
+             {1, 0},  {1, -1}, {0, -1}, {-1, 0}, {-1, 1},  {0, 1},
 
-                                                                {2, 0}, 
-                                                                {2, -1}, 
-                                                                {1, -2}, 
-                                                                {0, -2}, 
-                                                                {-1, -1}, 
-                                                                {-2, 0}, 
-                                                                {-2, 1}, 
-                                                                {-1, 2}, 
-                                                                {0, 2},
-                                                                {1, 1}, 
-                                                                {2, -2}, 
-                                                                {-2, 2},
+             {2, 0},  {2, -1}, {1, -2}, {0, -2}, {-1, -1}, {-2, 0},
+             {-2, 1}, {-1, 2}, {0, 2},  {1, 1},  {2, -2},  {-2, 2},
 
-                                                                {3, 0}, 
-                                                                {3, -1},
-                                                                {2, -3}, 
-                                                                {1, -3},
-                                                                {-2, -1}, 
-                                                                {-3, 0},
-                                                                {-3,1},
-                                                                {-2, 3}, 
-                                                                {-1, 3},
-                                                                {2, 1}, 
-                                                            }});
+             {3, 0},  {3, -1}, {2, -3}, {1, -3}, {-2, -1}, {-3, 0},
+             {-3, 1}, {-2, 3}, {-1, 3}, {2, 1},
+         }});
 }

@@ -7,7 +7,7 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
     cell->setEntity(this);
     cell->setState(HexCell::State::Player);
     setCell(cell);
-    getOwner()->transform()->setPosition(cell->getCoord().toWorldPosition(1.0F, 0.1F) +
+    getOwner()->transform()->setPosition(cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
                                          glm::vec3(0.0F, 0.4F, 0.0F));
 }
 
@@ -49,7 +49,7 @@ void PlayerEntity::teleportTo(const HexCellPtr& targetCell) {
 
     setCell(targetCell);
 
-    getOwner()->transform()->setPosition(targetCell->getCoord().toWorldPosition(1.0F, 0.1F) +
+    getOwner()->transform()->setPosition(targetCell->getCoord().toWorldPosition(1.0F, 0.1F, targetCell->getHeight()) +
                                          glm::vec3(0.0F, 0.4F, 0.0F));
 }
 } // namespace game

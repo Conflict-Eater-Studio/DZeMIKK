@@ -266,6 +266,19 @@ std::unordered_map<HexCoord, HexChunk::HexCellPtr>& HexChunk::getHexes() {
     return _hexes;
 }
 
+void HexChunk::clean() {
+    std::vector<HexCellPtr> toRemove;
+    for (auto& [coord, cell] : _hexes) {
+        if (cell && cell->getGenState() == HexCell::GenState::Blocked) {
+            toRemove.emplace_back(cell);
+        }
+    }
+
+    for (const auto& cell : toRemove) {
+        _hexes.erase(cell->getCoord());
+    }
+}
+
 HexChunk::HexCellPtr HexChunk::getCell(const HexCoord& coord) const {
     auto it = _hexes.find(coord);
     if (it == _hexes.end()) {
