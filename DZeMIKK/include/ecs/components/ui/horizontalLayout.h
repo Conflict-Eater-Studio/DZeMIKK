@@ -12,6 +12,8 @@ class HorizontalLayout : public Component {
   public:
     using Base = Component;
 
+    enum class VerticalAlignment { Bottom, Center, Top };
+
     HorizontalLayout() = default;
     HorizontalLayout(const HorizontalLayout& other) = delete;
     HorizontalLayout& operator=(const HorizontalLayout& other) = delete;
@@ -32,10 +34,14 @@ class HorizontalLayout : public Component {
     void setChildForceExpandHeight(bool enabled);
     [[nodiscard]] bool getChildForceExpandHeight() const;
 
+    void setVerticalAlignment(VerticalAlignment alignment);
+    [[nodiscard]] VerticalAlignment getVerticalAlignment() const;
+
     void rebuild();
 
   private:
     float _spacing = 0.0F;
+    VerticalAlignment _verticalAlignment = VerticalAlignment::Center;
     bool _childForceExpandWidth = true;
     bool _childForceExpandHeight = false;
 };
