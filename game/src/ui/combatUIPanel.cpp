@@ -80,8 +80,6 @@ void game::CombatUIPanel::createPatternSlot(const PlayerPatternComponent::Patter
             _patterns->usePattern(index);
 
             refreshCounts();
-
-            std::cout << "[CombatUI:Panel] Click " << actionId << std::endl;
         },
         actionId);
 

@@ -6,6 +6,10 @@
 #include "map/HexPattern.h"
 #include <ecs/components/monobehaviour.h>
 
+namespace dzemikk {
+class Engine;
+}
+
 namespace game {
 
 class PlayerEntity;
@@ -18,8 +22,11 @@ class PlayerPatternComponent : public dzemikk::MonoBehaviour {
         int count = 0;
     };
 
+    using ListenerID = uint32_t;
+
     void start() override;
     void update(double deltaTime) override;
+    void onDestroy() override;
 
     void addPattern(const HexPattern& pattern, int count = 1);
 
@@ -55,11 +62,22 @@ class PlayerPatternComponent : public dzemikk::MonoBehaviour {
 
     int findPattern(const HexPattern& pattern) const;
 
+    void setEngine(dzemikk::Engine* engine);
+
+    std::string typeName() const override;
+
+    bool hasActivePattern() const;
+    void clearActivePattern();
+    const PatternEntry* getActivePattern() const;
+
   private:
     std::vector<PatternEntry> _patterns;
+    int _activePatternIndex = -1;
+    dzemikk::Engine* _engine = nullptr;
+    ListenerID _cancelPatternListenerID = -1;
+    dzemikk::GameObject* _previewObject = nullptr;
 
-    // Odziedziczono za poœrednictwem elementu MonoBehaviour
-    std::string typeName() const override;
+    void cancelPattern();
 };
 
 } // namespace game

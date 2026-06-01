@@ -1,0 +1,44 @@
+{
+    "root": {
+        "children": [],
+        "components": [
+            {
+                "id": "1bd6bea5-4f97-444e-bef8-0e37783c6f67",
+                "position": [
+                    0.0,
+                    2.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.7071067690849304,
+                    0.7071067690849304,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "type": "Transform"
+            },
+            {
+                "color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "id": "71f26568-b003-4db6-971b-94eac97d0e60",
+                "materials": [
+                    "shaders/tile1"
+                ],
+                "model": "models/hex_plaski.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "945c71ac-633e-468a-8047-b1a0876ea3c1",
+        "name": "BattleHex"
+    }
+}
