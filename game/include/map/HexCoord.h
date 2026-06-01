@@ -143,7 +143,7 @@ class HexCoord {
         return (absQ + absR + absS) / 2;
     }
 
-    [[nodiscard]] glm::vec3 toWorldPosition(float size, float spacing) const {
+    [[nodiscard]] glm::vec3 toWorldPosition(float size, float spacing, float height) const {
         const auto qF = static_cast<float>(_q);
         const auto rF = static_cast<float>(_r);
         const float s = size + spacing;
@@ -152,7 +152,7 @@ class HexCoord {
         float z =
             s * ((std::numbers::sqrt3_v<float> / 2.0F * qF) + (std::numbers::sqrt3_v<float> * rF));
 
-        return {z, _height, x};
+        return {z, height, x};
     }
 
     [[nodiscard]] HexCoord opposite() const {
@@ -167,13 +167,6 @@ class HexCoord {
             HexCoord::Direction::R0,   HexCoord::Direction::R30,  HexCoord::Direction::R60,
             HexCoord::Direction::R90,  HexCoord::Direction::R120, HexCoord::Direction::R150};
         return Opposites.at(static_cast<std::size_t>(d));
-    }
-
-    void setHeight(float height) {
-        _height = height;
-    }
-    [[nodiscard]] float getHeight() const {
-        return _height;
     }
 
     [[nodiscard]] static std::vector<HexCoord> getNeighbors(HexCoord coord) {
@@ -261,7 +254,6 @@ class HexCoord {
   private:
     int _q;
     int _r;
-    float _height{0};
 };
 
 inline HexCoord operator*(int scalar, HexCoord::Direction d) {

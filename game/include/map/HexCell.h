@@ -46,6 +46,10 @@ class HexCell {
         return _entity;
     }
 
+    [[nodiscard]] float getHeight() const {
+        return _height;
+    }
+
     [[nodiscard]] bool isDirty() const {
         return _dirty;
     }
@@ -63,6 +67,10 @@ class HexCell {
     }
     void setEntity(Entity* entity) {
         _entity = entity;
+        _dirty = true;
+    }
+    void setHeight(float height) {
+        _height = height;
         _dirty = true;
     }
     void setDirty(bool dirty) {
@@ -90,6 +98,8 @@ class HexCell {
     GenState _genState{GenState::Normal};
 
     Entity* _entity = nullptr;
+
+    float _height{0.0F};
 
     bool _dirty = false;
 };

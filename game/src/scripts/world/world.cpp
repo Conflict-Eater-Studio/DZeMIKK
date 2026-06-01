@@ -150,8 +150,8 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
                                 static_cast<float>(cell->getCoord().r()) * 0.1F) *
                   3.0F;
     std::uniform_real_distribution<float> dist(-0.2F, 0.2F);
-    cell->getCoord().setHeight(height + dist(_rng));
-    auto worldPos = cell->getCoord().toWorldPosition(1.0F, 0.1F);
+    cell->setHeight(height + dist(_rng));
+    auto worldPos = cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight());
     obj->transform()->setPosition(worldPos);
     obj->transform()->setScale({1.0F, 1.0F, 1.0F});
     obj->transform()->setRotation(
