@@ -151,17 +151,17 @@ game::Entity::HexCellPtr CombatArenaBuilder::ensureCellExists(const game::HexCoo
 
     bool hasVisual = world->hasHexVisual(coord);
 
-    if (!cell || !hasVisual) {
-
+    if (!cell) {
         auto newCell = std::make_shared<game::HexCell>(
             coord, game::HexCell::State(game::HexCell::State::Empty), game::HexCell::Type(type),
             game::HexCell::GenState::Normal);
-
         chunk->insertCell(coord, newCell);
-
         world->ensureHexExists(newCell);
-
         return newCell;
+    }
+
+    if (!hasVisual) {
+        world->ensureHexExists(cell);
     }
 
     return cell;

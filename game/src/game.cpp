@@ -368,6 +368,7 @@ void Game::setupPlayer() {
 
     auto patternConponent = playerGO->addComponent<game::PlayerPatternComponent>();
     patternConponent->setEngine(_engine);
+    patternConponent->setGrid(_hexGrid);
 
     auto playerPanel = _mainScene.get()->findGameObjectByName("Player_Panel");
     auto combatPlayerPanel = playerPanel->addComponent<game::CombatUIPanel>();

@@ -70,7 +70,6 @@ void game::CombatState::onExit() {
         cell->setDirty(true);
     }
 
-
     player->clearTerritory();
 
     const auto& enemyTerritory = _currentEnemy->getTerritory();

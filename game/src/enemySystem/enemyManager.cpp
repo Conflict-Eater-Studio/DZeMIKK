@@ -148,7 +148,7 @@ void game::EnemyManager::assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPt
         auto targetCell = grid->getCell(coord);
         bool hasVisual = _world->hasHexVisual(coord);
 
-        if (!targetCell || !hasVisual) {
+        if (!targetCell) {
             auto newCell =
                 std::make_shared<HexCell>(coord, HexCell::State::Empty,
                                           HexCell::Type::EnemyBattleHex, HexCell::GenState::Normal);
@@ -160,8 +160,10 @@ void game::EnemyManager::assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPt
             chunk->insertCell(coord, newCell);
 
             targetCell = newCell;
+        }
 
-            _world->ensureHexExists(newCell);
+        if (!hasVisual) {
+            _world->ensureHexExists(targetCell);
         }
 
         enemy->addTerritoryCell(targetCell.get());

@@ -15,10 +15,10 @@
 
 void game::PlayerPatternComponent::start() {
     // atk1
-    addPattern(HexPattern({{0, 0}, {1, -1}, {2, -2}}, HexPattern::Type::ATK), 1);
+    addPattern(HexPattern({{-1, 1}, {0, 0}, {1, -1}}, HexPattern::Type::ATK), 1);
 
     // atk2
-    addPattern(HexPattern({{0, 0}, {1, 0}, {2, -1}}, HexPattern::Type::ATK), -1);
+    addPattern(HexPattern({{-1, 0}, {0, 0}, {1, -1}}, HexPattern::Type::ATK), -1);
 
     // atk3
     addPattern(HexPattern({{0, 0}, {1, -1}, {-1, 0}, {0, 1}}, HexPattern::Type::ATK), -1);
@@ -27,7 +27,7 @@ void game::PlayerPatternComponent::start() {
     addPattern(HexPattern({{0, 0}}, HexPattern::Type::DEF), -1);
 
     // def2
-    addPattern(HexPattern({{0, 0}, {1, -1}, {2, -2}}, HexPattern::Type::DEF), -1);
+    addPattern(HexPattern({{-1, 1}, {0, 0}, {1, -1}}, HexPattern::Type::DEF), -1);
 
     // hp1
     addPattern(HexPattern({{0, 0}}, HexPattern::Type::HEAL), -1);
@@ -38,6 +38,27 @@ void game::PlayerPatternComponent::start() {
                 cancelPattern();
             }
         });
+
+    _rotatePatternListenerID = _engine->getInput()->OnMouseScrolled.addListener([this](dzemikk::MouseScrolledEvent& e) {
+        if (_activePatternIndex < 0)
+            return;
+
+        auto& pattern = _patterns[_activePatternIndex].pattern;
+
+        if (e.GetYOffset() > 0)
+            pattern.rotate(HexPattern::Rotation::Clockwise);
+        else
+            pattern.rotate(HexPattern::Rotation::CounterClockwise);
+
+        rebuildPreview();
+    });
+
+    _confirmPatternListenerID = _engine->getInput()->OnMouseButtonPressed.addListener(
+        [this](dzemikk::MouseButtonPressedEvent& e) {
+            if (e.GetMouseButton() == GLFW_MOUSE_BUTTON_LEFT) {
+                confirmPattern();
+            }
+        });
 }
 
 void game::PlayerPatternComponent::update(double deltaTime) {
@@ -45,84 +66,116 @@ void game::PlayerPatternComponent::update(double deltaTime) {
     if (_activePatternIndex < 0)
         return;
 
-    auto mousePos = _engine->getInput()->GetMousePosition();
-    
     int windowWidth = 0;
     int windowHeight = 0;
-    glfwGetWindowSize(_engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
 
-    dzemikk::Collider* collider = _engine->getCollisions()->raycast(
-        _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
-        _engine->getInput()->GetMousePosition(), windowWidth, windowHeight);
+    glfwGetWindowSize(
+        _engine->getWindow()->nativeHandle(),
+        &windowWidth,
+        &windowHeight);
 
-    if (collider) {
+    dzemikk::Collider* collider =
+        _engine->getCollisions()->raycast(
+            _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
+            _engine->getInput()->GetMousePosition(),
+            windowWidth,
+            windowHeight);
 
-        auto* worldHex = collider->getOwner()->getComponent<game::WorldHex>();
+    if (!collider)
+        return;
 
-        if (worldHex && worldHex->getHexCell()) {
+    auto* worldHex =
+        collider->getOwner()->getComponent<game::WorldHex>();
 
-            auto cell = worldHex->getHexCell();
+    if (!worldHex || !worldHex->getHexCell())
+        return;
 
-            glm::vec4 color;
+    auto cell = worldHex->getHexCell();
+    _currentPreviewOrigin = cell->getCoord();
 
-            auto patternType = _patterns[_activePatternIndex].pattern.getType();
+    bool validPattern = true;
+    _currentPreviewValid = validPattern;
 
-            switch (patternType) {
+    const auto& pattern =
+        _patterns[_activePatternIndex].pattern;
 
-            case HexPattern::Type::ATK:
+    for (const auto& offset : pattern.getHexes()) {
 
-                if (cell->getType() == HexCell::Type::PlayerBattleHex)
-                    color = {1.0f, 0.0f, 0.0f, 1.0f};
-                else
-                    color = {1.0f, 0.7f, 0.7f, 1.0f}; 
+        HexCoord targetCoord(cell->getCoord().q() + offset.r(), cell->getCoord().r() + offset.q());
 
-                break;
+        auto targetCell = _grid->getCell(targetCoord);
 
-            case HexPattern::Type::DEF:
+        if (!targetCell) {
+            std::cout << "Missing cell: " << targetCoord.q() << ", " << targetCoord.r()
+                      << std::endl;
+        }
 
-                if (cell->getType() == HexCell::Type::PlayerBattleHex)
-                    color = {0.0f, 0.0f, 1.0f, 1.0f}; 
-                else
-                    color = {0.7f, 0.7f, 1.0f, 1.0f};
+        std::cout << "Checking: " << targetCoord.q() << ", " << targetCoord.r();
 
-                break;
+        if (targetCell) {
+            std::cout << " type=" << static_cast<int>(targetCell->getType());
+        } else {
+            std::cout << " NULL";
+        }
 
-            case HexPattern::Type::HEAL:
+        std::cout << std::endl;
 
-                if (cell->getType() == HexCell::Type::PlayerBattleHex)
-                    color = {0.0f, 1.0f, 0.0f, 1.0f}; 
-                else
-                    color = {0.7f, 1.0f, 0.7f, 1.0f};
+        if (!targetCell || targetCell->getType() != HexCell::Type::PlayerBattleHex) {
+            validPattern = false;
+            break;
+        }
+    }
 
-                break;
+    glm::vec4 color;
 
-            default:
-                color = {1.0f, 1.0f, 1.0f, 1.0f};
-                break;
-            }
+    switch (pattern.getType()) {
 
-            auto transform = collider->getOwner()->transform();
-            _previewObject->transform()->setPosition({transform->getPosition().x,
-                                                      transform->getPosition().y + 0.1F,
-                                                      transform->getPosition().z});
-            
-            for (auto* hex : _previewHexes) {
-                auto* renderer = hex->getComponent<dzemikk::MeshRenderer>();
+    case HexPattern::Type::ATK:
+        color = validPattern
+                    ? glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)
+                    : glm::vec4(1.0f, 0.7f, 0.7f, 1.0f);
+        break;
 
-                if (renderer) {
-                    renderer->setColor(color);
-                }
-            }
+    case HexPattern::Type::DEF:
+        color = validPattern
+                    ? glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
+                    : glm::vec4(0.7f, 0.7f, 1.0f, 1.0f);
+        break;
+
+    case HexPattern::Type::HEAL:
+        color = validPattern
+                    ? glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)
+                    : glm::vec4(0.7f, 1.0f, 0.7f, 1.0f);
+        break;
+
+    default:
+        color = glm::vec4(1.0f);
+        break;
+    }
+
+    auto transform = collider->getOwner()->transform();
+
+    _previewObject->transform()->setPosition(
+        {
+            transform->getPosition().x,
+            transform->getPosition().y + 0.5f,
+            transform->getPosition().z
+        });
+
+    for (auto* hex : _previewHexes) {
+
+        auto* renderer =
+            hex->getComponent<dzemikk::MeshRenderer>();
+
+        if (renderer) {
+            renderer->setColor(color);
         }
     }
 }
 
 void game::PlayerPatternComponent::onDestroy() {
-    if (_cancelPatternListenerID < 0) {
-        return;
-    }
-
     _engine->getInput()->OnMouseScrolled.removeListener(_cancelPatternListenerID);
+    _engine->getInput()->OnMouseScrolled.removeListener(_rotatePatternListenerID);
 }
 
 void game::PlayerPatternComponent::addPattern(const HexPattern& pattern, int count) {
@@ -297,10 +350,71 @@ const game::PlayerPatternComponent::PatternEntry* game::PlayerPatternComponent::
     return &_patterns[_activePatternIndex];
 }
 
+void game::PlayerPatternComponent::setGrid(game::HexGrid* grid) {
+    _grid = grid;
+}
+
 glm::vec3 game::PlayerPatternComponent::axialToWorld(const HexCoord& coord, float hexSize) {
     float x = hexSize * std::sqrt(3.0f) * (coord.q() + coord.r() * 0.5f);
 
     float z = hexSize * 1.5f * coord.r();
 
     return {x, 0.0f, z};
+}
+
+void game::PlayerPatternComponent::rebuildPreview() {
+    if (!_previewObject || _activePatternIndex < 0)
+        return;
+
+    for (auto* hex : _previewHexes) {
+        if (hex && hex->getScene())
+            hex->getScene()->destroyGameObject(hex);
+    }
+
+    _previewHexes.clear();
+
+    const auto& pattern = _patterns[_activePatternIndex].pattern;
+
+    const auto& hexes = pattern.getHexes();
+
+    for (const auto& hex : hexes) {
+        auto previewPrefab =
+            _engine->getAssetManager()->get<nlohmann::json>("prefabs/battle_hex.prefab");
+
+        auto* hexObject = dzemikk::PrefabSerializer::instantiate(
+            *getOwner()->getScene(), *previewPrefab.get(), _engine->getAssetManager());
+
+        hexObject->setParent(_previewObject);
+
+        hexObject->transform()->setPosition(axialToWorld(hex, 1.0f));
+
+        _previewHexes.push_back(hexObject);
+    }
+}
+
+bool game::PlayerPatternComponent::confirmPattern() {
+    if (_activePatternIndex < 0)
+        return false;
+
+    if (!_currentPreviewValid)
+        return false;
+
+    PlacedPattern placed(_patterns[_activePatternIndex].pattern, _currentPreviewOrigin);
+
+    _placedPatterns.push_back(placed);
+    
+    for (dzemikk::GameObject* object : _previewHexes) {
+        if (!object)
+            continue;
+
+        _confirmedHexes.push_back(object);
+    }
+
+    _activePatternIndex = -1;
+
+    return true;
+}
+
+void game::PlayerPatternComponent::clearPlacedPatterns() {
+    _placedPatterns.clear();
 }

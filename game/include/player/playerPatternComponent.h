@@ -22,6 +22,11 @@ class PlayerPatternComponent : public dzemikk::MonoBehaviour {
         int count = 0;
     };
 
+    struct PlacedPattern {
+        HexPattern pattern;
+        HexCoord origin;
+    };
+
     using ListenerID = uint32_t;
 
     void start() override;
@@ -70,16 +75,31 @@ class PlayerPatternComponent : public dzemikk::MonoBehaviour {
     void clearActivePattern();
     const PatternEntry* getActivePattern() const;
 
+    void setGrid(game::HexGrid* grid);
+    void clearPlacedPatterns();
+
+    const std::vector<PlacedPattern>& getPlacedPatterns() const;
+
   private:
     std::vector<PatternEntry> _patterns;
+    std::vector<PlacedPattern> _placedPatterns;
     int _activePatternIndex = -1;
     dzemikk::Engine* _engine = nullptr;
     ListenerID _cancelPatternListenerID = -1;
+    ListenerID _rotatePatternListenerID = -1;
+    ListenerID _confirmPatternListenerID = -1;
+    HexCoord _currentPreviewOrigin;
+    bool _currentPreviewValid = false;
+
     dzemikk::GameObject* _previewObject = nullptr;
     std::vector<dzemikk::GameObject*> _previewHexes;
+    std::vector<dzemikk::GameObject*> _confirmedHexes;
+    game::HexGrid* _grid = nullptr;
 
     void cancelPattern();
+    void rebuildPreview();
     glm::vec3 axialToWorld(const HexCoord& coord, float hexSize);
+    bool confirmPattern();
 };
 
 } // namespace game
