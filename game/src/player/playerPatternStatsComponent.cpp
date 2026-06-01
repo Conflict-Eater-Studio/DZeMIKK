@@ -1,4 +1,5 @@
 #include "player/playerPatternStatsComponent.h"
+#include <iostream>
 
 float game::PlayerPatternStatsComponent::Stats::getTypeRatio(HexPattern::Type type) const {
     if (actionsTotal == 0)
@@ -6,6 +7,35 @@ float game::PlayerPatternStatsComponent::Stats::getTypeRatio(HexPattern::Type ty
     auto it = placedByType.find(type);
     uint32_t value = (it != placedByType.end()) ? it->second : 0;
     return static_cast<float>(value) / static_cast<float>(actionsTotal);
+}
+
+void game::PlayerPatternStatsComponent::update(double dt) {
+    /*
+    static double printTimer = 0.0;
+    printTimer += dt;
+
+    if (printTimer < 1.0)
+        return;
+
+    printTimer = 0.0;
+
+    std::cout << "\n========== PATTERN STATS ==========\n";
+    std::cout << "Placed total  : " << _stats.placedTotal << '\n';
+    std::cout << "Removed total : " << _stats.removedTotal << '\n';
+    std::cout << "Actions total : " << _stats.actionsTotal << '\n';
+
+    std::cout << "\nPlaced by type:\n";
+    for (const auto& [type, count] : _stats.placedByType) {
+        std::cout << "  Type " << static_cast<int>(type) << " -> " << count << '\n';
+    }
+
+    std::cout << "\nRemoved by type:\n";
+    for (const auto& [type, count] : _stats.removedByType) {
+        std::cout << "  Type " << static_cast<int>(type) << " -> " << count << '\n';
+    }
+
+    std::cout << "===================================\n";
+    */
 }
 
 void game::PlayerPatternStatsComponent::registerPlacement(const HexPattern& pattern) {

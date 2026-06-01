@@ -26,6 +26,7 @@ class PlayerPatternStatsComponent : public dzemikk::MonoBehaviour {
     };
 
     void start() override {}
+    void update(double dt) override;
 
     void registerPlacement(const HexPattern& pattern);
 
