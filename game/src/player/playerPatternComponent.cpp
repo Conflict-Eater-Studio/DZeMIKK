@@ -35,7 +35,12 @@ void game::PlayerPatternComponent::start() {
     _cancelPatternListenerID = _engine->getInput()->OnMouseButtonPressed.addListener(
         [this](dzemikk::MouseButtonPressedEvent& e) {
             if (e.GetMouseButton() == GLFW_MOUSE_BUTTON_MIDDLE) {
-                cancelPattern();
+                if (_activePatternIndex >= 0) {
+                    cancelPattern();
+                    return;
+                }
+
+                tryRemovePlacedPatternUnderCursor();
             }
         });
 
@@ -319,16 +324,6 @@ std::string game::PlayerPatternComponent::typeName() const {
     return "PlayerPatternComponent";
 }
 
-void game::PlayerPatternComponent::cancelPattern() {
-    _activePatternIndex = -1;
-
-    if (_previewObject)
-        _previewObject->getScene()->destroyGameObject(_previewObject);
-
-    _previewObject = nullptr;
-    _previewHexes.clear();
-}
-
 bool game::PlayerPatternComponent::hasActivePattern() const {
     return _activePatternIndex >= 0;
 }
@@ -337,7 +332,8 @@ void game::PlayerPatternComponent::clearActivePattern() {
     _activePatternIndex = -1;
 }
 
-const game::PlayerPatternComponent::PatternEntry* game::PlayerPatternComponent::getActivePattern() const {
+const game::PlayerPatternComponent::PatternEntry*
+game::PlayerPatternComponent::getActivePattern() const {
 
     if (_activePatternIndex < 0 || _activePatternIndex >= static_cast<int>(_patterns.size())) {
         return nullptr;
@@ -356,6 +352,109 @@ glm::vec3 game::PlayerPatternComponent::axialToWorld(const HexCoord& coord, floa
     float z = hexSize * 1.5f * coord.r();
 
     return {x, 0.0f, z};
+}
+
+void game::PlayerPatternComponent::cancelPattern() {
+    _activePatternIndex = -1;
+
+    if (_previewObject)
+        _previewObject->getScene()->destroyGameObject(_previewObject);
+
+    _previewObject = nullptr;
+    _previewHexes.clear();
+}
+
+bool game::PlayerPatternComponent::confirmPattern() {
+    if (_activePatternIndex < 0)
+        return false;
+
+    if (!_currentPreviewValid)
+        return false;
+
+    PlacedPattern placed(_patterns[_activePatternIndex].pattern, _currentPreviewOrigin);
+
+    for (auto* object : _previewHexes) {
+        if (!object)
+            continue;
+
+        placed.objects.push_back(object);
+    }
+
+    _placedPatterns.push_back(placed);
+
+    _previewHexes.clear();
+    _previewObject = nullptr;
+
+    restartPreview();
+
+    return true;
+}
+
+void game::PlayerPatternComponent::clearPlacedPatterns() {
+
+    for (auto& placed : _placedPatterns) {
+
+        for (auto* obj : placed.objects) {
+            if (obj && obj->getScene()) {
+                obj->getScene()->destroyGameObject(obj);
+            }
+        }
+
+        placed.objects.clear();
+    }
+
+    _placedPatterns.clear();
+}
+
+bool game::PlayerPatternComponent::isCellOccupiedByPattern(const HexCoord& coord) const {
+    for (const auto& placed : _placedPatterns) {
+        for (const auto& offset : placed.pattern.getHexes()) {
+            HexCoord occupied(placed.origin.q() + offset.r(), placed.origin.r() + offset.q());
+
+            if (occupied == coord)
+                return true;
+        }
+    }
+
+    return false;
+}
+
+void game::PlayerPatternComponent::clearPreview() {
+    _activePatternIndex = -1;
+
+    if (_previewObject) {
+        _previewObject->getScene()->destroyGameObject(_previewObject);
+        _previewObject = nullptr;
+    }
+
+    _previewHexes.clear();
+}
+
+void game::PlayerPatternComponent::restartPreview() {
+    if (_activePatternIndex < 0)
+        return;
+
+    destroyPreview();
+
+    const auto& entry = _patterns[_activePatternIndex];
+
+    _previewObject = getOwner()->getScene()->createGameObject();
+    _previewObject->setName("PatternPreview");
+
+    _previewHexes.clear();
+
+    for (const auto& hex : entry.pattern.getHexes()) {
+
+        auto prefab = _engine->getAssetManager()->get<nlohmann::json>("prefabs/battle_hex.prefab");
+
+        auto* hexObject = dzemikk::PrefabSerializer::instantiate(
+            *getOwner()->getScene(), *prefab.get(), _engine->getAssetManager());
+
+        hexObject->setParent(_previewObject);
+        hexObject->transform()->setPosition(axialToWorld(hex, 1.0f));
+
+        _previewHexes.push_back(hexObject);
+    }
 }
 
 void game::PlayerPatternComponent::rebuildPreview() {
@@ -388,96 +487,6 @@ void game::PlayerPatternComponent::rebuildPreview() {
     }
 }
 
-bool game::PlayerPatternComponent::confirmPattern() {
-    if (_activePatternIndex < 0)
-        return false;
-
-    if (!_currentPreviewValid)
-        return false;
-
-    PlacedPattern placed(_patterns[_activePatternIndex].pattern, _currentPreviewOrigin);
-
-    _placedPatterns.push_back(placed);
-    
-    for (auto* object : _previewHexes) {
-        if (!object)
-            continue;
-
-        _confirmedHexes.push_back(object);
-    }
-
-    _previewHexes.clear();
-
-    _previewObject = nullptr;
-    
-    restartPreview();
-
-    return true;
-}
-
-void game::PlayerPatternComponent::clearPlacedPatterns() {
-    for (auto* hex : _confirmedHexes) {
-        if (!hex)
-            continue;
-
-        if (hex->getScene())
-            hex->getScene()->destroyGameObject(hex);
-    }
-
-    _confirmedHexes.clear();
-    _placedPatterns.clear();
-}
-
-bool game::PlayerPatternComponent::isCellOccupiedByPattern(const HexCoord& coord) const {
-    for (const auto& placed : _placedPatterns) {
-        for (const auto& offset : placed.pattern.getHexes()) {
-            HexCoord occupied(placed.origin.q() + offset.r(), placed.origin.r() + offset.q());
-
-            if (occupied == coord)
-                return true;
-        }
-    }
-
-    return false;
-}
-
-void game::PlayerPatternComponent::clearPreview() {
-    _activePatternIndex = -1;
-
-    if (_previewObject) {
-        _previewObject->getScene()->destroyGameObject(_previewObject);
-        _previewObject = nullptr;
-    }
-
-    _previewHexes.clear();
-}
-
-void game::PlayerPatternComponent::restartPreview() {
-    if (_activePatternIndex < 0)
-        return;
-
-    auto index = _activePatternIndex;
-
-    const auto& entry = _patterns[index];
-
-    _previewObject = getOwner()->getScene()->createGameObject();
-    _previewObject->setName("PatternPreview");
-
-    const auto& pattern = entry.pattern;
-
-    for (const auto& hex : pattern.getHexes()) {
-        auto prefab = _engine->getAssetManager()->get<nlohmann::json>("prefabs/battle_hex.prefab");
-
-        auto* hexObject = dzemikk::PrefabSerializer::instantiate(
-            *getOwner()->getScene(), *prefab.get(), _engine->getAssetManager());
-
-        hexObject->setParent(_previewObject);
-        hexObject->transform()->setPosition(axialToWorld(hex, 1.0f));
-
-        _previewHexes.push_back(hexObject);
-    }
-}
-
 void game::PlayerPatternComponent::destroyPreview() {
     if (_previewObject) {
         _previewObject->getScene()->destroyGameObject(_previewObject);
@@ -485,4 +494,63 @@ void game::PlayerPatternComponent::destroyPreview() {
     }
 
     _previewHexes.clear();
+}
+
+void game::PlayerPatternComponent::tryRemovePlacedPatternUnderCursor() {
+    int windowWidth = 0;
+    int windowHeight = 0;
+
+    glfwGetWindowSize(_engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
+
+    auto* collider = _engine->getCollisions()->raycast(
+        _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
+        _engine->getInput()->GetMousePosition(), windowWidth, windowHeight);
+
+    if (!collider)
+        return;
+
+    auto* worldHex = collider->getOwner()->getComponent<game::WorldHex>();
+
+    if (!worldHex || !worldHex->getHexCell())
+        return;
+
+    HexCoord clicked = worldHex->getHexCell()->getCoord();
+
+    for (size_t i = 0; i < _placedPatterns.size(); ++i) {
+
+        const auto& placed = _placedPatterns[i];
+
+        for (const auto& offset : placed.pattern.getHexes()) {
+
+            HexCoord occupied(placed.origin.q() + offset.r(), placed.origin.r() + offset.q());
+
+            if (occupied == clicked) {
+                removePlacedPattern(i);
+                return;
+            }
+        }
+    }
+}
+
+void game::PlayerPatternComponent::removePlacedPattern(size_t index) {
+    if (index >= _placedPatterns.size())
+        return;
+
+    auto& placed = _placedPatterns[index];
+
+    for (auto* obj : placed.objects) {
+        if (obj && obj->getScene())
+            obj->getScene()->destroyGameObject(obj);
+    }
+
+    _placedPatterns.erase(_placedPatterns.begin() + index);
+
+    if (_activePatternIndex < 0) {
+        destroyPreview();
+    }
+}
+
+const std::vector<game::PlayerPatternComponent::PlacedPattern>&
+game::PlayerPatternComponent::getPlacedPatterns() const {
+    return _placedPatterns;
 }

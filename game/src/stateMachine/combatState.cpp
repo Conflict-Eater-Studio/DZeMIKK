@@ -74,9 +74,9 @@ void game::CombatState::onExit() {
     }
 
     _player->clearTerritory();
-    _playerPatternComponent->clearActivePattern();
     _playerPatternComponent->clearPlacedPatterns();
     _playerPatternComponent->clearPreview();
+    _playerPatternComponent->clearActivePattern();
 
     const auto& enemyTerritory = _currentEnemy->getTerritory();
 

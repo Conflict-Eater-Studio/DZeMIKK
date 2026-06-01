@@ -25,6 +25,7 @@ class PlayerPatternComponent : public dzemikk::MonoBehaviour {
     struct PlacedPattern {
         HexPattern pattern;
         HexCoord origin;
+        std::vector<dzemikk::GameObject*> objects;
     };
 
     using ListenerID = uint32_t;
@@ -104,6 +105,8 @@ class PlayerPatternComponent : public dzemikk::MonoBehaviour {
     bool isCellOccupiedByPattern(const HexCoord& coord) const;
     void restartPreview();
     void destroyPreview();
+    void tryRemovePlacedPatternUnderCursor();
+    void removePlacedPattern(size_t index);
 };
 
 } // namespace game
