@@ -19,7 +19,7 @@ void main()
     vec2 grainUV = vUV / max(grainSize, 0.001);
     vec2 seed = grainUV * textureSize(screenTexture, 0);
 
-    float noise = rand(seed) - 0.5; // Center around 0
+    float noise = rand(seed) - 0.5;
 
     noise *= grainIntensity;
     color += noise;
