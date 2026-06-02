@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ecs/components/monobehaviour.h"
-#include "player/playerPatternComponent.h"
+#include "enemySystem/patternComponent.h"
 
 #include <assetManager/assetmanager.h>
 #include <ecs/components/ui/uiButton.h>
@@ -20,20 +20,22 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
     };
 
   public:
+    CombatUIPanel(bool isClickable) : _isClickable(isClickable) {}
+
     void start() override;
     void update(double deltaTime) override;
 
     void refresh();
     void clear();
 
-    void setPlayerPatterns(PlayerPatternComponent* patterns);
+    void setPatternsComponent(PatternComponent* patterns);
     void setAssetManager(dzemikk::AssetManager* assetManager);
     void setCanvas(dzemikk::GameObject* canvas);
 
   private:
     void buildUI();
 
-    void createPatternSlot(const PlayerPatternComponent::PatternEntry& entry, size_t index);
+    void createPatternSlot(const PatternComponent::PatternEntry& entry, size_t index);
 
     void createPatternPreview(dzemikk::GameObject* parent, const HexPattern& pattern);
 
@@ -45,8 +47,10 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
 
     glm::vec4 getPatternBaseColor(HexPattern::Type type);
 
+    std::string typeName() const override;
+
   private:
-    PlayerPatternComponent* _patterns = nullptr;
+    PatternComponent* _patterns = nullptr;
 
     dzemikk::AssetManager* _assetManager = nullptr;
 
@@ -57,8 +61,8 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
     dzemikk::AssetHandle<nlohmann::json> _hexUIPrefab;
 
     std::vector<PatternUIEntry> _uiEntries;
+    bool _isClickable = false;
 
-    std::string typeName() const override;
 };
 
 } // namespace game

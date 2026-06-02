@@ -39,6 +39,7 @@
 #include "enemySystem/territoryPatternRegistry.h"
 #include "player/playerPatternComponent.h"
 #include "player/playerPatternStatsComponent.h"
+#include "enemySystem/enemyPatternComponent.h"
 #include "stateMachine/combatState.h"
 #include "stateMachine/explorationState.h"
 #include "ui/combatUIPanel.h"
@@ -378,8 +379,8 @@ void Game::setupPlayer() {
     patternComponent->setGrid(_hexGrid);
 
     auto playerPanel = _mainScene.get()->findGameObjectByName("Player_Panel");
-    auto combatPlayerPanel = playerPanel->addComponent<game::CombatUIPanel>();
-    combatPlayerPanel->setPlayerPatterns(patternComponent);
+    auto combatPlayerPanel = playerPanel->addComponent<game::CombatUIPanel>(true);
+    combatPlayerPanel->setPatternsComponent(patternComponent);
     combatPlayerPanel->setAssetManager(_engine->getAssetManager());
     combatPlayerPanel->setCanvas(playerPanel);
 }
@@ -467,6 +468,13 @@ void Game::setupEnemies() {
     enemyManager->setSpawnConfig(_chunkIds["c17"], c17Config);
 
     enemyManager->spawnEnemiesPerChunk();
+
+    auto enemyPatternComponent = enemyManagerGO->addComponent<game::EnemyPatternComponent>();
+    auto enemyPanel = _mainScene.get()->findGameObjectByName("Enemy_Panel");
+    auto combatEnamyPanel = enemyPanel->addComponent<game::CombatUIPanel>(false);
+    combatEnamyPanel->setPatternsComponent(enemyPatternComponent);
+    combatEnamyPanel->setAssetManager(_engine->getAssetManager());
+    combatEnamyPanel->setCanvas(enemyPanel);
 }
 
 void Game::registerDefaultTerritories() {

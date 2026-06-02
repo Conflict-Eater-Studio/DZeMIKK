@@ -53,7 +53,7 @@ void game::CombatUIPanel::buildUI() {
         grid->rebuild();
 }
 
-void game::CombatUIPanel::createPatternSlot(const PlayerPatternComponent::PatternEntry& entry,
+void game::CombatUIPanel::createPatternSlot(const PatternComponent::PatternEntry& entry,
                                             size_t index) {
 
     auto* patternGO = dzemikk::PrefabSerializer::instantiate(
@@ -72,23 +72,30 @@ void game::CombatUIPanel::createPatternSlot(const PlayerPatternComponent::Patter
 
     std::string actionId = "pattern_" + std::to_string(index);
 
-    dzemikk::UIActionRegistry::get().registerAction(
-        [this, index, actionId](const dzemikk::UIEvent&) {
-            if (!_patterns)
-                return;
+    if (_isClickable) {
+        dzemikk::UIActionRegistry::get().registerAction(
+            [this, index, actionId](const dzemikk::UIEvent&) {
+                if (!_patterns)
+                    return;
 
-            _patterns->usePattern(index);
+                _patterns->usePattern(index);
 
-            refreshCounts();
-        },
-        actionId);
+                refreshCounts();
+            },
+            actionId);
+    }
 
     if (button) {
-        button->addEventListener(dzemikk::UIEventType::Click, actionId);
+        if (_isClickable) {
+            button->addEventListener(dzemikk::UIEventType::Click, actionId);
+            glm::vec4 baseColor = getPatternBaseColor(entry.pattern.getType());
 
-        glm::vec4 baseColor = getPatternBaseColor(entry.pattern.getType());
+            button->setStyle({baseColor, baseColor * 0.75f, baseColor * 0.5f});
+        } else {
+            glm::vec4 baseColor = getPatternBaseColor(entry.pattern.getType());
 
-        button->setStyle({baseColor, baseColor * 0.75f, baseColor * 0.5f});
+            button->setStyle({baseColor, baseColor, baseColor});
+        }
 
         button->applyVisualState();
     }
@@ -255,7 +262,7 @@ std::string game::CombatUIPanel::typeName() const {
     return "CombatUIPanel";
 }
 
-void game::CombatUIPanel::setPlayerPatterns(PlayerPatternComponent* patterns) {
+void game::CombatUIPanel::setPatternsComponent(PatternComponent* patterns) {
     _patterns = patterns;
 }
 

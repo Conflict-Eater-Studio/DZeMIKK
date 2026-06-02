@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "map/HexPattern.h"
-#include <ecs/components/monobehaviour.h>
+#include "enemySystem/patternComponent.h"
 
 namespace dzemikk {
 class Engine;
@@ -16,12 +16,8 @@ class PlayerEntity;
 class HexGrid;
 class PlayerPatternStatsComponent;
 
-class PlayerPatternComponent : public dzemikk::MonoBehaviour {
+class PlayerPatternComponent : public PatternComponent {
   public:
-    struct PatternEntry {
-        HexPattern pattern;
-        int count = 0;
-    };
 
     struct PlacedPattern {
         HexPattern pattern;
@@ -35,39 +31,13 @@ class PlayerPatternComponent : public dzemikk::MonoBehaviour {
     void update(double deltaTime) override;
     void onDestroy() override;
 
-    void addPattern(const HexPattern& pattern, int count = 1);
-
-    void insertPattern(size_t index, const HexPattern& pattern, int count = 1);
-
-
-    bool removePattern(size_t index);
-
-    bool removePattern(const HexPattern& pattern);
-
-    void clearPatterns();
-
-
     bool addCount(size_t index, int amount);
 
     bool removeCount(size_t index, int amount);
 
     bool setCount(size_t index, int count);
 
-
-    bool canUsePattern(size_t index) const;
-
-    bool usePattern(size_t index);
-
-
-    size_t getPatternCount() const;
-
-    PatternEntry* getPattern(size_t index);
-    const PatternEntry* getPattern(size_t index) const;
-
-    const std::vector<PatternEntry>& getPatterns() const;
-
-
-    int findPattern(const HexPattern& pattern) const;
+    bool usePattern(size_t index) override;
 
     void setEngine(dzemikk::Engine* engine);
 
@@ -84,7 +54,6 @@ class PlayerPatternComponent : public dzemikk::MonoBehaviour {
     const std::vector<PlacedPattern>& getPlacedPatterns() const;
 
   private:
-    std::vector<PatternEntry> _patterns;
     std::vector<PlacedPattern> _placedPatterns;
     int _activePatternIndex = -1;
     dzemikk::Engine* _engine = nullptr;

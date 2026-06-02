@@ -136,6 +136,7 @@ void game::CombatState::onUpdate(float dt) {
 void game::CombatState::startNewTurn() {
     _phase = CombatPhase::EnemyPlanning;
 
+
     generateEnemyBlockedCells();
 
     _phase = CombatPhase::PlayerTurn;
@@ -144,6 +145,11 @@ void game::CombatState::startNewTurn() {
 void game::CombatState::endPlayerTurn() {
 
     _phase = CombatPhase::ResolveTurn;
+
+    //_player->clearTerritory();
+    _playerPatternComponent->clearPlacedPatterns();
+    _playerPatternComponent->clearPreview();
+    _playerPatternComponent->clearActivePattern();
 
     //resolvePlayerPatterns();
 
