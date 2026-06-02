@@ -1,6 +1,5 @@
 #version 330 core
 
-uniform vec2 resolution;
 uniform vec3 color;
 uniform sampler2D screenTexture;
 
@@ -18,7 +17,7 @@ float luma(vec3 c)
 
 void main()
 {
-    vec2 texel = 1.0 / resolution;
+    vec2 texel = 1.0 / textureSize(screenTexture, 0);
 
     vec3 rgbM = texture(screenTexture, vUV).rgb;
     vec3 rgbN = texture(screenTexture, vUV + vec2(0.0, texel.y)).rgb;
@@ -43,5 +42,5 @@ void main()
         return;
     }
 
-     FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+     FragColor = vec4(color, 1.0);
 }
