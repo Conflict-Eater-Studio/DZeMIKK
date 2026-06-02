@@ -35,6 +35,9 @@
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
 #endif
+#include "ecs/components/fxaaPostProcessEffect.h"
+#include "ecs/components/outlinePostProcessEffect.h"
+#include "ecs/components/postProcessEffect.h"
 #include "enemySystem/enemyManager.h"
 #include "enemySystem/territoryPatternRegistry.h"
 #include "player/playerPatternComponent.h"
@@ -48,8 +51,6 @@
 #include <ecs/components/skinnedMeshRenderer.h>
 #include <gameStateMachine.h>
 #include <iostream>
-
-#include "ecs/components/postProcessEffect.h"
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
@@ -157,19 +158,21 @@ void Game::setupMainCamera() {
     auto* cameraGO = _mainScene.get()->createGameObject("Camera");
 
     _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
-    auto postProccessEffect = cameraGO->addComponent<dzemikk::PostProcessEffect>();
-
-    postProccessEffect->setEnabled(true);
-    postProccessEffect->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/fxaa"));
-    postProccessEffect->setPriority(1);
+    auto fxaaProcessEffect = cameraGO->addComponent<dzemikk::OutlinePostProcessEffect>();
+    fxaaProcessEffect->setEnabled(true);
+    fxaaProcessEffect->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/outline"));
+    fxaaProcessEffect->setPriority(1);
 
     _engine->getInput()->OnKeyPressed.addListener
-     ([this, postProccessEffect](dzemikk::KeyPressedEvent& event) {
-         if (event.GetKeyCode() == GLFW_KEY_1) {
-             postProccessEffect->setEnabled(true);
+     ([this, fxaaProcessEffect](dzemikk::KeyPressedEvent& event) {
+         if (event.GetKeyCode() == GLFW_KEY_F1) {
+            _engine->getAssetManager()->reload<dzemikk::Shader>("shaders/outline");
          }
-         if (event.GetKeyCode() == GLFW_KEY_2) {
-             postProccessEffect->setEnabled(false);
+         if (event.GetKeyCode() == GLFW_KEY_3) {
+             fxaaProcessEffect->setEnabled(true);
+         }
+         if (event.GetKeyCode() == GLFW_KEY_4) {
+             fxaaProcessEffect->setEnabled(false);
          }
      });
     // auto postProccessEffect2 = cameraGO->addComponent<dzemikk::PostProcessEffect>();
