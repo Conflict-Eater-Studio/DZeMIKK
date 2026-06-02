@@ -18,7 +18,11 @@ add_library(DZeMIKK STATIC
         include/ecs/serialize/ui/gridLayoutSerializer.h
         include/ecs/serialize/ui/horizontalLayoutSerializer.h
         include/ecs/serialize/ui/verticalLayoutSerializer.h
-        include/ecs/serialize/ui/uiDropdownSerializer.h)
+        include/ecs/serialize/ui/uiDropdownSerializer.h
+        include/ecs/components/fxaaPostProcessEffect.h
+        src/ecs/components/fxaaPostProcessEffect.cpp
+        include/ecs/components/outlinePostProcessEffect.h
+        src/ecs/components/outlinePostProcessEffect.cpp)
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"
