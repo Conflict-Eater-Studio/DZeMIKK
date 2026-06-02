@@ -50,6 +50,7 @@
 #include <iostream>
 
 #include "ecs/components/postProcessEffect.h"
+#include "ecs/components/colorGradingEffect.h"
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
@@ -166,7 +167,17 @@ void Game::setupMainCamera() {
     postProccessEffect2->setEnabled(true);
     postProccessEffect2->setShader(
     _engine->getAssetManager()->get<dzemikk::Shader>("shaders/grayscale"));
-    postProccessEffect2->setPriority(0);
+    postProccessEffect2->setPriority(2);
+
+    auto colorGrading = cameraGO->addComponent<dzemikk::ColorGradingEffect>();
+    colorGrading->setEnabled(true);
+    colorGrading->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/color_grading"));
+    colorGrading->setPriority(0);
+    colorGrading->setExposure(0.1f);
+    colorGrading->setContrast(1.1f);
+    colorGrading->setSaturation(1.15f);
+    colorGrading->setTemperature(0.1f);
+    colorGrading->setTint(-0.05f);
 
 
     _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(_mainCamera);
