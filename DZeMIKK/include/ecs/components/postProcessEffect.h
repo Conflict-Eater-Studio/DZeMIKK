@@ -16,7 +16,7 @@ class PostProcessEffect : public Component {
     virtual void bindShaderUniforms(Shader& shader) {}
 
     virtual int getPriority() const {
-        return 0;
+        return _priority;
     }
 
     void setShader(AssetHandle<Shader> shader) {
@@ -39,9 +39,14 @@ class PostProcessEffect : public Component {
 
     std::string typeName() const override;
 
+    void setPriority(int p) {
+        _priority = p;
+    }
+
   private:
     AssetHandle<Shader> _shader;
     bool _enabled = true;
+    int _priority = 0;
 };
 
 } // namespace dzemikk

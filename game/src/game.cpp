@@ -160,9 +160,18 @@ void Game::setupMainCamera() {
     auto postProccessEffect = cameraGO->addComponent<dzemikk::PostProcessEffect>();
     postProccessEffect->setEnabled(true);
     postProccessEffect->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/vignette"));
+    postProccessEffect->setPriority(1);
+
+    auto postProccessEffect2 = cameraGO->addComponent<dzemikk::PostProcessEffect>();
+    postProccessEffect2->setEnabled(true);
+    postProccessEffect2->setShader(
+    _engine->getAssetManager()->get<dzemikk::Shader>("shaders/grayscale"));
+    postProccessEffect2->setPriority(0);
+
 
     _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(_mainCamera);
 }
+
 
 void Game::setupWorld() {
     auto shader = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
