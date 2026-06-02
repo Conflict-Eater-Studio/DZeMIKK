@@ -14,7 +14,6 @@ int main() {
     auto game = new Game(engine.get());
     game->start();
 
-    // engine->start();
     delete (game);
     return 0;
 }

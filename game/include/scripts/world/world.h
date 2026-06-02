@@ -97,6 +97,7 @@ class World : public dzemikk::MonoBehaviour {
         return _reservedTerritory.contains(coord);
     }
 
+    dzemikk::Transform* getHexTransformByCell(HexCell cell);
 
   private:
     void spawnHexVisual(const std::shared_ptr<HexCell>& cell);

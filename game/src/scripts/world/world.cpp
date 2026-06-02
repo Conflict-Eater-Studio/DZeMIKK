@@ -135,6 +135,23 @@ bool World::hasHexVisual(const HexCoord& coord) const {
     return _spawnedHexes.contains(coord);
 }
 
+dzemikk::Transform* World::getHexTransformByCell(HexCell cell) {
+    for (auto* transform : _hexTransforms) {
+        if (!transform)
+            continue;
+
+        auto* worldHex = transform->getOwner()->getComponent<WorldHex>();
+        if (!worldHex)
+            continue;
+
+        if (worldHex->getHexCell().get()->getCoord() == cell.getCoord()) {
+            return transform;
+        }
+    }
+
+    return nullptr;
+}
+
 void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
     if (_spawnedHexes.contains(cell->getCoord())) {
         return;

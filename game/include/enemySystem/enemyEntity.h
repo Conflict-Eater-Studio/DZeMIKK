@@ -3,6 +3,7 @@
 
 #include "map/Entity.h"
 #include "enemySystem/enemyTypes.h"
+#include "enemySystem/enemyActionWeights.h"
 
 namespace game {
 
@@ -25,7 +26,8 @@ class EnemyEntity : public Entity {
         return _territory;
     }
 
-    void onEnter(HexCellPtr cell) override;
+    void onEnter(HexCellPtr cell);
+
     void onExit() override;
 
     void setHp(double hp) {
@@ -52,11 +54,41 @@ class EnemyEntity : public Entity {
         return _personality;
     }
 
+    void setActionWeights(const EnemyActionWeights& weights) {
+        _actionWeights = weights;
+        _actionWeights.normalize();
+    }
+
+    const EnemyActionWeights& getActionWeights() const {
+        return _actionWeights;
+    }
+
+    void addBlockedCell(HexCell* cell) {
+        if (!cell)
+            return;
+
+        _blockedEnemyCells.insert(cell);
+    }
+
+    const auto& getBlockedCells() const {
+        return _blockedEnemyCells;
+    }
+
+    void clearBlockedCells() {
+        _blockedEnemyCells.clear();
+    }
+
+    bool isCellBlocked(HexCell* cell) const {
+        return cell && _blockedEnemyCells.contains(cell);
+    }
+
   private:
     std::unordered_set<HexCell*> _territory;
+    std::unordered_set<HexCell*> _blockedEnemyCells;
     double _hp = 1;
     EnemyType _type = EnemyType::Normal;
     EnemyPersonality _personality = EnemyPersonality::Balanced;
+    EnemyActionWeights _actionWeights;
 };
 
 } // namespace game

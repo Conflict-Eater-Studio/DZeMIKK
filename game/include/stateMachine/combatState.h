@@ -16,6 +16,10 @@ class PlayerPatternComponent;
 
 class CombatState : public IGameState {
   public:
+    using ListenerID = uint32_t;
+
+    enum class CombatPhase { PreparingBoard, EnemyPlanning, PlayerTurn, ResolveTurn };
+
     CombatState(Game* game) : _game(game) {}
 
     void onEnter() override;
@@ -29,6 +33,12 @@ class CombatState : public IGameState {
     PlayerEntity* _player = nullptr;
     EnemyEntity* _currentEnemy = nullptr;
     PlayerPatternComponent* _playerPatternComponent = nullptr;
+    CombatPhase _phase = CombatPhase::PreparingBoard;
+    ListenerID _endTurnListenerId = -1;
+
+    void startNewTurn();
+    void endPlayerTurn();
+    void generateEnemyBlockedCells();
 };
 
 } // namespace game

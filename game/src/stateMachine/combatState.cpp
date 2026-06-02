@@ -11,11 +11,14 @@
 #include "camera/cameraController.h"
 #include <ecs/scene.h>
 #include <ecs/gameobject.h>
+#include <ecs/components/meshRenderer.h>
 #include <assetManager/assetHandle.h>
 #include <iostream>
 
 
 void game::CombatState::onEnter() {
+
+    _phase = CombatPhase::PreparingBoard;
 
     _game->getCameraController()->setMode(CameraController::Mode::Combat);
 
@@ -51,6 +54,19 @@ void game::CombatState::onEnter() {
     _player->teleportTo(arena.centerCell);
 
     _playerPatternComponent = playerGO->getComponent<PlayerPatternComponent>();
+
+    _endTurnListenerId = _game->getEngine()->getInput()->OnMouseButtonPressed.addListener(
+        [this](dzemikk::MouseButtonPressedEvent& e) {
+            if (e.GetMouseButton() != GLFW_MOUSE_BUTTON_RIGHT)
+                return;
+
+            if (_phase != CombatPhase::PlayerTurn)
+                return;
+
+            endPlayerTurn();
+        });
+
+    startNewTurn();
 }
 
 void game::CombatState::onExit() {
@@ -110,8 +126,76 @@ void game::CombatState::onExit() {
     }
 
     _currentEnemy = nullptr;
+    _game->getEngine()->getInput()->OnMouseButtonPressed.removeListener(_endTurnListenerId);
 }
 
 void game::CombatState::onUpdate(float dt) {
 
+}
+
+void game::CombatState::startNewTurn() {
+    _phase = CombatPhase::EnemyPlanning;
+
+    generateEnemyBlockedCells();
+
+    _phase = CombatPhase::PlayerTurn;
+}
+
+void game::CombatState::endPlayerTurn() {
+
+    _phase = CombatPhase::ResolveTurn;
+
+    //resolvePlayerPatterns();
+
+    //resolveEnemyAction();
+
+    startNewTurn();
+}
+
+void game::CombatState::generateEnemyBlockedCells() {
+
+    for (auto* cell : _currentEnemy->getBlockedCells()) {
+        cell->setDirty(true);
+    }
+
+    _currentEnemy->clearBlockedCells();
+
+    if (!_currentEnemy)
+        return;
+
+    std::vector<HexCell*> territory;
+
+    for (auto* cell : _currentEnemy->getTerritory()) {
+
+        if (!cell)
+            continue;
+
+        territory.push_back(cell);
+    }
+
+    if (territory.empty())
+        return;
+
+    std::shuffle(territory.begin(), territory.end(), std::mt19937(std::random_device{}()));
+
+    size_t count = std::max<size_t>(1, territory.size() / 3);
+
+    for (size_t i = 0; i < count; ++i) {
+        auto* cell = territory[i];
+
+        _currentEnemy->addBlockedCell(cell);
+
+        auto* worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
+        auto* world = worldGO->getComponent<game::World>();
+
+        auto* transform = world->getHexTransformByCell(*cell);
+        if (!transform)
+            continue;
+
+        auto* mesh = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+        if (!mesh)
+            continue;
+
+        mesh->setColor(glm::vec4(1.0f, 0.2f, 0.2f, 1.0f));
+    }
 }
