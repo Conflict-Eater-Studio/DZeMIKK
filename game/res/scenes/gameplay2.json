@@ -1375,7 +1375,7 @@
                                                             ],
                                                             "id": "06a0937b-90cd-4671-9926-e221f90944ba",
                                                             "materialPath": "shaders/quad",
-                                                            "texture": "textures/Mouse_Input_MMB.png",
+                                                            "texture": "textures/Mouse_Input_R-CLICK.png",
                                                             "type": "ImageRenderer"
                                                         }
                                                     ],
@@ -1482,7 +1482,60 @@
                                         {
                                             "children": [
                                                 {
-                                                    "children": [],
+                                                    "children": [
+                                                        {
+                                                            "children": [],
+                                                            "components": [
+                                                                {
+                                                                    "anchorMax": [
+                                                                        0.5,
+                                                                        0.5
+                                                                    ],
+                                                                    "anchorMin": [
+                                                                        0.5,
+                                                                        0.5
+                                                                    ],
+                                                                    "id": "ec97cde2-a8d9-4407-bfa8-80b8045ad08f",
+                                                                    "pivot": [
+                                                                        0.5,
+                                                                        0.5
+                                                                    ],
+                                                                    "position": [
+                                                                        0.0,
+                                                                        0.0
+                                                                    ],
+                                                                    "rotation": 0.0,
+                                                                    "scale": [
+                                                                        1.0,
+                                                                        1.0
+                                                                    ],
+                                                                    "size": [
+                                                                        100.0,
+                                                                        35.0
+                                                                    ],
+                                                                    "type": "RectTransform",
+                                                                    "zIndex": 0
+                                                                },
+                                                                {
+                                                                    "color": [
+                                                                        0.0,
+                                                                        0.0,
+                                                                        0.0
+                                                                    ],
+                                                                    "font": "fonts/Lato-Regular.ttf",
+                                                                    "horizontalAlign": 1,
+                                                                    "id": "50ecc529-4b51-4dbd-a8e8-bbbf539d319e",
+                                                                    "scale": 0.30000001192092896,
+                                                                    "text": "[SPACE]",
+                                                                    "type": "UITextRenderer",
+                                                                    "verticalAlign": 1
+                                                                }
+                                                            ],
+                                                            "enabled": false,
+                                                            "id": "37012970-280c-4ac4-ac72-c39d4e810e23",
+                                                            "name": "Text"
+                                                        }
+                                                    ],
                                                     "components": [
                                                         {
                                                             "anchorMax": [
@@ -1508,8 +1561,8 @@
                                                                 1.0
                                                             ],
                                                             "size": [
-                                                                80.0,
-                                                                80.0
+                                                                100.0,
+                                                                35.0
                                                             ],
                                                             "type": "RectTransform",
                                                             "zIndex": 0
@@ -1521,9 +1574,9 @@
                                                                 1.0,
                                                                 1.0
                                                             ],
-                                                            "id": "02237b09-9630-4b6d-882c-4852667d8af5",
+                                                            "id": "6b7ac793-4cc8-4924-88b5-893affc1e56d",
                                                             "materialPath": "shaders/quad",
-                                                            "texture": "textures/Mouse_Input_R-CLICK.png",
+                                                            "texture": "",
                                                             "type": "ImageRenderer"
                                                         }
                                                     ],

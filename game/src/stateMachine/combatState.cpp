@@ -55,9 +55,9 @@ void game::CombatState::onEnter() {
 
     _playerPatternComponent = playerGO->getComponent<PlayerPatternComponent>();
 
-    _endTurnListenerId = _game->getEngine()->getInput()->OnMouseButtonPressed.addListener(
-        [this](dzemikk::MouseButtonPressedEvent& e) {
-            if (e.GetMouseButton() != GLFW_MOUSE_BUTTON_RIGHT)
+    _endTurnListenerId = _game->getEngine()->getInput()->OnKeyPressed.addListener(
+        [this](dzemikk::KeyPressedEvent& e) {
+            if (e.GetKeyCode() != GLFW_KEY_SPACE)
                 return;
 
             if (_phase != CombatPhase::PlayerTurn)
@@ -126,7 +126,7 @@ void game::CombatState::onExit() {
     }
 
     _currentEnemy = nullptr;
-    _game->getEngine()->getInput()->OnMouseButtonPressed.removeListener(_endTurnListenerId);
+    _game->getEngine()->getInput()->OnKeyPressed.removeListener(_endTurnListenerId);
 }
 
 void game::CombatState::onUpdate(float dt) {

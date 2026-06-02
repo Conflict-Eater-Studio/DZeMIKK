@@ -37,10 +37,9 @@ void game::PlayerPatternComponent::start() {
 
     _cancelPatternListenerID = _engine->getInput()->OnMouseButtonPressed.addListener(
         [this](dzemikk::MouseButtonPressedEvent& e) {
-            if (e.GetMouseButton() == GLFW_MOUSE_BUTTON_MIDDLE) {
+            if (e.GetMouseButton() == GLFW_MOUSE_BUTTON_RIGHT) {
                 if (_activePatternIndex >= 0) {
                     cancelPattern();
-                    return;
                 }
 
                 tryRemovePlacedPatternUnderCursor();
