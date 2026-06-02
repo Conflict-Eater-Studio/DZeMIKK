@@ -12,6 +12,7 @@
 #include "renderer/lightSystem.h"
 
 #include "renderer/framebuffer.h"
+#include "renderer/renderPasses/postProcessRenderPass.h"
 
 namespace dzemikk {
     class Camera;
@@ -27,7 +28,7 @@ namespace dzemikk {
      */
     class Renderer : public IEngineModule {
     public:
-        Renderer(EngineMode engineMode) : _engineMode(engineMode) {};
+        Renderer(EngineMode engineMode, Engine* engine) : _engineMode(engineMode), _engine(engine) {};
         ~Renderer() = default;
 
 #pragma region Disable copy/move
@@ -127,6 +128,7 @@ namespace dzemikk {
          * Ownership is maintained via unique_ptr.
          */
         std::vector<std::unique_ptr<IRenderPass>> _passes;
+        PostProcessRenderPass _postProcessingPass;
 
         /**
          * @brief Fast lookup map for render passes by type.
@@ -158,6 +160,13 @@ namespace dzemikk {
         uint32_t _viewportHeight = 1080;
 
         EngineMode _engineMode = EngineMode::Game;
+
+        AssetHandle<Shader> _presentShader;
+        GLuint _fullscreenVAO = 0;
+
+        Engine* _engine = nullptr;
+
+        void initFullscreenQuad();
 
         /**
          * @brief Prepares frame before rendering.

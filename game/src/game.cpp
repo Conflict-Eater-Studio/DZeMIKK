@@ -49,6 +49,8 @@
 #include <gameStateMachine.h>
 #include <iostream>
 
+#include "ecs/components/postProcessEffect.h"
+
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
         return;
@@ -155,6 +157,9 @@ void Game::setupMainCamera() {
     auto* cameraGO = _mainScene.get()->createGameObject("Camera");
 
     _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
+    auto postProccessEffect = cameraGO->addComponent<dzemikk::PostProcessEffect>();
+    postProccessEffect->setEnabled(true);
+    postProccessEffect->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/vignette"));
 
     _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(_mainCamera);
 }

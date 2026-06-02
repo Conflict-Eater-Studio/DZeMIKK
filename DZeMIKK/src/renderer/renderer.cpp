@@ -22,10 +22,11 @@
 #include <imgui.h>
 #endif
 
+#include "core/engine.h"
+#include "assetManager/assetmanager.h"
+
 void dzemikk::Renderer::initialize() {
-    if (_engineMode == EngineMode::Editor) {
-        _sceneFramebuffer = std::make_unique<Framebuffer>(_viewportWidth, _viewportHeight);
-    }
+    _sceneFramebuffer = std::make_unique<Framebuffer>(_viewportWidth, _viewportHeight);
 
     _context = RenderContext(_cameraSystem.getActiveSceneCamera(),
                              _cameraSystem.getActiveUICamera(), glm::mat4(1.0f),
@@ -54,6 +55,9 @@ void dzemikk::Renderer::initialize() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     _context.uboMatrices = _uboMatrices;
+
+    initFullscreenQuad();
+    _presentShader = _engine->getAssetManager()->get<Shader>("shaders/blit");
 }
 
 void dzemikk::Renderer::uninitialize() {
@@ -66,10 +70,8 @@ void dzemikk::Renderer::uninitialize() {
 void dzemikk::Renderer::render() {
     _lightSystem.update(_context);
 
-    if (_engineMode == EngineMode::Editor) {
-        _sceneFramebuffer->bind();
-        glViewport(0, 0, _viewportWidth, _viewportHeight);
-    }
+    _sceneFramebuffer->bind();
+    glViewport(0, 0, _viewportWidth, _viewportHeight);
 
     setupFrame();
     _cameraSystem.update(_context);
@@ -79,9 +81,27 @@ void dzemikk::Renderer::render() {
     for (auto& pass : _passes)
         pass->execute(_context);
 
-    if (_engineMode == EngineMode::Editor) {
-        _sceneFramebuffer->unbind();
-    }
+    _context.sceneTexture = _sceneFramebuffer->getColorAttachmentRendererID();
+
+    _sceneFramebuffer->unbind();
+
+    _postProcessingPass.execute(_context);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glViewport(0, 0, _viewportWidth, _viewportHeight);
+
+    _presentShader.get()->bind();
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _context.sceneTexture);
+
+    _presentShader.get()->setSampler("screenTexture", 0);
+
+    glBindVertexArray(_fullscreenVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    glBindVertexArray(0);
 }
 
 void dzemikk::Renderer::setSkybox(AssetHandle<Skybox> skybox) {
@@ -104,9 +124,7 @@ const dzemikk::AssetHandle<dzemikk::Skybox> dzemikk::Renderer::getSkybox() const
 }
 
 void dzemikk::Renderer::setupFrame() {
-    if (_engineMode == EngineMode::Editor) {
-        glViewport(0, 0, _viewportWidth, _viewportHeight);    
-    }
+    glViewport(0, 0, _viewportWidth, _viewportHeight);    
 
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -132,4 +150,28 @@ void dzemikk::Renderer::setViewportSize(uint32_t width, uint32_t height) {
     _viewportHeight = height;
 
     _sceneFramebuffer->resize(width, height);
+}
+
+void dzemikk::Renderer::initFullscreenQuad() {
+    float vertices[] = {// pos   // uv
+                        -1.f, 1.f, 0.f, 1.f, -1.f, -1.f, 0.f, 0.f, 1.f, -1.f, 1.f, 0.f,
+
+                        -1.f, 1.f, 0.f, 1.f, 1.f,  -1.f, 1.f, 0.f, 1.f, 1.f,  1.f, 1.f};
+
+    glGenVertexArrays(1, &_fullscreenVAO);
+    glBindVertexArray(_fullscreenVAO);
+
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+
+    glBindVertexArray(0);
 }
