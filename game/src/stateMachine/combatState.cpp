@@ -60,10 +60,10 @@ void game::CombatState::onEnter() {
             if (e.GetKeyCode() != GLFW_KEY_SPACE)
                 return;
 
-            if (_phase != CombatPhase::PlayerTurn)
-                return;
-
-            endPlayerTurn();
+            if (_phase == CombatPhase::PlayerTurn)
+                endPlayerTurn();
+            else if (_phase == CombatPhase::ResolveTurn)
+                startNewTurn();
         });
 
     startNewTurn();
@@ -136,6 +136,9 @@ void game::CombatState::onUpdate(float dt) {
 void game::CombatState::startNewTurn() {
     _phase = CombatPhase::EnemyPlanning;
 
+    //for (auto* cell : _currentEnemy->getTerritory()) {
+    //    cell->setDirty(true);
+    //}
 
     generateEnemyBlockedCells();
 
@@ -154,8 +157,6 @@ void game::CombatState::endPlayerTurn() {
     //resolvePlayerPatterns();
 
     //resolveEnemyAction();
-
-    startNewTurn();
 }
 
 void game::CombatState::generateEnemyBlockedCells() {
@@ -202,6 +203,6 @@ void game::CombatState::generateEnemyBlockedCells() {
         if (!mesh)
             continue;
 
-        mesh->setColor(glm::vec4(1.0f, 0.2f, 0.2f, 1.0f));
+        mesh->setColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
     }
 }
