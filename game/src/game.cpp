@@ -158,15 +158,25 @@ void Game::setupMainCamera() {
 
     _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
     auto postProccessEffect = cameraGO->addComponent<dzemikk::PostProcessEffect>();
+
     postProccessEffect->setEnabled(true);
-    postProccessEffect->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/vignette"));
+    postProccessEffect->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/fxaa"));
     postProccessEffect->setPriority(1);
 
-    auto postProccessEffect2 = cameraGO->addComponent<dzemikk::PostProcessEffect>();
-    postProccessEffect2->setEnabled(true);
-    postProccessEffect2->setShader(
-    _engine->getAssetManager()->get<dzemikk::Shader>("shaders/grayscale"));
-    postProccessEffect2->setPriority(0);
+    _engine->getInput()->OnKeyPressed.addListener
+     ([this, postProccessEffect](dzemikk::KeyPressedEvent& event) {
+         if (event.GetKeyCode() == GLFW_KEY_1) {
+             postProccessEffect->setEnabled(true);
+         }
+         if (event.GetKeyCode() == GLFW_KEY_2) {
+             postProccessEffect->setEnabled(false);
+         }
+     });
+    // auto postProccessEffect2 = cameraGO->addComponent<dzemikk::PostProcessEffect>();
+    // postProccessEffect2->setEnabled(true);
+    // postProccessEffect2->setShader(
+    // _engine->getAssetManager()->get<dzemikk::Shader>("shaders/grayscale"));
+    // postProccessEffect2->setPriority(0);
 
 
     _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(_mainCamera);
