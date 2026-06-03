@@ -2,7 +2,6 @@
 
 #include "game.h"
 
-#include "../include/player/playerMovement.h"
 #include "assetManager/assetmanager.h"
 #include "camera/cameraController.h"
 #include "collisions/collisions.h"
@@ -19,6 +18,7 @@
 #include "input/input.h"
 #include "map/HexCoord.h"
 #include "map/PlayerEntity.h"
+#include "player/playerMovement.h"
 #include "renderer/cameraSystem.h"
 #include "renderer/material.h"
 #include "renderer/model.h"
@@ -35,28 +35,21 @@
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
 #endif
-
-#include "ecs/components/ui/horizontalLayout.h"
-#include "ecs/components/ui/uiButton.h"
-#include "ecs/serialize/prefabSerializer.h"
 #include "enemySystem/enemyManager.h"
+#include "enemySystem/enemyPatternComponent.h"
 #include "enemySystem/territoryPatternRegistry.h"
-#include "healthSystem.h"
-#include "player/inventory.h"
 #include "player/playerPatternComponent.h"
 #include "player/playerPatternStatsComponent.h"
-#include "enemySystem/enemyPatternComponent.h"
 #include "stateMachine/combatState.h"
 #include "stateMachine/explorationState.h"
 #include "ui/combatUIPanel.h"
-#include "stateMachine/combatState.h"
-#include "stateMachine/explorationState.h"
 
 #include <animation/animationstatemachine.h>
 #include <ecs/components/animator.h>
 #include <ecs/components/skinnedMeshRenderer.h>
 #include <gameStateMachine.h>
 #include <iostream>
+#include <healthSystem.h>
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
@@ -95,43 +88,8 @@ void Game::start() {
 
     setupSkybox();
 
-    _mainScene = assetManager->get<dzemikk::Scene>("scenes/interface2.json");
+    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay2.json");
 
-    auto item1PrefabJson = assetManager->get<nlohmann::json>("prefabs/ItemPrefab.prefab");
-    auto item2PrefabJson = assetManager->get<nlohmann::json>("prefabs/ItemPrefab1.prefab");
-    auto item3PrefabJson = assetManager->get<nlohmann::json>("prefabs/ItemPrefab2.prefab");
-    auto horizontalGO = _mainScene.get()->findGameObjectByName("Horizontal");
-    auto inventory = horizontalGO->addComponent<game::Inventory>();
- 
-    inventory->setHorizontalLayout(horizontalGO);
-    inventory->setAssetManager(assetManager);
-    inventory->setMainScene(_mainScene.get());
-
-    inventory->setItem1Prefab(item1PrefabJson);
-    inventory->setItem2Prefab(item2PrefabJson);
-    inventory->setItem3Prefab(item3PrefabJson);
-
-    inventory->addItem(game::Inventory::Item1);
-    inventory->addItem(game::Inventory::Item2);
-    inventory->addItem(game::Inventory::Item3);
-
-    auto tooltip  = _mainScene.get()->findGameObjectByName("Tooltip");
-    tooltip->enabled(false);
-    dzemikk::UIActionRegistry::get().registerAction(
-         [tooltip, this](const dzemikk::UIEvent&) {
-             tooltip->enabled(true);
-         },
-         "ItemEnter");
-    dzemikk::UIActionRegistry::get().registerAction(
-         [tooltip](const dzemikk::UIEvent&) {
-             tooltip->enabled(false);
-         },
-         "ItemExit");
-
-    auto playerHealthbarGO = _mainScene.get()->findGameObjectByName("PlayerSlider");
-    auto playerHealthSystem = playerHealthbarGO->addComponent<game::HealthSystem>();
-    playerHealthSystem->setSlider(playerHealthbarGO->getComponent<dzemikk::UISlider>());
-    playerHealthSystem->damage(15.0f);
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
     sceneManager->setActiveScene(sceneShared);
@@ -426,6 +384,13 @@ void Game::setupPlayer() {
     combatPlayerPanel->setPatternsComponent(patternComponent);
     combatPlayerPanel->setAssetManager(_engine->getAssetManager());
     combatPlayerPanel->setCanvas(playerPanel);
+
+    auto playerHealthbarGO = _mainScene.get()->findGameObjectByName("Player_Healthbar_Slider");
+
+    auto playerHealthSystem = playerHealthbarGO->addComponent<game::HealthSystem>();
+    playerHealthSystem->setSlider(playerHealthbarGO->getComponent<dzemikk::UISlider>());
+    playerHealthSystem->setMaxHealth(30.0F);
+    playerHealthSystem->setHealth(30.0F);
 }
 
 void Game::setupEnemies() {
@@ -519,6 +484,11 @@ void Game::setupEnemies() {
     combatEnamyPanel->setPatternsComponent(enemyPatternComponent);
     combatEnamyPanel->setAssetManager(_engine->getAssetManager());
     combatEnamyPanel->setCanvas(enemyPanel);
+
+    auto enemyHealthbarGO = _mainScene.get()->findGameObjectByName("Enemy_Healthbar_Slider");
+
+    auto enemyHealthSystem = enemyHealthbarGO->addComponent<game::HealthSystem>();
+    enemyHealthSystem->setSlider(enemyHealthbarGO->getComponent<dzemikk::UISlider>());
 }
 
 void Game::registerDefaultTerritories() {

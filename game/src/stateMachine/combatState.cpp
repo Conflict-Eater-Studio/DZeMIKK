@@ -3,7 +3,7 @@
 #include "map/HexGrid.h"
 #include "map/HexCell.h"
 #include "enemySystem/enemyManager.h"
-#include "playerMovement.h"
+#include "player/playerMovement.h"
 #include "enemySystem/combatArenaBuilder.h"
 #include "player/playerPatternComponent.h"
 
@@ -16,6 +16,7 @@
 #include <iostream>
 #include <enemySystem/enemyPatternComponent.h>
 #include "ui/combatUIPanel.h"
+#include "healthSystem.h"
 
 const char* patternTypeToString(game::HexPattern::Type type) {
     switch (type) {
@@ -97,6 +98,11 @@ void game::CombatState::onEnter() {
             else if (_phase == CombatPhase::ResolveTurn)
                 startNewTurn();
         });
+
+    auto enemyHealthbarGO =
+        _game->getCurrentScene().get()->findGameObjectByName("Enemy_Healthbar_Slider");
+    auto* enemyHealthbarSystem = enemyHealthbarGO->getComponent<HealthSystem>();
+    enemyHealthbarSystem->setMaxHealth(_currentEnemy->getHp(), true);
 
     startNewTurn();
 }

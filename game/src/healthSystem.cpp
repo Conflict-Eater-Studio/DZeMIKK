@@ -2,6 +2,9 @@
 
 #include <algorithm>
 
+#include <ecs/gameobject.h>
+#include <ecs/components/ui/uiTextRenderer.h>
+
 namespace game {
 
 void HealthSystem::start() {
@@ -11,7 +14,7 @@ void HealthSystem::start() {
 void HealthSystem::setHealth(int value) {
     _currentHealth = std::clamp(value, 0, _maxHealth);
     if (_slider) {
-        _slider->onValueChanged(_currentHealth/static_cast<float>(_maxHealth));
+        updateUI();
     }
     if (_currentHealth == 0) {
     }
@@ -25,7 +28,9 @@ void HealthSystem::setMaxHealth(int value, bool healToFull) {
         _currentHealth = std::min(_currentHealth, _maxHealth);
     }
     if (_slider) {
-        _slider->onValueChanged(_currentHealth/static_cast<float>(_maxHealth));
+        _slider->setMaxValue(1.0F);
+        _slider->setMinValue(0.0F);
+        updateUI();
     }
 }
 
@@ -60,6 +65,29 @@ bool HealthSystem::isDead() const {
 
 std::string HealthSystem::typeName() const {
     return "HealthSystem";
+}
+
+void HealthSystem::updateUI() {
+    if (!_slider)
+        return;
+
+    float value = _currentHealth / static_cast<float>(_maxHealth);
+    _slider->onValueChanged(value);
+
+    auto* sliderGO = _slider->getOwner();
+
+    if (!sliderGO)
+        return;
+
+    for (auto* child : sliderGO->getChildren()) {
+        if (child->getName() == "Empty") {
+
+            auto* text = child->getComponent<dzemikk::UITextRenderer>();
+            if (text) {
+                text->text = std::to_string(_currentHealth) + "/" + std::to_string(_maxHealth);
+            }
+        }
+    }
 }
 
 } // namespace game

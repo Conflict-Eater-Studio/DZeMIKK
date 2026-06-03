@@ -24,12 +24,13 @@ public:
     [[nodiscard]] int getCurrentHealth() const;
     [[nodiscard]] bool isDead() const;
 
-
     [[nodiscard]] std::string typeName() const override;
 private:
     int _maxHealth = 100;
     int _currentHealth = 100;
     dzemikk::UISlider* _slider = nullptr;
+
+    void updateUI();
 };
 
 } // namespace game

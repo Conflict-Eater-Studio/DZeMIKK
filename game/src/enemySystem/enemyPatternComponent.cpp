@@ -21,7 +21,7 @@ void game::EnemyPatternComponent::start() {
     addPattern(HexPattern({{-1, 1}, {0, 0}, {1, -1}}, HexPattern::Type::DEF, 1.2F), 100);
 
     // hp1
-    addPattern(HexPattern({{0, 0}}, HexPattern::Type::HEAL), 100);
+    addPattern(HexPattern({{0, 0}}, HexPattern::Type::HEAL, 0.5F), 100);
 }
 
 void game::EnemyPatternComponent::update(double deltaTime) {}
