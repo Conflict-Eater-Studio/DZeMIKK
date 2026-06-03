@@ -19,6 +19,11 @@ class HexPattern {
     bool operator==(const HexPattern& other) const;
     bool operator!=(const HexPattern& other) const;
 
+    [[nodiscard]]
+    float getEffectStrength() const {
+        return _effectStrength;
+    }
+
   private:
     std::vector<HexCoord> _hexes;
     Type _type{Type::ATK};

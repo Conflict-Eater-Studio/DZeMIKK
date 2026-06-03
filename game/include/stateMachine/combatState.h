@@ -4,6 +4,8 @@
 #include "stateMachine/iGameState.h"
 #include <vector>
 
+#include "map/HexPattern.h"
+
 class Game;
 
 namespace game {
@@ -11,6 +13,7 @@ class PlayerEntity;
 class HexChunk;
 class HexGrid;
 class HexCoord;
+class HexCell;
 class EnemyEntity;
 class PlayerPatternComponent;
 
@@ -19,6 +22,12 @@ class CombatState : public IGameState {
     using ListenerID = uint32_t;
 
     enum class CombatPhase { PreparingBoard, EnemyPlanning, PlayerTurn, ResolveTurn };
+
+    struct PlacementCandidate {
+        HexPattern pattern;
+        std::vector<HexCell*> cells;
+        float score = 0.0f;
+    };
 
     CombatState(Game* game) : _game(game) {}
 
@@ -39,6 +48,8 @@ class CombatState : public IGameState {
     void startNewTurn();
     void endPlayerTurn();
     void generateEnemyBlockedCells();
+    float getTypeWeight(const EnemyEntity* enemy, HexPattern::Type type);
+    float scorePattern(const EnemyEntity* enemy, const HexPattern& pattern);
 };
 
 } // namespace game
