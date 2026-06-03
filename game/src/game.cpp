@@ -379,7 +379,7 @@ void Game::setupPlayer() {
     patternComponent->setGrid(_hexGrid);
 
     auto playerPanel = _mainScene.get()->findGameObjectByName("Player_Panel");
-    auto combatPlayerPanel = playerPanel->addComponent<game::CombatUIPanel>(true);
+    auto combatPlayerPanel = playerPanel->addComponent<game::CombatUIPanel>(true, game::CombatUIPanel::Mode::AvailablePatterns);
     combatPlayerPanel->setPatternsComponent(patternComponent);
     combatPlayerPanel->setAssetManager(_engine->getAssetManager());
     combatPlayerPanel->setCanvas(playerPanel);
@@ -471,7 +471,8 @@ void Game::setupEnemies() {
 
     auto enemyPatternComponent = enemyManagerGO->addComponent<game::EnemyPatternComponent>();
     auto enemyPanel = _mainScene.get()->findGameObjectByName("Enemy_Panel");
-    auto combatEnamyPanel = enemyPanel->addComponent<game::CombatUIPanel>(false);
+    auto combatEnamyPanel =
+        enemyPanel->addComponent<game::CombatUIPanel>(false, game::CombatUIPanel::Mode::EnemyUsage);
     combatEnamyPanel->setPatternsComponent(enemyPatternComponent);
     combatEnamyPanel->setAssetManager(_engine->getAssetManager());
     combatEnamyPanel->setCanvas(enemyPanel);

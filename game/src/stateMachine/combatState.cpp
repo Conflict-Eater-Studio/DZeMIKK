@@ -15,6 +15,7 @@
 #include <assetManager/assetHandle.h>
 #include <iostream>
 #include <enemySystem/enemyPatternComponent.h>
+#include "ui/combatUIPanel.h"
 
 const char* patternTypeToString(game::HexPattern::Type type) {
     switch (type) {
@@ -180,7 +181,14 @@ void game::CombatState::startNewTurn() {
         mesh->setColor(glm::vec4(0.0F, 0.0F, 0.5F, 1.0F));
     }
 
+    auto* enemyManagerGO = _game->getCurrentScene().get()->findGameObjectByName("EnemyManager");
+    auto* patternComponent = enemyManagerGO->getComponent<EnemyPatternComponent>();
+    patternComponent->clearUsage();
+    
     generateEnemyBlockedCells();
+    auto enemyPanel = _game->getCurrentScene().get()->findGameObjectByName("Enemy_Panel");
+    auto* enemyPanelUI = enemyPanel->getComponent<CombatUIPanel>();
+    enemyPanelUI->refreshVisuals();
 
     _phase = CombatPhase::PlayerTurn;
 }
@@ -222,7 +230,7 @@ void game::CombatState::generateEnemyBlockedCells() {
 
     std::shuffle(territory.begin(), territory.end(), std::mt19937(std::random_device{}()));
 
-    fillEnemyBoard(1.f);
+    fillEnemyBoard(0.75f);
 }
 
 float game::CombatState::getTypeWeight(const EnemyEntity* enemy, HexPattern::Type type) {
@@ -341,10 +349,34 @@ void game::CombatState::fillEnemyBoard(float coverage) {
 
         auto candidates = generateCandidates(availableCells);
 
-        auto chosen = chooseCandidate(candidates);
+        HexPattern::Type desiredType = choosePatternType();
+
+        std::vector<PlacementCandidate> filteredCandidates;
+
+        for (auto& candidate : candidates) {
+
+            if (!candidate.pattern)
+                continue;
+
+            if (candidate.pattern->getType() == desiredType) {
+                filteredCandidates.push_back(candidate);
+            }
+        }
+
+        if (filteredCandidates.empty()) {
+            filteredCandidates = std::move(candidates);
+        }
+
+        auto chosen = chooseCandidate(filteredCandidates);
 
         if (!chosen.has_value())
             break;
+
+        auto* enemyManagerGO = _game->getCurrentScene().get()->findGameObjectByName("EnemyManager");
+
+        auto* patternComponent = enemyManagerGO->getComponent<EnemyPatternComponent>();
+
+        patternComponent->registerPatternUsage(chosen->pattern);
 
         PlannedPattern planned;
         planned.type = chosen->pattern->getType();
@@ -467,4 +499,33 @@ void game::CombatState::showEnemyPlannedPatterns() {
             mesh->setColor(color);
         }
     }
+}
+
+game::HexPattern::Type game::CombatState::choosePatternType() const {
+    const auto& weights = _currentEnemy->getActionWeights();
+
+    float attackWeight = std::max(0.0f, weights.attack);
+    float defenseWeight = std::max(0.0f, weights.defense);
+    float healWeight = std::max(0.0f, weights.heal);
+
+    float totalWeight = attackWeight + defenseWeight + healWeight;
+
+    if (totalWeight <= 0.0f)
+        return HexPattern::Type::ATK;
+
+    static std::mt19937 rng(std::random_device{}());
+
+    std::uniform_real_distribution<float> dist(0.0f, totalWeight);
+
+    float roll = dist(rng);
+
+    if (roll < attackWeight)
+        return HexPattern::Type::ATK;
+
+    roll -= attackWeight;
+
+    if (roll < defenseWeight)
+        return HexPattern::Type::DEF;
+
+    return HexPattern::Type::HEAL;
 }

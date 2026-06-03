@@ -153,7 +153,7 @@ void game::PlayerPatternComponent::update(double deltaTime) {
     _previewObject->transform()->setPosition(
         {
             transform->getPosition().x,
-            transform->getPosition().y + 2.f,
+            transform->getPosition().y + 0.6f,
             transform->getPosition().z
         });
 

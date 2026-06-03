@@ -6,6 +6,7 @@
 #include <ecs/serialize/prefabSerializer.h>
 #include <ecs/components/ui/uiActionRegistry.h>
 #include <iostream>
+#include <enemySystem/enemyPatternComponent.h>
 
 void game::CombatUIPanel::start() {
     _patternSlotPrefab = _assetManager->get<nlohmann::json>("prefabs/pattern_ui.prefab");
@@ -21,7 +22,12 @@ void game::CombatUIPanel::update(double deltaTime) {}
 
 void game::CombatUIPanel::refresh() {
     clear();
+
+    if (!_patterns)
+        return;
+
     buildUI();
+    refreshCounts();
 }
 
 void game::CombatUIPanel::clear() {
@@ -67,10 +73,26 @@ void game::CombatUIPanel::createPatternSlot(const PatternComponent::PatternEntry
     uiEntry.root = patternGO;
 
     auto* button = patternGO->getComponent<dzemikk::UIButton>();
-
     uiEntry.button = button;
 
     std::string actionId = "pattern_" + std::to_string(index);
+
+    uint32_t usageCount = 0;
+
+    if (_patterns) {
+        if (auto* enemyPatterns = dynamic_cast<game::EnemyPatternComponent*>(_patterns)) {
+
+            const auto& usage = enemyPatterns->getPatternUsage();
+
+            auto it = usage.find(&entry.pattern);
+            if (it != usage.end()) {
+                usageCount = it->second;
+            }
+        }
+    }
+
+    glm::vec4 baseColor = getPatternBaseColor(entry.pattern.getType());
+    glm::vec4 color = applyUsageTint(baseColor, usageCount);
 
     if (_isClickable) {
         dzemikk::UIActionRegistry::get().registerAction(
@@ -79,7 +101,6 @@ void game::CombatUIPanel::createPatternSlot(const PatternComponent::PatternEntry
                     return;
 
                 _patterns->usePattern(index);
-
                 refreshCounts();
             },
             actionId);
@@ -88,13 +109,9 @@ void game::CombatUIPanel::createPatternSlot(const PatternComponent::PatternEntry
     if (button) {
         if (_isClickable) {
             button->addEventListener(dzemikk::UIEventType::Click, actionId);
-            glm::vec4 baseColor = getPatternBaseColor(entry.pattern.getType());
-
-            button->setStyle({baseColor, baseColor * 0.75f, baseColor * 0.5f});
+            button->setStyle({color, color * 0.75f, color * 0.5f});
         } else {
-            glm::vec4 baseColor = getPatternBaseColor(entry.pattern.getType());
-
-            button->setStyle({baseColor, baseColor, baseColor});
+            button->setStyle({color, color, color});
         }
 
         button->applyVisualState();
@@ -107,7 +124,6 @@ void game::CombatUIPanel::createPatternSlot(const PatternComponent::PatternEntry
         if (child->getName() == "Button_Text") {
 
             auto* text = child->getComponent<dzemikk::UITextRenderer>();
-
             if (text) {
                 text->text = patternName;
             }
@@ -120,10 +136,8 @@ void game::CombatUIPanel::createPatternSlot(const PatternComponent::PatternEntry
                 if (countChild->getName() == "Text_Count") {
 
                     auto* text = countChild->getComponent<dzemikk::UITextRenderer>();
-
                     if (text) {
-                        text->text = std::to_string(entry.count);
-
+                        text->text = std::to_string(usageCount);
                         uiEntry.countText = text;
                     }
                 }
@@ -186,21 +200,16 @@ void game::CombatUIPanel::createPatternPreview(dzemikk::GameObject* parent,
 }
 
 void game::CombatUIPanel::refreshCounts() {
-
-    if (!_patterns)
-        return;
-
     for (auto& entry : _uiEntries) {
-
-        auto* pattern = _patterns->getPattern(entry.patternIndex);
-
-        if (!pattern)
-            continue;
 
         if (!entry.countText)
             continue;
 
-        entry.countText->text = std::to_string(pattern->count);
+        const auto& patternEntry = _patterns->getPatterns()[entry.patternIndex];
+
+        int32_t count = getPatternCount(patternEntry);
+
+        entry.countText->text = std::to_string(count);
     }
 }
 
@@ -241,21 +250,26 @@ std::string game::CombatUIPanel::buildPatternName(const HexPattern& pattern) {
 }
 
 glm::vec4 game::CombatUIPanel::getPatternBaseColor(HexPattern::Type type) {
-
     switch (type) {
-
     case HexPattern::Type::ATK:
-        return {0.6f, 0.0f, 0.0f, 1.0f};
-
+        return {1.f, 0.f, 0.f, 1.f};
     case HexPattern::Type::DEF:
-        return {0.0f, 0.0f, 0.6f, 1.0f};
-
+        return {0.f, 0.f, 1.f, 1.f};
     case HexPattern::Type::HEAL:
-        return {0.0f, 0.6f, 0.0f, 1.0f};
-
+        return {0.f, 1.f, 0.f, 1.f};
     default:
-        return {0.3f, 0.3f, 0.3f, 1.0f};
+        return {0.3f, 0.3f, 0.3f, 1.f};
     }
+}
+
+glm::vec4 game::CombatUIPanel::applyUsageTint(glm::vec4 base, uint32_t count) {
+    float intensity = std::min(1.0f, count * 0.2f);
+
+    base.r += intensity * 0.3f;
+    base.g += intensity * 0.3f;
+    base.b += intensity * 0.3f;
+
+    return base;
 }
 
 std::string game::CombatUIPanel::typeName() const {
@@ -272,4 +286,79 @@ void game::CombatUIPanel::setAssetManager(dzemikk::AssetManager* assetManager) {
 
 void game::CombatUIPanel::setCanvas(dzemikk::GameObject* canvas) {
     _canvas = canvas;
+}
+
+void game::CombatUIPanel::setMode(Mode mode) {
+    _mode = mode;
+    refresh();
+}
+
+int32_t game::CombatUIPanel::getPatternCount(const PatternComponent::PatternEntry& entry) const {
+    if (!_patterns)
+        return 0;
+
+    if (_mode == Mode::AvailablePatterns) {
+        return entry.count; 
+    }
+
+    const auto* enemyPatterns = dynamic_cast<const EnemyPatternComponent*>(_patterns);
+
+    if (!enemyPatterns)
+        return 0;
+
+    const auto& usage = enemyPatterns->getPatternUsage();
+
+    auto it = usage.find(&entry.pattern);
+
+    if (it == usage.end())
+        return 0;
+
+    return it->second;
+}
+
+void game::CombatUIPanel::refreshVisuals() {
+    if (!_patterns)
+        return;
+
+    const bool isEnemy = (dynamic_cast<EnemyPatternComponent*>(_patterns) != nullptr);
+
+    for (auto& ui : _uiEntries) {
+
+        if (ui.patternIndex >= _patterns->getPatterns().size())
+            continue;
+
+        const auto& entry = _patterns->getPatterns()[ui.patternIndex];
+
+        uint32_t count = 0;
+
+        if (isEnemy) {
+            auto* enemy = static_cast<EnemyPatternComponent*>(_patterns);
+
+            const auto& usage = enemy->getPatternUsage();
+
+            auto it = usage.find(&entry.pattern);
+            if (it != usage.end()) {
+                count = it->second;
+            }
+        } else {
+            count = entry.count;
+        }
+
+        glm::vec4 baseColor = getPatternBaseColor(entry.pattern.getType());
+        glm::vec4 color = applyUsageTint(baseColor, count);
+
+        if (ui.button) {
+            if (_isClickable) {
+                ui.button->setStyle({color, color * 0.75f, color * 0.5f});
+            } else {
+                ui.button->setStyle({color, color, color});
+            }
+
+            ui.button->applyVisualState();
+        }
+
+        if (ui.countText) {
+            ui.countText->text = std::to_string(count);
+        }
+    }
 }

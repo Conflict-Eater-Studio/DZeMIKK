@@ -19,8 +19,10 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
         dzemikk::UITextRenderer* countText = nullptr;
     };
 
+    enum class Mode { AvailablePatterns, EnemyUsage };
+
   public:
-    CombatUIPanel(bool isClickable) : _isClickable(isClickable) {}
+    CombatUIPanel(bool isClickable, Mode mode) : _isClickable(isClickable), _mode(mode) {}
 
     void start() override;
     void update(double deltaTime) override;
@@ -31,6 +33,7 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
     void setPatternsComponent(PatternComponent* patterns);
     void setAssetManager(dzemikk::AssetManager* assetManager);
     void setCanvas(dzemikk::GameObject* canvas);
+    void refreshVisuals();
 
   private:
     void buildUI();
@@ -48,6 +51,9 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
     glm::vec4 getPatternBaseColor(HexPattern::Type type);
 
     std::string typeName() const override;
+    void setMode(Mode mode);
+    int32_t getPatternCount(const PatternComponent::PatternEntry& entry) const;
+    glm::vec4 applyUsageTint(glm::vec4 base, uint32_t count);
 
   private:
     PatternComponent* _patterns = nullptr;
@@ -56,6 +62,7 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
 
     dzemikk::GameObject* _canvas = nullptr;
     dzemikk::GameObject* _patternsContainer = nullptr;
+    Mode _mode = Mode::AvailablePatterns;
 
     dzemikk::AssetHandle<nlohmann::json> _patternSlotPrefab;
     dzemikk::AssetHandle<nlohmann::json> _hexUIPrefab;

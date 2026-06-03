@@ -66,6 +66,7 @@ class CombatState : public IGameState {
     void fillEnemyBoard(float coverage = 0.33f);
     static glm::vec4 getPatternColor(HexPattern::Type type);
     void showEnemyPlannedPatterns();
+    HexPattern::Type choosePatternType() const;
 };
 
 } // namespace game
