@@ -163,7 +163,7 @@ void Game::setupMainCamera() {
 
     _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
     auto fxaaProcessEffect = cameraGO->addComponent<dzemikk::OutlinePostProcessEffect>();
-    fxaaProcessEffect->setEnabled(true);
+    fxaaProcessEffect->setEnabled(false);
     fxaaProcessEffect->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/outline"));
     fxaaProcessEffect->setPriority(1);
     fxaaProcessEffect->setColor(glm::vec3(1.0F, 0.0F, 0.0F));
@@ -181,14 +181,12 @@ void Game::setupMainCamera() {
          }
      });
     auto postProccessEffect2 = cameraGO->addComponent<dzemikk::PostProcessEffect>();
-    postProccessEffect2->setEnabled(true);
-    postProccessEffect2->setShader(
-
-    _engine->getAssetManager()->get<dzemikk::Shader>("shaders/grayscale"));
+    postProccessEffect2->setEnabled(false);
+    postProccessEffect2->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/grayscale"));
     postProccessEffect2->setPriority(2);
 
     auto colorGrading = cameraGO->addComponent<dzemikk::ColorGradingEffect>();
-    colorGrading->setEnabled(true);
+    colorGrading->setEnabled(false);
     colorGrading->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/color_grading"));
     colorGrading->setPriority(0);
     colorGrading->setExposure(0.1f);
@@ -197,9 +195,12 @@ void Game::setupMainCamera() {
     colorGrading->setTemperature(0.1f);
     colorGrading->setTint(-0.05f);
 
-    _engine->getAssetManager()->get<dzemikk::Shader>("shaders/grain"));
-    postProccessEffect2->setPriority(2);
-
+    _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
+    auto postProccessEffect = cameraGO->addComponent<dzemikk::PostProcessEffect>();
+    postProccessEffect->setEnabled(true);
+    postProccessEffect->setShader(
+        _engine->getAssetManager()->get<dzemikk::Shader>("shaders/vignette"));
+    postProccessEffect->setPriority(5);
 
     _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(_mainCamera);
 }

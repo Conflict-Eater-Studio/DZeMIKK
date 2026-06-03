@@ -11,7 +11,7 @@ void main()
 
     float gray = dot(color, vec3(0.2126, 0.7152, 0.0722));
 
-    float strength = 0.5; // 1 = full grayscale, 0 = no effect
+    float strength = 1.0; // 1 = full grayscale, 0 = no effect
 
     vec3 result = mix(color, vec3(gray), strength);
 
