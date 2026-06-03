@@ -18,6 +18,9 @@
 #include "ui/combatUIPanel.h"
 #include "healthSystem.h"
 
+#include "gameStateMachine.h"
+#include "stateMachine/explorationState.h"
+
 const char* patternTypeToString(game::HexPattern::Type type) {
     switch (type) {
     case game::HexPattern::Type::ATK:
@@ -71,20 +74,6 @@ void game::CombatState::onEnter() {
 
     _player->teleportTo(arena.centerCell);
 
-
-    std::cout << "\n===== ENEMY TERRITORY =====\n";
-
-    for (auto* cell : _currentEnemy->getTerritory()) {
-
-        if (!cell)
-            continue;
-
-        const auto& coord = cell->getCoord();
-
-        std::cout << "hex(" << coord.q() << ", " << coord.r() << ")\n";
-    }
-
-    std::cout << "==========================\n";
 
     _playerPatternComponent = playerGO->getComponent<PlayerPatternComponent>();
 
@@ -168,15 +157,23 @@ void game::CombatState::onExit() {
 }
 
 void game::CombatState::onUpdate(float dt) {
-
+    if (_shouldLeaveCombat) {
+        _shouldLeaveCombat = false;
+        _game->setExplorationState();
+        return;
+    }
 }
 
 void game::CombatState::startNewTurn() {
     _phase = CombatPhase::EnemyPlanning;
+    
+    _playerPatternComponent->clearPlacedPatterns();
+    _playerPatternComponent->clearPreview();
+    _playerPatternComponent->clearActivePattern();
 
-    //for (auto* cell : _currentEnemy->getTerritory()) {
-    //    cell->setDirty(true);
-    //}
+    for (auto* cell : _currentEnemy->getTerritory()) {
+        cell->setDirty(true);
+    }
 
     auto* worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
     auto* world = worldGO->getComponent<World>();
@@ -203,15 +200,8 @@ void game::CombatState::endPlayerTurn() {
 
     _phase = CombatPhase::ResolveTurn;
 
+    resolveConflict();
     showEnemyPlannedPatterns();
-
-    _playerPatternComponent->clearPlacedPatterns();
-    _playerPatternComponent->clearPreview();
-    _playerPatternComponent->clearActivePattern();
-
-    //resolvePlayerPatterns();
-
-    //resolveEnemyAction();
 }
 
 void game::CombatState::generateEnemyBlockedCells() {
@@ -386,6 +376,7 @@ void game::CombatState::fillEnemyBoard(float coverage) {
 
         PlannedPattern planned;
         planned.type = chosen->pattern->getType();
+        planned.strength = chosen->pattern->getEffectStrength();
         planned.cells = chosen->cells;
 
         _plannedPatterns.push_back(std::move(planned));
@@ -478,8 +469,6 @@ void game::CombatState::showEnemyPlannedPatterns() {
 
     for (const auto& pattern : _plannedPatterns) {
 
-        std::cout << "\n=== PATTERN " << patternTypeToString(pattern.type) << " ===\n";
-
         glm::vec4 color = getPatternColor(pattern.type);
 
         for (auto* cell : pattern.cells) {
@@ -488,9 +477,6 @@ void game::CombatState::showEnemyPlannedPatterns() {
                 continue;
 
             const auto& coord = cell->getCoord();
-
-            std::cout << patternTypeToString(pattern.type) << " -> hex(" << coord.q() << ", "
-                      << coord.r() << ")\n";
 
             auto* transform = world->getHexTransformByCell(*cell);
 
@@ -534,4 +520,143 @@ game::HexPattern::Type game::CombatState::choosePatternType() const {
         return HexPattern::Type::DEF;
 
     return HexPattern::Type::HEAL;
+}
+
+void game::CombatState::resolveConflict() {
+    struct CellEffect {
+        float atk = 0.0f;
+        float def = 0.0f;
+        float heal = 0.0f;
+    };
+
+    std::unordered_map<HexCoord, CellEffect> playerEffects;
+    std::unordered_map<HexCoord, CellEffect> enemyEffects;
+
+    for (const auto& placed : _playerPatternComponent->getPlacedPatterns()) {
+
+        const auto& pattern = placed.pattern;
+
+        for (const auto& offset : pattern.getHexes()) {
+
+            auto& effect = playerEffects[offset];
+
+            switch (pattern.getType()) {
+            case HexPattern::Type::ATK:
+                effect.atk += pattern.getEffectStrength();
+                break;
+
+            case HexPattern::Type::DEF:
+                effect.def += pattern.getEffectStrength();
+                break;
+
+            case HexPattern::Type::HEAL:
+                effect.heal += pattern.getEffectStrength();
+                break;
+
+            default:
+                break;
+            }
+        }
+    }
+
+    for (const auto& pattern : _plannedPatterns) {
+
+        for (auto* cell : pattern.cells) {
+
+            if (!cell)
+                continue;
+
+            HexCoord offset = _currentEnemy->getCell().get()->getCoord() -  cell->getCoord();
+
+            auto& effect = enemyEffects[offset];
+
+            switch (pattern.type) {
+            case HexPattern::Type::ATK:
+                effect.atk += pattern.strength;
+                break;
+
+            case HexPattern::Type::DEF:
+                effect.def += pattern.strength;
+                break;
+
+            case HexPattern::Type::HEAL:
+                effect.heal += pattern.strength;
+                break;
+
+            default:
+                break;
+            }
+        }
+    }
+
+    float damageToPlayer = 0.0f;
+    float damageToEnemy = 0.0f;
+
+    float healPlayer = 0.0f;
+    float healEnemy = 0.0f;
+
+    std::unordered_set<HexCoord> allOffsets;
+
+    for (const auto& [coord, _] : playerEffects)
+        allOffsets.insert(coord);
+
+    for (const auto& [coord, _] : enemyEffects)
+        allOffsets.insert(coord);
+
+    for (const auto& coord : allOffsets) {
+
+        CellEffect player;
+        CellEffect enemy;
+
+        if (auto it = playerEffects.find(coord); it != playerEffects.end())
+            player = it->second;
+
+        if (auto it = enemyEffects.find(coord); it != enemyEffects.end())
+            enemy = it->second;
+
+        float dmgToEnemy = std::max(0.0f, player.atk - enemy.def);
+        float dmgToPlayer = std::max(0.0f, enemy.atk - player.def);
+    }
+
+    for (const auto& coord : allOffsets) {
+
+        CellEffect player;
+        CellEffect enemy;
+
+        if (auto it = playerEffects.find(coord); it != playerEffects.end())
+            player = it->second;
+
+        if (auto it = enemyEffects.find(coord); it != enemyEffects.end())
+            enemy = it->second;
+
+        damageToEnemy += std::max(0.0f, player.atk - enemy.def);
+
+        damageToPlayer += std::max(0.0f, enemy.atk - player.def);
+
+        healPlayer += player.heal;
+        healEnemy += enemy.heal;
+    }
+
+
+    auto* playerHealth = _game->getCurrentScene().get()
+                             ->findGameObjectByName("Player_Healthbar_Slider")
+                             ->getComponent<HealthSystem>();
+
+    if (playerHealth) {
+        playerHealth->damage(static_cast<int>(std::round(damageToPlayer)));
+        playerHealth->heal(static_cast<int>(std::round(healPlayer)));
+    }
+
+    auto* enemyHealth = _game->getCurrentScene().get()
+                            ->findGameObjectByName("Enemy_Healthbar_Slider")
+                            ->getComponent<HealthSystem>();
+
+    if (enemyHealth) {
+        enemyHealth->damage(static_cast<int>(std::round(damageToEnemy)));
+        enemyHealth->heal(static_cast<int>(std::round(healEnemy)));
+    }
+
+    if (playerHealth->isDead() || enemyHealth->isDead()) {
+        _shouldLeaveCombat = true;
+    }
 }

@@ -43,6 +43,7 @@ class Game {
     dzemikk::Engine* getEngine() {
         return _engine;
     }
+    void setExplorationState();
 
   private:
     void setupSkybox();

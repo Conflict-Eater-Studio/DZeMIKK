@@ -31,6 +31,7 @@ class CombatState : public IGameState {
 
     struct PlannedPattern {
         HexPattern::Type type;
+        float strength = 0.0f;
         std::vector<HexCell*> cells;
     };
 
@@ -50,6 +51,7 @@ class CombatState : public IGameState {
     CombatPhase _phase = CombatPhase::PreparingBoard;
     ListenerID _endTurnListenerId = -1;
     std::vector<PlannedPattern> _plannedPatterns;
+    bool _shouldLeaveCombat = false;
 
     void startNewTurn();
     void endPlayerTurn();
@@ -67,6 +69,7 @@ class CombatState : public IGameState {
     static glm::vec4 getPatternColor(HexPattern::Type type);
     void showEnemyPlannedPatterns();
     HexPattern::Type choosePatternType() const;
+    void resolveConflict();
 };
 
 } // namespace game

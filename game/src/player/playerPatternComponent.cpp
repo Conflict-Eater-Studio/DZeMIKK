@@ -31,7 +31,7 @@ void game::PlayerPatternComponent::start() {
     addPattern(HexPattern({{-1, 1}, {0, 0}, {1, -1}}, HexPattern::Type::DEF, 1.2F), -1);
 
     // hp1
-    addPattern(HexPattern({{0, 0}}, HexPattern::Type::HEAL, 0.5F), -1);
+    addPattern(HexPattern({{0, 0}}, HexPattern::Type::HEAL), -1);
 
     _playerPatternStats = getOwner()->getComponent<PlayerPatternStatsComponent>();
 
@@ -252,6 +252,7 @@ std::string game::PlayerPatternComponent::typeName() const {
     return "PlayerPatternComponent";
 }
 
+
 bool game::PlayerPatternComponent::hasActivePattern() const {
     return _activePatternIndex >= 0;
 }
@@ -268,6 +269,7 @@ game::PlayerPatternComponent::getActivePattern() const {
     }
 
     return &_patterns[_activePatternIndex];
+
 }
 
 void game::PlayerPatternComponent::setGrid(game::HexGrid* grid) {
