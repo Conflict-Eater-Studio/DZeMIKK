@@ -35,6 +35,9 @@
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
 #endif
+#include "ecs/components/fxaaPostProcessEffect.h"
+#include "ecs/components/outlinePostProcessEffect.h"
+#include "ecs/components/postProcessEffect.h"
 #include "enemySystem/enemyManager.h"
 #include "enemySystem/territoryPatternRegistry.h"
 #include "player/playerPatternComponent.h"
@@ -51,6 +54,7 @@
 
 #include "ecs/components/postProcessEffect.h"
 #include "ecs/components/colorGradingEffect.h"
+
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
@@ -158,14 +162,28 @@ void Game::setupMainCamera() {
     auto* cameraGO = _mainScene.get()->createGameObject("Camera");
 
     _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
-    auto postProccessEffect = cameraGO->addComponent<dzemikk::PostProcessEffect>();
-    postProccessEffect->setEnabled(true);
-    postProccessEffect->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/vignette"));
-    postProccessEffect->setPriority(1);
-
+    auto fxaaProcessEffect = cameraGO->addComponent<dzemikk::OutlinePostProcessEffect>();
+    fxaaProcessEffect->setEnabled(true);
+    fxaaProcessEffect->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/outline"));
+    fxaaProcessEffect->setPriority(1);
+    fxaaProcessEffect->setColor(glm::vec3(1.0F, 0.0F, 0.0F));
+    _engine->getInput()->OnKeyPressed.addListener
+     ([this, fxaaProcessEffect](dzemikk::KeyPressedEvent& event) {
+         if (event.GetKeyCode() == GLFW_KEY_F1) {
+             _engine->getAssetManager()->reload<dzemikk::Shader>("shaders/outline");
+             _engine->getAssetManager()->reload<dzemikk::Shader>("shaders/grain");
+         }
+         if (event.GetKeyCode() == GLFW_KEY_3) {
+             fxaaProcessEffect->setEnabled(true);
+         }
+         if (event.GetKeyCode() == GLFW_KEY_4) {
+             fxaaProcessEffect->setEnabled(false);
+         }
+     });
     auto postProccessEffect2 = cameraGO->addComponent<dzemikk::PostProcessEffect>();
     postProccessEffect2->setEnabled(true);
     postProccessEffect2->setShader(
+
     _engine->getAssetManager()->get<dzemikk::Shader>("shaders/grayscale"));
     postProccessEffect2->setPriority(2);
 
@@ -178,6 +196,9 @@ void Game::setupMainCamera() {
     colorGrading->setSaturation(1.15f);
     colorGrading->setTemperature(0.1f);
     colorGrading->setTint(-0.05f);
+
+    _engine->getAssetManager()->get<dzemikk::Shader>("shaders/grain"));
+    postProccessEffect2->setPriority(2);
 
 
     _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(_mainCamera);
