@@ -1,9 +1,9 @@
 #ifndef DZEMIKK_PLAYERMOVEMENT_H
 #define DZEMIKK_PLAYERMOVEMENT_H
 
+#include "../map/HexGrid.h"
+#include "../map/PlayerEntity.h"
 #include "ecs/components/monobehaviour.h"
-#include "map/HexGrid.h"
-#include "map/PlayerEntity.h"
 
 class Game;
 namespace game {
