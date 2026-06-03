@@ -260,13 +260,13 @@ source_group(TREE "${INC_DIR}" PREFIX "Include" FILES ${ENGINE_HEADERS})
 target_include_directories(DZeMIKK
         PUBLIC
         "${INC_DIR}"
+        "${EXTERN_DIR}"
         "${EXTERN_DIR}/glm/include"
         "${EXTERN_DIR}/boost/include"
+        "${EXTERN_DIR}/fmod/include"
         PRIVATE
-        "${EXTERN_DIR}"
         "${EXTERN_DIR}/assimp/include"
         "${EXTERN_DIR}/freetype/include"
-        "${EXTERN_DIR}/fmod/include"
 )
 
 add_library(glad STATIC
