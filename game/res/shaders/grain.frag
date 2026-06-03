@@ -5,7 +5,6 @@ in vec2 vUV;
 out vec4 FragColor;
 
 uniform sampler2D screenTexture;
-uniform float time;
 uniform float grainIntensity = 0.5;
 uniform float grainSize = 5;
 
