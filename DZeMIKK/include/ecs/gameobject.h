@@ -13,7 +13,9 @@
 #include "components/transform.h"
 
 #include <memory>
+#if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
+#endif
 #include <string>
 #include <type_traits>
 #include <vector>
