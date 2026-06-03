@@ -14,7 +14,23 @@
 #include <ecs/components/meshRenderer.h>
 #include <assetManager/assetHandle.h>
 #include <iostream>
+#include <enemySystem/enemyPatternComponent.h>
 
+const char* patternTypeToString(game::HexPattern::Type type) {
+    switch (type) {
+    case game::HexPattern::Type::ATK:
+        return "ATK";
+
+    case game::HexPattern::Type::DEF:
+        return "DEF";
+
+    case game::HexPattern::Type::HEAL:
+        return "HEAL";
+
+    default:
+        return "UNKNOWN";
+    }
+}
 
 void game::CombatState::onEnter() {
 
@@ -52,6 +68,21 @@ void game::CombatState::onEnter() {
     }
 
     _player->teleportTo(arena.centerCell);
+
+
+    std::cout << "\n===== ENEMY TERRITORY =====\n";
+
+    for (auto* cell : _currentEnemy->getTerritory()) {
+
+        if (!cell)
+            continue;
+
+        const auto& coord = cell->getCoord();
+
+        std::cout << "hex(" << coord.q() << ", " << coord.r() << ")\n";
+    }
+
+    std::cout << "==========================\n";
 
     _playerPatternComponent = playerGO->getComponent<PlayerPatternComponent>();
 
@@ -140,6 +171,15 @@ void game::CombatState::startNewTurn() {
     //    cell->setDirty(true);
     //}
 
+    auto* worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
+    auto* world = worldGO->getComponent<World>();
+
+    for (auto* cell : _currentEnemy->getBlockedCells()) {
+        auto* transform = world->getHexTransformByCell(*cell);
+        auto* mesh = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+        mesh->setColor(glm::vec4(0.0F, 0.0F, 0.5F, 1.0F));
+    }
+
     generateEnemyBlockedCells();
 
     _phase = CombatPhase::PlayerTurn;
@@ -149,7 +189,8 @@ void game::CombatState::endPlayerTurn() {
 
     _phase = CombatPhase::ResolveTurn;
 
-    //_player->clearTerritory();
+    showEnemyPlannedPatterns();
+
     _playerPatternComponent->clearPlacedPatterns();
     _playerPatternComponent->clearPreview();
     _playerPatternComponent->clearActivePattern();
@@ -160,11 +201,7 @@ void game::CombatState::endPlayerTurn() {
 }
 
 void game::CombatState::generateEnemyBlockedCells() {
-
-    for (auto* cell : _currentEnemy->getBlockedCells()) {
-        cell->setDirty(true);
-    }
-
+    _plannedPatterns.clear();
     _currentEnemy->clearBlockedCells();
 
     if (!_currentEnemy)
@@ -180,29 +217,254 @@ void game::CombatState::generateEnemyBlockedCells() {
         territory.push_back(cell);
     }
 
-    if (territory.empty())
+    if (territory.empty()) 
         return;
 
     std::shuffle(territory.begin(), territory.end(), std::mt19937(std::random_device{}()));
 
-    size_t count = std::max<size_t>(1, territory.size() / 3);
+    fillEnemyBoard(1.f);
+}
 
-    for (size_t i = 0; i < count; ++i) {
-        auto* cell = territory[i];
+float game::CombatState::getTypeWeight(const EnemyEntity* enemy, HexPattern::Type type) {
+    const auto& weights = enemy->getActionWeights();
 
-        _currentEnemy->addBlockedCell(cell);
+    switch (type) {
+    case HexPattern::Type::ATK:
+        return weights.attack;
 
-        auto* worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
-        auto* world = worldGO->getComponent<game::World>();
+    case HexPattern::Type::DEF:
+        return weights.defense;
 
-        auto* transform = world->getHexTransformByCell(*cell);
-        if (!transform)
+    case HexPattern::Type::HEAL:
+        return weights.heal;
+
+    default:
+        return 0.0f;
+    }
+}
+
+float game::CombatState::scorePattern(const EnemyEntity* enemy, const HexPattern& pattern) {
+    float typeWeight = getTypeWeight(enemy, pattern.getType());
+
+    return typeWeight * pattern.getEffectStrength();
+}
+
+std::optional<game::CombatState::PlacementCandidate>
+game::CombatState::chooseCandidate(std::vector<PlacementCandidate>& candidates) {
+    if (candidates.empty())
+        return std::nullopt;
+
+    std::sort(
+        candidates.begin(), candidates.end(),
+        [](const PlacementCandidate& a, const PlacementCandidate& b) { return a.score > b.score; });
+
+    size_t topCount = std::min<size_t>(5, candidates.size());
+
+    static std::mt19937 rng(std::random_device{}());
+
+    std::uniform_int_distribution<size_t> dist(0, topCount - 1);
+
+    return candidates[dist(rng)];
+}
+
+std::vector<game::CombatState::PlacementCandidate>
+game::CombatState::generateCandidates(const std::vector<HexCell*>& availableCells) {
+    std::vector<PlacementCandidate> result;
+
+    auto* enemyManagerGO = _game->getCurrentScene().get()->findGameObjectByName("EnemyManager");
+    auto* patternComponent = enemyManagerGO->getComponent<EnemyPatternComponent>();
+
+    if (!patternComponent)
+        return result;
+
+    for (const auto& entry : patternComponent->getPatterns()) {
+
+        const auto& pattern = entry.pattern;
+
+        for (auto* anchor : availableCells) {
+
+            if (!anchor)
+                continue;
+
+            HexPattern rotatedPattern = pattern;
+
+            for (int rotation = 0; rotation < 6; ++rotation) {
+
+                if (rotation > 0) {
+                    rotatedPattern.rotate(HexPattern::Rotation::Clockwise);
+                }
+
+                std::vector<HexCell*> cells;
+
+                if (!tryPlacePattern(anchor, rotatedPattern, cells))
+                    continue;
+
+                PlacementCandidate candidate;
+
+                candidate.pattern = const_cast<HexPattern*>(&pattern);
+
+                candidate.cells = std::move(cells);
+
+                candidate.score = scorePattern(_currentEnemy, pattern);
+
+                result.push_back(std::move(candidate));
+            }
+        }
+    }
+
+    return result;
+}
+
+void game::CombatState::fillEnemyBoard(float coverage) {
+    if (!_currentEnemy)
+        return;
+
+    std::vector<HexCell*> availableCells;
+
+    for (auto* cell : _currentEnemy->getTerritory()) {
+
+        if (!cell)
             continue;
 
-        auto* mesh = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
-        if (!mesh)
-            continue;
+        availableCells.push_back(cell);
+    }
 
-        mesh->setColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
+    if (availableCells.empty())
+        return;
+
+    const size_t targetFill =
+        std::max<size_t>(1, static_cast<size_t>(availableCells.size() * coverage));
+
+    size_t occupiedCount = 0;
+
+    while (occupiedCount < targetFill) {
+
+        auto candidates = generateCandidates(availableCells);
+
+        auto chosen = chooseCandidate(candidates);
+
+        if (!chosen.has_value())
+            break;
+
+        PlannedPattern planned;
+        planned.type = chosen->pattern->getType();
+        planned.cells = chosen->cells;
+
+        _plannedPatterns.push_back(std::move(planned));
+
+        for (auto* cell : chosen->cells) {
+            if (!cell)
+                continue;
+
+            if (_currentEnemy->isCellBlocked(cell))
+                continue;
+
+            const auto& coord = cell->getCoord();
+
+            _currentEnemy->addBlockedCell(cell);
+
+            occupiedCount++;
+
+            if (occupiedCount >= targetFill)
+                break;
+        }
+
+        availableCells.erase(
+            std::remove_if(availableCells.begin(), availableCells.end(),
+                           [this](HexCell* cell) { return _currentEnemy->isCellBlocked(cell); }),
+            availableCells.end());
+
+        if (availableCells.empty())
+            break;
+    }
+}
+
+bool game::CombatState::tryPlacePattern(HexCell* anchor, const HexPattern& pattern,
+                                        std::vector<HexCell*>& outCells) {
+    outCells.clear();
+
+    if (!anchor || !_currentEnemy)
+        return false;
+
+    auto* grid = _game->getHexGrid();
+
+    if (!grid)
+        return false;
+
+    const HexCoord anchorCoord = anchor->getCoord();
+
+    for (const auto& offset : pattern.getHexes()) {
+
+        HexCoord targetCoord = anchorCoord + offset;
+
+        auto targetCellPtr = grid->getCell(targetCoord);
+
+        if (!targetCellPtr)
+            return false;
+
+        HexCell* targetCell = targetCellPtr.get();
+
+        if (!_currentEnemy->getTerritory().contains(targetCell))
+            return false;
+
+        if (_currentEnemy->isCellBlocked(targetCell))
+            return false;
+
+        outCells.push_back(targetCell);
+    }
+
+    return true;
+}
+
+glm::vec4 game::CombatState::getPatternColor(HexPattern::Type type) {
+    switch (type) {
+    case HexPattern::Type::ATK:
+        return {1.f, 0.0f, 0.0f, 1.0f};
+
+    case HexPattern::Type::DEF:
+        return {0.0f, 0.0f, 1.f, 1.0f};
+
+    case HexPattern::Type::HEAL:
+        return {0.0f, 1.f, 0.0f, 1.0f};
+
+    default:
+        return {0.3f, 0.3f, 0.3f, 1.0f};
+    }
+}
+
+void game::CombatState::showEnemyPlannedPatterns() {
+
+    auto* worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
+
+    auto* world = worldGO->getComponent<World>();
+
+    for (const auto& pattern : _plannedPatterns) {
+
+        std::cout << "\n=== PATTERN " << patternTypeToString(pattern.type) << " ===\n";
+
+        glm::vec4 color = getPatternColor(pattern.type);
+
+        for (auto* cell : pattern.cells) {
+
+            if (!cell)
+                continue;
+
+            const auto& coord = cell->getCoord();
+
+            std::cout << patternTypeToString(pattern.type) << " -> hex(" << coord.q() << ", "
+                      << coord.r() << ")\n";
+
+            auto* transform = world->getHexTransformByCell(*cell);
+
+            if (!transform)
+                continue;
+
+            auto* mesh = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+
+            if (!mesh)
+                continue;
+
+            mesh->setColor(color);
+        }
     }
 }
