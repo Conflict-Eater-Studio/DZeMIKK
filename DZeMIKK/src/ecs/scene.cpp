@@ -4,9 +4,9 @@
 #include "ecs/components/monoBehaviour.h"
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
-#include "scene/octree.h"
-#include "renderer/model.h"
 #include "renderer/mesh.h"
+#include "renderer/model.h"
+#include "scene/octree.h"
 
 #include <algorithm>
 #include <stack>
@@ -25,9 +25,12 @@ GameObject* Scene::createGameObject() {
 }
 
 GameObject* Scene::createGameObject(const std::string& name) {
-    GameObject* object = createGameObject();
+    auto object = std::make_unique<GameObject>();
+    GameObject* result = object.get();
+    result->setScene(this);
     object->setName(name);
-    return object;
+    _objects.push_back(std::move(object));
+    return result;
 }
 
 GameObject* Scene::createGameObject(const std::string& name, GameObject* parent) {
@@ -142,6 +145,17 @@ void Scene::processPendingStart() {
 }
 
 void Scene::processDelete() {
+    auto removeFromIndex = [](auto& index, GameObject* obj) {
+        for (auto it = index.begin(); it != index.end();) {
+            std::erase(it->second, obj);
+            if (it->second.empty()) {
+                it = index.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    };
+
     for (auto* obj : _pendingDestroy) {
         const auto& monos = obj->getMonoBehaviours();
         for (const auto& mono : monos) {
@@ -161,6 +175,9 @@ void Scene::processDelete() {
         }
 
         std::erase_if(_objects, [obj](const auto& lObj) { return lObj.get() == obj; });
+        removeFromIndex(_taggedObjects, obj);
+        removeFromIndex(_idObjects, obj);
+        removeFromIndex(_namedObjects, obj);
     }
 
     _pendingDestroy.clear();
@@ -176,7 +193,8 @@ void Scene::rebuildOctree() {
             bool hasBounds = false;
 
             for (const auto& mesh : collider->getModel()->getSubMeshes()) {
-                if (!mesh.mesh) continue;
+                if (!mesh.mesh)
+                    continue;
                 globalMin = (glm::min)(globalMin, mesh.mesh->getBoundsMin());
                 globalMax = (glm::max)(globalMax, mesh.mesh->getBoundsMax());
                 hasBounds = true;
@@ -193,8 +211,7 @@ void Scene::rebuildOctree() {
                     glm::vec3(worldMat * glm::vec4(globalMin.x, globalMin.y, globalMax.z, 1.0f)),
                     glm::vec3(worldMat * glm::vec4(globalMax.x, globalMin.y, globalMax.z, 1.0f)),
                     glm::vec3(worldMat * glm::vec4(globalMin.x, globalMax.y, globalMax.z, 1.0f)),
-                    glm::vec3(worldMat * glm::vec4(globalMax.x, globalMax.y, globalMax.z, 1.0f))
-                };
+                    glm::vec3(worldMat * glm::vec4(globalMax.x, globalMax.y, globalMax.z, 1.0f))};
 
                 glm::vec3 worldMin(FLT_MAX);
                 glm::vec3 worldMax(-FLT_MAX);
@@ -247,11 +264,87 @@ void Scene::clearAllObjects() {
     processDelete();
 }
 
-GameObject* Scene::findGameObjectByName(const std::string& name) {
-    auto it = std::ranges::find_if(
-        _objects, [&name](const auto& obj) { return obj && obj->getName() == name; });
+void Scene::registerTaggedObject(const std::string& tag, GameObject* object) {
+    if (_taggedObjects.contains(tag) &&
+        std::ranges::find(_taggedObjects[tag], object) != _taggedObjects[tag].end()) {
+        return;
+    }
 
-    return (it != _objects.end()) ? it->get() : nullptr;
+    _taggedObjects[tag].push_back(object);
+}
+
+void Scene::unregisterTaggedObject(const std::string& tag, GameObject* object) {
+    auto it = _taggedObjects.find(tag);
+    if (it != _taggedObjects.end()) {
+        std::erase(it->second, object);
+        if (it->second.empty()) {
+            _taggedObjects.erase(it);
+        }
+    }
+}
+
+void Scene::registerIdObject(const boost::uuids::uuid& id, GameObject* object) {
+    if (_idObjects.contains(id) &&
+        std::ranges::find(_idObjects[id], object) != _idObjects[id].end()) {
+        return;
+    }
+    _idObjects[id].push_back(object);
+}
+
+void Scene::unregisterIdObject(const boost::uuids::uuid& id, GameObject* object) {
+    auto it = _idObjects.find(id);
+    if (it != _idObjects.end()) {
+        std::erase(it->second, object);
+        if (it->second.empty()) {
+            _idObjects.erase(it);
+        }
+    }
+}
+
+GameObject* Scene::findGameObjectById(const boost::uuids::uuid& id) {
+    return _idObjects.contains(id) && !_idObjects[id].empty() ? _idObjects[id].front() : nullptr;
+}
+
+std::vector<GameObject*> Scene::findGameObjectsById(const boost::uuids::uuid& id) {
+    return _idObjects.contains(id) ? _idObjects[id] : std::vector<GameObject*>{};
+}
+
+GameObject* Scene::findGameObjectByName(const std::string& name) {
+    return _namedObjects.contains(name) && !_namedObjects[name].empty()
+               ? _namedObjects[name].front()
+               : nullptr;
+}
+
+std::vector<GameObject*> Scene::findGameObjectsByName(const std::string& name) {
+    return _namedObjects.contains(name) ? _namedObjects[name] : std::vector<GameObject*>{};
+}
+
+GameObject* Scene::findGameObjectByTag(const std::string& tag) {
+    return _taggedObjects.contains(tag) && !_taggedObjects[tag].empty()
+               ? _taggedObjects[tag].front()
+               : nullptr;
+}
+
+std::vector<GameObject*> Scene::findGameObjectsByTag(const std::string& tag) {
+    return _taggedObjects.contains(tag) ? _taggedObjects[tag] : std::vector<GameObject*>{};
+}
+
+void Scene::registerNamedObject(const std::string& name, GameObject* object) {
+    if (_namedObjects.contains(name) &&
+        std::ranges::find(_namedObjects[name], object) != _namedObjects[name].end()) {
+        return;
+    }
+
+    _namedObjects[name].push_back(object);
+}
+
+void Scene::unregisterNamedObject(const std::string& name, GameObject* object) {
+    if (_namedObjects.contains(name) && !_namedObjects[name].empty()) {
+        std::erase(_namedObjects[name], object);
+        if (_namedObjects[name].empty()) {
+            _namedObjects.erase(name);
+        }
+    }
 }
 
 } // namespace dzemikk

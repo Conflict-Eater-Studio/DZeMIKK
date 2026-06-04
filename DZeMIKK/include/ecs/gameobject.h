@@ -4,6 +4,7 @@
 #include "ecs/components/ui/rectTransform.h"
 
 #include <stdexcept>
+#include <unordered_set>
 #include <vcruntime_typeinfo.h>
 
 #pragma once
@@ -168,19 +169,149 @@ class GameObject {
     [[nodiscard]] bool isEnabled() const;
 
     // --- Setters
+    /**
+     * @brief Sets the enabled state of this GameObject. When disabled, the GameObject and all its
+     * components will not be updated, and all its children will also be disabled. Enabling a
+     * GameObject will not automatically enable its children, but they will still be inactive until
+     * they are explicitly enabled.
+     *
+     * @param isEnabled The new enabled state for this GameObject.
+     */
     void setId(const boost::uuids::uuid& uuid);
+    /**
+     * @brief Sets the name of this GameObject. Names are not required to be unique. If this
+     * GameObject is part of a scene, the scene's name index will be updated accordingly.
+     *
+     * @param name The new name for this GameObject.
+     */
     void setName(const std::string& name);
+    /**
+     * @brief Sets the scene of this GameObject. This should only be called by the Scene that
+     * creates this GameObject. Setting the scene will register this GameObject with the scene's
+     * internal indices and add any MonoBehaviour components to the scene's pending start list.
+     * Once a scene is set it cannot be changed, and the GameObject cannot be part of multiple
+     * scenes.
+     *
+     * @param scene The Scene to set for this GameObject. Must not be null and must not be a
+     * different scene if this GameObject is already part of a scene.
+     */
     void setScene(Scene* scene);
+    /**
+     * @brief Marks this GameObject as having started. This should only be called by the Scene when
+     * processing pending starts. Marking a GameObject as started will move all its MonoBehaviour
+     * components from the scene's pending start list to the active list, allowing them to be
+     * updated in subsequent update loops.
+     */
     void markStarted();
+
+    // --- Child search
+    /**
+     * @brief Finds the first direct child GameObject with the specified name. Returns null if no
+     * such child exists.
+     *
+     * @param name The name of the child GameObject to find.
+     * @return A pointer to the found child GameObject, or null if no such child exists.
+     */
+    [[nodiscard]] GameObject* findChildByName(const std::string& name);
+    /**
+     * @brief Finds all direct child GameObjects with the specified name. Returns an empty vector if
+     * no such children exist.
+     *
+     * @param name The name of the child GameObjects to find.
+     * @return A vector of pointers to the found child GameObjects, or an empty vector if no such
+     * children exist.
+     */
+    [[nodiscard]] std::vector<GameObject*> findChildrenByName(const std::string& name);
+    /**
+     * @brief Finds the first direct child GameObject with the specified tag. Returns null if no
+     * such child exists.
+     *
+     * @param tag The tag of the child GameObject to find.
+     * @return A pointer to the found child GameObject, or null if no such child exists.
+     */
+    [[nodiscard]] GameObject* findChildByTag(const std::string& tag);
+    /**
+     * @brief Finds all direct child GameObjects with the specified tag. Returns an empty vector if
+     * no such children exist.
+     *
+     * @param tag The tag of the child GameObjects to find.
+     * @return A vector of pointers to the found child GameObjects, or an empty vector if no such
+     * children exist.
+     */
+    [[nodiscard]] std::vector<GameObject*> findChildrenByTag(const std::string& tag);
+
+    // --- Deep child search
+    /**
+     * @brief Finds the first descendant GameObject (child, grandchild, etc.) with the specified
+     * name. Returns null if no such descendant exists.
+     *
+     * @param name The name of the descendant GameObject to find.
+     * @return A pointer to the found descendant GameObject, or null if no such descendant exists.
+     */
+    [[nodiscard]] GameObject* findDescendantByName(const std::string& name) const;
+    /**
+     * @brief Finds all descendant GameObjects (children, grandchildren, etc.) with the specified
+     * name. Returns an empty vector if no such descendants exist.
+     *
+     * @param name The name of the descendant GameObjects to find.
+     * @return A vector of pointers to the found descendant GameObjects, or an empty vector if no
+     * such descendants exist.
+     */
+    [[nodiscard]] std::vector<GameObject*> findDescendantsByName(const std::string& name) const;
+    /**
+     * @brief Finds the first descendant GameObject (child, grandchild, etc.) with the specified
+     * tag. Returns null if no such descendant exists.
+     *
+     * @param tag The tag of the descendant GameObject to find.
+     * @return A pointer to the found descendant GameObject, or null if no such descendant exists.
+     */
+    [[nodiscard]] GameObject* findDescendantByTag(const std::string& tag) const;
+    /**
+     * @brief Finds all descendant GameObjects (children, grandchildren, etc.) with the specified
+     * tag. Returns an empty vector if no such descendants exist.
+     *
+     * @param tag The tag of the descendant GameObjects to find.
+     * @return A vector of pointers to the found descendant GameObjects, or an empty vector if no
+     * such descendants exist.
+     */
+    [[nodiscard]] std::vector<GameObject*> findDescendantsByTag(const std::string& tag) const;
+
+    // --- Tag operations
+    /**
+     * @brief Adds a tag to this GameObject. Tags are used for grouping and searching GameObjects.
+     * A GameObject can have multiple tags. Adding the same tag multiple times has no effect.
+     *
+     * @param tag The tag to add.
+     */
+    void addTag(const std::string& tag);
+    /**
+     * @brief Removes a tag from this GameObject. If the GameObject does not have the specified tag,
+     * this method does nothing.
+     *
+     * @param tag The tag to remove.
+     */
+    void removeTag(const std::string& tag);
+    /**
+     * @brief Checks if this GameObject has a specific tag.
+     *
+     * @param tag The tag to check for.
+     * @return true if the GameObject has the specified tag, false otherwise.
+     */
+    [[nodiscard]] bool hasTag(const std::string& tag) const;
 
     // --- Hierarchy operations
     /*
      * @brief Sets the parent of this GameObject. If the GameObject already has a parent, it will be
      * removed from the old parent's children. If the new parent is not null, this GameObject will
      * be added to the new parent's children.
+     *
      * @param parent The new parent GameObject. Can be null to detach from current parent.
+     *
+     * @return true if the parent was successfully set, false if the operation was rejected (e.g.
+     * due to cyclic parenting or invalid parent). In case of rejection, the parent will remain
+     * unchanged.
      */
-    void setParent(GameObject* parent);
+    bool setParent(GameObject* parent);
     /*
      * @brief Adds a child GameObject to this GameObject. This is equivalent to calling
      * child->setParent(this).
@@ -225,12 +356,17 @@ class GameObject {
     void addScenePending(MonoBehaviour* mono);
     void removeSceneActive(MonoBehaviour* mono);
 
-    [[nodiscard]] uint32_t getLastRaycastQueryId() const { return _lastRaycastQueryId; }
-    void setLastRaycastQueryId(uint32_t queryId) { _lastRaycastQueryId = queryId; }
+    [[nodiscard]] uint32_t getLastRaycastQueryId() const {
+        return _lastRaycastQueryId;
+    }
+    void setLastRaycastQueryId(uint32_t queryId) {
+        _lastRaycastQueryId = queryId;
+    }
 
   private:
     boost::uuids::uuid _id;
-    std::string _name;
+    std::string _name = "GameObject";
+    std::unordered_set<std::string> _tags;
     bool _hasStarted = false;
     GameObject* _parent = nullptr;
     std::vector<GameObject*> _children;

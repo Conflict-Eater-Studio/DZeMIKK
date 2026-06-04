@@ -75,7 +75,8 @@ TEST(ComponentSerializerRegistrySerialization, DeserializeIntoGameObjectAppliesT
     transformJson["scale"] = {2.0F, 3.0F, 4.0F};
 
     MockAssetManager mock;
-    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*object, mock, transformJson);
+    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*object, &mock,
+                                                                         transformJson);
     dzemikk::ComponentSerializerRegistry::get().deserializeIntoGameObject(context);
 
     const glm::vec3 position = object->transform()->getPosition();
@@ -97,7 +98,7 @@ TEST(ComponentSerializerRegistrySerialization, DeserializeUnknownTypeThrows) {
     unknown["type"] = "NoSuchComponent";
 
     MockAssetManager mock;
-    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*object, mock, unknown);
+    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*object, &mock, unknown);
     EXPECT_THROW(
         dzemikk::ComponentSerializerRegistry::get().deserializeIntoGameObject(context),
         std::runtime_error);
@@ -118,7 +119,8 @@ TEST(GameObjectSerializerSerialization, SerializeAndInstantiateRoundTripHierarch
 
     dzemikk::Scene targetScene;
     dzemikk::GameObject* instantiated =
-        dzemikk::GameObjectSerializer::instantiateIntoScene(targetScene, serialized, nullptr);
+        dzemikk::GameObjectSerializer::instantiateIntoScene(targetScene, serialized, nullptr,
+                                                            nullptr);
 
     ASSERT_NE(instantiated, nullptr);
     EXPECT_EQ(instantiated->getName(), "Root");
@@ -136,7 +138,8 @@ TEST(GameObjectSerializerSerialization, DetachedDeserializeRejectsChildren) {
 
     const nlohmann::json serialized = dzemikk::GameObjectSerializer::serialize(*root);
 
-    EXPECT_THROW((void)dzemikk::GameObjectSerializer::deserialize(serialized), std::runtime_error);
+    EXPECT_THROW((void)dzemikk::GameObjectSerializer::deserialize(serialized, nullptr),
+                 std::runtime_error);
 }
 
 TEST(PrefabSerializerSerialization, InstantiateRegeneratesRuntimeUuids) {
@@ -150,7 +153,8 @@ TEST(PrefabSerializerSerialization, InstantiateRegeneratesRuntimeUuids) {
     const nlohmann::json prefabJson = dzemikk::PrefabSerializer::serialize(*root);
 
     dzemikk::Scene targetScene;
-    dzemikk::GameObject* instance = dzemikk::PrefabSerializer::instantiate(targetScene, prefabJson);
+    dzemikk::GameObject* instance =
+        dzemikk::PrefabSerializer::instantiate(targetScene, prefabJson, nullptr);
     ASSERT_NE(instance, nullptr);
 
     EXPECT_NE(instance->getId(), sourceRootId);
@@ -175,7 +179,7 @@ TEST(SceneSerializerSerialization, SerializeRootsAndDeserializeIntoScene) {
     EXPECT_EQ(sceneJson["roots"].size(), 2U);
 
     dzemikk::Scene loadedScene;
-    dzemikk::SceneSerializer::deserializeInto(loadedScene, sceneJson);
+    dzemikk::SceneSerializer::deserializeInto(loadedScene, sceneJson, nullptr);
 
     std::size_t rootCount = 0;
     for (const auto& object : loadedScene.getObjects()) {
@@ -283,7 +287,8 @@ TEST(UIButtonSerialization, DeserializeBindsOnClickActionFromRegistry) {
     ASSERT_NE(target, nullptr);
 
     MockAssetManager mock;
-    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*target, mock, serializedButton);
+    dzemikk::ComponentSerializerRegistry::DeserializationContext context(*target, &mock,
+                                                                         serializedButton);
     dzemikk::ComponentSerializerRegistry::get().deserializeIntoGameObject(context);
 
     auto* button = target->getComponent<dzemikk::UIButton>();
