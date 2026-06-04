@@ -294,7 +294,7 @@ void Game::setupInputCallbacks() {
         glfwGetWindowSize(_engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
 
         dzemikk::Collider* collider = _engine->getCollisions()->raycast(
-            _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
+            _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(), nullptr,
             _engine->getInput()->GetMousePosition(), windowWidth, windowHeight);
 
         dzemikk::MeshRenderer* currentRenderer = nullptr;
@@ -335,7 +335,7 @@ void Game::setupInputCallbacks() {
             glfwGetWindowSize(_engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
 
             dzemikk::Collider* collider = _engine->getCollisions()->raycast(
-                _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
+                _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(), nullptr,
                 _engine->getInput()->GetMousePosition(), static_cast<float>(windowWidth),
                 static_cast<float>(windowHeight));
 

@@ -93,7 +93,7 @@ void Scene::update(double deltaTime) {
 
     const auto activeSnapshot = _active;
     for (auto* mono : activeSnapshot) {
-        if (!mono || std::ranges::find(_active, mono) == _active.end()) {
+        if (mono == nullptr || !_activeSet.contains(mono)) {
             continue;
         }
         mono->update(deltaTime);
@@ -101,7 +101,7 @@ void Scene::update(double deltaTime) {
 
     // Late Update all behaviours
     for (auto* mono : activeSnapshot) {
-        if (!mono || std::ranges::find(_active, mono) == _active.end()) {
+        if (mono == nullptr || !_activeSet.contains(mono)) {
             continue;
         }
         mono->lateUpdate(deltaTime);
@@ -116,7 +116,7 @@ void Scene::fixedUpdate(double deltaTime) {
 
     const auto activeSnapshot = _active;
     for (auto* mono : activeSnapshot) {
-        if (!mono || std::ranges::find(_active, mono) == _active.end()) {
+        if (mono == nullptr || !_activeSet.contains(mono)) {
             continue;
         }
         mono->fixedUpdate(deltaTime);
@@ -130,12 +130,13 @@ void Scene::processPendingStart() {
         std::vector<MonoBehaviour*> start;
         std::swap(start, _pendingStart);
 
-        auto filtered =
-            std::ranges::remove_if(start, [](MonoBehaviour* mono) { return !mono->hasStarted(); });
-        for (const auto& mono : filtered) {
+        std::erase_if(start,
+                      [](MonoBehaviour* mono) { return mono == nullptr || mono->hasStarted(); });
+        for (auto* mono : start) {
             mono->start();
             mono->markStarted();
             _active.push_back(mono);
+            _activeSet.insert(mono);
         }
     }
 }
@@ -150,6 +151,9 @@ void Scene::processDelete() {
             return std::ranges::find(monos, mono) != monos.end();
         };
         std::erase_if(_active, inMonos);
+        for (auto* mono : monos) {
+            _activeSet.erase(mono);
+        }
         std::erase_if(_pendingStart, inMonos);
 
         if (obj->getParent()) {
@@ -219,6 +223,7 @@ void Scene::addPending(MonoBehaviour* mono) {
 
 void Scene::removeActive(MonoBehaviour* mono) {
     std::erase(_active, mono);
+    _activeSet.erase(mono);
     std::erase(_pendingStart, mono);
 }
 

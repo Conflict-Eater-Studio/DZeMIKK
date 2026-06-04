@@ -81,9 +81,8 @@ void game::PlayerPatternComponent::update(double deltaTime) {
         &windowWidth,
         &windowHeight);
 
-    dzemikk::Collider* collider =
-        _engine->getCollisions()->raycast(
-            _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
+    dzemikk::Collider* collider = _engine->getCollisions()->raycast(
+        _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(), nullptr,
             _engine->getInput()->GetMousePosition(),
             windowWidth,
             windowHeight);
@@ -437,7 +436,7 @@ void game::PlayerPatternComponent::tryRemovePlacedPatternUnderCursor() {
     glfwGetWindowSize(_engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
 
     auto* collider = _engine->getCollisions()->raycast(
-        _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
+        _engine->getRenderer()->getCameraSystem().getActiveSceneCamera(), nullptr,
         _engine->getInput()->GetMousePosition(), windowWidth, windowHeight);
 
     if (!collider)
