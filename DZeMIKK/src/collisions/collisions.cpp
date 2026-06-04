@@ -3,8 +3,18 @@
 #include "ecs/components/collider.h"
 #include "ecs/components/transform.h"
 #include "ecs/componentRegistry.h"
+#include "ecs/gameobject.h"
 #include "renderer/model.h"
 #include "renderer/mesh.h"
+#include "scene/octree.h"
+#include "core/engine.h"
+#include "core/window.h"
+#include "input/input.h"
+#include "renderer/renderer.h"
+#include "ecs/scene.h"
+#include "ecs/scenemanager.h"
+#include "ecs/components/ui/iUIInteractable.h"
+#include <GLFW/glfw3.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <limits>
@@ -19,7 +29,59 @@ void Collisions::uninitialize() {
     // Intentionally empty for now
 }
 
-Collider* Collisions::raycast(const Camera* camera, const glm::vec2& screenPos, float screenWidth, float screenHeight) {
+void Collisions::update(Engine* engine, float deltaTime) {
+    (void)deltaTime;
+    
+    Collider* previousHovered = _hoveredCollider;
+    _hoveredCollider = nullptr;
+
+    if (!engine) return;
+
+    bool isMouseOverUI = false;
+    std::vector<IUIInteractable*> uiElements;
+    ComponentRegistry::get().getComponents<IUIInteractable>(uiElements);
+    for (auto* element : uiElements) {
+        if (element->isHovered()) {
+            isMouseOverUI = true;
+            break;
+        }
+    }
+
+    if (!isMouseOverUI && engine->getRenderer()->getCameraSystem().getActiveSceneCamera()) {
+        glm::vec2 mousePos = engine->getInput()->GetMousePosition();
+        int width, height;
+        glfwGetWindowSize(engine->getWindow()->nativeHandle(), &width, &height);
+
+        auto activeScene = engine->getSceneManager()->getActiveScene();
+        _hoveredCollider = raycast(
+            engine->getRenderer()->getCameraSystem().getActiveSceneCamera(),
+            activeScene ? activeScene->getOctree() : nullptr,
+            mousePos,
+            static_cast<float>(width),
+            static_cast<float>(height)
+        );
+    }
+
+    if (previousHovered != _hoveredCollider) {
+        if (previousHovered && previousHovered->onMouseExit) {
+            previousHovered->onMouseExit();
+        }
+        if (_hoveredCollider && _hoveredCollider->onMouseEnter) {
+            _hoveredCollider->onMouseEnter();
+        }
+    }
+
+    bool isLeftDown = engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT);
+    bool pressedThisFrame = isLeftDown && !_wasLeftMouseDown;
+
+    if (pressedThisFrame && _hoveredCollider) {
+        OnColliderClicked.Invoke(_hoveredCollider);
+    }
+
+    _wasLeftMouseDown = isLeftDown;
+}
+
+Collider* Collisions::raycast(const Camera* camera, const Octree* octree, const glm::vec2& screenPos, float screenWidth, float screenHeight) {
     if (!camera) return nullptr;
 
     // Convert screen pos to NDC
@@ -40,8 +102,32 @@ Collider* Collisions::raycast(const Camera* camera, const glm::vec2& screenPos, 
     glm::vec3 rayDir = glm::normalize(glm::vec3(rayEndWorld) - glm::vec3(rayStartWorld));
     glm::vec3 rayOrigin = glm::vec3(rayStartWorld);
 
-    static std::vector<Collider*> colliders;
-    ComponentRegistry::get().getComponents<Collider>(colliders);
+    std::vector<Collider*> colliders;
+    if (octree) {
+        static uint32_t s_RaycastQueryId = 0;
+        s_RaycastQueryId++;
+
+        static std::vector<GameObject*> hitGOs;
+        hitGOs.clear();
+        octree->queryRay(rayOrigin, rayDir, hitGOs);
+        
+        for (auto* go : hitGOs) {
+            // Remove duplicates using the query ID instead of sort and unique
+            if (go->getLastRaycastQueryId() == s_RaycastQueryId) {
+                continue;
+            }
+            go->setLastRaycastQueryId(s_RaycastQueryId);
+
+            for (const auto& comp : go->getAllComponents()) {
+                if (typeid(*comp) == typeid(Collider)) {
+                    colliders.push_back(static_cast<Collider*>(comp.get()));
+                    break;
+                }
+            }
+        }
+    } else {
+        ComponentRegistry::get().getComponents<Collider>(colliders);
+    }
 
     Collider* closestHit = nullptr;
     float closestDist = std::numeric_limits<float>::max();
@@ -73,18 +159,14 @@ Collider* Collisions::raycast(const Camera* camera, const glm::vec2& screenPos, 
         bool hit = false;
         float closestHitModel = std::numeric_limits<float>::max();
 
-        for (const auto& subMesh : model->getSubMeshes()) {
-            if (!subMesh.mesh) continue;
-
-            glm::vec3 minBox = subMesh.mesh->getBoundsMin();
-            glm::vec3 maxBox = subMesh.mesh->getBoundsMax();
-            
-            float t = 0.0f;
-            if (intersectRayAABB(localRayOrigin, localRayDir, minBox, maxBox, t)) {
-                if (t >= 0.0f && t < closestHitModel) {
-                    closestHitModel = t;
-                    hit = true;
-                }
+        glm::vec3 minBox = c->getBoundsMin();
+        glm::vec3 maxBox = c->getBoundsMax();
+        
+        float t = 0.0f;
+        if (intersectRayAABB(localRayOrigin, localRayDir, minBox, maxBox, t)) {
+            if (t >= 0.0f && t < closestHitModel) {
+                closestHitModel = t;
+                hit = true;
             }
         }
 

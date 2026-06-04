@@ -157,6 +157,8 @@ void Engine::start() {
             updateMouseUI(deltaTime);
         }
 
+        _collisions->update(this, deltaTime);
+
         if (m_UserUpdateCallback) {
             m_UserUpdateCallback();
         }

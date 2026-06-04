@@ -8,7 +8,7 @@
 #include <ecs/serialize/prefabSerializer.h>
 #include <assetManager/assetmanager.h>
 #include <ecs/components/skinnedMeshRenderer.h>
-#include <ecs/components/animator.h>1
+#include <ecs/components/animator.h>
 #include <animation/animationstatemachine.h>
 #include <iostream>
 

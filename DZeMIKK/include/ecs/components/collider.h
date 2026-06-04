@@ -41,6 +41,13 @@ public:
 
     float getCullingRadius() const;
 
+    [[nodiscard]] const glm::vec3& getBoundsMin() const { return _boundsMin; }
+    [[nodiscard]] const glm::vec3& getBoundsMax() const { return _boundsMax; }
+
+    std::function<void()> onClick = nullptr;
+    std::function<void()> onMouseEnter = nullptr;
+    std::function<void()> onMouseExit = nullptr;
+
     [[nodiscard]] std::string typeName() const override {
         return "Collider";
     }
@@ -51,6 +58,8 @@ private:
     AssetHandle<Model> _model;
     Transform* _transform = nullptr;
     float _cullingRadius = 1.0f;
+    glm::vec3 _boundsMin{0.0f};
+    glm::vec3 _boundsMax{0.0f};
 };
 
 } // namespace dzemikk

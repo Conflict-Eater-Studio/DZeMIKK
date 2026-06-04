@@ -44,6 +44,9 @@ void Collider::calculateCullingRadius(Model* model) {
         globalMax = glm::max(globalMax, max);
     }
 
+    _boundsMin = globalMin;
+    _boundsMax = globalMax;
+
     glm::vec3 size = globalMax - globalMin;
     _cullingRadius = glm::length(size) * 0.5f;
 }

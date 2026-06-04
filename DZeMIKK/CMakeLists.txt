@@ -58,6 +58,7 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/components/textRenderer.cpp"
         "${SRC_DIR}/ecs/gameobject.cpp"
         "${SRC_DIR}/ecs/scene.cpp"
+        "${SRC_DIR}/scene/octree.cpp"
         "${SRC_DIR}/ecs/scenemanager.cpp"
         "${SRC_DIR}/animation/animationmodule.cpp"
         "${SRC_DIR}/ecs/components/animator.cpp"
@@ -154,6 +155,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/component.h"
         "${INC_DIR}/ecs/gameobject.h"
         "${INC_DIR}/ecs/scene.h"
+        "${INC_DIR}/scene/octree.h"
         "${INC_DIR}/ecs/scenemanager.h"
         "${INC_DIR}/ecs/componentRegistry.h"
         "${INC_DIR}/ecs/scenemanager.h"
@@ -260,13 +262,13 @@ source_group(TREE "${INC_DIR}" PREFIX "Include" FILES ${ENGINE_HEADERS})
 target_include_directories(DZeMIKK
         PUBLIC
         "${INC_DIR}"
+        "${EXTERN_DIR}"
         "${EXTERN_DIR}/glm/include"
         "${EXTERN_DIR}/boost/include"
+        "${EXTERN_DIR}/fmod/include"
         PRIVATE
-        "${EXTERN_DIR}"
         "${EXTERN_DIR}/assimp/include"
         "${EXTERN_DIR}/freetype/include"
-        "${EXTERN_DIR}/fmod/include"
 )
 
 add_library(glad STATIC

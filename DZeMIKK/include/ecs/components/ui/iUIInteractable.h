@@ -72,6 +72,9 @@ class IUIInteractable : public Component {
         return _eventActionIds;
     }
 
+    [[nodiscard]] bool isHovered() const {
+        return _hovered;
+    }
   protected:
     void emit(UIEventType eventType,
               std::variant<std::monostate, float, bool> payload = std::monostate{}) {
@@ -105,9 +108,6 @@ class IUIInteractable : public Component {
         return _pressedInside;
     }
 
-    [[nodiscard]] bool isHovered() const {
-        return _hovered;
-    }
 
     void setPressedInside(bool value) {
         _pressedInside = value;
