@@ -32,6 +32,10 @@ class Game {
     void start();
 
     game::CameraController* getCameraController();
+    void enableCombatUI(bool enable);
+    game::GameStateMachine* getStateMachine() {
+        return _stateMachine;
+    }
 
   private:
     void setupSkybox();
@@ -40,6 +44,8 @@ class Game {
     void setupUICamera();
     void setupInputCallbacks();
     void setupPlayer();
+    void setupEnemies();
+    void registerDefaultTerritories();
 
     dzemikk::Engine* _engine;
     dzemikk::AssetHandle<dzemikk::Scene> _mainScene;
@@ -54,6 +60,8 @@ class Game {
     game::PlayerMovement* _playerMovement = nullptr;
     game::CameraController* _cameraController = nullptr;
     game::GameStateMachine* _stateMachine = nullptr;
+
+    std::unordered_map<std::string, boost::uuids::uuid> _chunkIds;
 };
 
 #endif

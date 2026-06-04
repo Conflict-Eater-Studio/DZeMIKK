@@ -105,6 +105,14 @@ class PropertyDrawer {
     static bool drawVec3(const std::string& label, glm::vec3& value, float resetValue = 0.0F);
 
     /**
+     * @brief Draws a read-only 2D vector display field.
+     *
+     * @param label UI label.
+     * @param value Const reference to the vec2 value.
+     */
+    static void drawVec2ReadOnly(const std::string& label, const glm::vec2& value);
+
+    /**
      * @brief Draws a color picker (RGBA).
      *
      * @param label UI label.

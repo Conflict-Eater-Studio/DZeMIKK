@@ -1,0 +1,82 @@
+{
+    "root": {
+        "children": [],
+        "components": [
+            {
+                "anchorMax": [
+                    0.5,
+                    0.5
+                ],
+                "anchorMin": [
+                    0.5,
+                    0.5
+                ],
+                "id": "657aec34-0824-43f8-8961-cdff599c27e6",
+                "pivot": [
+                    0.5,
+                    0.5
+                ],
+                "position": [
+                    -280.0,
+                    0.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                    1.0,
+                    1.0
+                ],
+                "size": [
+                    40.0,
+                    40.0
+                ],
+                "type": "RectTransform",
+                "zIndex": 1
+            },
+            {
+                "events": {
+                    "enter": [
+                        "ItemEnter"
+                    ],
+                    "exit": [
+                        "ItemExit"
+                    ]
+                },
+                "hoverColor": [
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.800000011920929,
+                    1.0
+                ],
+                "id": "3b34fcb8-be82-4734-be47-c27bd47cb9ae",
+                "normalColor": [
+                    0.3035822808742523,
+                    0.7696078419685364,
+                    0.109405018389225,
+                    1.0
+                ],
+                "pressedColor": [
+                    0.6000000238418579,
+                    0.6000000238418579,
+                    0.6000000238418579,
+                    1.0
+                ],
+                "type": "UIButton"
+            },
+            {
+                "color": [
+                    0.3035822808742523,
+                    0.7696078419685364,
+                    0.109405018389225,
+                    1.0
+                ],
+                "id": "362ac744-e225-4ba5-9091-31154de9d97a",
+                "materialPath": "shaders/quad",
+                "texture": "",
+                "type": "ImageRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "2980aaf7-9ecc-479b-8651-1737cc872792",
+        "name": "Item"
+    }
+}

@@ -1,0 +1,91 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "4b4b7366-b4bc-43a1-861c-c59ea486a051",
+                        "position": [
+                            0.0,
+                            68.9000015258789,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "castsShadows": false,
+                        "color": [
+                            0.13491412997245789,
+                            0.9509803652763367,
+                            0.08391005545854568
+                        ],
+                        "intensity": 0.6010000109672546,
+                        "range": 10.0,
+                        "type": "PointLight"
+                    }
+                ],
+                "enabled": true,
+                "id": "1cb983df-073c-4cf6-a375-30e9e3b46c01",
+                "name": "Light"
+            }
+        ],
+        "components": [
+            {
+                "id": "b5e36c40-7732-4288-903d-267758796bcb",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    -1.150718716921319e-15,
+                    -0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.00800000037997961,
+                    0.00800000037997961,
+                    0.00800000037997961
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "73df9ad2-bf72-4030-9526-00df69c5252c",
+                "materials": [
+                    "shaders/skinned"
+                ],
+                "model": "models/Ninja Idle.fbx",
+                "type": "SkinnedMeshRenderer"
+            },
+            {
+                "currentStateName": "Idle",
+                "currentTime": 0.0,
+                "id": "d954eb1e-5ebe-4dc7-bc63-7c69f6cfced5",
+                "parameters": {},
+                "stateMachine": [
+                    {
+                        "name": "Idle",
+                        "transitions": []
+                    }
+                ],
+                "type": "Animator"
+            }
+        ],
+        "enabled": true,
+        "id": "122c7ff0-3400-4896-a06c-d8875f24cc5d",
+        "name": "Balanced "
+    }
+}

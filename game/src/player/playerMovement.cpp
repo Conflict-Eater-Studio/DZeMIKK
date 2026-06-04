@@ -1,6 +1,11 @@
-#include "playerMovement.h"
+#include "player/playerMovement.h"
+
+#include "game.h"
+#include "gameStateMachine.h"
+#include "stateMachine/combatState.h"
 
 namespace game {
+//TO DO:  While finding a path, the player should avoid occupied fields and opponents' territories
 
 void PlayerMovement::start() {
     MonoBehaviour::start();
@@ -20,6 +25,12 @@ void PlayerMovement::update(double deltaTime) {
         _duration = 0.0f;
         _step++;
     }
+
+    if (auto cell = _playerEntity->getCell()) {
+        if (cell->getType() == HexCell::Type::EnemyBattleHex && _game) {
+            _game->getStateMachine()->setState(std::make_unique<game::CombatState>(_game));
+        }
+    }
 }
 void PlayerMovement::setSpeed(float speed) {
     _speed = speed;
@@ -37,4 +48,8 @@ void PlayerMovement::moveTo(HexGrid::HexCellPtr cell) {
     _path = _hexGrid->findPath(_playerEntity->getCell(), cell);
     _step = 1;
 }
+void PlayerMovement::setGame(Game* game) {
+    _game = game;
+}
+
 } // namespace game

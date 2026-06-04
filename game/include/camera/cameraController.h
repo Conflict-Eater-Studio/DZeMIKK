@@ -39,7 +39,7 @@ class CameraController : public dzemikk::MonoBehaviour {
     dzemikk::Transform* _playerTransform = nullptr;
     Mode _mode = Mode::Exploration;
     float _followSpeed = 2.0F;
-    glm::vec3 _offsetExplorationMode = glm::vec3(-16.0F, 15.0F, 10.0F);
+    glm::vec3 _offsetExplorationMode = glm::vec3(-25.0F, 15.0F, 10.0F);
     glm::vec3 _offsetCombatMode = glm::vec3(0.0f, 20.0f, 5.0f);
 };
 

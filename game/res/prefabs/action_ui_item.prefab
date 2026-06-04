@@ -1,0 +1,150 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "a708b8c4-b70f-41dc-a7cb-f9793c567a10",
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            80.0,
+                            80.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 0
+                    },
+                    {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "id": "e244962f-c66a-4a81-808c-3571dbc62760",
+                        "materialPath": "shaders/quad",
+                        "texture": "textures/Mouse_Input_L-CLICK.png",
+                        "type": "ImageRenderer"
+                    }
+                ],
+                "enabled": true,
+                "id": "1039cea9-bc95-4220-a470-a71d962ba231",
+                "name": "Image"
+            },
+            {
+                "children": [],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "69f82312-92b6-400a-9353-57a5249e8810",
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            700.0,
+                            150.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 0
+                    },
+                    {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "font": "fonts/Lato-Regular.ttf",
+                        "horizontalAlign": 1,
+                        "id": "9ef23b86-5af7-4a4f-86dd-f5cb4467a5a7",
+                        "scale": 0.4000000059604645,
+                        "text": "mmmm",
+                        "type": "UITextRenderer",
+                        "verticalAlign": 0
+                    }
+                ],
+                "enabled": true,
+                "id": "54526ebe-3e50-46f1-adf2-3fe60cb39a3d",
+                "name": "Text"
+            }
+        ],
+        "components": [
+            {
+                "anchorMax": [
+                    0.5,
+                    0.5
+                ],
+                "anchorMin": [
+                    0.5,
+                    0.5
+                ],
+                "id": "e0680a7c-cf80-4b51-ad86-6de7706fa277",
+                "pivot": [
+                    0.5,
+                    0.5
+                ],
+                "position": [
+                    0.0,
+                    -100.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                    1.0,
+                    1.0
+                ],
+                "size": [
+                    700.0,
+                    150.0
+                ],
+                "type": "RectTransform",
+                "zIndex": 0
+            },
+            {
+                "childForceExpandHeight": false,
+                "childForceExpandWidth": true,
+                "id": "ddec1bef-0cdb-4f29-8ea6-e587d987a48f",
+                "spacing": 0.0,
+                "type": "VerticalLayout"
+            }
+        ],
+        "enabled": true,
+        "id": "3aea493a-dd1a-49ad-a8a1-44b24c3023a0",
+        "name": "1"
+    }
+}

@@ -1,0 +1,809 @@
+{
+    "id": "97e02499-727d-4861-a4ff-735f14784b43",
+    "roots": [
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "4cf49041-6a12-4c32-a82e-ba23d3cf31a0",
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "castsShadows": false,
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "direction": [
+                        -0.4319342076778412,
+                        -0.8638684153556824,
+                        -0.2591605484485626
+                    ],
+                    "intensity": 1.0,
+                    "type": "DirectionalLight"
+                }
+            ],
+            "enabled": true,
+            "id": "06c01715-5e6d-4905-9f90-2bca8b8a4244",
+            "name": "Directional Light"
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "391ad0d9-9743-422b-96b8-c2f30aa20479",
+                    "position": [
+                        0.0,
+                        3.0,
+                        11.600000381469727
+                    ],
+                    "rotation": [
+                        0.9839535355567932,
+                        -0.17842482030391693,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "aspect": 1.7699999809265137,
+                    "bottom": -1.0,
+                    "far": 1000.0,
+                    "fov": 60.0,
+                    "id": 0,
+                    "left": -1.0,
+                    "near": 0.10000000149011612,
+                    "projectionType": 0,
+                    "right": 1.0,
+                    "top": 1.0,
+                    "type": "Camera"
+                }
+            ],
+            "enabled": true,
+            "id": "f596f462-d3bf-40aa-bb65-9db746fb5a56",
+            "name": "Editor Camera"
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "22edec92-75a2-4d25-8988-08e7545e1df9",
+                    "position": [
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "rotation": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "aspect": 1.7699999809265137,
+                    "bottom": 0.0,
+                    "far": 1.0,
+                    "fov": 60.0,
+                    "id": 1,
+                    "left": 0.0,
+                    "near": -1.0,
+                    "projectionType": 1,
+                    "right": 1920.0,
+                    "top": 1080.0,
+                    "type": "Camera"
+                }
+            ],
+            "enabled": true,
+            "id": "1ba86b50-ba7c-4968-a838-fef96e8f472f",
+            "name": "UICamera"
+        },
+        {
+            "children": [
+                {
+                    "children": [
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "id": "d2905642-eb9e-4b77-8da1-789f8b1ea745",
+                                    "position": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": [
+                                        1.0,
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "scale": [
+                                        0.009999999776482582,
+                                        0.009999999776482582,
+                                        0.009999999776482582
+                                    ],
+                                    "type": "Transform"
+                                },
+                                {
+                                    "id": "0bbe1960-aa35-4554-a263-67a5d31740b4",
+                                    "materials": [
+                                        "shaders/skinned"
+                                    ],
+                                    "model": "models/Baba.fbx",
+                                    "type": "SkinnedMeshRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "e815e11b-a05c-498a-b4c9-786cda0bd6ff",
+                            "name": "Player"
+                        }
+                    ],
+                    "components": [
+                        {
+                            "id": "88e468de-8b17-4223-a4bd-25732cce53bf",
+                            "position": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": [
+                                1.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "type": "Transform"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "123ced04-5ba2-4ea9-a8b1-373e0886d447",
+                    "name": "World"
+                }
+            ],
+            "components": [
+                {
+                    "id": "e5db8108-43ce-4b58-afdc-74979e70bb7d",
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                }
+            ],
+            "enabled": true,
+            "id": "1cb575b2-38bb-4f81-9648-9934ca8961c6",
+            "name": "Root"
+        },
+        {
+            "children": [
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "anchorMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "id": "54b5bba1-ad4a-4952-bcc6-6cd5932527b2",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 2
+                                        },
+                                        {
+                                            "color": [
+                                                0.0,
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "font": "fonts/UncialAntiqua-Regular.ttf",
+                                            "horizontalAlign": 1,
+                                            "id": "be98564f-2f1d-4118-bc95-4505b76d507c",
+                                            "scale": 1.0,
+                                            "text": "Button",
+                                            "type": "UITextRenderer",
+                                            "verticalAlign": 1
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "5c68b867-8e6a-404e-9959-a2c2e564de05",
+                                    "name": "Button_Text"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "ad8f3769-4403-43c9-b713-194a662f538c",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        250.0,
+                                        45.11800003051758
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        500.0,
+                                        90.23600006103516
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "hoverColor": [
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        1.0
+                                    ],
+                                    "id": "9329d157-088b-4143-b536-a195511ce75d",
+                                    "normalColor": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "pressedColor": [
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        1.0
+                                    ],
+                                    "type": "UIButton"
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "id": "7ff00335-8f96-4c3d-b437-a819c3034922",
+                                    "materialPath": "shaders/quad",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "3a86522c-a7a7-4a7e-abb0-d48b4a810cbf",
+                            "name": "Button"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "anchorMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "id": "d0a32d81-125b-403e-b07c-518557d76e20",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 2
+                                        },
+                                        {
+                                            "color": [
+                                                0.0,
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "font": "fonts/UncialAntiqua-Regular.ttf",
+                                            "horizontalAlign": 1,
+                                            "id": "20f9c06b-b205-4703-a491-c3cc24932525",
+                                            "scale": 1.0,
+                                            "text": "Button",
+                                            "type": "UITextRenderer",
+                                            "verticalAlign": 1
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "c7bfb4b8-84ad-4383-b561-92ed41540338",
+                                    "name": "Button_Text"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "a79e6365-a2fd-4398-9740-949b64c44b47",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        250.0,
+                                        181.70599365234375
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        500.0,
+                                        90.23600006103516
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "hoverColor": [
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        1.0
+                                    ],
+                                    "id": "c30ac443-b492-43d6-a9e6-e6af38acb793",
+                                    "normalColor": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "pressedColor": [
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        1.0
+                                    ],
+                                    "type": "UIButton"
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "id": "a1471349-bcce-4b1c-953e-68a5020697c8",
+                                    "materialPath": "shaders/quad",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "05ca9f43-5d60-47ef-b446-0b54bde200c0",
+                            "name": "Button"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "anchorMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "id": "4bca4fb8-f70f-406b-86ae-0fc8ec2a4dc9",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 2
+                                        },
+                                        {
+                                            "color": [
+                                                0.0,
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "font": "fonts/UncialAntiqua-Regular.ttf",
+                                            "horizontalAlign": 1,
+                                            "id": "00215b58-11fd-4599-8767-f69a23245d6f",
+                                            "scale": 1.0,
+                                            "text": "Button",
+                                            "type": "UITextRenderer",
+                                            "verticalAlign": 1
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "38539557-3c9e-4808-a648-e132e9569e8e",
+                                    "name": "Button_Text"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "5fe9f6e0-382d-445b-9ea1-8c4e6952f1ad",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        250.0,
+                                        318.29400634765625
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        500.0,
+                                        90.23600006103516
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "hoverColor": [
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        1.0
+                                    ],
+                                    "id": "a313e672-8484-4d32-ae23-bfc288618379",
+                                    "normalColor": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "pressedColor": [
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        1.0
+                                    ],
+                                    "type": "UIButton"
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "id": "bc5e0d02-7140-4701-8d4e-be73c4a40e80",
+                                    "materialPath": "shaders/quad",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "552a68e9-f90d-45b4-9504-cc54e4dc5e43",
+                            "name": "Button"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "anchorMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "id": "9062d38f-47a8-456a-85e9-ea8efaffaa2c",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 2
+                                        },
+                                        {
+                                            "color": [
+                                                0.0,
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "font": "fonts/UncialAntiqua-Regular.ttf",
+                                            "horizontalAlign": 1,
+                                            "id": "2847e89a-a43a-4016-a0f4-6b555a131713",
+                                            "scale": 1.0,
+                                            "text": "Button",
+                                            "type": "UITextRenderer",
+                                            "verticalAlign": 1
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "dd44ca16-c2f8-436f-a67a-c678b0d25cc6",
+                                    "name": "Button_Text"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "0769e54a-487d-4f49-9e04-b2cdf7103d94",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        250.0,
+                                        454.8819885253906
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        500.0,
+                                        90.23600006103516
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "hoverColor": [
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        1.0
+                                    ],
+                                    "id": "0fb9b96f-6d51-4af2-8c6a-abad39f4e292",
+                                    "normalColor": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "pressedColor": [
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        1.0
+                                    ],
+                                    "type": "UIButton"
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "id": "9bb79a1b-29a6-4b68-9183-add5de92cfba",
+                                    "materialPath": "shaders/quad",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "3609a9c8-7579-47d9-a963-abf7a4d8ef28",
+                            "name": "Button"
+                        }
+                    ],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.0,
+                                0.5
+                            ],
+                            "anchorMin": [
+                                0.0,
+                                0.5
+                            ],
+                            "id": "309f48ca-566a-4738-b333-0a30f78d58ea",
+                            "pivot": [
+                                0.5,
+                                1.0
+                            ],
+                            "position": [
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                500.0,
+                                500.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 0
+                        },
+                        {
+                            "childForceExpandHeight": true,
+                            "childForceExpandWidth": true,
+                            "id": "0d7306f2-7e2c-4d90-be3b-bf6774196580",
+                            "spacing": 46.35200119018555,
+                            "type": "VerticalLayout"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "bef79859-44b7-46e5-882c-a396cee1e4c1",
+                    "name": "Empty"
+                }
+            ],
+            "components": [
+                {
+                    "anchorMax": [
+                        0.5,
+                        0.5
+                    ],
+                    "anchorMin": [
+                        0.5,
+                        0.5
+                    ],
+                    "id": "4f9f2d60-20be-44e2-9051-8b1c0f44fc2a",
+                    "pivot": [
+                        0.5,
+                        0.5
+                    ],
+                    "position": [
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": 0.0,
+                    "scale": [
+                        1.0,
+                        1.0
+                    ],
+                    "size": [
+                        1920.0,
+                        1080.0
+                    ],
+                    "type": "RectTransform",
+                    "zIndex": 0
+                },
+                {
+                    "id": "cf856b97-0892-44ff-8733-bb794ff08d0c",
+                    "type": "Canvas"
+                }
+            ],
+            "enabled": true,
+            "id": "2b07f938-d061-44df-b649-5e390874c448",
+            "name": "Canvas"
+        }
+    ]
+}

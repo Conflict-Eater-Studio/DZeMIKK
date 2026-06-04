@@ -2,7 +2,9 @@
 
 #include "game.h"
 
+#include "../include/player/playerMovement.h"
 #include "assetManager/assetmanager.h"
+#include "camera/cameraController.h"
 #include "collisions/collisions.h"
 #include "core/engine.h"
 #include "core/time.h"
@@ -10,13 +12,13 @@
 #include "ecs/components/camera.h"
 #include "ecs/components/collider.h"
 #include "ecs/components/meshRenderer.h"
+#include "ecs/components/ui/uiActionRegistry.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
 #include "input/input.h"
 #include "map/HexCoord.h"
 #include "map/PlayerEntity.h"
-#include "playerMovement.h"
 #include "renderer/cameraSystem.h"
 #include "renderer/material.h"
 #include "renderer/model.h"
@@ -25,8 +27,6 @@
 #include "scripts/world/world.h"
 #include "scripts/world/worldHex.h"
 #include "utils/perlin.h"
-#include "camera/cameraController.h"
-#include "ecs/components/ui/uiActionRegistry.h"
 
 #include <GLFW/glfw3.h>
 #include <memory>
@@ -35,9 +35,37 @@
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
 #endif
-#include <gameStateMachine.h>
-#include "stateMachine/explorationState.h"
+#include "ecs/components/ui/horizontalLayout.h"
+#include "ecs/components/ui/uiButton.h"
+#include "ecs/serialize/prefabSerializer.h"
+#include "enemySystem/enemyManager.h"
+#include "enemySystem/territoryPatternRegistry.h"
+#include "healthSystem.h"
+#include "player/inventory.h"
+#include "player/playerPatternComponent.h"
 #include "stateMachine/combatState.h"
+#include "stateMachine/explorationState.h"
+
+#include <animation/animationstatemachine.h>
+#include <ecs/components/animator.h>
+#include <ecs/components/skinnedMeshRenderer.h>
+#include <gameStateMachine.h>
+#include <iostream>
+
+void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
+    if (!obj)
+        return;
+
+    for (int i = 0; i < depth; i++) {
+        std::cout << "  ";
+    }
+
+    std::cout << obj->getName() << "\n";
+
+    for (auto* child : obj->getChildren()) {
+        printHierarchy(child, depth + 1);
+    }
+}
 
 struct SkyboxInitContext {
     dzemikk::AssetHandle<dzemikk::Shader> shader;
@@ -61,8 +89,43 @@ void Game::start() {
 
     setupSkybox();
 
-    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay.json");
+    _mainScene = assetManager->get<dzemikk::Scene>("scenes/interface2.json");
 
+    auto item1PrefabJson = assetManager->get<nlohmann::json>("prefabs/ItemPrefab.prefab");
+    auto item2PrefabJson = assetManager->get<nlohmann::json>("prefabs/ItemPrefab1.prefab");
+    auto item3PrefabJson = assetManager->get<nlohmann::json>("prefabs/ItemPrefab2.prefab");
+    auto horizontalGO = _mainScene.get()->findGameObjectByName("Horizontal");
+    auto inventory = horizontalGO->addComponent<game::Inventory>();
+ 
+    inventory->setHorizontalLayout(horizontalGO);
+    inventory->setAssetManager(assetManager);
+    inventory->setMainScene(_mainScene.get());
+
+    inventory->setItem1Prefab(item1PrefabJson);
+    inventory->setItem2Prefab(item2PrefabJson);
+    inventory->setItem3Prefab(item3PrefabJson);
+
+    inventory->addItem(game::Inventory::Item1);
+    inventory->addItem(game::Inventory::Item2);
+    inventory->addItem(game::Inventory::Item3);
+
+    auto tooltip  = _mainScene.get()->findGameObjectByName("Tooltip");
+    tooltip->enabled(false);
+    dzemikk::UIActionRegistry::get().registerAction(
+         [tooltip, this](const dzemikk::UIEvent&) {
+             tooltip->enabled(true);
+         },
+         "ItemEnter");
+    dzemikk::UIActionRegistry::get().registerAction(
+         [tooltip](const dzemikk::UIEvent&) {
+             tooltip->enabled(false);
+         },
+         "ItemExit");
+
+    auto playerHealthbarGO = _mainScene.get()->findGameObjectByName("PlayerSlider");
+    auto playerHealthSystem = playerHealthbarGO->addComponent<game::HealthSystem>();
+    playerHealthSystem->setSlider(playerHealthbarGO->getComponent<dzemikk::UISlider>());
+    playerHealthSystem->damage(15.0f);
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
     sceneManager->setActiveScene(sceneShared);
@@ -71,6 +134,8 @@ void Game::start() {
     setupUICamera();
     setupWorld();
     setupPlayer();
+    registerDefaultTerritories();
+    setupEnemies();
 
     auto root = _mainScene.get()->findGameObjectByName("Root");
     _stateMachine = root->addComponent<game::GameStateMachine>();
@@ -99,6 +164,11 @@ void Game::start() {
 
 game::CameraController* Game::getCameraController() {
     return _cameraController;
+}
+
+void Game::enableCombatUI(bool enable) {
+    auto combatUI = _mainScene.get()->findGameObjectByName("Combat");
+    combatUI->enabled(enable);
 }
 
 void Game::setupSkybox() {
@@ -141,36 +211,75 @@ void Game::setupWorld() {
     // world->setEnemyModel(enemyModel);
     world->setResourceModel(resourceModel);
     world->setPlayer(_playerEntity);
-
     world->registerGenerator("full", [](int step, int maxSteps) { return 1.0F; });
 
-    auto c1 = world->addChunk({.steps = 4});
+
+    auto c1 = world->addChunk({.steps = 7});
+    _chunkIds["c1"] = c1;
 
     auto c2 = world->addChunk(
-        {.parentChunkId = c1, .steps = 8, .dirFromParent = game::HexCoord::Direction::R0});
+        {.parentChunkId = c1, .steps = 12, .dirFromParent = game::HexCoord::Direction::R0}); //connect chunk
+    _chunkIds["c2"] = c2;
+
     auto c3 = world->addChunk(
-        {.parentChunkId = c2, .steps = 12, .dirFromParent = game::HexCoord::Direction::R0});
+        {.parentChunkId = c2, .steps = 15, .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["c3"] = c3;
+
     auto c4 = world->addChunk(
-        {.parentChunkId = c3, .steps = 16, .dirFromParent = game::HexCoord::Direction::R0});
+        {.parentChunkId = c3, .steps = 11, .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["c4"] = c4;
+
     auto c5 = world->addChunk(
-        {.parentChunkId = c4, .steps = 10, .dirFromParent = game::HexCoord::Direction::R0});
+        {.parentChunkId = c4, .steps = 9, .dirFromParent = game::HexCoord::Direction::R0});
+    _chunkIds["c5"] = c5;
 
     auto c6 = world->addChunk(
-        {.parentChunkId = c5, .steps = 12, .dirFromParent = game::HexCoord::Direction::R0});
+        {.parentChunkId = c2, .steps = 17, .dirFromParent = game::HexCoord::Direction::R30});
+    _chunkIds["c6"] = c6;
 
     auto c7 = world->addChunk(
-        {.parentChunkId = c6, .steps = 14, .dirFromParent = game::HexCoord::Direction::R0});
+        {.parentChunkId = c6, .steps = 15, .dirFromParent = game::HexCoord::Direction::R30}); //connect chunk
+    _chunkIds["c7"] = c7;
 
     auto c8 = world->addChunk(
-        {.parentChunkId = c7, .steps = 16, .dirFromParent = game::HexCoord::Direction::R0});
+        {.parentChunkId = c7, .steps = 19, .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["c8"] = c8;
 
-    auto c3s1 = world->addChunk(
-        {.parentChunkId = c3, .steps = 26, .dirFromParent = game::HexCoord::Direction::R60});
-    auto c3s2 = world->addChunk(
-        {.parentChunkId = c3, .steps = 8, .dirFromParent = game::HexCoord::Direction::R300});
+    auto c9 = world->addChunk(
+        {.parentChunkId = c8, .steps = 15, .dirFromParent = game::HexCoord::Direction::R30});
+    _chunkIds["c9"] = c9;
 
-    auto c3s2s1 = world->addChunk(
-        {.parentChunkId = c3s2, .steps = 12, .dirFromParent = game::HexCoord::Direction::R300});
+    auto c10 = world->addChunk(
+        {.parentChunkId = c9, .steps = 24, .dirFromParent = game::HexCoord::Direction::R0}); //connect chunk
+    _chunkIds["c10"] = c10;
+
+    auto c11 = world->addChunk(
+        {.parentChunkId = c7, .steps = 14, .dirFromParent = game::HexCoord::Direction::R30});
+    _chunkIds["c11"] = c11;
+
+    auto c12 = world->addChunk(
+        {.parentChunkId = c10, .steps = 22, .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["c12"] = c12;
+
+    auto c13 = world->addChunk(
+        {.parentChunkId = c12, .steps = 15, .dirFromParent = game::HexCoord::Direction::R0});
+    _chunkIds["c13"] = c13;
+
+    auto c14 = world->addChunk(
+        {.parentChunkId = c13, .steps = 17, .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["c14"] = c14;
+
+    auto c15 = world->addChunk(
+        {.parentChunkId = c10, .steps = 17, .dirFromParent = game::HexCoord::Direction::R30});
+    _chunkIds["c15"] = c15;
+
+    auto c16 = world->addChunk(
+        {.parentChunkId = c15, .steps = 22, .dirFromParent = game::HexCoord::Direction::R0});
+    _chunkIds["c16"] = c16;
+
+    auto c17 = world->addChunk(
+        {.parentChunkId = c16, .steps = 30, .dirFromParent = game::HexCoord::Direction::R0});
+    _chunkIds["c17"] = c17;
 
     std::ofstream out("./world.json");
     out << world->save().dump(4);
@@ -191,8 +300,15 @@ void Game::setupUICamera() {
 
 void Game::setupInputCallbacks() {
     static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
+    static std::unordered_map<dzemikk::MeshRenderer*, glm::vec4> baseColors;
     
     _engine->SetUserUpdateCallback([this]() {
+        auto ensureBase = [&](dzemikk::MeshRenderer* r) {
+            if (!baseColors.contains(r)) {
+                baseColors[r] = r->getColor();
+            }
+        };
+
         if (!_engine || !_engine->getInput()) {
             return;
         }
@@ -208,6 +324,7 @@ void Game::setupInputCallbacks() {
 
         dzemikk::MeshRenderer* currentRenderer = nullptr;
 
+
         if (collider) {
             currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
         }
@@ -217,28 +334,15 @@ void Game::setupInputCallbacks() {
         if (currentRenderer != lastHitRenderer) {
 
             if (lastHitRenderer && lastHitRenderer->isValid()) {
-
-                glm::vec4 color = lastHitRenderer->getColor();
-
-                color.r += hoverStrength;
-                color.g += hoverStrength;
-                color.b += hoverStrength;
-
-                color = glm::clamp(color, 0.0f, 1.0f);
-
-                lastHitRenderer->setColor(color);
+                auto base = baseColors[lastHitRenderer];
+                lastHitRenderer->setColor(base);
             }
 
             if (currentRenderer && currentRenderer->isValid()) {
+                ensureBase(currentRenderer);
 
-                glm::vec4 color = currentRenderer->getColor();
-                color.r -= hoverStrength;
-                color.g -= hoverStrength;
-                color.b -= hoverStrength;
-
-                color = glm::clamp(color, 0.0f, 1.0f);
-
-                currentRenderer->setColor(color);
+                auto base = baseColors[currentRenderer];
+                currentRenderer->setColor(base * 0.5f);
             }
 
             lastHitRenderer = currentRenderer;
@@ -246,7 +350,8 @@ void Game::setupInputCallbacks() {
     });
 
     _engine->getInput()->OnMouseButtonPressed.addListener([this](dzemikk::MouseButtonPressedEvent& event) {
-        if (event.GetMouseButton() != GLFW_MOUSE_BUTTON_LEFT) {
+        if (event.GetMouseButton() != GLFW_MOUSE_BUTTON_LEFT ||
+            !_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
             return;
         }
 
@@ -276,11 +381,233 @@ void Game::setupInputCallbacks() {
 
 void Game::setupPlayer() {
     auto playerGO = _mainScene.get()->findGameObjectByName("Player");
+
+    dzemikk::AnimationClip* clip = nullptr;
+    auto skeleton =
+        playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
+    clip = skeleton->getClip("mixamo.com");
+    auto animator = playerGO->getComponent<dzemikk::Animator>();
+    animator->getStateMachine()->getState("Idle")->setClip(clip);
+
     _playerEntity = playerGO->addComponent<game::PlayerEntity>();
     _playerMovement = playerGO->addComponent<game::PlayerMovement>();
     _playerMovement->setPlayerEntity(_playerEntity);
     _playerMovement->setSpeed(0.25F);
+    _playerMovement->setGame(this);
+
+    animator->play("Idle");
 
     _hexGrid = _worldGO->getComponent<game::World>()->getGrid();
     _playerMovement->setHexGrid(_hexGrid);
+
+    auto patternConponent = playerGO->addComponent<game::PlayerPatternComponent>();
+    patternConponent->setPlayer(_playerEntity);
+    patternConponent->setGrid(_hexGrid);
+    patternConponent->setPlayerPatternsCanvas(
+        _mainScene.get()->findGameObjectByName("Player_Panel"));
+    patternConponent->setAssetManager(_engine->getAssetManager());
+    patternConponent->setupUI();
+}
+
+void Game::setupEnemies() {
+    auto* enemyManagerGO = _mainScene.get()->findGameObjectByName("EnemyManager");
+
+    auto* enemyManager = enemyManagerGO->addComponent<game::EnemyManager>();
+
+    enemyManager->setWorld(_worldGO->getComponent<game::World>());
+    enemyManager->setAssetManager(_engine->getAssetManager());
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c1Config = {
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 15, "1"}};
+    enemyManager->setSpawnConfig(_chunkIds["c1"], c1Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c2Config = {
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 20, "2"}};
+    enemyManager->setSpawnConfig(_chunkIds["c2"], c2Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c3Config = {
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Special, 1, 30, "3"},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c3"], c3Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c4Config = {
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20, "2"},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c4"], c4Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c6Config = {
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20, "2"},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "3"},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c6"], c6Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c7Config = {
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "3"},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Special, 1, 35, "4"},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c7"], c7Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c8Config = {
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 30, "3"},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 25, "3"},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c8"], c8Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c9Config = {
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35, "4"},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c9"], c9Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c10Config = {
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "3"},
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 30, "3"},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c10"], c10Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c12Config = {
+        {game::EnemyPersonality::Defensive, game::EnemyType::Special, 1, 40, "5"},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c12"], c12Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c13Config = {
+        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 35, "4"},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c13"], c13Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c15Config = {
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 35, "4"},
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 40, "5"},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c15"], c15Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c16Config = {
+        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35, "4"},
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 30, "1"},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c16"], c16Config);
+
+    std::vector<game::EnemyManager::EnemySpawnConfig> c17Config = {
+        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 50, "6"},
+    };
+    enemyManager->setSpawnConfig(_chunkIds["c17"], c17Config);
+
+    enemyManager->spawnEnemiesPerChunk();
+}
+
+void Game::registerDefaultTerritories() {
+    game::TerritoryPatternRegistry::instance().registerPattern({"1",
+                                                          {{1, 0},
+                                                           {1, -1},
+                                                           {0, -1},
+
+                                                           {-1, 0},
+                                                           {-1, 1},
+                                                           {0, 1}}});
+
+    game::TerritoryPatternRegistry::instance().registerPattern({"2",
+                                                            {{1, 0},
+                                                            {1, -1},
+                                                            {0, -1},
+
+                                                            {-1, 0},
+                                                            {-1, 1},
+                                                            {0, 1},
+
+                                                            {1, 1},
+                                                            {-1, -1}}});
+
+    game::TerritoryPatternRegistry::instance().registerPattern({"3",
+                                                            {
+                                                                {1, 0},
+                                                                {1, -1},
+                                                                {0, -1},
+                                                                {-1, 0},
+                                                                {-1, 1},
+                                                                {0, 1},
+
+                                                                {2, 0},
+                                                                {0, -2},
+                                                                {-2, 0},
+                                                                {0, 2},
+                                                                {2, -2},
+                                                                {-2, 2},
+                                                            }});
+
+    game::TerritoryPatternRegistry::instance().registerPattern({"4",
+                                                            {
+                                                                {1, 0},
+                                                                {1, -1},
+                                                                {0, -1},
+                                                                {-1, 0},
+                                                                {-1, 1},
+                                                                {0, 1},
+
+                                                                {2, 0},
+                                                                {2, -1},
+                                                                {1, -2},
+                                                                {-1, -1},
+                                                                {-2, 0},
+                                                                {-2, 1},
+                                                                {-1, 2},
+                                                                {1, 1},
+                                                                {2, -2},
+                                                                {-2, 2},
+                                                            }});
+
+    game::TerritoryPatternRegistry::instance().registerPattern({"5",
+                                                            {
+                                                                {1, 0},
+                                                                {1, -1},
+                                                                {0, -1},
+                                                                {-1, 0},
+                                                                {-1, 1},
+                                                                {0, 1},
+
+                                                                {2, 0},
+                                                                {2, -1},
+                                                                {1, -2},
+                                                                {0, -2},
+                                                                {-1, -1},
+                                                                {-2, 0},
+                                                                {-2, 1},
+                                                                {-1, 2},
+                                                                {0, 2},
+                                                                {1, 1},
+                                                                {2, -2},
+                                                                {-2, 2},
+                                                            }});
+
+    game::TerritoryPatternRegistry::instance().registerPattern({"6", 
+                                                            {
+                                                                {1, 0}, 
+                                                                {1, -1}, 
+                                                                {0, -1}, 
+                                                                {-1, 0}, 
+                                                                {-1, 1}, 
+                                                                {0, 1},
+
+                                                                {2, 0}, 
+                                                                {2, -1}, 
+                                                                {1, -2}, 
+                                                                {0, -2}, 
+                                                                {-1, -1}, 
+                                                                {-2, 0}, 
+                                                                {-2, 1}, 
+                                                                {-1, 2}, 
+                                                                {0, 2},
+                                                                {1, 1}, 
+                                                                {2, -2}, 
+                                                                {-2, 2},
+
+                                                                {3, 0}, 
+                                                                {3, -1},
+                                                                {2, -3}, 
+                                                                {1, -3},
+                                                                {-2, -1}, 
+                                                                {-3, 0},
+                                                                {-3,1},
+                                                                {-2, 3}, 
+                                                                {-1, 3},
+                                                                {2, 1}, 
+                                                            }});
 }

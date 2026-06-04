@@ -36,6 +36,8 @@ namespace dzemikk {
         virtual ~Font() = default; 
         std::map<char, Character> characters;
         std::map<char, PendingCharacter> pending;
+        int lineHeight = 0;
+        int baseSize = 0;
 
         void clear() {
             for (auto& [c, ch] : characters) {
@@ -60,6 +62,8 @@ namespace dzemikk {
             }
 
             if (FT_Set_Pixel_Sizes(face, 0, 48)) {
+                lineHeight = face->size->metrics.height >> 6;
+                baseSize = 48;
                 FT_Done_Face(face);
                 FT_Done_FreeType(ft);
                 return false;

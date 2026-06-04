@@ -2,7 +2,6 @@
 #include "ui/propertyDrawer.h"
 
 #include <ecs/components/ui/horizontalLayout.h>
-
 #include <imgui.h>
 
 void editor::HorizontalLayoutInspector::draw(dzemikk::HorizontalLayout* layout,
@@ -15,6 +14,13 @@ void editor::HorizontalLayoutInspector::draw(dzemikk::HorizontalLayout* layout,
         float spacing = layout->getSpacing();
         bool expandWidth = layout->getChildForceExpandWidth();
         bool expandHeight = layout->getChildForceExpandHeight();
+        dzemikk::HorizontalLayout::VerticalAlignment alignment = layout->getVerticalAlignment();
+
+        const char* verticalAlignmentItems[] = {
+            "Bottom",
+            "Center",
+            "Top"
+        };
 
         bool changed = false;
 
@@ -32,7 +38,10 @@ void editor::HorizontalLayoutInspector::draw(dzemikk::HorizontalLayout* layout,
             layout->setChildForceExpandHeight(expandHeight);
             changed = true;
         }
-
+        if (PropertyDrawer::drawEnum("Verticla Alignment", alignment, verticalAlignmentItems,3)) {
+            layout->setVerticalAlignment(alignment);
+            changed = true;
+        }
         if (changed) {
             layout->rebuild();
         }

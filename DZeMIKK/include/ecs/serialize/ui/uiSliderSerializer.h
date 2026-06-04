@@ -63,15 +63,20 @@ inline void from_json(const nlohmann::json& json, UISlider& slider, AssetManager
     boost::uuids::string_generator uuidGenerator;
 
     if (!json.contains("type") || !json["type"].is_string() || json["type"] != "UISlider") {
+#if DZEMIKK_DEV_TOOLS
         spdlog::info("Expected type 'UISlider' for deserialization, but got '{}'",
                      json.value("type", "null"));
+#endif
         throw std::runtime_error("Invalid component type for UISlider deserialization");
     }
 
     if (!json.contains("id") || !json.contains("value") || !json.contains("fillColor") ||
         !json.contains("backgroundColor") || !json.contains("handleColor") ||
         !json.contains("handleHoverColor") || !json.contains("handlePressedColor")) {
+#if DZEMIKK_DEV_TOOLS
         spdlog::info("Missing required fields for UISlider deserialization");
+#endif
+
         throw std::runtime_error("Missing required fields for UISlider deserialization");
     }
 

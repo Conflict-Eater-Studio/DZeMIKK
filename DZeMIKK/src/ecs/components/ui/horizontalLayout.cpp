@@ -30,6 +30,13 @@ void HorizontalLayout::setChildForceExpandHeight(bool enabled) {
 bool HorizontalLayout::getChildForceExpandHeight() const {
     return _childForceExpandHeight;
 }
+void HorizontalLayout::setVerticalAlignment(VerticalAlignment alignment) {
+    _verticalAlignment = alignment;
+    rebuild();
+}
+HorizontalLayout::VerticalAlignment HorizontalLayout::getVerticalAlignment() const {
+    return _verticalAlignment;
+}
 
 void HorizontalLayout::rebuild() {
     if (!_owner) {
@@ -42,6 +49,7 @@ void HorizontalLayout::rebuild() {
     }
 
     const glm::vec2 rectSize = rect->getSize();
+    const glm::vec2 rectPivot = rect->getPivot();
     const glm::vec2 offsetMin = rect->getOffsetMin();
     const glm::vec2 offsetMax = rect->getOffsetMax();
 
@@ -61,7 +69,11 @@ void HorizontalLayout::rebuild() {
     float childWidth =
         _childForceExpandWidth ? totalChildWidth / static_cast<float>(childCount) : 0.0F;
 
-    float x = offsetMin[0];
+    const float bottom = (-rectPivot[1] * rectSize[1]) + offsetMin[1];
+    const float top = bottom + availableHeight;
+    const float centerY = bottom + (availableHeight * 0.5F);
+
+    float startX = (-rectPivot[0] * rectSize[0]) + offsetMin[0];
     for (size_t i = 0; i < childCount; ++i) {
         auto* child = children[i];
         auto* childRect = child->rectTransform();
@@ -80,13 +92,34 @@ void HorizontalLayout::rebuild() {
             childSize[1] = availableHeight;
         }
 
-        float posX = x + (childSize[0] * childPivot[0]);
-        float posY = offsetMin[1] + (childSize[1] * childPivot[1]);
+        float posX = startX + (childSize[0] * childPivot[0]);
+        float posY = 0;
+        switch (_verticalAlignment) {
+            case VerticalAlignment::Bottom:
+                posY = bottom + (childSize[1] * childPivot[1]);
+                break;
+            case VerticalAlignment::Center:
+                posY = centerY + (childSize[1] * (childPivot[1] - 0.5F));
+                break;
+            case VerticalAlignment::Top:
+                posY = top - (childSize[1] * (1.0F - childPivot[1]));
+                break;
+        }
         childRect->setPosition(glm::vec2(posX, posY));
 
-        childRect->setSize(childSize);
+        if (_childForceExpandWidth || _childForceExpandHeight) {
+            glm::vec2 stretch = childRect->getStretchSize();
+            glm::vec2 newBase = childRect->getSize() - stretch;
+            if (_childForceExpandWidth) {
+                newBase[0] = childWidth - stretch[0];
+            }
+            if (_childForceExpandHeight) {
+                newBase[1] = availableHeight - stretch[1];
+            }
+            childRect->setBaseSize(newBase);
+        }
 
-        x += childSize[0] + _spacing;
+        startX += childSize[0] + _spacing;
     }
 }
 } // namespace dzemikk

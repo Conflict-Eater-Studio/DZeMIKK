@@ -44,7 +44,7 @@ Engine::~Engine() {
 }
 
 void Engine::init() {
-    _mainWindow = std::make_unique<Window>(1920, 1080, "DZeMIKK");
+    _mainWindow = std::make_unique<Window>(1920, 1080, "DZeMIKK", _mode);
     _assetManager = std::make_unique<AssetManager>();
     _renderer = std::make_unique<Renderer>(_mode);
     _sceneManager = std::make_unique<SceneManager>();

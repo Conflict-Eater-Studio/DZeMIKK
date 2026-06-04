@@ -36,5 +36,19 @@ void editor::ImageRendererInspector::draw(dzemikk::ImageRenderer* renderer,
         if (PropertyDrawer::drawShader("Shader", shaderHandle, ctx)) {
             material->setShader(shaderHandle);
         }
+
+        bool useTexture = renderer->useTexture();
+
+        if (PropertyDrawer::drawBool("Use Texture", useTexture)) {
+            renderer->setUseTexture(useTexture);
+        }
+
+        if (useTexture) {
+            auto textureHandle = renderer->getTextureHandle();
+
+            if (PropertyDrawer::drawTexture("Texture", textureHandle, ctx)) {
+                renderer->setTexture(textureHandle);
+            }
+        }
     }
 }

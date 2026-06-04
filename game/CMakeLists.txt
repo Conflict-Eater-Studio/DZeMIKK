@@ -11,11 +11,17 @@ set(GAME_SOURCES
     ${SRC_DIR}/map/HexPattern.cpp
     ${SRC_DIR}/scripts/world/world.cpp
     ${SRC_DIR}/game.cpp
-    ${SRC_DIR}/playerMovement.cpp
+    ${SRC_DIR}/player/playerMovement.cpp
     ${SRC_DIR}/camera/cameraController.cpp
     ${SRC_DIR}/stateMachine/gameStateMachine.cpp
     ${SRC_DIR}/stateMachine/explorationState.cpp
     ${SRC_DIR}/stateMachine/combatState.cpp
+    ${SRC_DIR}/enemySystem/enemyEntity.cpp
+    ${SRC_DIR}/enemySystem/enemyManager.cpp
+    ${SRC_DIR}/enemySystem/territoryPatternRegistry.cpp
+    ${SRC_DIR}/player/playerPatternComponent.cpp
+    ${SRC_DIR}/player/inventory.cpp
+    ${SRC_DIR}/healthSystem.cpp
 )
 
 set(GAME_HEADERS
@@ -30,7 +36,7 @@ set(GAME_HEADERS
     ${INC_DIR}/scripts/world/worldHex.h
     ${INC_DIR}/utils/perlin.h
     ${INC_DIR}/game.h
-    ${INC_DIR}/playerMovement.h
+    ${INC_DIR}/player/playerMovement.h
     ${INC_DIR}/spriteupdater.h
     ${INC_DIR}/textupdater.h
     ${INC_DIR}/camera/cameraController.h
@@ -38,6 +44,14 @@ set(GAME_HEADERS
     ${INC_DIR}/stateMachine/gameStateMachine.h
     ${INC_DIR}/stateMachine/explorationState.h
     ${INC_DIR}/stateMachine/combatState.h
+    ${INC_DIR}/enemySystem/enemyEntity.h
+    ${INC_DIR}/enemySystem/enemyManager.h
+    ${INC_DIR}/enemySystem/enemyTypes.h
+    ${INC_DIR}/enemySystem/territoryPattern.h
+    ${INC_DIR}/enemySystem/territoryPatternRegistry.h
+    ${INC_DIR}/player/playerPatternComponent.h
+    ${INC_DIR}/player/inventory.h
+    ${INC_DIR}/healthSystem.h
 )
 
 add_executable(game

@@ -61,6 +61,13 @@ void World::update(double dt) {
         auto* cell = trs->getOwner()->getComponent<game::WorldHex>();
         if (cell->getHexCell()->isDirty()) {
             auto color = glm::vec4(1.0F);
+            color = glm::vec4(1.0F, 1.0F, 1.0F, 1.0F);
+
+            if (cell->getHexCell()->getType() == HexCell::Type::EnemyBattleHex) {
+                color = glm::vec4(0.0F, 0.0F, 0.5F, 1.0F);
+            }
+
+            /*
             if (cell->getHexCell()->getGenState() == HexCell::GenState::Normal) {
                 color = glm::vec4(1.0F, 1.0F, 1.0F, 1.0F);
             } else if (cell->getHexCell()->getGenState() == HexCell::GenState::Blocked) {
@@ -68,6 +75,8 @@ void World::update(double dt) {
             } else if (cell->getHexCell()->getGenState() == HexCell::GenState::Protected) {
                 color = glm::vec4(0.2F, 0.5F, 1.0F, 1.0F);
             }
+            */
+
             cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setColor(color);
             cell->getHexCell()->setDirty(false);
         }
@@ -107,6 +116,17 @@ void World::renderChunk(boost::uuids::uuid id) {
     }
 }
 
+void World::ensureHexExists(const std::shared_ptr<HexCell>& cell) {
+    if (!cell)
+        return;
+
+    spawnHexVisual(cell);
+}
+
+bool World::hasHexVisual(const HexCoord& coord) const {
+    return _spawnedHexes.contains(coord);
+}
+
 void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
     if (_spawnedHexes.contains(cell->getCoord())) {
         return;
@@ -130,6 +150,7 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
         glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
     auto* meshRenderer = obj->addComponent<dzemikk::MeshRenderer>();
     meshRenderer->setModel(_model);
+
     switch (cell->getGenState()) {
     case HexCell::GenState::Blocked:
         meshRenderer->setMaterial(0, _material);
@@ -146,6 +167,9 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
     }
     if (cell->getType() == HexCell::Type::Bridge) {
         meshRenderer->setColor(glm::vec4(0.0F, 1.0F, 0.0F, 1.0F));
+    }
+    if (cell->getType() == HexCell::Type::EnemyBattleHex) {
+        meshRenderer->setColor(glm::vec4(1.0F, 0.0F, 0.0F, 1.0F));
     }
     meshRenderer->setTransform(obj->transform());
     auto* worldHex = obj->addComponent<WorldHex>();
