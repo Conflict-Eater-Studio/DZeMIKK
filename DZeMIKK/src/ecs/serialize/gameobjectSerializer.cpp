@@ -19,6 +19,10 @@ nlohmann::json GameObjectSerializer::serialize(const GameObject& gameObject) {
     nlohmann::json json;
     json["id"] = boost::uuids::to_string(gameObject.getId());
     json["name"] = gameObject.getName();
+    json["tags"] = nlohmann::json::array();
+    for (const auto& tag : gameObject.getTags()) {
+        json["tags"].push_back(tag);
+    }
 
     json["components"] = nlohmann::json::array();
     const auto& componentRegistry = ComponentSerializerRegistry::get();
@@ -58,6 +62,14 @@ void GameObjectSerializer::deserializeInto(GameObject& gameObject, const nlohman
 
     if (json.contains("name") && json["name"].is_string()) {
         gameObject.setName(json["name"].get<std::string>());
+    }
+
+    if (json.contains("tags") && json["tags"].is_array()) {
+        for (const auto& tagJson : json["tags"]) {
+            if (tagJson.is_string()) {
+                gameObject.addTag(tagJson.get<std::string>());
+            }
+        }
     }
 
     if (json.contains("components") && json["components"].is_array()) {

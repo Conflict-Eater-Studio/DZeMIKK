@@ -298,6 +298,13 @@ class GameObject {
      * @return true if the GameObject has the specified tag, false otherwise.
      */
     [[nodiscard]] bool hasTag(const std::string& tag) const;
+    /**
+     * @brief Gets all tags currently assigned to this GameObject.
+     *
+     * @return A const reference to an unordered set containing all tags of this GameObject. The
+     * returned set should not be modified directly; use addTag and removeTag to modify the tags.
+     */
+    [[nodiscard]] const std::unordered_set<std::string>& getTags() const;
 
     // --- Hierarchy operations
     /*
