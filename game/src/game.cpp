@@ -96,7 +96,7 @@ void Game::start() {
 
     setupSkybox();
 
-    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay4.json");
+    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
@@ -433,12 +433,12 @@ void Game::setupPlayer() {
     combatPlayerPanel->setAssetManager(_engine->getAssetManager());
     combatPlayerPanel->setCanvas(playerPanel);
 
-    auto playerHealthbarGO = _mainScene.get()->findGameObjectByName("Player_Healthbar_Slider");
+    //auto playerHealthbarGO = _mainScene.get()->findGameObjectByName("Player_Healthbar_Slider");
 
-    auto playerHealthSystem = playerHealthbarGO->addComponent<game::HealthSystem>();
-    playerHealthSystem->setSlider(playerHealthbarGO->getComponent<dzemikk::UISlider>());
-    playerHealthSystem->setMaxHealth(30.0F);
-    playerHealthSystem->setHealth(30.0F);
+    //auto playerHealthSystem = playerHealthbarGO->addComponent<game::HealthSystem>();
+    //playerHealthSystem->setSlider(playerHealthbarGO->getComponent<dzemikk::UISlider>());
+    //playerHealthSystem->setMaxHealth(30.0F);
+    //playerHealthSystem->setHealth(30.0F);
 }
 
 void Game::setupEnemies() {
@@ -533,10 +533,10 @@ void Game::setupEnemies() {
     combatEnamyPanel->setAssetManager(_engine->getAssetManager());
     combatEnamyPanel->setCanvas(enemyPanel);
 
-    auto enemyHealthbarGO = _mainScene.get()->findGameObjectByName("Enemy_Healthbar_Slider");
+    //auto enemyHealthbarGO = _mainScene.get()->findGameObjectByName("Enemy_Healthbar_Slider");
 
-    auto enemyHealthSystem = enemyHealthbarGO->addComponent<game::HealthSystem>();
-    enemyHealthSystem->setSlider(enemyHealthbarGO->getComponent<dzemikk::UISlider>());
+    //auto enemyHealthSystem = enemyHealthbarGO->addComponent<game::HealthSystem>();
+    //enemyHealthSystem->setSlider(enemyHealthbarGO->getComponent<dzemikk::UISlider>());
 }
 
 void Game::registerDefaultTerritories() {

@@ -1,7 +1,7 @@
 #include "camera/cameraController.h"
 
-#include "ecs/components/transform.h"
-#include "ecs/gameobject.h"
+#include <ecs/components/transform.h>
+#include <ecs/gameobject.h>
 
 void game::CameraController::start() {
     _mode = Mode::Exploration;
@@ -27,15 +27,15 @@ void game::CameraController::setMode(Mode mode) {
     _mode = mode;
 
     if (_mode == Mode::Exploration) {
-        getOwner()->transform()->setRotation(glm::vec3(glm::radians(-30.0f),
-                                                       glm::radians(-90.0f), 
-                                                       0.0f                  
+        getOwner()->transform()->setRotation(glm::vec3(glm::radians(-30.0F),
+                                                       glm::radians(-90.0F), 
+                                                       0.0F                  
                                                        ));
     }
 
     if (_mode == Mode::Combat) {
         getOwner()->transform()->setRotation(
-            glm::vec3(glm::radians(-90.0f), glm::radians(-90.0f), 0.0f));
+            glm::vec3(glm::radians(-90.0F), glm::radians(-90.0F), 0.0F));
     }
 }
 
@@ -52,8 +52,9 @@ void game::CameraController::setOffsetCombatMode(glm::vec3 offset) {
 }
 
 void game::CameraController::updateExploration(double dt) {
-    if (!_playerTransform)
+    if (!_playerTransform) {
         return;
+    }
 
     auto* cameraTransform = getOwner()->transform();
 
@@ -63,15 +64,16 @@ void game::CameraController::updateExploration(double dt) {
 
     glm::vec3 currentPos = cameraTransform->getPosition();
 
-    float t = 1.0f - std::exp(-_followSpeed * dt);
+    float t = (float)1.0F - std::exp(-_followSpeed * dt);
     glm::vec3 newPos = glm::mix(currentPos, targetPos, t);
 
     cameraTransform->setPosition(newPos);
 }
 
 void game::CameraController::updateCombat(double dt) {
-    if (!_playerTransform)
+    if (!_playerTransform) {
         return;
+    }
 
     auto* cameraTransform = getOwner()->transform();
 
@@ -81,7 +83,7 @@ void game::CameraController::updateCombat(double dt) {
 
     glm::vec3 currentPos = cameraTransform->getPosition();
 
-    float t = 1.0f - std::exp(-_followSpeed * dt);
+    float t = (float)1.0F - std::exp(-_followSpeed * dt);
     glm::vec3 newPos = glm::mix(currentPos, targetPos, t);
 
     cameraTransform->setPosition(newPos);

@@ -36,7 +36,7 @@
                         -0.8638684153556824,
                         -0.2591605484485626
                     ],
-                    "intensity": 1.0,
+                    "intensity": 0.5590000152587891,
                     "type": "DirectionalLight"
                 }
             ],
@@ -51,14 +51,14 @@
                     "id": "391ad0d9-9743-422b-96b8-c2f30aa20479",
                     "position": [
                         0.0,
-                        3.0,
-                        11.600000381469727
+                        3.5999999046325684,
+                        5.599999904632568
                     ],
                     "rotation": [
-                        0.9839535355567932,
-                        -0.17842482030391693,
-                        0.0,
-                        0.0
+                        0.9834831357002258,
+                        -0.18099981546401978,
+                        -5.267820207821572e-11,
+                        2.862330095165788e-10
                     ],
                     "scale": [
                         1.0,
@@ -158,8 +158,21 @@
                                     "materials": [
                                         "shaders/skinned"
                                     ],
-                                    "model": "models/Baba.fbx",
+                                    "model": "models/Idle.fbx",
                                     "type": "SkinnedMeshRenderer"
+                                },
+                                {
+                                    "currentStateName": "Idle",
+                                    "currentTime": 0.0,
+                                    "id": "af81862b-8e42-45a7-b6bb-93f859af6a78",
+                                    "parameters": {},
+                                    "stateMachine": [
+                                        {
+                                            "name": "Idle",
+                                            "transitions": []
+                                        }
+                                    ],
+                                    "type": "Animator"
                                 }
                             ],
                             "enabled": true,
@@ -192,6 +205,34 @@
                     "enabled": true,
                     "id": "123ced04-5ba2-4ea9-a8b1-373e0886d447",
                     "name": "World"
+                },
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "id": "6ccfd250-7169-4fb1-b198-306af2586743",
+                            "position": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": [
+                                1.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "type": "Transform"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "71331b7f-d7e8-49ac-be35-98b315b240a2",
+                    "name": "EnemyManager"
                 }
             ],
             "components": [
@@ -294,7 +335,7 @@
                             ],
                             "position": [
                                 -50.0,
-                                0.0
+                                400.0
                             ],
                             "rotation": 0.0,
                             "scale": [
@@ -344,6 +385,7 @@
                             ],
                             "id": "8d2b677a-e6a1-4111-baae-370b7bf1fe11",
                             "materialPath": "shaders/quad",
+                            "texture": "",
                             "type": "ImageRenderer"
                         }
                     ],
@@ -423,7 +465,7 @@
                             ],
                             "position": [
                                 50.0,
-                                0.0
+                                400.0
                             ],
                             "rotation": 0.0,
                             "scale": [
@@ -473,6 +515,7 @@
                             ],
                             "id": "2b1a0446-bd22-4cad-b196-3b1e0b022301",
                             "materialPath": "shaders/quad",
+                            "texture": "",
                             "type": "ImageRenderer"
                         }
                     ],
@@ -505,7 +548,7 @@
                                                     ],
                                                     "position": [
                                                         0.0,
-                                                        0.0
+                                                        475.0
                                                     ],
                                                     "rotation": 0.0,
                                                     "scale": [
@@ -513,8 +556,8 @@
                                                         1.0
                                                     ],
                                                     "size": [
-                                                        400.0,
-                                                        0.0
+                                                        300.0,
+                                                        50.0
                                                     ],
                                                     "type": "RectTransform",
                                                     "zIndex": 0
@@ -528,15 +571,67 @@
                                                     "font": "fonts/Lato-Regular.ttf",
                                                     "horizontalAlign": 1,
                                                     "id": "d0cb8aa3-a446-4477-b6bf-6ed733a12ef0",
-                                                    "scale": 0.699999988079071,
-                                                    "text": "PLAYER_PATTERNS",
+                                                    "scale": 0.5,
+                                                    "text": "PLAYER PATTERNS",
                                                     "type": "UITextRenderer",
-                                                    "verticalAlign": 0
+                                                    "verticalAlign": 1
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "ef9dbf46-af9f-4209-b300-c1196c952157",
                                             "name": "Text"
+                                        },
+                                        {
+                                            "children": [],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "3823ecc0-a552-41fc-b963-2b06b377ff13",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        20.0,
+                                                        -50.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        300.0,
+                                                        1000.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "cellSize": [
+                                                        120.0,
+                                                        120.0
+                                                    ],
+                                                    "columns": 2,
+                                                    "id": "b7b3a388-7857-4592-893e-f193eac6d4fb",
+                                                    "spacing": [
+                                                        20.0,
+                                                        20.0
+                                                    ],
+                                                    "startCorner": 0,
+                                                    "type": "GridLayout"
+                                                }
+                                            ],
+                                            "enabled": false,
+                                            "id": "4bc14c0d-c6fb-49c0-9a04-7b4e561d31e5",
+                                            "name": "Patterns"
                                         }
                                     ],
                                     "components": [
@@ -556,7 +651,7 @@
                                             ],
                                             "position": [
                                                 0.0,
-                                                0.0
+                                                -170.0
                                             ],
                                             "rotation": 0.0,
                                             "scale": [
@@ -564,21 +659,21 @@
                                                 1.0
                                             ],
                                             "size": [
-                                                400.0,
-                                                1000.0
+                                                300.0,
+                                                680.0
                                             ],
                                             "type": "RectTransform",
                                             "zIndex": 0
                                         },
                                         {
-                                            "childForceExpandHeight": true,
-                                            "childForceExpandWidth": false,
-                                            "id": "aca3d599-2519-4338-bb22-596c48ca9be3",
+                                            "childForceExpandHeight": false,
+                                            "childForceExpandWidth": true,
+                                            "id": "4073edda-fe0c-4089-a057-aba4e877f3ac",
                                             "spacing": 0.0,
                                             "type": "VerticalLayout"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "c4d8e2c1-f870-4edf-8eab-a5887bfedf89",
                                     "name": "VerticaLayout"
                                 }
@@ -599,8 +694,1496 @@
                                         0.5
                                     ],
                                     "position": [
-                                        -720.0,
-                                        0.0
+                                        -770.0,
+                                        -20.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        300.0,
+                                        680.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        0.03921568766236305,
+                                        0.0,
+                                        0.1882352977991104,
+                                        0.3137255012989044
+                                    ],
+                                    "id": "f2f2b8d2-e76b-43f2-ab09-a4bd89daccd6",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "f7c98ef8-d246-4da9-8dcc-1fd525967a00",
+                            "name": "Player_Panel"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "children": [],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "4b592bb7-98ab-454e-a870-fef29d659588",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        0.0,
+                                                        475.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        300.0,
+                                                        50.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "color": [
+                                                        1.0,
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "font": "fonts/Lato-Regular.ttf",
+                                                    "horizontalAlign": 1,
+                                                    "id": "1105d15f-e4f5-4d59-8ba7-671070e68935",
+                                                    "scale": 0.5,
+                                                    "text": "ENEMY PATTERNS",
+                                                    "type": "UITextRenderer",
+                                                    "verticalAlign": 1
+                                                }
+                                            ],
+                                            "enabled": false,
+                                            "id": "3d0c0f83-acd6-43e3-afca-2bb35c3e680c",
+                                            "name": "Text"
+                                        },
+                                        {
+                                            "children": [],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "620436fe-c767-437b-9e88-a4e2c1747b14",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        20.0,
+                                                        -50.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        300.0,
+                                                        1000.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "cellSize": [
+                                                        120.0,
+                                                        120.0
+                                                    ],
+                                                    "columns": 2,
+                                                    "id": "3f40d5d6-78b6-427a-8509-dea6358cb1dd",
+                                                    "spacing": [
+                                                        20.0,
+                                                        20.0
+                                                    ],
+                                                    "startCorner": 0,
+                                                    "type": "GridLayout"
+                                                }
+                                            ],
+                                            "enabled": false,
+                                            "id": "67fb4997-c245-4c1b-ae54-5871f9397f44",
+                                            "name": "Patterns"
+                                        }
+                                    ],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "57cf1390-75d6-4f51-8229-a79b3ffb1247",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                -170.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                300.0,
+                                                680.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "childForceExpandHeight": false,
+                                            "childForceExpandWidth": true,
+                                            "id": "5ebe1afa-01fa-41a8-ade3-9717c96ebc93",
+                                            "spacing": 0.0,
+                                            "type": "VerticalLayout"
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "b918f52c-ac07-4070-aed8-37cf9d62c5fd",
+                                    "name": "VerticaLayout"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "ed7b4609-e799-4da2-bbc7-99a7ff1e5359",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        770.0,
+                                        -20.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        300.0,
+                                        680.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        0.03921568766236305,
+                                        0.0,
+                                        0.1882352977991104,
+                                        0.3137255012989044
+                                    ],
+                                    "id": "8e48b96a-824a-409b-9772-c0fdeff6a82c",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "115d0278-709b-423a-8c9d-ab85095f1893",
+                            "name": "Enemy_Panel"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "379213a3-997b-42d8-8db2-77b191e272f3",
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                80.0,
+                                                                80.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 0
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                1.0,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "id": "f587e52c-654e-47b5-85a7-54b0acf822f6",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/Mouse_Input_L-CLICK.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "b0bab6db-6c54-4fdf-93aa-7970219981cc",
+                                                    "name": "Image"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "b4466aa0-2af2-401f-929b-0c54e5a40491",
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                150.0,
+                                                                150.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 0
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "horizontalAlign": 1,
+                                                            "id": "128934b5-dde7-4255-a2c7-c40d9b5c983d",
+                                                            "scale": 0.4000000059604645,
+                                                            "text": "Select and place",
+                                                            "type": "UITextRenderer",
+                                                            "verticalAlign": 0
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "6ef73dc3-eda7-43dc-b919-5414e1b01d95",
+                                                    "name": "Text"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "38b859a6-a62a-4760-87ff-0741543d1dd2",
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                -25.399999618530273
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                150.0,
+                                                                150.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 0
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "horizontalAlign": 1,
+                                                            "id": "d6c02495-9edf-4de1-99c1-6523dc8b1a28",
+                                                            "scale": 0.4000000059604645,
+                                                            "text": "pattern",
+                                                            "type": "UITextRenderer",
+                                                            "verticalAlign": 0
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "82003211-515b-4cce-9059-3c739f435185",
+                                                    "name": "Text2"
+                                                }
+                                            ],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "a8299bd5-c072-42a8-bcaf-a319aa888b02",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        -255.0,
+                                                        -70.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        150.0,
+                                                        150.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "childForceExpandHeight": false,
+                                                    "childForceExpandWidth": true,
+                                                    "id": "b6d0841c-92c1-448c-abfc-ad5fde087c50",
+                                                    "spacing": 0.0,
+                                                    "type": "VerticalLayout"
+                                                }
+                                            ],
+                                            "enabled": false,
+                                            "id": "08d57639-6cae-4c43-963d-1dbd3b76295b",
+                                            "name": "1"
+                                        },
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "fb7c63fe-504e-42f7-b68c-480efa03218a",
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                80.0,
+                                                                80.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 0
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                1.0,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "id": "a53edd59-4fe8-42a5-bd5d-efa1ac13bef8",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/Mouse_Input_SCROLL_DOWN.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "6ad688b7-40f7-4e69-98a1-c0dca0cbbf3a",
+                                                    "name": "Image"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "06ceb9cd-0674-47bd-afaf-b0a0869dde8f",
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                -67.0,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                700.0,
+                                                                150.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 0
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "horizontalAlign": 1,
+                                                            "id": "7e71561f-ce50-4dee-969c-cc9cfa12805c",
+                                                            "scale": 0.4000000059604645,
+                                                            "text": "Rotate pattern\n",
+                                                            "type": "UITextRenderer",
+                                                            "verticalAlign": 0
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "9ac83f25-2ab0-486e-a393-00b29b851ac0",
+                                                    "name": "Text"
+                                                }
+                                            ],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "99f4b92a-17c6-4e6f-86a4-f98bd75a63e0",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        -85.0,
+                                                        -70.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        150.0,
+                                                        150.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "childForceExpandHeight": false,
+                                                    "childForceExpandWidth": true,
+                                                    "id": "9b67c0f1-ec81-4211-aa4c-7440b0fb5b23",
+                                                    "spacing": 0.0,
+                                                    "type": "VerticalLayout"
+                                                }
+                                            ],
+                                            "enabled": false,
+                                            "id": "51348623-a38e-46ab-8a8d-ab38f2b29ee9",
+                                            "name": "2"
+                                        },
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "92885d75-9695-4194-8dfc-553b5a56b8be",
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                80.0,
+                                                                80.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 0
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                1.0,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "id": "06a0937b-90cd-4671-9926-e221f90944ba",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/Mouse_Input_R-CLICK.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "e65821cd-7ad0-496a-a5c2-92e3e3a0a34a",
+                                                    "name": "Image"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "27c0d0df-5752-49f5-bc2d-7d3961c16093",
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                700.0,
+                                                                150.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 0
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "horizontalAlign": 1,
+                                                            "id": "61f1fb91-3023-40a5-81a5-717a83d1197d",
+                                                            "scale": 0.4000000059604645,
+                                                            "text": "Delete pattern",
+                                                            "type": "UITextRenderer",
+                                                            "verticalAlign": 0
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "8ad51458-d886-4dbf-83cf-605765ca0759",
+                                                    "name": "Text"
+                                                }
+                                            ],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "6830524e-4dc1-48bc-a13f-4dceec0bac51",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        85.0,
+                                                        -70.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        150.0,
+                                                        150.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "childForceExpandHeight": false,
+                                                    "childForceExpandWidth": true,
+                                                    "id": "6c81738f-3189-491c-a562-b7d038f400d6",
+                                                    "spacing": 0.0,
+                                                    "type": "VerticalLayout"
+                                                }
+                                            ],
+                                            "enabled": false,
+                                            "id": "1fae89e1-e36e-46b1-9488-f0bcd6626fd0",
+                                            "name": "3"
+                                        },
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [
+                                                        {
+                                                            "children": [],
+                                                            "components": [
+                                                                {
+                                                                    "anchorMax": [
+                                                                        0.5,
+                                                                        0.5
+                                                                    ],
+                                                                    "anchorMin": [
+                                                                        0.5,
+                                                                        0.5
+                                                                    ],
+                                                                    "id": "ec97cde2-a8d9-4407-bfa8-80b8045ad08f",
+                                                                    "pivot": [
+                                                                        0.5,
+                                                                        0.5
+                                                                    ],
+                                                                    "position": [
+                                                                        0.0,
+                                                                        0.0
+                                                                    ],
+                                                                    "rotation": 0.0,
+                                                                    "scale": [
+                                                                        1.0,
+                                                                        1.0
+                                                                    ],
+                                                                    "size": [
+                                                                        100.0,
+                                                                        35.0
+                                                                    ],
+                                                                    "type": "RectTransform",
+                                                                    "zIndex": 0
+                                                                },
+                                                                {
+                                                                    "color": [
+                                                                        0.0,
+                                                                        0.0,
+                                                                        0.0
+                                                                    ],
+                                                                    "font": "fonts/Lato-Regular.ttf",
+                                                                    "horizontalAlign": 1,
+                                                                    "id": "50ecc529-4b51-4dbd-a8e8-bbbf539d319e",
+                                                                    "scale": 0.30000001192092896,
+                                                                    "text": "[SPACE]",
+                                                                    "type": "UITextRenderer",
+                                                                    "verticalAlign": 1
+                                                                }
+                                                            ],
+                                                            "enabled": false,
+                                                            "id": "37012970-280c-4ac4-ac72-c39d4e810e23",
+                                                            "name": "Text"
+                                                        }
+                                                    ],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "3ecfa1e1-de01-4f77-8f2d-6255d348fe25",
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                100.0,
+                                                                35.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 0
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                1.0,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "id": "6b7ac793-4cc8-4924-88b5-893affc1e56d",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "56e9bd77-1995-45f2-b086-fd965f728bb7",
+                                                    "name": "Image"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "9a0cda78-7e83-44f0-8cc2-e97e8d954542",
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                700.0,
+                                                                150.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 0
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "horizontalAlign": 1,
+                                                            "id": "baa824a3-d330-413e-ad9d-e33b8dafcf2a",
+                                                            "scale": 0.4000000059604645,
+                                                            "text": "Confirm round",
+                                                            "type": "UITextRenderer",
+                                                            "verticalAlign": 0
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "b1a9cd9c-56c4-4811-a3df-7793df19ef48",
+                                                    "name": "Text"
+                                                }
+                                            ],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "5e3a20de-918c-4d5f-8099-e83f238722d5",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        255.0,
+                                                        -70.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        150.0,
+                                                        150.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "childForceExpandHeight": false,
+                                                    "childForceExpandWidth": true,
+                                                    "id": "1256aa9b-bb50-42bb-8019-2b974bae309e",
+                                                    "spacing": 0.0,
+                                                    "type": "VerticalLayout"
+                                                }
+                                            ],
+                                            "enabled": false,
+                                            "id": "e2126334-f18e-4053-ac5e-b4fe20dd8b5a",
+                                            "name": "4"
+                                        }
+                                    ],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                1.0
+                                            ],
+                                            "id": "43171773-97c2-469c-81b0-3c8985426dfb",
+                                            "pivot": [
+                                                0.5,
+                                                0.0
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                -15.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                700.0,
+                                                150.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "59fed4a6-2b51-4c36-9e4f-ec0290f7381c",
+                                    "name": "Items_container"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "63979bee-c6de-4dad-bce5-2b618aa333d4",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        -430.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        1000.0,
+                                        150.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        0.03921568766236305,
+                                        0.0,
+                                        0.1882352977991104,
+                                        0.3137255012989044
+                                    ],
+                                    "id": "6f3057bb-f232-489a-b1ce-1840730e4539",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "7e6b2156-1a50-4867-9e92-5dd5a337b3e2",
+                            "name": "Actions_Panel"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "5b6ea72f-c6f6-4dfa-86fb-0d50fe491d84",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                200.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                180.0,
+                                                180.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "id": "51c3215c-f583-4e88-9c10-33eabe8878d0",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "textures/hex.png",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "2b7093ab-4655-4b0f-afca-f141662e930f",
+                                    "name": "Avatar_Holder"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "children": [],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "c89aa0cb-f4cd-419f-b7f8-c657e4409807",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        -20.0,
+                                                        40.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        500.0,
+                                                        46.66666793823242
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "color": [
+                                                        1.0,
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "font": "fonts/Lato-Regular.ttf",
+                                                    "horizontalAlign": 2,
+                                                    "id": "99d444ce-7949-47d2-8f89-9f7742d1493d",
+                                                    "scale": 0.6000000238418579,
+                                                    "text": "ENEMY\n",
+                                                    "type": "UITextRenderer",
+                                                    "verticalAlign": 1
+                                                }
+                                            ],
+                                            "enabled": false,
+                                            "id": "7de3cb1c-4384-483a-b3b6-5647ab8ebb93",
+                                            "name": "Name"
+                                        },
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "bcb3586a-0753-46b5-9403-29a34ee0e82e",
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                -235.0,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                30.0,
+                                                                30.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 0
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                0.0,
+                                                                0.0,
+                                                                1.0
+                                                            ],
+                                                            "id": "ba86e533-13e8-4d5b-95c9-4d1298ac9386",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "6cb56685-4a7d-469f-8ee2-13bca9547b72",
+                                                    "name": "Heart"
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "e72e6265-1caa-4edb-a8a5-c0f176c172c4",
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                -79.1199951171875,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                250.0,
+                                                                30.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 0
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "horizontalAlign": 0,
+                                                            "id": "22f0980b-1ae7-4962-99bf-e36028912045",
+                                                            "scale": 0.5,
+                                                            "text": "30/30\n",
+                                                            "type": "UITextRenderer",
+                                                            "verticalAlign": 1
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "e015e38d-4cd1-43f8-a40f-788f379fb241",
+                                                    "name": "Text"
+                                                }
+                                            ],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "53770629-66bb-4026-b057-1ccbcdee249b",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        470.0,
+                                                        -1.9073486328125e-06
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        500.0,
+                                                        46.66666793823242
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "childForceExpandHeight": false,
+                                                    "childForceExpandWidth": false,
+                                                    "id": "7fbda016-3dd3-48e0-b49b-65e92d768115",
+                                                    "spacing": 15.880000114440918,
+                                                    "type": "HorizontalLayout"
+                                                }
+                                            ],
+                                            "enabled": false,
+                                            "id": "fa23f885-f5f0-4131-ab34-4bb88af92c2a",
+                                            "name": "Health_Holder"
+                                        }
+                                    ],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "94c312cf-73f5-4537-a336-03ee1d766ade",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                -245.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                500.0,
+                                                120.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "childForceExpandHeight": false,
+                                            "childForceExpandWidth": true,
+                                            "id": "b7820220-fa59-4373-9f9a-a2537d48adf8",
+                                            "spacing": 0.0,
+                                            "type": "VerticalLayout"
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "620d5269-12ec-44b2-9d8a-bd41459845ee",
+                                    "name": "Info_Box"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "aaf7a187-fa5f-418f-ac7c-113f96f4050b",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        630.0,
+                                        430.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        500.0,
+                                        120.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        0.03921568766236305,
+                                        0.0,
+                                        0.1882352977991104,
+                                        0.3137255012989044
+                                    ],
+                                    "id": "7a58ccba-c68f-477e-ad57-6eb6d49e3d1c",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "a90cad2e-e671-4cc1-bac1-3775f8de99ae",
+                            "name": "Enemy_Avatar_Panel"
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "401c8c99-d489-4b9b-a9a5-8e35cacaf16f",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        -770.0,
+                                        -450.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        300.0,
+                                        110.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        0.03921568766236305,
+                                        0.0,
+                                        0.1882352977991104,
+                                        0.3137255012989044
+                                    ],
+                                    "id": "bd6ac34a-4a9b-4f79-8ec3-12ea97ed00c4",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "2350382f-1afb-48b4-8b54-d5b42d8de0ce",
+                            "name": "Tooltips_Panel"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "5810e90a-5cba-47fb-b5af-eef1e58bc65c",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                300.0,
+                                                70.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "font": "fonts/Lato-Regular.ttf",
+                                            "horizontalAlign": 1,
+                                            "id": "514b90ac-ebcb-42e1-a041-f284c6095161",
+                                            "scale": 0.800000011920929,
+                                            "text": "ROUND 1",
+                                            "type": "UITextRenderer",
+                                            "verticalAlign": 1
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "df1bae0a-4d28-4a4a-93a3-c9facff32166",
+                                    "name": "Text"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "de2baead-c6f7-467d-b080-a55e1cb8e1a0",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        462.5
                                     ],
                                     "rotation": 0.0,
                                     "scale": [
@@ -609,26 +2192,152 @@
                                     ],
                                     "size": [
                                         400.0,
-                                        1000.0
+                                        55.0
                                     ],
                                     "type": "RectTransform",
                                     "zIndex": 0
                                 },
                                 {
                                     "color": [
+                                        0.03921568766236305,
+                                        0.0,
+                                        0.1882352977991104,
+                                        0.3137255012989044
+                                    ],
+                                    "id": "277e83d9-1f1f-4eba-b8e1-24508bdb1136",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "81c3c567-c3ec-4518-8350-39cfc3d7d617",
+                            "name": "Round_Number"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "anchorMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "id": "bbc81de6-4c9f-485e-8201-7682c69f8268",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 2
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "font": "fonts/Lato-Regular.ttf",
+                                            "horizontalAlign": 1,
+                                            "id": "004c0173-5b22-43a0-acc0-ceaefa8798a8",
+                                            "scale": 0.6000000238418579,
+                                            "text": "CONFIRM",
+                                            "type": "UITextRenderer",
+                                            "verticalAlign": 1
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "dd72502e-276c-4f4f-9445-fa5816ea9e08",
+                                    "name": "Button_Text"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "d6830205-731d-4308-b3d1-884da90e77f8",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        397.5
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        300.0,
+                                        55.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "hoverColor": [
+                                        0.02264449931681156,
+                                        0.0015138419112190604,
+                                        0.10294115543365479,
+                                        0.3137255012989044
+                                    ],
+                                    "id": "755d619f-0160-4f6d-87b0-cbe1fc681604",
+                                    "normalColor": [
+                                        0.03921568766236305,
+                                        0.0,
+                                        0.1882352977991104,
+                                        0.3137255012989044
+                                    ],
+                                    "pressedColor": [
                                         0.0,
                                         0.0,
                                         0.0,
                                         0.3137255012989044
                                     ],
-                                    "id": "f2f2b8d2-e76b-43f2-ab09-a4bd89daccd6",
+                                    "type": "UIButton"
+                                },
+                                {
+                                    "color": [
+                                        0.03921568766236305,
+                                        0.0,
+                                        0.1882352977991104,
+                                        0.3137255012989044
+                                    ],
+                                    "id": "5ab32478-6e9a-4cce-a121-7c8bb16bc480",
                                     "materialPath": "shaders/quad",
+                                    "texture": "",
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
-                            "id": "f7c98ef8-d246-4da9-8dcc-1fd525967a00",
-                            "name": "Panel"
+                            "enabled": false,
+                            "id": "dcc97e2b-dd74-4d1c-9328-e1a1a334c5c3",
+                            "name": "Confirm_Round"
                         }
                     ],
                     "components": [
@@ -663,9 +2372,447 @@
                             "zIndex": 0
                         }
                     ],
-                    "enabled": true,
+                    "enabled": false,
                     "id": "9c97366d-f255-4050-9dac-297eee08f3cd",
                     "name": "Combat"
+                },
+                {
+                    "children": [
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "d7e3036c-543e-4108-87c6-a520d753ba97",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        -200.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        180.0,
+                                        180.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "id": "b3d7e8bb-216f-46ef-871e-e52d76a65b4e",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "textures/hex.png",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "ce0a7626-609c-424f-9846-11619dd33696",
+                            "name": "Avatar_Holder"
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "5223e396-2be2-47f9-8c2d-2750b1225e34",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                -20.0,
+                                                37.5
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                500.0,
+                                                46.66666793823242
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "font": "fonts/Lato-Regular.ttf",
+                                            "horizontalAlign": 2,
+                                            "id": "2ab8f336-7f0e-4b4e-bab6-df3fdb95ae55",
+                                            "scale": 0.6000000238418579,
+                                            "text": "LILI",
+                                            "type": "UITextRenderer",
+                                            "verticalAlign": 1
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "30f4247a-d387-46ec-bf06-4a0dd23dc396",
+                                    "name": "Name"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "children": [],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "aad1abf0-79b0-4f6b-ba99-a814a3c8e694",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        -235.0,
+                                                        0.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        30.0,
+                                                        30.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "color": [
+                                                        1.0,
+                                                        0.0,
+                                                        0.0,
+                                                        1.0
+                                                    ],
+                                                    "id": "2d1a5cfb-7911-4caf-9a1a-b77f79ea5515",
+                                                    "materialPath": "shaders/quad",
+                                                    "texture": "",
+                                                    "type": "ImageRenderer"
+                                                }
+                                            ],
+                                            "enabled": true,
+                                            "id": "757b79f5-8cc1-481e-8bc9-c33bcf69cc2b",
+                                            "name": "Heart"
+                                        },
+                                        {
+                                            "children": [],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "1a5953ba-24f4-4869-a49e-20bc11eb48f8",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        -79.1199951171875,
+                                                        0.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        250.0,
+                                                        30.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "color": [
+                                                        1.0,
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "font": "fonts/Lato-Regular.ttf",
+                                                    "horizontalAlign": 0,
+                                                    "id": "e445ad2b-ac8f-4466-8a9f-d79e084eae23",
+                                                    "scale": 0.5,
+                                                    "text": "30/30\n",
+                                                    "type": "UITextRenderer",
+                                                    "verticalAlign": 1
+                                                }
+                                            ],
+                                            "enabled": true,
+                                            "id": "4710cdaf-6417-4431-b02e-2743baf78c31",
+                                            "name": "Text"
+                                        }
+                                    ],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "d8e55e3a-f859-46b8-9bf8-258d1fdd1474",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                435.0,
+                                                -1.9073486328125e-06
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                500.0,
+                                                46.66666793823242
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "childForceExpandHeight": false,
+                                            "childForceExpandWidth": false,
+                                            "id": "63e47e73-7336-4dd4-b80b-496242657ccb",
+                                            "spacing": 15.880000114440918,
+                                            "type": "HorizontalLayout"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "b5db698d-fc00-451c-aece-38712df4c7ff",
+                                    "name": "Health_Holder"
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "children": [],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "906f6773-60f6-477f-83b5-50004c2d0d7f",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        500.0,
+                                                        0.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "color": [
+                                                        1.0,
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "font": "fonts/Lato-Regular.ttf",
+                                                    "horizontalAlign": 2,
+                                                    "id": "0ace9774-a093-4be6-afb3-ecffb34426a5",
+                                                    "scale": 0.5,
+                                                    "text": "ITEMS:",
+                                                    "type": "UITextRenderer",
+                                                    "verticalAlign": 1
+                                                }
+                                            ],
+                                            "enabled": true,
+                                            "id": "50b668a9-4ece-481b-b4a2-3884c14c373e",
+                                            "name": "Text"
+                                        }
+                                    ],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "2ea886b6-6053-483f-a12b-7ac25b0977c4",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                10.0,
+                                                -37.5
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                500.0,
+                                                46.66666793823242
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "2a24f938-c51e-47cb-b789-129d587a4f48",
+                                    "name": "Items_Holder"
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "953d4fd3-fbca-4e71-bce7-a2560be4a618",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        -263.8999938964844,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        500.0,
+                                        120.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "childForceExpandHeight": false,
+                                    "childForceExpandWidth": true,
+                                    "id": "d8ec3cca-453e-4e46-b81f-3e407840e7fe",
+                                    "spacing": 0.0,
+                                    "type": "VerticalLayout"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "8d96e90f-60b1-40f0-9794-0295cdebd6c7",
+                            "name": "Info_Box"
+                        }
+                    ],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                0.5
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                0.5
+                            ],
+                            "id": "81696cf6-651b-42c4-b413-6a7847e15a77",
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                -630.0,
+                                430.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                500.0,
+                                120.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 0
+                        },
+                        {
+                            "color": [
+                                0.03921568766236305,
+                                0.0,
+                                0.1882352977991104,
+                                0.3137255012989044
+                            ],
+                            "id": "69813242-0cd8-4ff4-bdc6-b7b8cf7e77fd",
+                            "materialPath": "shaders/quad",
+                            "texture": "",
+                            "type": "ImageRenderer"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "09263825-bbc6-4a88-bb1e-472dc0194772",
+                    "name": "Player_Avatar_Panel"
                 }
             ],
             "components": [

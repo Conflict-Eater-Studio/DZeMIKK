@@ -88,10 +88,10 @@ void game::CombatState::onEnter() {
                 startNewTurn();
         });
 
-    auto enemyHealthbarGO =
-        _game->getCurrentScene().get()->findGameObjectByName("Enemy_Healthbar_Slider");
-    auto* enemyHealthbarSystem = enemyHealthbarGO->getComponent<HealthSystem>();
-    enemyHealthbarSystem->setMaxHealth(_currentEnemy->getHp(), true);
+    //auto enemyHealthbarGO =
+        //_game->getCurrentScene().get()->findGameObjectByName("Enemy_Healthbar_Slider");
+    //auto* enemyHealthbarSystem = enemyHealthbarGO->getComponent<HealthSystem>();
+    //enemyHealthbarSystem->setMaxHealth(_currentEnemy->getHp(), true);
 
     startNewTurn();
 }
@@ -638,6 +638,7 @@ void game::CombatState::resolveConflict() {
     }
 
 
+    /*
     auto* playerHealth = _game->getCurrentScene().get()
                              ->findGameObjectByName("Player_Healthbar_Slider")
                              ->getComponent<HealthSystem>();
@@ -659,4 +660,5 @@ void game::CombatState::resolveConflict() {
     if (playerHealth->isDead() || enemyHealth->isDead()) {
         _shouldLeaveCombat = true;
     }
+    */
 }
