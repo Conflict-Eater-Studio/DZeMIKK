@@ -177,7 +177,7 @@ void Game::setupMainCamera() {
              _engine->getAssetManager()->reload<dzemikk::Shader>("shaders/grain");
          }
          if (event.GetKeyCode() == GLFW_KEY_3) {
-             fxaaProcessEffect->setEnabled(true);
+             fxaaProcessEffect->setEnabled(false);
          }
          if (event.GetKeyCode() == GLFW_KEY_4) {
              fxaaProcessEffect->setEnabled(false);
@@ -200,7 +200,7 @@ void Game::setupMainCamera() {
 
     _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
     auto postProccessEffect = cameraGO->addComponent<dzemikk::PostProcessEffect>();
-    postProccessEffect->setEnabled(true);
+    postProccessEffect->setEnabled(false);
     postProccessEffect->setShader(
         _engine->getAssetManager()->get<dzemikk::Shader>("shaders/vignette"));
     postProccessEffect->setPriority(5);
