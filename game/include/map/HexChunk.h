@@ -3,9 +3,11 @@
 
 #include "boost/uuid/detail/nil_uuid.hpp"
 #include "map/HexCell.h"
+#include "map/HexPattern.h"
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <random>
 #include <unordered_map>
 #include <vector>
@@ -22,6 +24,7 @@ class HexChunk {
         int steps{0};
         std::function<float(int, int)> generator;
         HexCoord::Direction dirFromParent{HexCoord::Direction::R180};
+        std::optional<HexPattern> unlockPatter = std::nullopt;
     };
 
     HexChunk(Config config, HexChunk* parent, unsigned int seed = 42);

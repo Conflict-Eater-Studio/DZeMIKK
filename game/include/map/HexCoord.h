@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstdint>
 #include <glm/glm.hpp>
+#include <nlohmann/json.hpp>
 #include <numbers>
 #include <optional>
 #include <queue>
@@ -260,6 +261,21 @@ inline HexCoord operator*(int scalar, HexCoord::Direction d) {
     return HexCoord::dir(d) * scalar;
 }
 
+// NOLINTBEGIN(readability-identifier-naming)
+inline void to_json(nlohmann::json& j, const HexCoord& c) {
+    j = nlohmann::json{{"q", c.q()}, {"r", c.r()}};
+}
+
+inline void from_json(const nlohmann::json& j, HexCoord& c) {
+    if (!j.contains("q") || !j.contains("r") || !j["q"].is_number_integer() ||
+        !j["r"].is_number_integer()) {
+        throw std::runtime_error("Invalid JSON for HexCoord");
+    }
+
+    c = HexCoord(j["q"].get<int>(), j["r"].get<int>());
+}
+// NOLINTEND(readability-identifier-naming)
+
 #ifdef DZEMIKK_DEV_TOOLS
 }
 #include <ostream>
@@ -288,6 +304,7 @@ template <> struct hash<game::HexCoord> {
         return seed;
     }
 };
+
 } // namespace std
 
 #endif
