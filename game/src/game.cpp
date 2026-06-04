@@ -93,10 +93,10 @@ void Game::start() {
     auto* assetManager = _engine->getAssetManager();
     auto* sceneManager = _engine->getSceneManager();
 
+
     setupSkybox();
 
-    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay3.json");
-
+    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay4.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
@@ -577,6 +577,7 @@ void Game::registerDefaultTerritories() {
                                                                     {2, -2},
                                                                     {-2, 2},
                                                                 }});
+
 
     game::TerritoryPatternRegistry::instance().registerPattern({"4",
                                                                 {

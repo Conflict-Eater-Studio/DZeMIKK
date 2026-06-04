@@ -1,0 +1,422 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "1a5af958-6138-44a7-b275-d1c9e6fa8b11",
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    94.0999984741211,
+                                    74.0999984741211
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    120.0,
+                                    120.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 2
+                            },
+                            {
+                                "color": [
+                                    1.0,
+                                    0.0,
+                                    0.0
+                                ],
+                                "font": "fonts/Lato-Regular.ttf",
+                                "horizontalAlign": 1,
+                                "id": "cc977220-a95d-4a4d-8a2d-dcf483190db5",
+                                "scale": 0.4000000059604645,
+                                "text": "ATTACK",
+                                "type": "UITextRenderer",
+                                "verticalAlign": 0
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "7c74095c-b833-4ba0-9148-ff3925369c77",
+                        "name": "Button_Text"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "components": [
+                                    {
+                                        "anchorMax": [
+                                            0.5,
+                                            0.5
+                                        ],
+                                        "anchorMin": [
+                                            0.5,
+                                            0.5
+                                        ],
+                                        "id": "382c1d0a-5901-4af6-8bda-0e70195c4741",
+                                        "pivot": [
+                                            0.5,
+                                            0.5
+                                        ],
+                                        "position": [
+                                            0.0,
+                                            0.0
+                                        ],
+                                        "rotation": 0.0,
+                                        "scale": [
+                                            1.0,
+                                            1.0
+                                        ],
+                                        "size": [
+                                            40.0,
+                                            20.0
+                                        ],
+                                        "type": "RectTransform",
+                                        "zIndex": 0
+                                    },
+                                    {
+                                        "color": [
+                                            0.970588207244873,
+                                            1.0,
+                                            0.0
+                                        ],
+                                        "font": "fonts/Lato-Regular.ttf",
+                                        "horizontalAlign": 1,
+                                        "id": "6740d245-b856-4d23-9ab0-f0f9d98bebf8",
+                                        "scale": 0.30000001192092896,
+                                        "text": "x-1",
+                                        "type": "UITextRenderer",
+                                        "verticalAlign": 1
+                                    }
+                                ],
+                                "enabled": true,
+                                "id": "571d3506-f80a-44a0-8d71-9f7605ed944b",
+                                "name": "Text_Count"
+                            }
+                        ],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "16f8a1aa-609a-4912-a466-94a49c69ad69",
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    180.0,
+                                    21.299999237060547
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    40.0,
+                                    20.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 2
+                            },
+                            {
+                                "color": [
+                                    0.0,
+                                    0.0,
+                                    0.0,
+                                    0.3137255012989044
+                                ],
+                                "id": "40340efa-7970-4571-ae76-710ab5a1fc59",
+                                "materialPath": "shaders/quad",
+                                "texture": "",
+                                "type": "ImageRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "79a1fc0e-e4cf-4989-b8c1-8537afc26757",
+                        "name": "Count"
+                    },
+                    {
+                        "children": [
+                            {
+                                "children": [],
+                                "components": [
+                                    {
+                                        "anchorMax": [
+                                            0.5,
+                                            0.5
+                                        ],
+                                        "anchorMin": [
+                                            0.5,
+                                            0.5
+                                        ],
+                                        "id": "dc22d5e4-9506-4dbd-b96b-ec31c6f76540",
+                                        "pivot": [
+                                            0.5,
+                                            0.5
+                                        ],
+                                        "position": [
+                                            0.0,
+                                            0.0
+                                        ],
+                                        "rotation": 0.0,
+                                        "scale": [
+                                            1.0,
+                                            1.0
+                                        ],
+                                        "size": [
+                                            20.0,
+                                            20.0
+                                        ],
+                                        "type": "RectTransform",
+                                        "zIndex": 0
+                                    },
+                                    {
+                                        "color": [
+                                            1.0,
+                                            0.0,
+                                            0.0,
+                                            1.0
+                                        ],
+                                        "id": "ef73b9fb-5685-4fd3-a170-44297eb1f148",
+                                        "materialPath": "shaders/quad",
+                                        "texture": "textures/hex.png",
+                                        "type": "ImageRenderer"
+                                    }
+                                ],
+                                "enabled": true,
+                                "id": "22557e21-b7c8-48be-96ed-41c942438753",
+                                "name": "Hex_UI"
+                            }
+                        ],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "7d4e96b6-947c-4fe3-853c-b60cb7bca4a5",
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 0
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "882e1e04-de8a-4e07-8a75-29bf6451262d",
+                        "name": "HexHolder"
+                    },
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "4381826e-f35b-4d34-a679-7d32bfd4985e",
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    117.5,
+                                    40.099998474121094
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    120.0,
+                                    120.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 0
+                            },
+                            {
+                                "color": [
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "font": "fonts/Lato-Regular.ttf",
+                                "horizontalAlign": 0,
+                                "id": "6bfb8a92-78b8-4ce0-a1ed-a3e34354aee2",
+                                "scale": 0.30000001192092896,
+                                "text": "Obrazenia:    2",
+                                "type": "UITextRenderer",
+                                "verticalAlign": 0
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "7f306164-4943-48af-bea0-da6580f36a19",
+                        "name": "Empty"
+                    }
+                ],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "c0fd87e4-64f6-427a-b67e-c241849da2d7",
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            -73.0999984741211,
+                            0.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            80.0,
+                            80.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 1
+                    },
+                    {
+                        "hoverColor": [
+                            0.6666666865348816,
+                            0.0,
+                            0.0,
+                            1.0
+                        ],
+                        "id": "f9a40b3b-f6dc-476b-9d19-8cc9fdf10254",
+                        "normalColor": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            1.0
+                        ],
+                        "pressedColor": [
+                            0.23529411852359772,
+                            0.0,
+                            0.0,
+                            1.0
+                        ],
+                        "type": "UIButton"
+                    },
+                    {
+                        "color": [
+                            0.4852941036224365,
+                            0.0,
+                            0.0,
+                            0.3137255012989044
+                        ],
+                        "id": "869290fc-d7ab-4669-a873-305c362e450e",
+                        "materialPath": "shaders/quad",
+                        "texture": "",
+                        "type": "ImageRenderer"
+                    }
+                ],
+                "enabled": true,
+                "id": "e4f38181-cc21-41bc-9d47-9a694116ba49",
+                "name": "Pattern_UI"
+            }
+        ],
+        "components": [
+            {
+                "anchorMax": [
+                    0.5,
+                    0.5
+                ],
+                "anchorMin": [
+                    0.5,
+                    0.5
+                ],
+                "id": "b7301b83-56eb-450c-bb62-1f652beb0094",
+                "pivot": [
+                    0.5,
+                    0.5
+                ],
+                "position": [
+                    -20.0,
+                    437.79998779296875
+                ],
+                "rotation": 0.0,
+                "scale": [
+                    1.0,
+                    1.0
+                ],
+                "size": [
+                    260.0,
+                    100.0
+                ],
+                "type": "RectTransform",
+                "zIndex": 0
+            },
+            {
+                "color": [
+                    0.0,
+                    0.0,
+                    0.007843137718737125,
+                    0.10980392247438431
+                ],
+                "id": "8baec222-7d0a-4b35-8f88-30f62bbb9594",
+                "materialPath": "shaders/quad",
+                "texture": "",
+                "type": "ImageRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "3a43cd96-9fb9-419b-afd6-40feca0f42b5",
+        "name": "Empty"
+    }
+}
