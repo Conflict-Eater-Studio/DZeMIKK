@@ -147,9 +147,9 @@
                                         0.0
                                     ],
                                     "scale": [
-                                        0.009999999776482582,
-                                        0.009999999776482582,
-                                        0.009999999776482582
+                                        0.014999999664723873,
+                                        0.014999999664723873,
+                                        0.014999999664723873
                                     ],
                                     "type": "Transform"
                                 },
@@ -158,7 +158,7 @@
                                     "materials": [
                                         "shaders/skinned"
                                     ],
-                                    "model": "models/Idle.fbx",
+                                    "model": "models/DwieAnimacjeNa1Modelu.fbx",
                                     "type": "SkinnedMeshRenderer"
                                 },
                                 {
@@ -676,6 +676,56 @@
                                     "enabled": false,
                                     "id": "c4d8e2c1-f870-4edf-8eab-a5887bfedf89",
                                     "name": "VerticaLayout"
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "f7976dc3-0a07-4e17-9e3f-077af58df45e",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                300.0,
+                                                680.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                0.28921568393707275,
+                                                0.28921568393707275,
+                                                0.28921568393707275,
+                                                1.0
+                                            ],
+                                            "id": "b010416b-a762-4f6f-8940-02203651f599",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "textures/Patterns_panel_ramka.png",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "9bfba8bb-3e95-49aa-92d3-2f8c89aff46c",
+                                    "name": "Empty"
                                 }
                             ],
                             "components": [
@@ -718,7 +768,7 @@
                                     ],
                                     "id": "f2f2b8d2-e76b-43f2-ab09-a4bd89daccd6",
                                     "materialPath": "shaders/quad",
-                                    "texture": "",
+                                    "texture": "textures/Patterns_panel.png",
                                     "type": "ImageRenderer"
                                 }
                             ],
@@ -877,6 +927,56 @@
                                     "enabled": false,
                                     "id": "b918f52c-ac07-4070-aed8-37cf9d62c5fd",
                                     "name": "VerticaLayout"
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "5772a7e1-ff46-48ae-942d-3174c169d1be",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                300.0,
+                                                680.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                0.29019609093666077,
+                                                0.29019609093666077,
+                                                0.29019609093666077,
+                                                1.0
+                                            ],
+                                            "id": "7040abe2-28ca-4bb7-ad4f-402fb10f6485",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "textures/Patterns_panel_ramka.png",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "b522f273-4ed5-4d8e-bbc7-17298f4c2557",
+                                    "name": "Empty"
                                 }
                             ],
                             "components": [
@@ -919,7 +1019,7 @@
                                     ],
                                     "id": "8e48b96a-824a-409b-9772-c0fdeff6a82c",
                                     "materialPath": "shaders/quad",
-                                    "texture": "",
+                                    "texture": "textures/Patterns_panel.png",
                                     "type": "ImageRenderer"
                                 }
                             ],

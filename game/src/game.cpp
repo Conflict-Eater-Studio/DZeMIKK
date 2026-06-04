@@ -406,7 +406,7 @@ void Game::setupPlayer() {
     dzemikk::AnimationClip* clip = nullptr;
     auto skeleton =
         playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
-    clip = skeleton->getClip("mixamo.com");
+    clip = skeleton->getClip("forward_2_60");
     auto animator = playerGO->getComponent<dzemikk::Animator>();
     animator->getStateMachine()->getState("Idle")->setClip(clip);
 
@@ -414,6 +414,7 @@ void Game::setupPlayer() {
     _playerMovement = playerGO->addComponent<game::PlayerMovement>();
     _playerMovement->setPlayerEntity(_playerEntity);
     _playerMovement->setSpeed(0.25F);
+
     _playerMovement->setGame(this);
 
     animator->play("Idle");

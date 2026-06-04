@@ -150,6 +150,15 @@ dzemikk::ModelHandler::loadModelFromFile(const std::string& path,
     }
 
     if (scene->mNumAnimations > 0 && loadMode == LoadMode::All) {
+
+        /*
+        for (unsigned int i = 0; i < scene->mNumAnimations; ++i) {
+            const aiAnimation* animation = scene->mAnimations[i];
+
+            std::cout << "Animation [" << i << "]: " << animation->mName.C_Str() << std::endl;
+        }
+        */
+
         AnimationLoader::load(scene, *skeleton);
     }
 

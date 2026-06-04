@@ -1,8 +1,9 @@
 #include "enemySystem/enemyEntity.h"
 
 void game::EnemyEntity::addTerritoryCell(HexCell* cell) {
-    if (!cell)
+    if (!cell) {
         return;
+    }
 
     _territory.insert(cell);
 }
@@ -27,15 +28,15 @@ void game::EnemyEntity::onEnter(HexCellPtr cell) {
 
     switch (_personality) {
     case EnemyPersonality::Aggressive:
-        setActionWeights({0.7f, 0.2f, 0.1f});
+        setActionWeights({0.7F, 0.2F, 0.1F});
         break;
 
     case EnemyPersonality::Defensive:
-        setActionWeights({0.2f, 0.6f, 0.2f});
+        setActionWeights({0.2F, 0.6F, 0.2F});
         break;
 
     case EnemyPersonality::Balanced:
-        setActionWeights({0.4f, 0.4f, 0.2f});
+        setActionWeights({0.4F, 0.4F, 0.2F});
         break;
     }
 }
@@ -85,8 +86,9 @@ const game::EnemyActionWeights& game::EnemyEntity::getActionWeights() const {
 }
 
 void game::EnemyEntity::addBlockedCell(HexCell* cell) {
-    if (!cell)
+    if (!cell) {
         return;
+    }
 
     _blockedEnemyCells.insert(cell);
 }

@@ -10,6 +10,7 @@
 #include <ecs/components/skinnedMeshRenderer.h>
 #include <ecs/components/animator.h>
 #include <animation/animationstatemachine.h>
+
 #include <iostream>
 
 game::EnemyManager::EnemyManager(unsigned int seed) : _rng(seed) {}
@@ -28,60 +29,79 @@ void game::EnemyManager::setSpawnConfig(const boost::uuids::uuid& chunkId,
 }
 
 void game::EnemyManager::spawnEnemiesPerChunk() {
-    if (!_world || !_assetManager)
+    if (!_world || !_assetManager) {
         return;
+    }
 
-    auto& chunks = _world->getGrid()->getChunks();
+    const auto& chunks = _world->getGrid()->getChunks();
 
     for (const auto& [chunkId, chunkPtr] : chunks) {
+
         auto ruleIt = _spawnRules.find(chunkId);
-        if (ruleIt == _spawnRules.end())
+
+        if (ruleIt == _spawnRules.end()) {
             continue;
-
-        HexChunk* chunk = chunkPtr.get();
-        const auto& configs = ruleIt->second;
-
-        std::vector<HexChunk::HexCellPtr> availableCells;
-        for (const auto& [coord, cell] : chunk->getHexes()) {
-            if (cell && cell->getState() == HexCell::State::Empty && cell->getGenState() == HexCell::GenState::Normal) {
-                availableCells.push_back(cell);
-            }
         }
 
-        if (availableCells.empty())
+        auto availableCells = collectAvailableCells(chunkPtr.get());
+
+        if (availableCells.empty()) {
             continue;
+        }
 
         std::shuffle(availableCells.begin(), availableCells.end(), _rng);
 
         size_t cursor = 0;
 
-        for (const auto& cfg : configs) {
+        for (const auto& cfg : ruleIt->second) {
+            spawnFromConfig(cfg, availableCells, cursor);
+        }
+    }
+}
 
-            auto* pattern = TerritoryPatternRegistry::instance().get(cfg.territoryPattern);
+std::vector<game::HexChunk::HexCellPtr> game::EnemyManager::collectAvailableCells(HexChunk* chunk) {
+    std::vector<HexChunk::HexCellPtr> result;
 
-            if (!pattern)
+    for (const auto& [coord, cell] : chunk->getHexes()) {
+        if (cell && cell->getState() == HexCell::State::Empty &&
+            cell->getGenState() == HexCell::GenState::Normal) {
+            result.push_back(cell);
+        }
+    }
+
+    return result;
+}
+
+void game::EnemyManager::spawnFromConfig(const EnemySpawnConfig& cfg,
+                                         std::vector<HexChunk::HexCellPtr>& availableCells,
+                                         size_t& cursor) {
+
+    const auto* pattern = TerritoryPatternRegistry::instance().get(cfg.territoryPattern);
+
+    if (!pattern) {
+        return;
+    }
+
+    for (int i = 0; i < cfg.count; ++i) {
+
+        while (cursor < availableCells.size()) {
+
+            const game::HexGrid::HexCellPtr cell = availableCells[cursor++];
+
+            if (!canPlacePattern(cell->getCoord(), *pattern)) {
                 continue;
-
-            for (int i = 0; i < cfg.count; i++) {
-
-                while (cursor < availableCells.size()) {
-
-                    auto cell = availableCells[cursor++];
-
-                    if (!canPlacePattern(cell->getCoord(), *pattern))
-                        continue;
-
-                    spawnEnemy(cell, cfg);
-                    break;
-                }
             }
+
+            spawnEnemy(cell, cfg);
+            break;
         }
     }
 }
 
 void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnConfig& cfg) {
-    if (!_assetManager || !cell)
+    if (!_assetManager || !cell) {
         return;
+    }
     
     std::string prefabPath;
 
@@ -114,7 +134,7 @@ void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnC
     auto skeleton =
         enemyGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
     clip = skeleton->getClip("mixamo.com");
-    auto animator = enemyGO->getComponent<dzemikk::Animator>();
+    auto* animator = enemyGO->getComponent<dzemikk::Animator>();
     animator->getStateMachine()->getState("Idle")->setClip(clip);
     animator->play("Idle");
 
@@ -129,7 +149,7 @@ void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnC
     cell->setEntity(enemy);
     cell->setState(HexCell::State::Enemy);
 
-    auto* pattern = TerritoryPatternRegistry::instance().get(cfg.territoryPattern);
+    const auto* pattern = TerritoryPatternRegistry::instance().get(cfg.territoryPattern);
 
     if (pattern) {
         assignTerritory(enemy, cell, *pattern);
@@ -176,9 +196,9 @@ void game::EnemyManager::assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPt
 }
 
 game::HexChunk* game::EnemyManager::findChunkForCoord(const game::HexCoord& coord) {
-    auto& chunks = _world->getGrid()->getChunks();
+    const auto& chunks = _world->getGrid()->getChunks();
 
-    for (auto& [id, chunkPtr] : chunks) {
+    for (const auto& [id, chunkPtr] : chunks) {
         if (chunkPtr->contains(coord)) {
             return chunkPtr.get();
         }
@@ -192,19 +212,22 @@ bool game::EnemyManager::canPlacePattern(game::HexCoord center, const game::Terr
     for (const auto& offset : pattern.offsets) {
         HexCoord c = center + offset;
 
-        if (_world->isTerritoryReserved(c))
+        if (_world->isTerritoryReserved(c)) {
             return false;
+        }
     }
     return true;
 }
 
 game::EnemyEntity* game::EnemyManager::getEnemyByCell(game::HexCell* cell) const {
-    if (!cell)
+    if (!cell) {
         return nullptr;
+    }
 
     auto it = _cellToEnemy.find(cell->getCoord());
-    if (it != _cellToEnemy.end())
+    if (it != _cellToEnemy.end()) {
         return it->second;
+    }
 
     return nullptr;
 }

@@ -1,31 +1,39 @@
 #include "enemySystem/patternComponent.h"
 
+#include <ranges>
+#include <algorithm>
+
 void game::PatternComponent::addPattern(const HexPattern& pattern, int count) {
-    _patterns.push_back({pattern, count});
+    _patterns.push_back(PatternEntry{.pattern = pattern, .count = count});
 }
 
 void game::PatternComponent::insertPattern(size_t index, const HexPattern& pattern,
                                                  int count) {
     index = std::min(index, _patterns.size());
 
-    _patterns.insert(_patterns.begin() + index, {pattern, count});
+    _patterns.insert(_patterns.begin() +
+                         static_cast<std::vector<PatternEntry>::difference_type>(index),
+                     PatternEntry{.pattern = pattern, .count = count});
 }
 
 bool game::PatternComponent::removePattern(size_t index) {
-    if (index >= _patterns.size())
+    if (index >= _patterns.size()) {
         return false;
+    }
 
-    _patterns.erase(_patterns.begin() + index);
+    _patterns.erase(_patterns.begin() +
+                    static_cast<std::vector<PatternEntry>::difference_type>(index));
 
     return true;
 }
 
 bool game::PatternComponent::removePattern(const HexPattern& pattern) {
-    auto it = std::find_if(_patterns.begin(), _patterns.end(),
-                           [&](const PatternEntry& entry) { return entry.pattern == pattern; });
+    auto it = std::ranges::find_if(
+        _patterns, [&](const PatternEntry& entry) { return entry.pattern == pattern; });
 
-    if (it == _patterns.end())
+    if (it == _patterns.end()) {
         return false;
+    }
 
     _patterns.erase(it);
 
@@ -37,8 +45,9 @@ void game::PatternComponent::clearPatterns() {
 }
 
 bool game::PatternComponent::canUsePattern(size_t index) const {
-    if (index >= _patterns.size())
+    if (index >= _patterns.size()) {
         return false;
+    }
 
     return _patterns[index].count != 0;
 }
@@ -52,15 +61,17 @@ size_t game::PatternComponent::getPatternCount() const {
 }
 
 game::PatternComponent::PatternEntry* game::PatternComponent::getPattern(size_t index) {
-    if (index >= _patterns.size())
+    if (index >= _patterns.size()) {
         return nullptr;
+    }
 
     return &_patterns[index];
 }
 
 const game::PatternComponent::PatternEntry* game::PatternComponent::getPattern(size_t index) const {
-    if (index >= _patterns.size())
+    if (index >= _patterns.size()) {
         return nullptr;
+    }
 
     return &_patterns[index];
 }
@@ -72,8 +83,9 @@ game::PatternComponent::getPatterns() const {
 
 int game::PatternComponent::findPattern(const HexPattern& pattern) const {
     for (size_t i = 0; i < _patterns.size(); ++i) {
-        if (_patterns[i].pattern == pattern)
+        if (_patterns[i].pattern == pattern) {
             return static_cast<int>(i);
+        }
     }
 
     return -1;

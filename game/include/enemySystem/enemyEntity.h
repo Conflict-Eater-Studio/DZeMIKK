@@ -24,7 +24,7 @@ class EnemyEntity : public Entity {
      *
      * @param cell Target cell.
      */
-    void onEnter(HexCellPtr cell);
+    void onEnter(HexCellPtr cell) override;
 
     /**
      * @brief Removes the enemy from its current cell.
