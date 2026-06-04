@@ -2,9 +2,11 @@
 #define DZEMIKK_MESH_RENDERER_H
 
 #include "../component.h"
+#include "assetManager/assetHandle.h"
 
 #include <glm/ext/quaternion_geometric.hpp>
 #include <glm/ext/vector_float3.hpp>
+#include <glm/ext/vector_float4.hpp>
 
 
 namespace dzemikk {
@@ -44,17 +46,19 @@ class MeshRenderer : public Component {
      *
      * @return Model* Pointer to the mesh.
      */
-    [[nodiscard]] Model* getModel() const {
+    [[nodiscard]] AssetHandle<Model> getModel() const {
         return _model;
     }
-
+    [[nodiscard]] AssetHandle<Model> getModelHandle() const {
+        return _model;
+    }
     
     /**
      * @brief Returns all materials assigned to this renderer.
      *
      * @return const std::vector<Material*>& Reference to material list.
      */
-    [[nodiscard]] const std::vector<Material*>& getMaterials() const {
+    [[nodiscard]] const std::vector<std::shared_ptr<Material>>& getMaterials() const {
         return _materials;
     }
 
@@ -69,7 +73,7 @@ class MeshRenderer : public Component {
             return nullptr;
         }
 
-        return _materials[index];
+        return _materials[index].get();
     }
 
     /**
@@ -90,9 +94,9 @@ class MeshRenderer : public Component {
      *
      * @param mesh Pointer to the mesh.
      */
-    void setModel(Model* model) {
+    void setModel(AssetHandle<Model> model) {
         _model = model;
-        calculateCullingRadius(model);
+        calculateCullingRadius(model.get());
     }
 
     /**
@@ -100,7 +104,7 @@ class MeshRenderer : public Component {
      *
      * @param materials Vector of material pointers.
      */
-    void setMaterials(const std::vector<Material*>& materials) {
+    void setMaterials(const std::vector<std::shared_ptr<Material>>& materials) {
         _materials = materials;
     }
 
@@ -112,7 +116,7 @@ class MeshRenderer : public Component {
      * @param index Material slot index.
      * @param material Pointer to material.
      */
-    void setMaterial(size_t index, Material* material) {
+    void setMaterial(size_t index, std::shared_ptr<Material> material) {
         if (index >= _materials.size()) {
             _materials.resize(index + 1, nullptr);
         }
@@ -127,6 +131,26 @@ class MeshRenderer : public Component {
      */
     void setTransform(Transform* transform) {
         _transform = transform;
+    }
+
+    /**
+     * @brief Sets the color multiplier for the mesh.
+     *
+     * @param color The RGBA color vector.
+     */
+    void setColor(const glm::vec4& color) {
+        _color = color;
+    }
+
+    void setCullingRadius(float cullingRadius);
+
+    /**
+     * @brief Returns the color multiplier.
+     *
+     * @return const glm::vec4& The color.
+     */
+    [[nodiscard]] const glm::vec4& getColor() const {
+        return _color;
     }
 
 #pragma endregion
@@ -171,9 +195,10 @@ class MeshRenderer : public Component {
   private:
 #pragma region References
 
-    Model* _model = nullptr;
-    std::vector<Material*> _materials;
+    AssetHandle<Model> _model;
+    std::vector<std::shared_ptr<Material>> _materials;
     Transform* _transform = nullptr;
+    glm::vec4 _color = glm::vec4(1.0f);
 
     float _cullingRadius = 1.0F;
 

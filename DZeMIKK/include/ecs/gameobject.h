@@ -6,7 +6,6 @@
 #include <stdexcept>
 #include <vcruntime_typeinfo.h>
 
-
 #pragma once
 #include "component.h"
 #include "componentRegistry.h"
@@ -14,7 +13,9 @@
 #include "components/transform.h"
 
 #include <memory>
+#if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
+#endif
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -106,19 +107,7 @@ class GameObject {
 
         // When we add a Canvas, make this gameobject have a RectTransform
         if (std::is_same_v<T, Canvas>) {
-            if (_rectTransform != nullptr) {
-#if DZEMIKK_DEV_TOOLS
-                spdlog::error("[{}] GameObject '{}' already has a RectTransform component. "
-                              "GameObject::addComponent<Canvas>() was called, which means this "
-                              "canvas would be nested.",
-                              boost::uuids::to_string(_id), _name);
-#endif
-                throw std::runtime_error("Canvas components cannot be nested");
-            }
-
-            removeComponent(_transform);
-            _transform = nullptr;
-            _rectTransform = addComponent<RectTransform>();
+            replaceTransformWithRectTransform();
         }
 
         auto component = std::make_unique<T>(std::forward<Args>(args)...);
@@ -133,6 +122,7 @@ class GameObject {
         }
         result->setOwner(this);
         ComponentRegistry::get().registerComponent<T>(result);
+        component->enabled(_isEnabled);
         _components.push_back(std::move(component));
         return result;
     }
@@ -164,6 +154,8 @@ class GameObject {
         }
     }
 
+    RectTransform* replaceTransformWithRectTransform();
+
     // -- Getters
     [[nodiscard]] GameObject* getParent() const;
     [[nodiscard]] const std::vector<GameObject*>& getChildren() const;
@@ -173,6 +165,7 @@ class GameObject {
     [[nodiscard]] const std::vector<std::unique_ptr<Component>>& getAllComponents() const;
     [[nodiscard]] bool hasStarted() const;
     [[nodiscard]] Scene* getScene();
+    [[nodiscard]] bool isEnabled() const;
 
     // --- Setters
     void setId(const boost::uuids::uuid& uuid);
@@ -222,10 +215,18 @@ class GameObject {
      * whichever runs first)
      */
     void destroyChildren();
+    /**
+     * @brief Sets all components of this GameObject (and it's children) to enabled or disabled.
+     * @param isEnabled Whether to enable or disable the components.
+     */
+    void enabled(bool isEnabled);
 
     // --- Utility
     void addScenePending(MonoBehaviour* mono);
     void removeSceneActive(MonoBehaviour* mono);
+
+    [[nodiscard]] uint32_t getLastRaycastQueryId() const { return _lastRaycastQueryId; }
+    void setLastRaycastQueryId(uint32_t queryId) { _lastRaycastQueryId = queryId; }
 
   private:
     boost::uuids::uuid _id;
@@ -233,6 +234,7 @@ class GameObject {
     bool _hasStarted = false;
     GameObject* _parent = nullptr;
     std::vector<GameObject*> _children;
+    bool _isEnabled = true;
 
     Scene* _scene = nullptr;
 
@@ -241,6 +243,8 @@ class GameObject {
 
     std::vector<std::unique_ptr<Component>> _components;
     std::vector<MonoBehaviour*> _monoBehaviours;
+
+    uint32_t _lastRaycastQueryId = 0;
 };
 } // namespace dzemikk
 

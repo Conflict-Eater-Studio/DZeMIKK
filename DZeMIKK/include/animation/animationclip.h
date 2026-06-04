@@ -2,15 +2,19 @@
 #ifndef DZEMIKK_ANIMATIONCLIP_H
 #define DZEMIKK_ANIMATIONCLIP_H
 
+#include "IAnimationTrack.h"
+#include "floattrack.h"
+#include "nlohmann/json.hpp"
+
 #include <memory>
 #include <vector>
-#include "IAnimationTrack.h"
 
 struct aiAnimation;
 namespace dzemikk {
 class FloatTrack;
 class VectorTrack;
 class QuaternionTrack;
+class BoneTrack;
 class Transform;
 
 /**
@@ -48,7 +52,7 @@ public:
      * @return Framerate (ticks per second).
      */
     [[nodiscard]] float getTickrate() const;
-
+    [[nodiscard]] const std::vector<std::unique_ptr<IAnimationTrack>>& getTracks() const;
     /**
      * @brief Creates and adds a new animation track.
      * @return Pointer to the newly created track (owned by this clip)
@@ -59,6 +63,7 @@ public:
     FloatTrack* addFloatTrack();
     VectorTrack* addVectorTrack();
     QuaternionTrack* addQuaternionTrack();
+    BoneTrack* addBoneTrack();
 
     /**
     * @brief Samples the animation clip at a given time.
@@ -68,13 +73,22 @@ public:
     * @param timeInSeconds Current time within the animation (in seconds).
     */
     void apply(float timeInSeconds) const;
-    static std::shared_ptr<AnimationClip> fromAssimp(aiAnimation* animation);
-private:
+    void setLoop(bool loop);
+    void setDuration(float duration);
+    void setTickrate(float tickrate);
+    void setTracks(std::vector<std::unique_ptr<IAnimationTrack>> tracks);
+
+    [[nodiscard]] bool isLoop() const;
+    void setName(const std::string& name);
+    std::string getName();
+
+  private:
     std::vector<std::unique_ptr<IAnimationTrack>> _tracks;
     float _durationInTicks = 0;
     float _ticksPerSecond = 0;
+    bool _loop = true;
+    std::string _nameInSkeleton;
 };
-
 }
 
 #endif

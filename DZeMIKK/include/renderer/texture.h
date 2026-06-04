@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 
+#include "assetManager/iGpuUploadable.h"
+
 namespace dzemikk {
 
     /**
@@ -13,7 +15,7 @@ namespace dzemikk {
      *
      * Wraps OpenGL texture with metadata, type information
      */
-    class Texture {
+    class Texture: public IGpuUploadable {
       public:
         /**
          * @brief Semantic type of texture used in material system.
@@ -41,8 +43,9 @@ namespace dzemikk {
          */
         enum class Wrap { Repeat, ClampToEdge, MirroredRepeat };
 
-        Texture();
-        ~Texture();
+        Texture(unsigned char* data, int width, int height, int channels,
+                bool generateMipmaps = true);
+        virtual ~Texture();
 
         #pragma region Disable copy / move
 
@@ -110,12 +113,16 @@ namespace dzemikk {
 
         void replaceTexture(GLuint newId, int width, int height, int channels);
 
+        void uploadToGPU() override;
+
       private:
         GLuint _id = 0;
 
         int _width = 0;
         int _height = 0;
         int _channels = 0;
+        std::vector<unsigned char> _data;
+        bool _generateMipmaps;
 
         std::string _path;
         Type _type = Type::Unknown;
@@ -124,7 +131,8 @@ namespace dzemikk {
         GLenum convertWrap(Wrap w) const;
 
         void release();
+
     };
-} // namespace dzemikk
+    } // namespace dzemikk
 
 #endif // DZEMIKK_TEXTURE_H

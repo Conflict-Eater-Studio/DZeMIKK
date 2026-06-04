@@ -11,6 +11,8 @@
 #include "assetManager/soundHandler.h"
 #include "assetManager/textureHandler.h"
 #include "assetManager/modelHandler.h"
+#include "assetManager/sceneHandler.h"
+#include "assetManager/prefabHandler.h"
 
 #include "audio/sound.h"
 
@@ -53,6 +55,8 @@ void dzemikk::AssetManager::initialize() {
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(timer1 - timer0).count();
     spdlog::info("[AssetManager] Initialization finished in {} ms", ms);
 #endif
+
+    _threadPool.start();
 }
 
 void dzemikk::AssetManager::uninitialize() {
@@ -78,13 +82,31 @@ void dzemikk::AssetManager::unload(const std::string& path) {
         return;
     }
 
-    handler->unloadUntyped(asset);
+    handler->unloadUntyped(asset, path);
 
     _database.remove(path);
 }
 
+dzemikk::AssetHandle<dzemikk::Model> dzemikk::AssetManager::getPrimitiveModel(PrimitiveMeshLibrary::PrimitiveMesh type) {
+    const std::string key = "primitive/" + std::to_string(static_cast<int>(type));
+
+    if (auto cached = _database.get<Model>(key)) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[AssetManager] Primitive model from cache: {}", key);
+#endif
+        return AssetHandle<Model>(cached, key);
+    }
+
+    auto model = std::make_shared<Model>();
+    model->addMesh(_primitiveMeshLibrary.get(type), 0);
+
+    _database.store<Model>(key, model);
+
+    return AssetHandle<Model>(model, key);
+}
+
 dzemikk::Mesh* dzemikk::AssetManager::getPrimitive(PrimitiveMeshLibrary::PrimitiveMesh type) {
-    return _primitiveMeshLibrary.get(type);
+    return _primitiveMeshLibrary.get(type).get();
 }
 
 void dzemikk::AssetManager::setFMODSystem(FMOD::System* system) {
@@ -101,6 +123,19 @@ FMOD::System* dzemikk::AssetManager::getFMODSystem() const{
     return _system;
 }
 
+void dzemikk::AssetManager::processGpuUploads() {
+    std::lock_guard lock(_gpuMutex);
+
+    while (!_gpuUploadQueue.empty()) {
+        auto gpu = _gpuUploadQueue.front();
+        _gpuUploadQueue.pop();
+
+        if (gpu) {
+            gpu->uploadToGPU();
+        }
+    }
+}
+
 void dzemikk::AssetManager::registerHandlers() {
     _loaders.registerHandler<Mesh>(std::make_unique<MeshHandler>());
     _loaders.registerHandler<Shader>(std::make_unique<ShaderHandler>());
@@ -109,4 +144,31 @@ void dzemikk::AssetManager::registerHandlers() {
     _loaders.registerHandler<Font>(std::make_unique<FontHandler>());
     _loaders.registerHandler<Sound>(std::make_unique<SoundHandler>());
     _loaders.registerHandler<Model>(std::make_unique<ModelHandler>());
+    _loaders.registerHandler<Scene>(std::make_unique<SceneHandler>(this));
+    _loaders.registerHandler<nlohmann::json>(std::make_unique<PrefabHandler>(this));
+}
+
+void dzemikk::AssetManager::update() {
+    processGpuUploads();
+}
+
+dzemikk::AssetHandle<dzemikk::Mesh> dzemikk::AssetManager::getPrimitiveMesh(dzemikk::PrimitiveMeshLibrary::PrimitiveMesh type) {
+    const std::string key = "primitive_mesh/" + std::to_string(static_cast<int>(type));
+
+    if (auto cached = _database.get<Mesh>(key)) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[AssetManager] Primitive mesh from cache: {}", key);
+#endif
+        return AssetHandle<Mesh>(cached, key);
+    }
+
+    auto mesh = _primitiveMeshLibrary.get(type);
+
+    if (!mesh) {
+        return {};
+    }
+
+    _database.store<Mesh>(key, mesh);
+
+    return AssetHandle<Mesh>(mesh, key);
 }

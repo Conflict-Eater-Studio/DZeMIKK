@@ -19,6 +19,8 @@ struct RectTransformParams {
     glm::vec2 pivot = glm::vec2(0.5F);
     glm::vec2 anchorMin = glm::vec2(0.5F);
     glm::vec2 anchorMax = glm::vec2(0.5F);
+    glm::vec2 offsetMin = glm::vec2(0.0F);
+    glm::vec2 offsetMax = glm::vec2(0.0F);
 };
 
 class RectTransform : public Component {
@@ -50,7 +52,7 @@ class RectTransform : public Component {
      * @brief Sets the size
      * @param size New size
      */
-    void setSize(const glm::vec2& size);
+    void setBaseSize(const glm::vec2& size);
 
     /**
      * @brief Sets the scale
@@ -81,6 +83,18 @@ class RectTransform : public Component {
      * @param anchorMax New anchor maximum
      */
     void setAnchorMax(const glm::vec2& anchorMax);
+
+    /**
+     * @brief Sets the offset minimum (left, bottom)
+     * @param offsetMin New offset minimum
+     */
+    void setOffsetMin(const glm::vec2& offsetMin);
+
+    /**
+     * @brief Sets the offset maximum (right, top)
+     * @param offsetMax New offset maximum
+     */
+    void setOffsetMax(const glm::vec2& offsetMax);
 
     /**
      * @brief Sets the z-index
@@ -126,6 +140,12 @@ class RectTransform : public Component {
     [[nodiscard]] glm::vec2 getSize() const;
 
     /**
+     * @brief Gets the base size (the size without stretch)
+     * @return Base size
+     */
+    [[nodiscard]] glm::vec2 getBaseSize() const;
+
+    /**
      * @brief Gets the scale
      * @return Current scale
      */
@@ -156,6 +176,18 @@ class RectTransform : public Component {
     [[nodiscard]] glm::vec2 getAnchorMax() const;
 
     /**
+     * @brief Gets the offset minimum (left, bottom)
+     * @return Current offset minimum
+     */
+    [[nodiscard]] glm::vec2 getOffsetMin() const;
+
+    /**
+     * @brief Gets the offset maximum (right, top)
+     * @return Current offset maximum
+     */
+    [[nodiscard]] glm::vec2 getOffsetMax() const;
+
+    /**
      * @brief Gets the z-index
      * @return Current z-index
      */
@@ -179,6 +211,13 @@ class RectTransform : public Component {
      */
     [[nodiscard]] glm::vec2 getStretchSize() const;
 
+    /**
+     * @brief Checks if the given point is within the bounds of the RectTransform
+     * @param point Point to check (in world coordinates)
+     * @return True if the point is within the bounds, false otherwise
+     */
+    [[nodiscard]] bool containsPoint(const glm::vec2& point) const;
+
     void markDirty();
     void markSizeDirty();
 
@@ -194,6 +233,8 @@ class RectTransform : public Component {
     glm::vec2 _pivot{0.5F, 0.5F};
     glm::vec2 _anchorMin{0.5F, 0.5F};
     glm::vec2 _anchorMax{0.5F, 0.5F};
+    glm::vec2 _offsetMin{0.0F, 0.0F};
+    glm::vec2 _offsetMax{0.0F, 0.0F};
     unsigned int _zIndex{0};
 
     mutable glm::mat4 _cachedLocalNoSizeMatrix = glm::mat4(1.0F);

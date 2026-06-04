@@ -23,6 +23,9 @@ class FloatTrack : public IAnimationTrack {
         void addKey(FloatPropertyKey key) {
                 _keys.push_back(key);
         }
+        void setKeys(std::vector<FloatPropertyKey> keys) {
+            _keys = keys;
+        }
         void setProperty(const FloatProperty& property) {
             _property = property;
         }
@@ -58,6 +61,7 @@ class FloatTrack : public IAnimationTrack {
             }
             return _keys.size() - 2;
         }
+
 };
 }
 #endif

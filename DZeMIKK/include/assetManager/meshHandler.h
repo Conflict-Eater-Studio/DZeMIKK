@@ -28,7 +28,8 @@ namespace dzemikk {
          * @param path Path to the mesh file.
          * @return AssetResult containing a valid Mesh handle or error.
          */
-        Result load(const std::string& path) override;
+        Result load(const std::string& path,
+                    LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync) override;
 
         /**
          * @brief Reloads an existing mesh asset.
@@ -57,7 +58,9 @@ namespace dzemikk {
          * @param path Path to mesh file.
          * @return Shared pointer to loaded Mesh or nullptr on failure.
          */
-        static std::shared_ptr<Mesh> loadMeshFromFile(const std::string& path);
+        static std::shared_ptr<Mesh>
+        loadMeshFromFile(const std::string& path,
+                         LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync);
 
         /**
          * @brief Reloads mesh data into an existing Mesh instance.

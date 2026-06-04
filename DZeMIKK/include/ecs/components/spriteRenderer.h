@@ -2,6 +2,7 @@
 #define DZEMIKK_SPRITE_RENDERER_H
 
 #include "../component.h"
+#include "assetManager/assetHandle.h"
 
 #include <glm/glm.hpp>
 
@@ -67,9 +68,11 @@ class SpriteRenderer : public Component {
     }
 
     [[nodiscard]] Texture* getTexture() const {
+        return _texture.get();
+    }
+    [[nodiscard]] AssetHandle<Texture> getTextureHandle() const {
         return _texture;
     }
-
     glm::vec4 getColor() const {
         return _color;
     }
@@ -108,7 +111,7 @@ class SpriteRenderer : public Component {
     /**
      * @brief Sets sprite texture (albedo).
      */
-    void setTexture(Texture* texture) {
+    void setTexture(AssetHandle<Texture> texture) {
         _texture = texture;
     }
 
@@ -118,6 +121,10 @@ class SpriteRenderer : public Component {
 
     bool useTexture() {
         return _useTexture;
+    }
+
+    void setUseTexture(bool useTexture) {
+        _useTexture = useTexture;
     }
 
 #pragma endregion
@@ -138,7 +145,7 @@ class SpriteRenderer : public Component {
      * @brief Checks if sprite has texture.
      */
     [[nodiscard]] bool hasTexture() const {
-        return _texture != nullptr;
+        return _texture.get() != nullptr;
     }
 
 #pragma endregion
@@ -153,12 +160,12 @@ class SpriteRenderer : public Component {
     /**
      * @brief Non-owning pointer to mesh resource (usually a quad).
      */
-    Mesh* _mesh = nullptr;
+    Mesh* _mesh;
 
     /**
      * @brief Non-owning pointer to material resource.
      */
-    Material* _material = nullptr;
+    Material* _material;
 
     /**
      * @brief Non-owning pointer to transform component.
@@ -167,7 +174,7 @@ class SpriteRenderer : public Component {
 
     bool _useTexture = false;
 
-    Texture* _texture = nullptr;
+    AssetHandle<Texture> _texture;
     glm::vec4 _color = glm::vec4(1.0f);
 
 #pragma endregion

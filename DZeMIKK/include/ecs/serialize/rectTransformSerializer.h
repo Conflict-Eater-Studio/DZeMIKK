@@ -1,7 +1,6 @@
+#pragma once
 #ifndef DZEMIKK_RECTTRANSFORMSERIALIZER_H
 #define DZEMIKK_RECTTRANSFORMSERIALIZER_H
-
-#pragma once
 
 #include "ecs/components/ui/rectTransform.h"
 #include "ecs/gameobject.h"
@@ -21,10 +20,9 @@ inline void to_json(nlohmann::json& json, const RectTransform& trs) {
     auto anchorMax = trs.getAnchorMax();
     auto pivot = trs.getPivot();
     auto rot = trs.getRotation();
-    auto size = trs.getSize();
     auto zIndex = trs.getZIndex();
 
-    json["type"] = "RectTransform";
+    json["type"] = trs.typeName();
     json["id"] = boost::uuids::to_string(trs.getId());
     json["position"] = {pos[0], pos[1]};
     json["rotation"] = rot;
@@ -32,8 +30,11 @@ inline void to_json(nlohmann::json& json, const RectTransform& trs) {
     json["anchorMin"] = {anchorMin[0], anchorMin[1]};
     json["anchorMax"] = {anchorMax[0], anchorMax[1]};
     json["pivot"] = {pivot[0], pivot[1]};
-    json["size"] = {size[0], size[1]};
     json["zIndex"] = zIndex;
+
+    const glm::vec2 anchorSpan = glm::abs(anchorMax - anchorMin);
+    const bool hasStretch = anchorSpan[0] > 0.0F || anchorSpan[1] > 0.0F;
+    json["size"] = {trs.getBaseSize()[0], trs.getBaseSize()[1]};
 }
 
 inline void from_json(const nlohmann::json& json, RectTransform& trs) {
@@ -63,28 +64,50 @@ inline void from_json(const nlohmann::json& json, RectTransform& trs) {
     trs.setPosition({pos[0].get<float>(), pos[1].get<float>()});
     trs.setRotation(rot.get<float>());
     trs.setScale({scale[0].get<float>(), scale[1].get<float>()});
-    trs.setAnchorMin({anchorMin[0].get<float>(), anchorMin[1].get<float>()});
-    trs.setAnchorMax({anchorMax[0].get<float>(), anchorMax[1].get<float>()});
+
+    const glm::vec2 storedAnchorMin{anchorMin[0].get<float>(), anchorMin[1].get<float>()};
+    const glm::vec2 storedAnchorMax{anchorMax[0].get<float>(), anchorMax[1].get<float>()};
+
+    trs.setAnchorMin(storedAnchorMin);
+    trs.setAnchorMax(storedAnchorMax);
     trs.setPivot({pivot[0].get<float>(), pivot[1].get<float>()});
-    trs.setSize({size[0].get<float>(), size[1].get<float>()});
+
+    const glm::vec2 anchorSpan = glm::abs(storedAnchorMax - storedAnchorMin);
+    const bool hasStretch = anchorSpan[0] > 0.0F || anchorSpan[1] > 0.0F;
+    trs.setBaseSize({size[0].get<float>(), size[1].get<float>()});
+
     trs.setZIndex(zIndex.get<unsigned int>());
 }
+// NOLINTEND(readability-identifier-naming)
 
 inline void registerRectTransformSerializer(ComponentSerializerRegistry& registry) {
+
     registry.registerType(
         "RectTransform",
+
         [](const Component& component) {
             const auto* transform = dynamic_cast<const RectTransform*>(&component);
+
             if (transform == nullptr) {
                 throw std::runtime_error("Component type mismatch for RectTransform serialization");
             }
             return nlohmann::json(*transform);
         },
-        [](GameObject& gameObject, const nlohmann::json& componentJson) {
-            from_json(componentJson, *gameObject.rectTransform());
+
+        [](ComponentSerializerRegistry::DeserializationContext context) {
+            if (!context.gameObject.getComponent<dzemikk::RectTransform>()) {
+                context.gameObject.replaceTransformWithRectTransform();
+            }
+
+            auto* rectTransform = context.gameObject.rectTransform();
+
+            if (!rectTransform) {
+                throw std::runtime_error("Failed to create RectTransform during deserialization");
+            }
+
+            from_json(context.json, *rectTransform);
         });
 }
-// NOLINTEND(readability-identifier-naming)
 } // namespace dzemikk
 
-#endif // DZEMIKK_RECTTRANSFORMSERIALIZER_H
+#endif

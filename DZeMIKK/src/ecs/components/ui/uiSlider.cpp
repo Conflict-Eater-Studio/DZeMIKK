@@ -1,8 +1,7 @@
 #include "ecs/components/ui/uiSlider.h"
 
-#include "ecs/components/ui/rectTransform.h"
-#include "ecs/components/ui/uiSliderActionRegistry.h"
 #include "ecs/components/ui/imageRenderer.h"
+#include "ecs/components/ui/rectTransform.h"
 #include "ecs/gameobject.h"
 
 #include <algorithm>
@@ -31,75 +30,31 @@ constexpr float kValueEpsilon = 1e-6F;
     return true;
 }
 
-[[nodiscard]] bool containsPointInRect(const RectTransform* rectTransform, const glm::vec2& point) {
-    if (rectTransform == nullptr) {
-        return false;
-    }
-
-    const glm::mat4 worldMatrix = rectTransform->getWorldMatrix();
-    const float determinant = glm::determinant(worldMatrix);
-    if (glm::abs(determinant) < kMinDeterminant) {
-        return false;
-    }
-
-    const glm::vec4 local = glm::inverse(worldMatrix) * glm::vec4(point, 0.0F, 1.0F);
-    return local[0] >= 0.0F && local[0] <= 1.0F && local[1] >= 0.0F && local[1] <= 1.0F;
-}
-
 [[nodiscard]] float pointToNormalizedX(const RectTransform* rectTransform, const glm::vec2& point) {
     float localX = 0.0F;
     if (!tryPointToLocalX(rectTransform, point, localX)) {
         return 0.0F;
     }
+
     return std::clamp(localX, 0.0F, 1.0F);
 }
-}
-
-bool UISlider::containsPoint(const glm::vec2& point) const {
-    const RectTransform* handle = handleRect();
-    if (handle != nullptr) {
-        return containsPointInRect(handle, point);
-    }
-
-    return containsPointInRect(trackRect(), point);
-}
+} // namespace
 
 void UISlider::processPointer(const glm::vec2& point, bool isDown, bool pressedThisFrame,
-                              bool releasedThisFrame) {
-    _pointerDown = isDown;
-    _pointerInside = containsPoint(point);
+                              bool releasedThisFrame, double scrollDelta) {
+    if (!_isInteractable) return;
+    setPointerDown(isDown);
 
-    if (_pointerInside && !_hovered) {
-        _hovered = true;
-        onEnter();
-    } else if (!_pointerInside && _hovered) {
-        _hovered = false;
-        onExit();
-    }
+    setPointerInside(getHandleSpriteRenderer()->getRectTransform() != nullptr
+                         ? getHandleSpriteRenderer()->getRectTransform()->containsPoint(point)
+                         : _owner->rectTransform()->containsPoint(point));
+    updateHoverState();
 
     processPress(point, pressedThisFrame);
     processRelease(releasedThisFrame);
     processDrag(point);
+    processScroll(scrollDelta);
     applyVisualState();
-}
-
-const RectTransform* UISlider::handleRect() const {
-    return _handleSpriteRenderer ? _handleSpriteRenderer->getRectTransform() : nullptr;
-}
-
-const RectTransform* UISlider::backgroundRect() const {
-    return _backgroundSpriteRenderer ? _backgroundSpriteRenderer->getRectTransform() : nullptr;
-}
-
-const RectTransform* UISlider::fillRect() const {
-    return _fillSpriteRenderer ? _fillSpriteRenderer->getRectTransform() : nullptr;
-}
-
-const RectTransform* UISlider::trackRect() const {
-    if (_owner == nullptr) {
-        return nullptr;
-    }
-    return _owner->rectTransform();
 }
 
 void UISlider::processPress(const glm::vec2& point, bool pressedThisFrame) {
@@ -107,18 +62,18 @@ void UISlider::processPress(const glm::vec2& point, bool pressedThisFrame) {
         return;
     }
 
-    const bool pressedOnHandle = containsPointInRect(handleRect(), point);
-    _pressedInside = pressedOnHandle;
+    const bool pressedOnHandle = _handleSpriteRenderer->getRectTransform()->containsPoint(point);
+    setPressedInside(pressedOnHandle);
     if (pressedOnHandle) {
         return;
     }
 
-    const RectTransform* snapRect = backgroundRect();
+    const RectTransform* snapRect = _backgroundSpriteRenderer->getRectTransform();
     if (snapRect == nullptr) {
-        snapRect = trackRect();
+        snapRect = _backgroundSpriteRenderer->getRectTransform();
     }
 
-    if (snapRect == nullptr || !containsPointInRect(snapRect, point)) {
+    if (snapRect == nullptr || !snapRect->containsPoint(point)) {
         return;
     }
 
@@ -134,204 +89,172 @@ void UISlider::processRelease(bool releasedThisFrame) {
         return;
     }
 
-    if (_pressedInside && _pointerInside) {
+    if (pressedInside() && pointerInside()) {
         onClick();
     }
-    _pressedInside = false;
+
+    setPressedInside(false);
 }
 
 void UISlider::processDrag(const glm::vec2& point) {
-    if (!_pressedInside || !_pointerDown) {
+    if (!pressedInside() || !pointerDown()) {
         return;
     }
 
-    const RectTransform* dragRect = backgroundRect();
-    if (dragRect == nullptr) {
-        dragRect = trackRect();
-    }
-
+    const RectTransform* dragRect = _backgroundSpriteRenderer->getRectTransform();
     if (dragRect == nullptr) {
         return;
     }
 
     const float normalized = pointToNormalizedX(dragRect, point);
     const float nextValue = _minValue + ((_maxValue - _minValue) * normalized);
-    if (glm::abs(nextValue - _value) > kValueEpsilon) {
-        onValueChanged(nextValue);
+    // Snap to step increments
+    const float steppedValue = (std::round((nextValue - _minValue) / _step) * _step) + _minValue;
+    if (glm::abs(steppedValue - _value) > kValueEpsilon) {
+        onValueChanged(steppedValue);
     }
 }
 
-void UISlider::onClick() {
-    if (!_onClick && !_onClickActionId.empty()) {
-        tryBindActionsFromIds();
+void UISlider::processScroll(double scrollDelta) {
+    if (!pointerInside() && glm::abs(scrollDelta) < kValueEpsilon) {
+        return;
     }
 
-    if (_onClick) {
-        _onClick();
-    }
-}
-
-void UISlider::onEnter() {
-    if (!_onEnter && !_onEnterActionId.empty()) {
-        tryBindActionsFromIds();
-    }
-
-    if (_onEnter) {
-        _onEnter();
-    }
-}
-
-void UISlider::onExit() {
-    if (!_onExit && !_onExitActionId.empty()) {
-        tryBindActionsFromIds();
-    }
-
-    if (_onExit) {
-        _onExit();
-    }
+    const auto deltaValue = static_cast<float>(scrollDelta);
+    onValueChanged(_value + (_step * glm::sign(deltaValue)));
 }
 
 void UISlider::onValueChanged(float newValue) {
+    if (newValue == _value) {
+        return;
+    }
+
     const float minBound = std::min(_minValue, _maxValue);
     const float maxBound = std::max(_minValue, _maxValue);
     _value = std::clamp(newValue, minBound, maxBound);
 
-    if (!_onValueChanged && !_onValueChangedActionId.empty()) {
-        tryBindActionsFromIds();
+    auto* fillRect = _fillSpriteRenderer->getRectTransform();
+    fillRect->setPivot({0.0f, 0.5f});
+    fillRect->setPosition(
+        {-_backgroundSpriteRenderer->getOwner()->rectTransform()->getSize().x / 2,
+         fillRect->getPosition().y});
+
+    if (fillRect != nullptr) {
+        float t = (_value - _minValue) / (_maxValue - _minValue);
+        t = glm::clamp(t, 0.0f, 1.0f);
+
+        glm::vec2 scale = fillRect->getScale();
+        scale.x = t;
+        fillRect->setScale(scale);
     }
 
-    if (_onValueChanged) {
-        _onValueChanged(_value);
-    }
+    auto slideArea = _fillSpriteRenderer->getRectTransform()->getSize();
+    auto handleProgress = (_value - _minValue) / (_maxValue - _minValue);
+    auto handlePosX = (handleProgress * slideArea[0]) - (slideArea[0] * 0.5F);
+    _handleSpriteRenderer->getRectTransform()->setPosition({handlePosX, 0.0F});
+
+    emit(UIEventType::ValueChanged, _value);
 }
 
 float UISlider::getValue() const {
     return _value;
 }
 
-void UISlider::setOnClick(std::function<void()> onClick) {
-    _onClick = std::move(onClick);
-}
-
-void UISlider::setOnEnter(std::function<void()> onEnter) {
-    _onEnter = std::move(onEnter);
-}
-
-void UISlider::setOnExit(std::function<void()> onExit) {
-    _onExit = std::move(onExit);
-}
-
-void UISlider::setOnValueChanged(std::function<void(float)> onValueChanged) {
-    _onValueChanged = std::move(onValueChanged);
-}
-
-void UISlider::setBackgroundSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _backgroundSpriteRenderer = spriteRenderer;
-    applyVisualState();
-}
-
-void UISlider::setFillSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _fillSpriteRenderer = spriteRenderer;
-    applyVisualState();
-}
-
-void UISlider::setHandleSpriteRenderer(ImageRenderer* spriteRenderer) {
-    _handleSpriteRenderer = spriteRenderer;
-    applyVisualState();
-}
-
-void UISlider::setFillColor(const glm::vec4& color) {
-    _fillColor = color;
-    applyVisualState();
-}
-
-void UISlider::setBackgroundColor(const glm::vec4& color) {
-    _backgroundColor = color;
-    applyVisualState();
-}
-
-void UISlider::setHandleColor(const glm::vec4& color) {
-    _handleColor = color;
-    applyVisualState();
-}
-
-void UISlider::setHandleHoverColor(const glm::vec4& color) {
-    _handleHoverColor = color;
-    applyVisualState();
-}
-
-void UISlider::setHandlePressedColor(const glm::vec4& color) {
-    _handlePressedColor = color;
-    applyVisualState();
-}
-
-void UISlider::setOnClickActionId(std::string actionId) {
-    _onClickActionId = std::move(actionId);
-    if (_onClick == nullptr) {
-        tryBindActionsFromIds();
-    }
-}
-
-void UISlider::setOnEnterActionId(std::string actionId) {
-    _onEnterActionId = std::move(actionId);
-    if (_onEnter == nullptr) {
-        tryBindActionsFromIds();
-    }
-}
-
-void UISlider::setOnExitActionId(std::string actionId) {
-    _onExitActionId = std::move(actionId);
-    if (_onExit == nullptr) {
-        tryBindActionsFromIds();
-    }
-}
-
-void UISlider::setOnValueChangedActionId(std::string actionId) {
-    _onValueChangedActionId = std::move(actionId);
-    if (_onValueChanged == nullptr) {
-        tryBindActionsFromIds();
-    }
-}
-
-void UISlider::tryBindActionsFromIds() {
-    auto& registry = UISliderActionRegistry::get();
-
-    if (_onClick == nullptr && !_onClickActionId.empty()) {
-        _onClick = registry.bind(_onClickActionId, *this);
+ImageRenderer* UISlider::getBackgroundSpriteRenderer() const {
+    if (_backgroundSpriteRenderer == nullptr) {
+        _backgroundSpriteRenderer = _owner->getComponent<ImageRenderer>();
     }
 
-    if (_onEnter == nullptr && !_onEnterActionId.empty()) {
-        _onEnter = registry.bind(_onEnterActionId, *this);
+    return _backgroundSpriteRenderer;
+}
+
+ImageRenderer* UISlider::getFillSpriteRenderer() const {
+    if (_fillSpriteRenderer == nullptr) {
+        for (const auto& child : _owner->getChildren()) {
+            if (child == nullptr || child->getName().find("_Fill") == std::string::npos) {
+                continue;
+            }
+
+            auto* img = child->getComponent<ImageRenderer>();
+            if (img != nullptr) {
+                _fillSpriteRenderer = img;
+                break;
+            }
+        }
     }
 
-    if (_onExit == nullptr && !_onExitActionId.empty()) {
-        _onExit = registry.bind(_onExitActionId, *this);
+    return _fillSpriteRenderer;
+}
+
+ImageRenderer* UISlider::getHandleSpriteRenderer() const {
+    if (_handleSpriteRenderer == nullptr) {
+        for (const auto& child : _owner->getChildren()) {
+            if (child == nullptr || child->getName().find("_Handle") == std::string::npos) {
+                continue;
+            }
+
+            auto* img = child->getComponent<ImageRenderer>();
+            if (img != nullptr) {
+                _handleSpriteRenderer = img;
+                break;
+            }
+        }
     }
 
-    if (_onValueChanged == nullptr && !_onValueChangedActionId.empty()) {
-        _onValueChanged = registry.bindValueChanged(_onValueChangedActionId, *this);
-    }
+    return _handleSpriteRenderer;
+}
+
+void UISlider::setStyle(const Style& style) {
+    _style = style;
+    applyVisualState();
 }
 
 void UISlider::applyVisualState() {
-    if (_backgroundSpriteRenderer != nullptr) {
-        _backgroundSpriteRenderer->setColor(_backgroundColor);
+    if (getBackgroundSpriteRenderer() != nullptr) {
+        _backgroundSpriteRenderer->setColor(_style.backgroundColor);
     }
 
-    if (_fillSpriteRenderer != nullptr) {
-        _fillSpriteRenderer->setColor(_fillColor);
+    if (getFillSpriteRenderer() != nullptr) {
+        _fillSpriteRenderer->setColor(_style.fillColor);
+
+        auto* fillRect = _fillSpriteRenderer->getRectTransform();
+        fillRect->setPivot({0.0f, 0.5f});
+        fillRect->setPosition(
+            {-_backgroundSpriteRenderer->getOwner()->rectTransform()->getSize().x / 2,
+             fillRect->getPosition().y});
+
+        if (fillRect != nullptr) {
+            float t = (_value - _minValue) / (_maxValue - _minValue);
+            t = glm::clamp(t, 0.0f, 1.0f);
+
+            glm::vec2 scale = fillRect->getScale();
+            scale.x = t;
+            fillRect->setScale(scale);
+        }
     }
 
-    if (_handleSpriteRenderer == nullptr) {
+    if (getHandleSpriteRenderer() == nullptr) {
         return;
     }
 
-    if (_pressedInside && _pointerInside && _pointerDown) {
-        _handleSpriteRenderer->setColor(_handlePressedColor);
-    } else if (_hovered) {
-        _handleSpriteRenderer->setColor(_handleHoverColor);
+    if (pressedInside() && pointerInside() && pointerDown()) {
+        _handleSpriteRenderer->setColor(_style.handlePressedColor);
+    } else if (isHovered()) {
+        _handleSpriteRenderer->setColor(_style.handleHoverColor);
     } else {
-        _handleSpriteRenderer->setColor(_handleColor);
+        _handleSpriteRenderer->setColor(_style.handleColor);
+    }
+}
+
+void UISlider::init(Style style, float value, float minValue, float maxValue, float step,
+                    std::vector<std::pair<UIEventType, std::string>> events) {
+    _style = style;
+    _value = std::clamp(value, std::min(minValue, maxValue), std::max(minValue, maxValue));
+    _minValue = minValue;
+    _maxValue = maxValue;
+    _step = step;
+    for (const auto& [eventType, actionId] : events) {
+        addEventListener(eventType, actionId);
     }
 }
 } // namespace dzemikk

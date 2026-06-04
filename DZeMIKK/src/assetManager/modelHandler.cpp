@@ -1,14 +1,67 @@
 #include "assetManager/modelHandler.h"
-#include "renderer/mesh.h"
+#include "renderer/StaticMesh.h"
 #include "renderer/model.h"
 
+#include "animation/boneTrack.h"
+
 #include <assimp/Importer.hpp>
-#include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <iostream>
 
-dzemikk::ModelHandler::Result dzemikk::ModelHandler::load(const std::string& path) {
-    auto model = loadModelFromFile(path);
+#include "assetManager/skeletonBuilder.h"
+#include "assetManager/meshBuilder.h"
+#include "assetManager/animationLoader.h"
+
+#if DZEMIKK_DEV_TOOLS
+#include <spdlog/spdlog.h>
+#endif
+
+bool dzemikk::ModelHandler::isAssimpHelperNode(const std::string& name) {
+    return name.find("_$AssimpFbx$") != std::string::npos;
+}
+
+bool dzemikk::ModelHandler::isBoneNode(const std::string& name, const dzemikk::Skeleton& skeleton) {
+    return skeleton.getBoneIndex(name) != -1;
+}
+
+void dzemikk::ModelHandler::printNodeHierarchyForMesh(aiNode* node, const aiScene* scene,
+                               const dzemikk::Skeleton& skeleton, int depth) {
+#if DZEMIKK_DEV_TOOLS
+    if (!node) {
+        return;
+    }
+
+    std::string indent(static_cast<std::size_t>(depth * 2), ' ');
+    std::string name = node->mName.C_Str();
+
+    bool isHelper = isAssimpHelperNode(name);
+    bool isBone = isBoneNode(name, skeleton);
+    bool hasMeshes = node->mNumMeshes > 0;
+
+    std::string line = indent + name;
+
+    if (isHelper) {
+        line += " [ASSIMP_HELPER]";
+    }
+    if (isBone) {
+        line += " [BONE]";
+    }
+    if (hasMeshes) {
+        line += " [MESHES: " + std::to_string(node->mNumMeshes) + "]";
+    }
+
+    spdlog::info("[ModelHandler] {}", line);
+
+    for (unsigned int i = 0; i < node->mNumChildren; ++i) {
+        printNodeHierarchyForMesh(node->mChildren[i], scene, skeleton, depth + 1);
+    }
+#endif
+}
+
+dzemikk::ModelHandler::Result
+dzemikk::ModelHandler::load(const std::string& path,
+                            LoadExecutionMode loadExecutionMode) {
+    auto model = loadModelFromFile(path, loadExecutionMode);
 
     if (!model) {
         std::cerr << "Failed to load mesh: " << path << "\n";
@@ -23,7 +76,7 @@ bool dzemikk::ModelHandler::reload(Handle& asset, const std::string& path) {
         return false;
     }
 
-    auto newModel = loadModelFromFile(path);
+    auto newModel = loadModelFromFile(path,LoadExecutionMode::Sync, LoadMode::MeshOnly);
     if (!newModel) {
         return false;
     }
@@ -32,8 +85,7 @@ bool dzemikk::ModelHandler::reload(Handle& asset, const std::string& path) {
 
     model->clear();
 
-    const auto& newSubMeshes = newModel->getSubMeshes();
-    for (const auto& subMesh : newSubMeshes) {
+    for (const auto& subMesh : newModel->getSubMeshes()) {
         model->addMesh(subMesh.mesh, subMesh.materialIndex);
     }
 
@@ -44,53 +96,64 @@ void dzemikk::ModelHandler::unload(Handle& asset) {
     asset = Handle{};
 }
 
-std::shared_ptr<dzemikk::Model> dzemikk::ModelHandler::loadModelFromFile(const std::string& path) {
+std::shared_ptr<dzemikk::Model>
+dzemikk::ModelHandler::loadModelFromFile(const std::string& path,
+                                         LoadExecutionMode loadExecutionMode, LoadMode loadMode) {
+
     Assimp::Importer importer;
 
     const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals |
                                                        aiProcess_JoinIdenticalVertices);
 
     if (!scene || !scene->HasMeshes()) {
+        std::cerr << "ASSIMP ERROR: " << importer.GetErrorString() << "\n";
         return nullptr;
     }
 
+    const bool hasAnimations = scene->mNumAnimations > 0;
+
     auto model = std::make_shared<Model>();
 
-    for (unsigned int i = 0; i < scene->mNumMeshes; i++) {
-        const aiMesh* aiMesh = scene->mMeshes[i];
+    auto *skeleton = SkeletonBuilder::build(scene);
+    model->setSkeleton(std::shared_ptr<Skeleton>(skeleton));
 
-        std::vector<float> vertices;
-        std::vector<unsigned int> indices;
 
-        vertices.reserve(aiMesh->mNumVertices * 6);
+    for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
+    #if DZEMIKK_DEV_TOOLS
+        //spdlog::info("[ModelHandler] MESH {}: {}", i, scene->mMeshes[i]->mName.C_Str());
+        //printNodeHierarchyForMesh(scene->mRootNode, scene, *skeleton);
+    #endif
+    }
 
-        for (unsigned int v = 0; v < aiMesh->mNumVertices; v++) {
-            vertices.push_back(aiMesh->mVertices[v].x);
-            vertices.push_back(aiMesh->mVertices[v].y);
-            vertices.push_back(aiMesh->mVertices[v].z);
+    for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
 
-            if (aiMesh->HasNormals()) {
-                vertices.push_back(aiMesh->mNormals[v].x);
-                vertices.push_back(aiMesh->mNormals[v].y);
-                vertices.push_back(aiMesh->mNormals[v].z);
+        const aiMesh* mesh = scene->mMeshes[i];
+        const bool isSkinned = mesh->HasBones();
+
+        if (loadExecutionMode == LoadExecutionMode::Async) {
+            if (!isSkinned) {
+                auto raw = MeshBuilder::buildStaticMeshRaw(mesh);
+                model->addPending(raw);
             } else {
-                vertices.insert(vertices.end(), {0, 0, 0});
+                auto raw = MeshBuilder::buildSkinnedMeshRaw(mesh, *skeleton);
+                model->addPending(raw);
+            }
+        } else {
+            if (!isSkinned) {
+                auto staticMesh = MeshBuilder::buildStaticMesh(mesh);
+                model->addMesh(staticMesh, mesh->mMaterialIndex);
+            } else {
+                auto skinnedMesh = MeshBuilder::buildSkinnedMesh(mesh, *skeleton);
+                model->addMesh(skinnedMesh, mesh->mMaterialIndex);
             }
         }
+    }
 
-        for (unsigned int f = 0; f < aiMesh->mNumFaces; f++) {
-            const aiFace& face = aiMesh->mFaces[f];
-            for (unsigned int j = 0; j < face.mNumIndices; j++) {
-                indices.push_back(face.mIndices[j]);
-            }
-        }
-
-        auto mesh = std::make_shared<Mesh>();
-        mesh->createIndexed(vertices.data(), aiMesh->mNumVertices, indices.data(), indices.size(),
-                            6);
-
-        model->addMesh(mesh, aiMesh->mMaterialIndex);
+    if (scene->mNumAnimations > 0 && loadMode == LoadMode::All) {
+        AnimationLoader::load(scene, *skeleton);
     }
 
     return model;
 }
+
+

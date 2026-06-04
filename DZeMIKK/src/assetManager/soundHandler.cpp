@@ -3,9 +3,11 @@
 #include "assetManager/assetError.h"
 #include "audio/sound.h"
 
-#include <iostream>dzemikk::
+#include <iostream>
 
-dzemikk::SoundHandler::Result dzemikk::SoundHandler::load(const std::string& path) {
+dzemikk::SoundHandler::Result
+dzemikk::SoundHandler::load(const std::string& path,
+                            LoadExecutionMode loadExecutionMode) {
     auto sound = loadSoundFromFile(path);
 
     if (!sound) {
@@ -16,7 +18,8 @@ dzemikk::SoundHandler::Result dzemikk::SoundHandler::load(const std::string& pat
     return {sound, AssetError::None};
 }
 
-std::shared_ptr<dzemikk::Sound> dzemikk::SoundHandler::loadSoundFromFile(const std::string& path) const {
+std::shared_ptr<dzemikk::Sound>
+dzemikk::SoundHandler::loadSoundFromFile(const std::string& path) const {
     if (!system) {
         std::cerr << "FMOD system not initialized!\n";
         return nullptr;

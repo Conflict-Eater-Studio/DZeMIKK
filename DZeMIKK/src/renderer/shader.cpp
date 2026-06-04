@@ -3,13 +3,33 @@
 #include "renderer/shader.h"
 
 dzemikk::Shader::Shader(const char* vertexSrc, const char* fragmentSrc) {
+    _vertSrc = vertexSrc;
+    _fragSrc = fragmentSrc;
+}
+
+dzemikk::Shader::~Shader() {
+    if (_program)
+        glDeleteProgram(_program);
+}
+
+void dzemikk::Shader::bind() const {
+    glUseProgram(_program);
+}
+
+void dzemikk::Shader::unbind() const {
+    glUseProgram(0);
+}
+
+void dzemikk::Shader::uploadToGPU() {
     GLuint vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vertexSrc, nullptr);
+    const char* v = _vertSrc.c_str();
+    glShaderSource(vertex, 1, &v, nullptr);
     glCompileShader(vertex);
     checkCompileErrors(vertex, "VERTEX");
 
     GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fragmentSrc, nullptr);
+    const char* f = _fragSrc.c_str();
+    glShaderSource(fragment, 1, &f, nullptr);
     glCompileShader(fragment);
     checkCompileErrors(fragment, "FRAGMENT");
 
@@ -24,19 +44,6 @@ dzemikk::Shader::Shader(const char* vertexSrc, const char* fragmentSrc) {
 
     unsigned int uniformBlockIndex = glGetUniformBlockIndex(_program, "Matrices");
     glUniformBlockBinding(_program, uniformBlockIndex, 0);
-}
-
-dzemikk::Shader::~Shader() {
-    if (_program)
-        glDeleteProgram(_program);
-}
-
-void dzemikk::Shader::bind() const {
-    glUseProgram(_program);
-}
-
-void dzemikk::Shader::unbind() const {
-    glUseProgram(0);
 }
 
 void dzemikk::Shader::setFloat(const char* name, float value) {
@@ -103,6 +110,19 @@ void dzemikk::Shader::setMat3(const char* name, const glm::mat3& mat) {
 void dzemikk::Shader::setMat4(const char* name, const glm::mat4& mat) {
     glUniformMatrix4fv(glGetUniformLocation(_program, name), 1, GL_FALSE,
                        glm::value_ptr(mat));
+}
+
+void dzemikk::Shader::setMat4Array(const char* name,
+                                   const std::vector<glm::mat4>& matrices) const {
+    if (matrices.empty())
+        return;
+
+    GLint location = glGetUniformLocation(_program, name);
+    if (location == -1)
+        return;
+
+    glUniformMatrix4fv(location, static_cast<GLsizei>(matrices.size()), GL_FALSE,
+                       reinterpret_cast<const float*>(matrices.data()));
 }
 
 void dzemikk::Shader::setSampler(const char* name, int textureUnit) {

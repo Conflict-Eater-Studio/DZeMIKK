@@ -8,6 +8,33 @@ dzemikk::Camera::Camera() {
 
     setPerspective(DefaultFov, DefaultAspect, DefaultNear, DefaultFar);
 }
+dzemikk::Camera::ProjectionType dzemikk::Camera::getProjectionType() const {
+    return _projectionType;
+}
+float dzemikk::Camera::getNear() const {
+    return _near;
+}
+float dzemikk::Camera::getFar() const {
+    return _far;
+}
+float dzemikk::Camera::getFov() const {
+    return _fov;
+}
+float dzemikk::Camera::getAspect() const {
+    return _aspect;
+}
+float dzemikk::Camera::getLeft() const {
+    return _left;
+}
+float dzemikk::Camera::getBottom() const {
+    return _bottom;
+}
+float dzemikk::Camera::getRightOrtographic() const {
+    return _right;
+}
+float dzemikk::Camera::getTop() const {
+    return _top;
+}
 
 void dzemikk::Camera::setPerspective(float fov, float aspect, float nearPlane, float farPlane) {
     _projectionType = ProjectionType::Perspective;
@@ -113,7 +140,57 @@ void dzemikk::Camera::setViewportSize(float width, float height) {
         recalcProjection();
 }
 
+void dzemikk::Camera::markDirty() {
+    _viewProjectionDirty = true;
+    _viewDirty = true;
+    recalcProjection();
+}
+
 int dzemikk::Camera::getId() const {
     return _id;
 }
 
+void dzemikk::Camera::setProjectionType(ProjectionType type) {
+    _projectionType = type;
+    recalcProjection();
+}
+
+void dzemikk::Camera::setNear(float nearPlane) {
+    _near = nearPlane;
+    recalcProjection();
+}
+
+void dzemikk::Camera::setFar(float farPlane) {
+    _far = farPlane;
+    recalcProjection();
+}
+
+void dzemikk::Camera::setFov(float fov) {
+    _fov = fov;
+    recalcProjection();
+}
+
+void dzemikk::Camera::setAspect(float aspect) {
+    _aspect = aspect;
+    recalcProjection();
+}
+
+void dzemikk::Camera::setLeft(float left) {
+    _left = left;
+    recalcProjection();
+}
+
+void dzemikk::Camera::setRight(float right) {
+    _right = right;
+    recalcProjection();
+}
+
+void dzemikk::Camera::setBottom(float bottom) {
+    _bottom = bottom;
+    recalcProjection();
+}
+
+void dzemikk::Camera::setTop(float top) {
+    _top = top;
+    recalcProjection();
+}

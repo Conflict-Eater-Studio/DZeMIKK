@@ -1,7 +1,8 @@
-#ifndef DZEMIKK_UISPRITERENDERER_H
-#define DZEMIKK_UISPRITERENDERER_H
+#ifndef DZEMIKK_IMAGERENDERER_H
+#define DZEMIKK_IMAGERENDERER_H
 
 #include "ecs/component.h"
+#include "assetManager/assetHandle.h"
 
 #include <glm/glm.hpp>
 
@@ -10,6 +11,7 @@ namespace dzemikk {
 class RectTransform;
 class Mesh;
 class Material;
+class Texture;
 
 class ImageRenderer : public Component {
   public:
@@ -24,10 +26,10 @@ class ImageRenderer : public Component {
     ImageRenderer& operator=(ImageRenderer&& other) noexcept = delete;
 
     [[nodiscard]] Mesh* getMesh() const {
-        return _mesh;
+        return _mesh.get();
     }
 
-    [[nodiscard]] Material* getMaterial() const {
+    [[nodiscard]] std::shared_ptr<dzemikk::Material> getMaterial() const {
         return _material;
     }
 
@@ -35,19 +37,23 @@ class ImageRenderer : public Component {
         return _rectTransform;
     }
 
-    [[nodiscard]] unsigned int getTexture() const {
-        return _textureID;
+    [[nodiscard]] Texture* getTexture() const {
+        return _texture.get();
+    }
+    
+    [[nodiscard]] AssetHandle<Texture> getTextureHandle() const {
+        return _texture;
     }
 
     [[nodiscard]] glm::vec4 getColor() const {
         return _color;
     }
 
-    void setMesh(Mesh* mesh) {
+    void setMesh(AssetHandle<Mesh> mesh) {
         _mesh = mesh;
     }
 
-    void setMaterial(Material* material) {
+    void setMaterial(std::shared_ptr<dzemikk::Material> material) {
         _material = material;
     }
 
@@ -55,8 +61,16 @@ class ImageRenderer : public Component {
         _rectTransform = transform;
     }
 
-    void setTexture(unsigned int texID) {
-        _textureID = texID;
+    bool useTexture() {
+        return _useTexture;
+    }
+
+    void setUseTexture(bool useTexture) {
+        _useTexture = useTexture;
+    }
+
+    void setTexture(AssetHandle<Texture> texture) {
+        _texture = texture;
     }
 
     void setColor(const glm::vec4& color) {
@@ -67,18 +81,24 @@ class ImageRenderer : public Component {
         return _mesh && _material && _rectTransform;
     }
 
+    [[nodiscard]] bool hasTexture() const {
+        return _texture.get() != nullptr;
+    }
+
     [[nodiscard]] std::string typeName() const override {
-        return "UISpriteRenderer";
+        return "ImageRenderer";
     };
 
   private:
-    Mesh* _mesh = nullptr;
+    AssetHandle<Mesh> _mesh;
 
-    Material* _material = nullptr;
+    std::shared_ptr<dzemikk::Material> _material = nullptr;
 
     RectTransform* _rectTransform = nullptr;
 
-    unsigned int _textureID = 0;
+    bool _useTexture = false;
+
+    AssetHandle<Texture> _texture;
     glm::vec4 _color = glm::vec4(1.0F);
 };
 } // namespace dzemikk

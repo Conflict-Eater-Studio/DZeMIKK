@@ -6,8 +6,10 @@
 #include <iostream>
 #include <stb/stb_image.h>
 
-dzemikk::TextureHandler::Result dzemikk::TextureHandler::load(const std::string& path) {
-    auto texture = loadTextureFromFile(path);
+dzemikk::TextureHandler::Result
+dzemikk::TextureHandler::load(const std::string& path,
+                              LoadExecutionMode loadExecutionMode) {
+    auto texture = loadTextureFromFile(path, loadExecutionMode);
 
     if (!texture) {
         std::cerr << "Failed to load texture: " << path << "\n";
@@ -17,7 +19,8 @@ dzemikk::TextureHandler::Result dzemikk::TextureHandler::load(const std::string&
     return {texture, AssetError::None};
 }
 
-std::shared_ptr<dzemikk::Texture> dzemikk::TextureHandler::loadTextureFromFile(const std::string& path,
+std::shared_ptr<dzemikk::Texture> dzemikk::TextureHandler::loadTextureFromFile(
+    const std::string& path, LoadExecutionMode loadExecutionMode,
                                                              bool flipVertical) {
     int width = 0;
     int height = 0;
@@ -32,8 +35,11 @@ std::shared_ptr<dzemikk::Texture> dzemikk::TextureHandler::loadTextureFromFile(c
         return nullptr;
     }
 
-    auto texture = std::make_shared<Texture>();
-    texture->initFromData(data, width, height, channels);
+    auto texture = std::make_shared<Texture>(data, width, height, channels);
+
+    if (loadExecutionMode == LoadExecutionMode::Sync) {
+        texture->uploadToGPU();
+    }
 
     stbi_image_free(data);
 

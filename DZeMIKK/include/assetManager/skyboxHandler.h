@@ -47,7 +47,8 @@ namespace dzemikk {
          * @param path Directory containing cubemap textures.
          * @return AssetResult containing a valid Skybox handle or error.
          */
-        Result load(const std::string& path) override;
+        Result load(const std::string& path,
+                    LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync) override;
         
         /**
          * @brief Reloads an existing skybox.
@@ -76,7 +77,9 @@ namespace dzemikk {
          * @param path Directory with cubemap textures.
          * @return Shared pointer to Skybox or nullptr on failure.
          */
-        static std::shared_ptr<Skybox> loadSkyboxFromFile(const std::string& path);
+        static std::shared_ptr<Skybox>
+        loadSkyboxFromFile(const std::string& path,
+                           LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync);
 
         /**
          * @brief Reloads textures into an existing skybox instance.

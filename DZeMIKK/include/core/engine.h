@@ -20,13 +20,17 @@ class Renderer;
 class AssetManager;
 class AnimationModule;
 class Input;
+class Collisions;
+class AudioManager;
+
+enum class EngineMode { Game, Editor };
 
 /**
  * @brief The core application class managing the game loop and all subsystems.
  */
 class Engine {
 public:
-    Engine();
+    Engine(EngineMode mode = EngineMode::Game);
     ~Engine();
 
     Engine(const Engine&) = delete;
@@ -40,27 +44,20 @@ public:
     [[nodiscard]] Window* getWindow() const;
     [[nodiscard]] SceneManager* getSceneManager() const;
     [[nodiscard]] Time* getTime() const;
-    [[nodiscard]] AnimationModule* getAnimationSystem() const;
+    [[nodiscard]] AnimationModule* getAnimationModule() const;
     [[nodiscard]] AssetManager* getAssetManager() const;
     [[nodiscard]] Input* getInput() const;
+    [[nodiscard]] Collisions* getCollisions() const;
+    [[nodiscard]] AudioManager* getAudioManager() const;
 
-    /**
-     * @brief Zwraca dynamicznie zarejestrowany moduł na podstawie jego typu.
-     * @tparam T Typ modułu (musi dziedziczyć po IEngineModule)
-     * @return Surowy wskaźnik na moduł lub nullptr, jeśli nie znaleziono.
-     */
-    template <std::derived_from<IEngineModule> T>
-    [[nodiscard]] T* getModule() const {
-        for (const auto& module : _modules) {
-            // Używamy dynamic_cast dla wygody. W ultra-wydajnych silnikach
-            // stosuje się tu mapowanie po statycznym ID typu (np. TypeId),
-            // ale dynamic_cast na etapie inicjalizacji/pobierania jest w 100% OK.
-            if (T* castedModule = dynamic_cast<T*>(module.get())) {
-                return castedModule;
-            }
-        }
-        return nullptr;
+    
+    [[nodiscard]] EngineMode getMode() const {
+        return _mode;
     }
+    [[nodiscard]] bool isEditorMode() const {
+        return _mode == EngineMode::Editor;
+    }
+
 
     void SetUserUpdateCallback(const std::function<void()>& callback) {
         m_UserUpdateCallback = callback;
@@ -83,13 +80,18 @@ private:
     std::unique_ptr<AssetManager> _assetManager;
     std::unique_ptr<AnimationModule> _animationModule;
     std::unique_ptr<Input> _input;
+    std::unique_ptr<Collisions> _collisions;
+    std::unique_ptr<AudioManager> _audioManager;
 
     std::vector<std::unique_ptr<IEngineModule>> _modules;
 
     std::function<void()> m_UserUpdateCallback;
 
-    float _accumulator = 0.0f;
-	bool _wasLeftMouseDown = false;
+    float _accumulator = 0.0F;
+    bool _wasLeftMouseDown = false;
+    double _scrollDelta = 0.0F;
+
+    EngineMode _mode;
 };
 } // namespace dzemikk
 

@@ -31,7 +31,8 @@ namespace dzemikk {
          * @param path Base path to shader (without extension or with custom convention).
          * @return AssetResult containing a valid Shader handle or error.
          */
-        Result load(const std::string& path) override;
+        Result load(const std::string& path,
+                    LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync) override;
 
         /**
          * @brief Reloads an existing shader.
@@ -70,7 +71,9 @@ namespace dzemikk {
          * @param path Base path to shader.
          * @return Shared pointer to Shader or nullptr.
          */
-        static std::shared_ptr<Shader> loadShaderFromFile(const std::string& path);
+        static std::shared_ptr<Shader>
+        loadShaderFromFile(const std::string& path,
+                           LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync);
 
         /**
          * @brief Reloads shader data into existing instance.

@@ -1,0 +1,203 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "887504b6-c6bb-4d57-802d-25b366d4ad50",
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    0.0,
+                                    475.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    300.0,
+                                    50.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 0
+                            },
+                            {
+                                "color": [
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "font": "fonts/Lato-Regular.ttf",
+                                "horizontalAlign": 1,
+                                "id": "d0cb8aa3-a446-4477-b6bf-6ed733a12ef0",
+                                "scale": 0.5,
+                                "text": "PLAYER_PATTERNS",
+                                "type": "UITextRenderer",
+                                "verticalAlign": 1
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "ef9dbf46-af9f-4209-b300-c1196c952157",
+                        "name": "Text"
+                    },
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "3823ecc0-a552-41fc-b963-2b06b377ff13",
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    20.0,
+                                    -50.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    300.0,
+                                    1000.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 0
+                            },
+                            {
+                                "cellSize": [
+                                    120.0,
+                                    120.0
+                                ],
+                                "columns": 2,
+                                "id": "b7b3a388-7857-4592-893e-f193eac6d4fb",
+                                "spacing": [
+                                    20.0,
+                                    20.0
+                                ],
+                                "startCorner": 0,
+                                "type": "GridLayout"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "4bc14c0d-c6fb-49c0-9a04-7b4e561d31e5",
+                        "name": "Patterns"
+                    }
+                ],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "f5958ea8-d700-4a72-9f4f-ff6a3df5ae74",
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            300.0,
+                            1000.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 0
+                    },
+                    {
+                        "childForceExpandHeight": false,
+                        "childForceExpandWidth": true,
+                        "id": "4073edda-fe0c-4089-a057-aba4e877f3ac",
+                        "spacing": 0.0,
+                        "type": "VerticalLayout"
+                    }
+                ],
+                "enabled": true,
+                "id": "c4d8e2c1-f870-4edf-8eab-a5887bfedf89",
+                "name": "VerticaLayout"
+            }
+        ],
+        "components": [
+            {
+                "anchorMax": [
+                    0.5,
+                    0.5
+                ],
+                "anchorMin": [
+                    0.5,
+                    0.5
+                ],
+                "id": "1958b58c-f980-4e25-98df-0607f1fdb339",
+                "pivot": [
+                    0.5,
+                    0.5
+                ],
+                "position": [
+                    -770.0,
+                    0.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                    1.0,
+                    1.0
+                ],
+                "size": [
+                    300.0,
+                    1000.0
+                ],
+                "type": "RectTransform",
+                "zIndex": 0
+            },
+            {
+                "color": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.3137255012989044
+                ],
+                "id": "f2f2b8d2-e76b-43f2-ab09-a4bd89daccd6",
+                "materialPath": "shaders/quad",
+                "texture": "",
+                "type": "ImageRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "f7c98ef8-d246-4da9-8dcc-1fd525967a00",
+        "name": "Panel"
+    }
+}

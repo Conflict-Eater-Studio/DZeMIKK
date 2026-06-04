@@ -10,29 +10,34 @@
 #include FT_FREETYPE_H
 #endif
 
+#include "ecs/components/colorGradingEffect.h"
+
 #include "animation/animationmodule.h"
+#include "assetManager/assetmanager.h"
+#include "audio/audioManager.h"
+#include "audio/sound.h"
+#include "collisions/collisions.h"
 #include "core/engine.h"
 #include "core/profiler.h"
 #include "core/time.h"
 #include "core/window.h"
+#include "core/windowContext.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
 #include "ecs/scenemanager.h"
-#include "renderer/renderer.h"
-#include "renderer/font.h"
-#include "renderer/texture.h"
-#include "renderer/Model.h"
-#include "audio/sound.h"
-#include "assetManager/assetmanager.h"
 #include "input/input.h"
+#include "renderer/Model.h"
+#include "renderer/font.h"
+#include "renderer/renderer.h"
+#include "renderer/texture.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
 
 namespace dzemikk {
 
-Engine::Engine() {
+Engine::Engine(EngineMode mode) : _mode(mode) {
     init();
 }
 
@@ -41,13 +46,15 @@ Engine::~Engine() {
 }
 
 void Engine::init() {
-    _mainWindow = std::make_unique<Window>(1920, 1080, "DZeMIKK");
+    _mainWindow = std::make_unique<Window>(1920, 1080, "DZeMIKK", _mode);
     _assetManager = std::make_unique<AssetManager>();
-    _renderer = std::make_unique<Renderer>();
+    _renderer = std::make_unique<Renderer>(_mode, this);
     _sceneManager = std::make_unique<SceneManager>();
     _time = std::make_unique<Time>();
     _animationModule = std::make_unique<AnimationModule>();
     _input = std::make_unique<Input>();
+    _collisions = std::make_unique<Collisions>();
+    _audioManager = std::make_unique<AudioManager>();
 
     _mainWindow->initialize();
     _assetManager->initialize();
@@ -59,22 +66,20 @@ void Engine::init() {
     _input->setInputWindow(_mainWindow->nativeHandle());
     _mainWindow->setEventCallback([this](Event& e) { this->OnEvent(e); });
     _input->initialize();
+    _collisions->initialize();
+    _audioManager->initialize();
 
-    // _modules.push_back(std::move(_assetManager));
-    // _modules.push_back(_mainWindow);
-    // _modules.push_back(_renderer);
-    // _modules.push_back(_sceneManager);
-    // _modules.push_back(_time);
-    // _modules.push_back(_animationModule);
-    //
-    // for (const auto& module : _modules) {
-    //     module->Initialize();
-    // }
+    _assetManager->setFMODSystem(_audioManager->getSystem());
+
+    _input->OnMouseScrolled.addListener(
+        [&](dzemikk::MouseScrolledEvent& e) { _scrollDelta = e.GetYOffset(); });
 
 #if DZEMIKK_DEV_TOOLS
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     ImGui_ImplGlfw_InitForOpenGL(_mainWindow->nativeHandle(), true);
     ImGui_ImplOpenGL3_Init("#version 330");
@@ -85,22 +90,25 @@ void Engine::init() {
 }
 
 void Engine::shutdown() {
+    if (!_mainWindow)
+        return;
+
+    _input->uninitialize();
+    _animationModule->uninitialize();
+    _time->uninitialize();
+    _sceneManager->uninitialize();
 #if DZEMIKK_DEV_TOOLS
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 #endif
 
+    _audioManager->uninitialize();
     _mainWindow->uninitialize();
     _assetManager->uninitialize();
     _renderer->uninitialize();
-    _sceneManager->uninitialize();
-    _time->uninitialize();
-    _animationModule->uninitialize();
-
-    for (const auto& module : _modules) {
-        module->uninitialize();
-    }
+    _assetManager->uninitialize();
+    _mainWindow->uninitialize();
 }
 
 void Engine::start() {
@@ -112,6 +120,11 @@ void Engine::start() {
     float fixedDeltaTime = _time->getFixedDeltaTime();
     while (!_mainWindow->shouldClose()) {
         _time->update();
+        _audioManager->update(_time->getDeltaTime());
+
+        if (_input) {
+            _input->Update();
+        }
 
         float deltaTime = _time->getDeltaTime();
         Profiler::Get().BeginFrame(deltaTime);
@@ -135,25 +148,83 @@ void Engine::start() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("Debug Panel");
-        ImGui::Text("Background");
-        ImGui::ColorEdit4("Clear Color", reinterpret_cast<float*>(&clear_color));
-        ImGui::End();
-
         _mainWindow->clear(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
 
 #else
         _mainWindow->clear(0.1F, 0.15F, 0.2F, 1.0F);
 #endif
-        updateCameraWASD(1.f);
-        updateCameraArrows(1.1f);
-        updateMouseUI(deltaTime);
+        if (_mode == EngineMode::Game) {
+            updateCameraWASD(.3f);
+            updateCameraArrows(0.3f);
+            updateMouseUI(deltaTime);
+        }
+
+        _collisions->update(this, deltaTime);
+
+        if (m_UserUpdateCallback) {
+            m_UserUpdateCallback();
+        }
+
         {
             DZ_PROFILE_CPU("Renderer (Total CPU)");
             _renderer->render();
         }
+
+        _assetManager->update();
+
 #if DZEMIKK_DEV_TOOLS
-        Profiler::Get().DrawImGui();
+        if (_mode == EngineMode::Game) {
+            Profiler::Get().DrawImGui();
+
+            std::vector<ColorGradingEffect*> gradingEffects;
+            ComponentRegistry::get().getEnabledComponents<ColorGradingEffect>(gradingEffects);
+            if (!gradingEffects.empty()) {
+                ImGui::Begin("Color Grading Settings");
+                for (size_t i = 0; i < gradingEffects.size(); ++i) {
+                    auto* effect = gradingEffects[i];
+                    std::string label = "Effect " + std::to_string(i) + " (" + effect->getOwner()->getName() + ")";
+                    if (ImGui::TreeNode(label.c_str())) {
+                        bool enabled = effect->isEnabled();
+                        if (ImGui::Checkbox("Enabled", &enabled)) {
+                            effect->setEnabled(enabled);
+                        }
+
+                        float exp = effect->getExposure();
+                        if (ImGui::SliderFloat("Exposure", &exp, -4.0f, 4.0f)) {
+                            effect->setExposure(exp);
+                        }
+
+                        float contrast = effect->getContrast();
+                        if (ImGui::SliderFloat("Contrast", &contrast, 0.0f, 3.0f)) {
+                            effect->setContrast(contrast);
+                        }
+
+                        float saturation = effect->getSaturation();
+                        if (ImGui::SliderFloat("Saturation", &saturation, 0.0f, 3.0f)) {
+                            effect->setSaturation(saturation);
+                        }
+
+                        float temp = effect->getTemperature();
+                        if (ImGui::SliderFloat("Temperature", &temp, -2.0f, 2.0f)) {
+                            effect->setTemperature(temp);
+                        }
+
+                        float tint = effect->getTint();
+                        if (ImGui::SliderFloat("Tint", &tint, -2.0f, 2.0f)) {
+                            effect->setTint(tint);
+                        }
+
+                        glm::vec3 filter = effect->getColorFilter();
+                        if (ImGui::ColorEdit3("Color Filter", &filter.x)) {
+                            effect->setColorFilter(filter);
+                        }
+
+                        ImGui::TreePop();
+                    }
+                }
+                ImGui::End();
+            }
+        }
         glDisable(GL_DEPTH_TEST);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -171,14 +242,13 @@ Window* Engine::getWindow() const {
 }
 SceneManager* Engine::getSceneManager() const {
     return _sceneManager.get();
-
 }
 
 Time* Engine::getTime() const {
     return _time.get();
 }
 
-AnimationModule* Engine::getAnimationSystem() const{
+AnimationModule* Engine::getAnimationModule() const {
     return _animationModule.get();
 }
 
@@ -190,18 +260,16 @@ Input* Engine::getInput() const {
     return _input.get();
 }
 
-// template <std::derived_from<IEngineModule> T>
-// std::shared_ptr<T> Engine::getModule() const {
-//     for (const auto& module : _modules) {
-//         if (auto casted = std::dynamic_pointer_cast<T>(module)) {
-//             return casted;
-//         }
-//     }
-//     return nullptr;
-// }
+Collisions* Engine::getCollisions() const {
+    return _collisions.get();
+}
+
+AudioManager* Engine::getAudioManager() const {
+    return _audioManager.get();
+}
 
 void Engine::updateCameraWASD(float speed) {
-    auto* transform = _renderer->getActiveSceneCamera()->getOwner()->transform();
+    auto* transform = _renderer->getCameraSystem().getActiveSceneCamera()->getOwner()->transform();
 
     glm::vec3 move(0.0f);
 
@@ -225,12 +293,12 @@ void Engine::updateCameraWASD(float speed) {
 
     if (glm::length(move) > 0.0f) {
         move = glm::normalize(move);
-        transform->translate(move * speed * 0.016f);
+        transform->translate(move * speed * 0.16f);
     }
 }
 
 void Engine::updateCameraArrows(float speed) {
-    auto* camera = _renderer->getActiveSceneCamera();
+    auto* camera = _renderer->getCameraSystem().getActiveSceneCamera();
     if (!camera)
         return;
     auto* transform = camera->getOwner()->transform();
@@ -253,18 +321,13 @@ void Engine::updateCameraArrows(float speed) {
         getAssetManager()->reload<dzemikk::Font>("fonts/UncialAntiqua-Regular.ttf");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_T) == GLFW_PRESS) {
-        getAssetManager()->reload<dzemikk::Model>("models/Body Block.fbx");
+        getAssetManager()->reload<dzemikk::Model>("models/Flair(1).fbx");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Y) == GLFW_PRESS) {
-        getAssetManager()->reload<dzemikk::Shader>("shaders/quad");
+        getAssetManager()->reload<dzemikk::Shader>("shaders/skinned");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_U) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Skybox>("textures/Daylight Box_Pieces");
-    }
-    if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_I) == GLFW_PRESS) {
-        getAssetManager()->reload<dzemikk::Sound>("audio/prime_coToZaHex.wav");
-        auto sound = getAssetManager()->get<dzemikk::Sound>("audio/prime_coToZaHex.wav");
-        sound.get()->play(getAssetManager()->getFMODSystem());
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_O) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Texture>("textures/tex3.png");
@@ -281,7 +344,7 @@ void Engine::updateCameraArrows(float speed) {
 void Engine::updateMouseUI(float deltaTime) {
     (void)deltaTime;
 
-    auto* camera = _renderer->getActiveUICamera();
+    auto* camera = _renderer->getCameraSystem().getActiveUICamera();
     if (!camera) {
         return;
     }
@@ -292,6 +355,7 @@ void Engine::updateMouseUI(float deltaTime) {
     int width = 0;
     int height = 0;
     glfwGetWindowSize(_mainWindow->nativeHandle(), &width, &height);
+    WindowContext::get().setWindowSize({width, height});
 
     const glm::vec2 pointerPos(static_cast<float>(mouseX),
                                static_cast<float>(height) - static_cast<float>(mouseY));
@@ -302,12 +366,14 @@ void Engine::updateMouseUI(float deltaTime) {
     const bool releasedThisFrame = !isLeftDown && _wasLeftMouseDown;
 
     std::vector<IUIInteractable*> uiElements;
-    ComponentRegistry::get().getComponents<IUIInteractable>(uiElements);
+    ComponentRegistry::get().getEnabledComponents<IUIInteractable>(uiElements);
     for (auto* element : uiElements) {
-        element->processPointer(pointerPos, isLeftDown, pressedThisFrame, releasedThisFrame);
+        element->processPointer(pointerPos, isLeftDown, pressedThisFrame, releasedThisFrame,
+                                _scrollDelta);
     }
 
     _wasLeftMouseDown = isLeftDown;
+    _scrollDelta = 0.0;
 }
 
 void Engine::OnEvent(Event& e) {

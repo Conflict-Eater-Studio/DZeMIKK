@@ -1,11 +1,12 @@
 #include "animation/animationmodule.h"
 
+#include "../../include/ecs/components/animator.h"
 #include "ecs/componentRegistry.h"
-#include "ecs/components/animator.h"
 #include "spdlog/spdlog.h"
 
 namespace dzemikk {
     void AnimationModule::update(float deltaTime)  {
+        ComponentRegistry::get().getEnabledComponents<Animator>(_animators);
         for (const auto& element : _animators) {
             element->update(deltaTime);
         }

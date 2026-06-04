@@ -1,0 +1,268 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "2c8a479a-92bf-4cf9-ae0b-8ae4b81366d2",
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            0.0,
+                            10.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            120.0,
+                            120.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 2
+                    },
+                    {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "font": "fonts/Lato-Regular.ttf",
+                        "horizontalAlign": 1,
+                        "id": "5cbdb198-fa7c-4b3b-8d1a-a0317fcef0ff",
+                        "scale": 0.30000001192092896,
+                        "text": "atk1",
+                        "type": "UITextRenderer",
+                        "verticalAlign": 0
+                    }
+                ],
+                "enabled": true,
+                "id": "cff61a87-fe40-480b-8675-d0a2fa47c2d0",
+                "name": "Button_Text"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "c9009cdb-533a-41d1-934f-24ca4427653d",
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    40.0,
+                                    20.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 0
+                            },
+                            {
+                                "color": [
+                                    0.970588207244873,
+                                    1.0,
+                                    0.0
+                                ],
+                                "font": "fonts/Lato-Regular.ttf",
+                                "horizontalAlign": 1,
+                                "id": "35c8bff7-6d38-46d0-8fe2-dc7859a86c33",
+                                "scale": 0.30000001192092896,
+                                "text": "x-1",
+                                "type": "UITextRenderer",
+                                "verticalAlign": 1
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "e4d1e9b2-a4d8-4180-ac06-fee97a4f374f",
+                        "name": "Text_Count"
+                    }
+                ],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "2978134e-7215-4b5b-adde-e1eec65ea5eb",
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            30.0,
+                            40.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            40.0,
+                            20.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 2
+                    },
+                    {
+                        "color": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            0.3137255012989044
+                        ],
+                        "id": "bee9988a-2d5f-4dda-aed9-ccd79c8404c8",
+                        "materialPath": "shaders/quad",
+                        "texture": "",
+                        "type": "ImageRenderer"
+                    }
+                ],
+                "enabled": true,
+                "id": "611db82f-ee83-415d-a679-746d12070ba5",
+                "name": "Count"
+            },
+            {
+                "children": [],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "cb9c14f3-90f7-4861-b74e-f3e4059048b2",
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            0.0,
+                            0.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 0
+                    }
+                ],
+                "enabled": true,
+                "id": "d81dbc16-5394-4096-b40f-5b44341f7b66",
+                "name": "HexHolder"
+            }
+        ],
+        "components": [
+            {
+                "anchorMax": [
+                    0.5,
+                    0.5
+                ],
+                "anchorMin": [
+                    0.5,
+                    0.5
+                ],
+                "id": "947be52a-44b3-493c-ab9a-bda6e6968d3e",
+                "pivot": [
+                    0.5,
+                    0.5
+                ],
+                "position": [
+                    50.0,
+                    440.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                    1.0,
+                    1.0
+                ],
+                "size": [
+                    120.0,
+                    120.0
+                ],
+                "type": "RectTransform",
+                "zIndex": 1
+            },
+            {
+                "hoverColor": [
+                    0.6666666865348816,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "id": "6cab12ee-c458-428e-a83d-d427e026573d",
+                "normalColor": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "pressedColor": [
+                    0.23529411852359772,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "type": "UIButton"
+            },
+            {
+                "color": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "id": "f82a73f6-7523-418e-af2c-aa0821a5494f",
+                "materialPath": "shaders/quad",
+                "texture": "",
+                "type": "ImageRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "92133871-2060-43f2-bf5f-d352663c0842",
+        "name": "Pattern_UI"
+    }
+}

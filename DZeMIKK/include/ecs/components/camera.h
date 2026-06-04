@@ -33,6 +33,29 @@ class Camera : public Component {
     Camera();
     ~Camera() = default;
 
+    ProjectionType getProjectionType() const;
+    float getNear() const;
+    float getFar() const;
+    float getFov() const;
+    float getAspect() const;
+    float getLeft() const;
+    float getBottom() const;
+    float getRightOrtographic() const;
+    float getTop() const;
+    void setProjectionType(ProjectionType type);
+
+    void setNear(float nearPlane);
+    void setFar(float farPlane);
+
+    void setFov(float fov);
+    void setAspect(float aspect);
+
+    void setLeft(float left);
+    void setRight(float right);
+
+    void setBottom(float bottom);
+    void setTop(float top);
+
 #pragma region Disable copy and move
 
     Camera(const Camera& other) = delete;
@@ -74,6 +97,8 @@ class Camera : public Component {
      * @param height Height of the viewport.
      */
     void setViewportSize(float width, float height);
+
+    void markDirty();
 
 #pragma endregion
 

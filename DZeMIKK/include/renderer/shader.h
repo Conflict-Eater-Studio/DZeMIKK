@@ -4,6 +4,9 @@
 #include <glad/glad.h>
 #include <glm/fwd.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <string>
+
+#include "assetManager/iGpuUploadable.h"
 
 namespace dzemikk {
     /**
@@ -11,7 +14,7 @@ namespace dzemikk {
      *
      * Provides utilities to compile, link, and set uniforms (scalars, vectors, matrices, samplers).
      */
-    class Shader {
+    class Shader : public IGpuUploadable {
     public:
         #pragma region Construction / Destruction
 
@@ -27,7 +30,7 @@ namespace dzemikk {
         /**
          * @brief Deletes the shader program on destruction.
          */
-        ~Shader();
+        virtual ~Shader();
 
         #pragma endregion
 
@@ -45,6 +48,14 @@ namespace dzemikk {
         void unbind() const;
 
         #pragma endregion
+        
+        /**
+         * @brief Uploads resource data to the GPU.
+         *
+         * Transfers CPU-side asset data into GPU memory so it can be used
+         * for rendering. Called after the asset has been fully loaded.
+         */
+        void uploadToGPU() override;
 
         #pragma region Copy / Move semantics
 
@@ -77,6 +88,7 @@ namespace dzemikk {
         void setMat2(const char* name, const glm::mat2& mat);
         void setMat3(const char* name, const glm::mat3& mat);
         void setMat4(const char* name, const glm::mat4& mat);
+        void setMat4Array(const char* name, const std::vector<glm::mat4>& matrices) const;
 
         // --- Texture samplers
         void setSampler(const char* name, int textureUnit);
@@ -98,6 +110,8 @@ namespace dzemikk {
         #pragma region Internal state
 
         GLuint _program = 0;
+        std::string _vertSrc;
+        std::string _fragSrc;
 
         #pragma endregion
 

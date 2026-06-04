@@ -1,0 +1,9 @@
+IUIINTERACTABLE
+NOLINTBEGIN
+NOLINTEND
+RectTransform
+anchorMax
+anchorMin
+deltaDegrees
+dzemikk
+zIndex

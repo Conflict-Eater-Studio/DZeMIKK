@@ -1,6 +1,10 @@
 #ifndef DZEMIKK_MODEL_HANDLER_H
 #define DZEMIKK_MODEL_HANDLER_H
 #include "iAssetHandler.h"
+#include "animation/skeleton.h"
+#include <assimp/matrix4x4.h>
+#include <assimp/mesh.h>
+#include <assimp/scene.h>
 
 namespace dzemikk {
 class Model;
@@ -23,7 +27,8 @@ class ModelHandler : public IAssetHandler<Model> {
      * @param path Path to the model file.
      * @return Result containing the loaded Model or an error state.
      */
-    Result load(const std::string& path) override;
+    Result load(const std::string& path,
+                LoadExecutionMode loadExecutionMode = LoadExecutionMode::Sync) override;
 
     /**
      * @brief Reloads an existing model asset from a file path.
@@ -45,6 +50,26 @@ class ModelHandler : public IAssetHandler<Model> {
 
   private:
     /**
+     * @brief Controls loading scope.
+     */
+    enum LoadMode : std::uint8_t { 
+        MeshOnly, 
+        All,
+    };
+    
+#pragma region Debug
+    /** @brief Checks if node is Assimp helper node */
+    static bool isAssimpHelperNode(const std::string& name);
+
+    /** @brief Checks if node is bone in skeleton */
+    static bool isBoneNode(const std::string& name, const dzemikk::Skeleton& skeleton);
+
+    /** @brief Debug print of scene node hierarchy */
+    static void printNodeHierarchyForMesh(aiNode* node, const aiScene* scene,
+                                          const dzemikk::Skeleton& skeleton, int depth = 0);
+#pragma endregion
+
+    /**
      * @brief Internal helper function for loading a model from file.
      *
      * Performs actual parsing and construction of the Model object.
@@ -52,7 +77,9 @@ class ModelHandler : public IAssetHandler<Model> {
      * @param path Path to the model file.
      * @return Shared pointer to the loaded Model, or nullptr on failure.
      */
-    static std::shared_ptr<Model> loadModelFromFile(const std::string& path);
+    static std::shared_ptr<Model>
+    loadModelFromFile(const std::string& path,LoadExecutionMode loadExecutionMode =
+                          LoadExecutionMode::Sync, LoadMode loadMode = LoadMode::All);
 };
 }
 

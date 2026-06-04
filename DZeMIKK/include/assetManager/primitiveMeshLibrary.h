@@ -39,7 +39,7 @@ class PrimitiveMeshLibrary {
      * @param type Primitive mesh type.
      * @return Mesh* Pointer to mesh or nullptr if not initialized.
      */
-    [[nodiscard]] Mesh* get(PrimitiveMesh type);
+    [[nodiscard]] std::shared_ptr<Mesh> get(PrimitiveMesh type);
 
     /**
      * @brief Clears all cached meshes.
@@ -50,7 +50,7 @@ class PrimitiveMeshLibrary {
     /**
      * @brief Internal storage of generated primitive meshes.
      */
-    std::unordered_map<PrimitiveMesh, std::unique_ptr<Mesh>> _meshes;
+    std::unordered_map<PrimitiveMesh, std::shared_ptr<Mesh>> _meshes;
 };
 } // namespace dzemikk
 

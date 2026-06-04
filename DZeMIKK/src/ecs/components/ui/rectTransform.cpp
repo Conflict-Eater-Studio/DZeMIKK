@@ -1,15 +1,13 @@
 #include "ecs/components/ui/rectTransform.h"
 
+#include "core/windowContext.h"
 #include "ecs/gameobject.h"
-#include "glm/fwd.hpp"
-
-#include <glm/gtc/matrix_transform.hpp>
 
 namespace dzemikk {
 RectTransform::RectTransform(RectTransformParams params)
     : _position(params.position), _size(params.size), _scale(params.scale),
       _rotation(params.rotation), _pivot(params.pivot), _anchorMin(params.anchorMin),
-      _anchorMax(params.anchorMax) {}
+      _anchorMax(params.anchorMax), _offsetMin(params.offsetMin), _offsetMax(params.offsetMax) {}
 
 void RectTransform::setPosition(const glm::vec2& position) {
     _position = position;
@@ -17,7 +15,7 @@ void RectTransform::setPosition(const glm::vec2& position) {
     markDirty();
 }
 
-void RectTransform::setSize(const glm::vec2& size) {
+void RectTransform::setBaseSize(const glm::vec2& size) {
     _size = size;
     _localDirty = true;
     markDirty();
@@ -56,6 +54,20 @@ void RectTransform::setAnchorMax(const glm::vec2& anchorMax) {
     markSizeDirty();
 }
 
+void RectTransform::setOffsetMin(const glm::vec2& offsetMin) {
+    _offsetMin = offsetMin;
+    _localDirty = true;
+    markDirty();
+    markSizeDirty();
+}
+
+void RectTransform::setOffsetMax(const glm::vec2& offsetMax) {
+    _offsetMax = offsetMax;
+    _localDirty = true;
+    markDirty();
+    markSizeDirty();
+}
+
 void RectTransform::setZIndex(unsigned int zIndex) {
     _zIndex = zIndex;
     markDirty();
@@ -89,6 +101,10 @@ glm::vec2 RectTransform::getSize() const {
     return _cachedSize;
 }
 
+glm::vec2 RectTransform::getBaseSize() const {
+    return _size;
+}
+
 glm::vec2 RectTransform::getScale() const {
     return _scale;
 }
@@ -107,6 +123,14 @@ glm::vec2 RectTransform::getAnchorMin() const {
 
 glm::vec2 RectTransform::getAnchorMax() const {
     return _anchorMax;
+}
+
+glm::vec2 RectTransform::getOffsetMin() const {
+    return _offsetMin;
+}
+
+glm::vec2 RectTransform::getOffsetMax() const {
+    return _offsetMax;
 }
 
 unsigned int RectTransform::getZIndex() const {
@@ -144,7 +168,7 @@ glm::mat4 RectTransform::getLocalNoSizeMatrix() const {
         anchorCenter = (anchorNormalized - parentPivot) * parentSize;
     } else {
         const glm::vec2 anchorNormalized = (_anchorMin + _anchorMax) * 0.5F;
-        anchorCenter = anchorNormalized * getSize();
+        anchorCenter = anchorNormalized * WindowContext::get().getWindowSize();
     }
 
     glm::mat4 translation =
@@ -185,10 +209,6 @@ glm::mat4 RectTransform::getWorldNoSizeMatrix() const {
 }
 
 void RectTransform::markDirty() {
-    if (_worldDirty && _localDirty) {
-        return;
-    }
-
     _localDirty = true;
     _worldDirty = true;
 
@@ -212,7 +232,7 @@ glm::vec2 RectTransform::getStretchSize() const {
 
     const glm::vec2 parentSize = parentRect->getSize();
     const glm::vec2 anchorSpan = glm::max(_anchorMax - _anchorMin, glm::vec2(0.0F));
-    return anchorSpan * parentSize;
+    return anchorSpan * parentSize - _offsetMin - _offsetMax;
 }
 
 void RectTransform::markSizeDirty() {
@@ -233,5 +253,13 @@ void RectTransform::markSizeDirty() {
             childRect->markSizeDirty();
         }
     }
+}
+
+bool RectTransform::containsPoint(const glm::vec2& point) const {
+    glm::vec4 localPos = glm::inverse(getWorldMatrix()) * glm::vec4(point, 0.0F, 1.0F);
+
+    glm::vec2 p = glm::vec2(localPos) / localPos[3];
+
+    return p[0] >= 0.0F && p[0] <= 1.0F && p[1] >= 0.0F && p[1] <= 1.0F;
 }
 } // namespace dzemikk

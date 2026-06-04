@@ -1,0 +1,85 @@
+#pragma once
+#ifndef DZEMIKK_COLLIDERSERIALIZER_H
+#define DZEMIKK_COLLIDERSERIALIZER_H
+
+#include "ecs/components/collider.h"
+#include "ecs/serialize/componentSerializerRegistry.h"
+#include "assetManager/assetmanager.h"
+
+#include <nlohmann/json.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/string_generator.hpp>
+
+#if DZEMIKK_DEV_TOOLS
+#include <spdlog/spdlog.h>
+#endif
+
+namespace dzemikk {
+
+inline void to_json(nlohmann::json& json, const Collider& collider) {
+    json["type"] = collider.typeName();
+    json["id"] = boost::uuids::to_string(collider.getId());
+    if (collider.getModelHandle().get() != nullptr) {
+        json["model"] = collider.getModelHandle().getAssetPath();
+    } else {
+        json["model"] = "";
+    }
+}
+
+inline void from_json(const nlohmann::json& json, Collider& collider, AssetManager* assetManager) {
+    static boost::uuids::string_generator uuidGenerator;
+
+    if (!json.contains("type") || !json["type"].is_string() || json["type"] != collider.typeName()) {
+        throw std::runtime_error("Invalid component type for Collider deserialization");
+    }
+
+    if (!json.contains("id") || !json.contains("model")) {
+        throw std::runtime_error("Missing fields for Collider deserialization");
+    }
+
+    collider.setId(uuidGenerator(json["id"].get<std::string>()));
+
+    std::string modelPath = json.value("model", "");
+
+    if (!modelPath.empty()) {
+
+        constexpr std::string_view primitivePrefix = "primitive/";
+
+        if (modelPath.starts_with(primitivePrefix)) {
+
+            std::string primitiveIndexString = modelPath.substr(primitivePrefix.size());
+
+            int primitiveIndex = std::stoi(primitiveIndexString);
+
+            collider.setModel(assetManager->getPrimitiveModel(
+                static_cast<PrimitiveMeshLibrary::PrimitiveMesh>(primitiveIndex)));
+
+        }
+        else {
+
+            collider.setModel(assetManager->get<Model>(modelPath));
+        }
+    }
+
+    collider.setTransform(collider.getOwner()->transform());
+}
+
+inline void registerColliderSerializer(ComponentSerializerRegistry& registry) {
+    registry.registerType(
+        "Collider",
+        [](const Component& component) {
+            const auto* collider = dynamic_cast<const Collider*>(&component);
+            if (collider == nullptr) {
+                throw std::runtime_error("Component type mismatch for Collider serialization");
+            }
+            nlohmann::json j;
+            to_json(j, *collider);
+            return j;
+        },
+        [](const ComponentSerializerRegistry::DeserializationContext& context) {
+            auto* collider = context.gameObject.addComponent<Collider>();
+            from_json(context.json, *collider, context.assetManager);
+        });
+}
+}
+#endif
