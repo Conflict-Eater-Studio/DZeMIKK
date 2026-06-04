@@ -142,15 +142,42 @@ bool GameObject::isEnabled() const {
 
 // --- Setters
 void GameObject::setName(const std::string& name) {
-    _name = name;
+    if (_scene != nullptr) {
+        _scene->unregisterNamedObject(_name, this);
+        _name = name;
+        _scene->registerNamedObject(name, this);
+    } else {
+        _name = name;
+    }
 }
 
 void GameObject::setId(const boost::uuids::uuid& uuid) {
-    _id = uuid;
+    if (_scene != nullptr) {
+        _scene->unregisterIdObject(_id, this);
+        _id = uuid;
+        _scene->registerIdObject(uuid, this);
+    } else {
+        _id = uuid;
+    }
 }
 
 void GameObject::setScene(Scene* scene) {
+    if (scene == nullptr || _scene == scene) {
+        return;
+    }
+
+    if (_scene != nullptr) {
+        return;
+    }
+
     _scene = scene;
+
+    _scene->registerIdObject(_id, this);
+    _scene->registerNamedObject(_name, this);
+    for (const auto& tag : _tags) {
+        _scene->registerTaggedObject(tag, this);
+    }
+
     for (auto& mono : _monoBehaviours) {
         if (mono && _scene) {
             _scene->addPending(mono);
@@ -162,20 +189,157 @@ void GameObject::markStarted() {
     _hasStarted = true;
 }
 
+// --- Tag operations
+void GameObject::addTag(const std::string& tag) {
+    if (!hasTag(tag)) {
+        _tags.insert(tag);
+
+        if (_scene != nullptr) {
+            _scene->registerTaggedObject(tag, this);
+        }
+    }
+}
+
+void GameObject::removeTag(const std::string& tag) {
+    if (hasTag(tag)) {
+        _tags.erase(tag);
+
+        if (_scene != nullptr) {
+            _scene->unregisterTaggedObject(tag, this);
+        }
+    }
+}
+
+bool GameObject::hasTag(const std::string& tag) const {
+    return _tags.contains(tag);
+}
+
+// --- Child search
+GameObject* GameObject::findChildByName(const std::string& name) {
+    auto it = std::ranges::find_if(
+        _children, [&name](const auto* child) { return child && child->getName() == name; });
+    return (it != _children.end()) ? *it : nullptr;
+}
+
+std::vector<GameObject*> GameObject::findChildrenByName(const std::string& name) {
+    std::vector<GameObject*> results;
+    for (auto* child : _children) {
+        if (child && child->getName() == name) {
+            results.emplace_back(child);
+        }
+    }
+    return results;
+}
+
+GameObject* GameObject::findChildByTag(const std::string& tag) {
+    auto it = std::ranges::find_if(
+        _children, [&tag](const auto* child) { return child && child->hasTag(tag); });
+    return (it != _children.end()) ? *it : nullptr;
+}
+
+std::vector<GameObject*> GameObject::findChildrenByTag(const std::string& tag) {
+    std::vector<GameObject*> results;
+    for (auto* child : _children) {
+        if (child && child->hasTag(tag)) {
+            results.emplace_back(child);
+        }
+    }
+    return results;
+}
+
+// --- Deep child search
+GameObject* GameObject::findDescendantByName(const std::string& name) const {
+    std::vector<GameObject*> stack{getChildren()};
+    while (!stack.empty()) {
+        GameObject* current = stack.back();
+        stack.pop_back();
+        if (current->getName() == name) {
+            return current;
+        }
+        for (auto* child : current->getChildren()) {
+            if (child) {
+                stack.push_back(child);
+            }
+        }
+    }
+    return nullptr;
+}
+
+std::vector<GameObject*> GameObject::findDescendantsByName(const std::string& name) const {
+    std::vector<GameObject*> results;
+    std::vector<GameObject*> stack{getChildren()};
+    while (!stack.empty()) {
+        GameObject* current = stack.back();
+        stack.pop_back();
+        if (current->getName() == name) {
+            results.emplace_back(current);
+        }
+        for (auto* child : current->getChildren()) {
+            if (child) {
+                stack.push_back(child);
+            }
+        }
+    }
+    return results;
+}
+
+GameObject* GameObject::findDescendantByTag(const std::string& tag) const {
+    std::vector<GameObject*> stack{getChildren()};
+    while (!stack.empty()) {
+        GameObject* current = stack.back();
+        stack.pop_back();
+        if (current->hasTag(tag)) {
+            return current;
+        }
+        for (auto* child : current->getChildren()) {
+            if (child) {
+                stack.push_back(child);
+            }
+        }
+    }
+    return nullptr;
+}
+
+std::vector<GameObject*> GameObject::findDescendantsByTag(const std::string& tag) const {
+    std::vector<GameObject*> results;
+    std::vector<GameObject*> stack{getChildren()};
+    while (!stack.empty()) {
+        GameObject* current = stack.back();
+        stack.pop_back();
+        if (current->hasTag(tag)) {
+            results.emplace_back(current);
+        }
+        for (auto* child : current->getChildren()) {
+            if (child) {
+                stack.push_back(child);
+            }
+        }
+    }
+    return results;
+}
+
 // --- Hierarchy operations
-void GameObject::setParent(GameObject* parent) {
+bool GameObject::setParent(GameObject* parent) {
+    if (_scene == nullptr) {
+        return false;
+    }
+
+    if (parent != nullptr && parent->getScene() != _scene) {
+        return false;
+    }
+
     if (_parent == parent) {
-        return;
+        return false;
     }
 
     if (parent == this) {
-        return;
+        return false;
     }
 
     // Reject cyclic parenting
     for (GameObject* ancestor = parent; ancestor; ancestor = ancestor->_parent) {
         if (ancestor == this) {
-            return;
+            return false;
         }
     }
 
@@ -224,6 +388,8 @@ void GameObject::setParent(GameObject* parent) {
     if (_rectTransform) {
         _rectTransform->markDirty();
     }
+
+    return true;
 }
 
 void GameObject::addChild(GameObject* child) {
