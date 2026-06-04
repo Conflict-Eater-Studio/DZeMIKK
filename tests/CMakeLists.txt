@@ -16,12 +16,23 @@ add_executable(dzemikk_tests
     test_gameobject.cpp
     test_componentRegister.cpp
     test_serializers.cpp
+    test_findGameObject.cpp
 )
 
 target_link_libraries(dzemikk_tests
     PRIVATE
     DZeMIKK
     GTest::gtest_main
+)
+
+add_custom_command(TARGET dzemikk_tests POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${FMOD_LIBS_PATH}/fmod.dll"
+    $<TARGET_FILE_DIR:dzemikk_tests>
+
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${FMOD_LIBS_PATH}/fmodL.dll"
+    $<TARGET_FILE_DIR:dzemikk_tests>
 )
 
     if (MSVC)

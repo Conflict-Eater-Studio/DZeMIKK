@@ -77,7 +77,7 @@ class CountingMonoBehaviour final : public dzemikk::MonoBehaviour {
         }
     }
 
-    void lateUpdate() override {
+    void lateUpdate(double dt) override {
         if (_counters) {
             ++_counters->lateUpdateCount;
         }
@@ -111,16 +111,18 @@ TEST(GameObjectCore, TransformOwnerIsSelfOnConstruction) {
 }
 
 TEST(GameObjectCore, NameAndStartedFlagWork) {
-    dzemikk::GameObject object;
+    dzemikk::Scene scene;
 
-    EXPECT_EQ(object.getName(), "");
-    EXPECT_FALSE(object.hasStarted());
+    dzemikk::GameObject* object = scene.createGameObject();
 
-    object.setName("Player");
-    object.markStarted();
+    EXPECT_EQ(object->getName(), "GameObject");
+    EXPECT_FALSE(object->hasStarted());
 
-    EXPECT_EQ(object.getName(), "Player");
-    EXPECT_TRUE(object.hasStarted());
+    object->setName("Player");
+    object->markStarted();
+
+    EXPECT_EQ(object->getName(), "Player");
+    EXPECT_TRUE(object->hasStarted());
 }
 
 TEST(GameObjectComponents, AddAndGetPlainComponent) {
@@ -243,22 +245,24 @@ TEST(GameObjectSceneInteraction, RemoveMonoBehaviourUnregistersFromSceneLoops) {
 }
 
 TEST(GameObjectHierarchy, DetachChildAndDetachChildrenUnparentWithoutDestroy) {
-    dzemikk::GameObject parent;
-    dzemikk::GameObject childA;
-    dzemikk::GameObject childB;
+    dzemikk::Scene scene;
 
-    parent.addChild(&childA);
-    parent.addChild(&childB);
-    ASSERT_EQ(parent.getChildren().size(), 2U);
+    dzemikk::GameObject* parent = scene.createGameObject();
+    dzemikk::GameObject* childA = scene.createGameObject();
+    dzemikk::GameObject* childB = scene.createGameObject();
 
-    parent.detachChild(&childA);
-    EXPECT_EQ(childA.getParent(), nullptr);
-    ASSERT_EQ(parent.getChildren().size(), 1U);
-    EXPECT_EQ(parent.getChildren().front(), &childB);
+    parent->addChild(childA);
+    parent->addChild(childB);
+    ASSERT_EQ(parent->getChildren().size(), 2U);
 
-    parent.detachChildren();
-    EXPECT_EQ(childB.getParent(), nullptr);
-    EXPECT_TRUE(parent.getChildren().empty());
+    parent->detachChild(childA);
+    EXPECT_EQ(childA->getParent(), nullptr);
+    ASSERT_EQ(parent->getChildren().size(), 1U);
+    EXPECT_EQ(parent->getChildren().front(), childB);
+
+    parent->detachChildren();
+    EXPECT_EQ(childB->getParent(), nullptr);
+    EXPECT_TRUE(parent->getChildren().empty());
 }
 
 TEST(GameObjectHierarchy, DestroyChildIsDeferredAndCallsOnDestroyOnce) {
@@ -311,18 +315,20 @@ TEST(GameObjectHierarchy, DestroyChildrenDeduplicatesQueuedDestruction) {
 }
 
 TEST(GameObjectHierarchy, CyclicParentingIsRejected) {
-    dzemikk::GameObject grandParent;
-    dzemikk::GameObject parent;
-    dzemikk::GameObject child;
+    dzemikk::Scene scene;
 
-    parent.setParent(&grandParent);
-    child.setParent(&parent);
+    dzemikk::GameObject* grandParent = scene.createGameObject();
+    dzemikk::GameObject* parent = scene.createGameObject();
+    dzemikk::GameObject* child = scene.createGameObject();
 
-    grandParent.setParent(&child); // would create cycle, should be rejected
+    parent->setParent(grandParent);
+    child->setParent(parent);
 
-    EXPECT_EQ(grandParent.getParent(), nullptr);
-    EXPECT_EQ(parent.getParent(), &grandParent);
-    EXPECT_EQ(child.getParent(), &parent);
+    grandParent->setParent(child); // would create cycle, should be rejected
+
+    EXPECT_EQ(grandParent->getParent(), nullptr);
+    EXPECT_EQ(parent->getParent(), grandParent);
+    EXPECT_EQ(child->getParent(), parent);
 }
 
 TEST(GameObjectSceneInteraction, DestroyIgnoresObjectsOutsideScene) {
