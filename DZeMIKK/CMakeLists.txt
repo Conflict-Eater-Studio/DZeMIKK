@@ -18,7 +18,11 @@ add_library(DZeMIKK STATIC
         include/ecs/serialize/ui/gridLayoutSerializer.h
         include/ecs/serialize/ui/horizontalLayoutSerializer.h
         include/ecs/serialize/ui/verticalLayoutSerializer.h
-        include/ecs/serialize/ui/uiDropdownSerializer.h)
+        include/ecs/serialize/ui/uiDropdownSerializer.h
+        include/ecs/components/fxaaPostProcessEffect.h
+        src/ecs/components/fxaaPostProcessEffect.cpp
+        include/ecs/components/outlinePostProcessEffect.h
+        src/ecs/components/outlinePostProcessEffect.cpp)
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"
@@ -48,6 +52,7 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/renderer/renderPasses/spriteRenderPass.cpp"
         "${SRC_DIR}/renderer/renderPasses/textRenderPass.cpp"
         "${SRC_DIR}/renderer/renderPasses/uITextRenderPass.cpp"
+        "${SRC_DIR}/renderer/renderPasses/postProcessRenderPass.cpp"
         "${SRC_DIR}/ecs/components/monobehaviour.cpp"
         "${SRC_DIR}/ecs/components/transform.cpp"
         "${SRC_DIR}/ecs/components/meshRenderer.cpp"
@@ -56,6 +61,8 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/components/spriteRenderer.cpp"
         "${SRC_DIR}/ecs/components/camera.cpp"
         "${SRC_DIR}/ecs/components/textRenderer.cpp"
+        "${SRC_DIR}/ecs/components/postProcessEffect.cpp"
+        "${SRC_DIR}/ecs/components/colorGradingEffect.cpp"
         "${SRC_DIR}/ecs/gameobject.cpp"
         "${SRC_DIR}/ecs/scene.cpp"
         "${SRC_DIR}/scene/octree.cpp"
@@ -143,6 +150,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/renderer/renderPasses/spriteRenderPass.h"
         "${INC_DIR}/renderer/renderPasses/textRenderPass.h"
         "${INC_DIR}/renderer/renderPasses/uITextRenderPass.h"
+        "${INC_DIR}/renderer/renderPasses/postProcessRenderPass.h"
         "${INC_DIR}/renderer/lightUtils.h"
         "${INC_DIR}/ecs/components/monobehaviour.h"
         "${INC_DIR}/ecs/components/transform.h"
@@ -151,6 +159,8 @@ set(ENGINE_HEADERS
      "${INC_DIR}/ecs/components/skinnedMeshRenderer.h"
      "${INC_DIR}/ecs/components/spriteRenderer.h"
      "${INC_DIR}/ecs/components/textRenderer.h"
+     "${INC_DIR}/ecs/components/postProcessEffect.h"
+     "${INC_DIR}/ecs/components/colorGradingEffect.h"
         "${INC_DIR}/ecs/components/camera.h"
         "${INC_DIR}/ecs/component.h"
         "${INC_DIR}/ecs/gameobject.h"

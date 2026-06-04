@@ -5,6 +5,8 @@
 #include "renderer/frustum.h"
 #include "renderer/lightUtils.h"
 
+#include <glad/glad.h>
+
 namespace dzemikk {
 
 /**
@@ -62,6 +64,8 @@ struct RenderContext {
     int directionalCount = 0;
     int pointCount = 0;
     int spotCount = 0;
+
+    GLuint sceneTexture = 0;
 };
 
 /**

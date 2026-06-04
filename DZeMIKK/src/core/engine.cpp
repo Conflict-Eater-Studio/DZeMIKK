@@ -10,6 +10,8 @@
 #include FT_FREETYPE_H
 #endif
 
+#include "ecs/components/colorGradingEffect.h"
+
 #include "animation/animationmodule.h"
 #include "assetManager/assetmanager.h"
 #include "audio/audioManager.h"
@@ -46,7 +48,7 @@ Engine::~Engine() {
 void Engine::init() {
     _mainWindow = std::make_unique<Window>(1920, 1080, "DZeMIKK", _mode);
     _assetManager = std::make_unique<AssetManager>();
-    _renderer = std::make_unique<Renderer>(_mode);
+    _renderer = std::make_unique<Renderer>(_mode, this);
     _sceneManager = std::make_unique<SceneManager>();
     _time = std::make_unique<Time>();
     _animationModule = std::make_unique<AnimationModule>();
@@ -173,6 +175,55 @@ void Engine::start() {
 #if DZEMIKK_DEV_TOOLS
         if (_mode == EngineMode::Game) {
             Profiler::Get().DrawImGui();
+
+            std::vector<ColorGradingEffect*> gradingEffects;
+            ComponentRegistry::get().getEnabledComponents<ColorGradingEffect>(gradingEffects);
+            if (!gradingEffects.empty()) {
+                ImGui::Begin("Color Grading Settings");
+                for (size_t i = 0; i < gradingEffects.size(); ++i) {
+                    auto* effect = gradingEffects[i];
+                    std::string label = "Effect " + std::to_string(i) + " (" + effect->getOwner()->getName() + ")";
+                    if (ImGui::TreeNode(label.c_str())) {
+                        bool enabled = effect->isEnabled();
+                        if (ImGui::Checkbox("Enabled", &enabled)) {
+                            effect->setEnabled(enabled);
+                        }
+
+                        float exp = effect->getExposure();
+                        if (ImGui::SliderFloat("Exposure", &exp, -4.0f, 4.0f)) {
+                            effect->setExposure(exp);
+                        }
+
+                        float contrast = effect->getContrast();
+                        if (ImGui::SliderFloat("Contrast", &contrast, 0.0f, 3.0f)) {
+                            effect->setContrast(contrast);
+                        }
+
+                        float saturation = effect->getSaturation();
+                        if (ImGui::SliderFloat("Saturation", &saturation, 0.0f, 3.0f)) {
+                            effect->setSaturation(saturation);
+                        }
+
+                        float temp = effect->getTemperature();
+                        if (ImGui::SliderFloat("Temperature", &temp, -2.0f, 2.0f)) {
+                            effect->setTemperature(temp);
+                        }
+
+                        float tint = effect->getTint();
+                        if (ImGui::SliderFloat("Tint", &tint, -2.0f, 2.0f)) {
+                            effect->setTint(tint);
+                        }
+
+                        glm::vec3 filter = effect->getColorFilter();
+                        if (ImGui::ColorEdit3("Color Filter", &filter.x)) {
+                            effect->setColorFilter(filter);
+                        }
+
+                        ImGui::TreePop();
+                    }
+                }
+                ImGui::End();
+            }
         }
         glDisable(GL_DEPTH_TEST);
         ImGui::Render();
