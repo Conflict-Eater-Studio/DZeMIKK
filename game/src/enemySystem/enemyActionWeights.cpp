@@ -3,8 +3,8 @@
 void game::EnemyActionWeights::normalize() {
     float sum = attack + defense + heal;
 
-    if (sum <= 0.0f) {
-        attack = defense = heal = 1.0f / 3.0f;
+    if (sum <= 0.0F) {
+        attack = defense = heal = 1.0F / 3.0F;
         return;
     }
 

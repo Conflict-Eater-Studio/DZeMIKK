@@ -10,16 +10,17 @@
 
 CombatArenaResult CombatArenaBuilder::build(game::EnemyEntity* enemy, game::PlayerEntity* player,
                                             game::HexGrid* grid, game::World* world) {
-
     CombatArenaResult result;
 
-    if (!enemy || !player || !grid || !world)
+    if (!enemy || !player || !grid || !world) {
         return result;
+    }
 
     const auto& territorySet = enemy->getTerritory();
 
-    if (territorySet.empty())
+    if (territorySet.empty()) {
         return result;
+    }
 
     std::vector<game::HexCell*> territory(territorySet.begin(), territorySet.end());
 
@@ -29,16 +30,18 @@ CombatArenaResult CombatArenaBuilder::build(game::EnemyEntity* enemy, game::Play
 
     auto* chunk = getAnyChunk(world);
 
-    if (!chunk)
+    if (!chunk) {
         return result;
+    }
 
     for (const auto& coord : copiedCoords) {
 
         auto cell =
             ensureCellExists(coord, grid, world, chunk, game::HexCell::Type::PlayerBattleHex);
 
-        if (!cell)
+        if (!cell) {
             continue;
+        }
 
         cell->setType(game::HexCell::Type::PlayerBattleHex);
         cell->setDirty(true);
@@ -75,28 +78,6 @@ CombatArenaBuilder::copyTerritory(const std::vector<game::HexCell*>& territory) 
     }
 
     return coords;
-}
-
-std::unordered_set<game::HexCoord>
-CombatArenaBuilder::buildBlockedSet(const std::vector<game::HexCell*>& territory) {
-
-    std::unordered_set<game::HexCoord> blocked;
-
-    for (auto* cell : territory) {
-
-        if (!cell)
-            continue;
-
-        auto coord = cell->getCoord();
-
-        blocked.insert(coord);
-
-        for (const auto& n : game::HexCoord::getNeighbors(coord)) {
-            blocked.insert(n);
-        }
-    }
-
-    return blocked;
 }
 
 std::vector<game::HexCoord>
@@ -183,10 +164,11 @@ game::HexCoord CombatArenaBuilder::calculateCenter(const std::vector<game::HexCo
 
 game::HexChunk* CombatArenaBuilder::getAnyChunk(game::World* world) {
 
-    auto& chunks = world->getGrid()->getChunks();
+    const auto& chunks = world->getGrid()->getChunks();
 
-    if (chunks.empty())
+    if (chunks.empty()) {
         return nullptr;
+    }
 
     return chunks.begin()->second.get();
 }
