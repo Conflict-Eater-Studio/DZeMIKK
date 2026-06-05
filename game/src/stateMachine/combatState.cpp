@@ -118,8 +118,7 @@ void game::CombatState::onExit() {
 
     _player->clearTerritory();
     _playerPatternComponent->clearPlacedPatterns();
-    _playerPatternComponent->clearPreview();
-    _playerPatternComponent->clearActivePattern();
+    _playerPatternComponent->deactivatePattern();
 
     const auto& enemyTerritory = _currentEnemy->getTerritory();
 
@@ -168,8 +167,7 @@ void game::CombatState::startNewTurn() {
     _phase = CombatPhase::EnemyPlanning;
     
     _playerPatternComponent->clearPlacedPatterns();
-    _playerPatternComponent->clearPreview();
-    _playerPatternComponent->clearActivePattern();
+    _playerPatternComponent->deactivatePattern();
 
     for (auto* cell : _currentEnemy->getTerritory()) {
         cell->setDirty(true);

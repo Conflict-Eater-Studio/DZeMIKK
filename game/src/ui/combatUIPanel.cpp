@@ -155,7 +155,7 @@ void game::CombatUIPanel::createPatternSlot(const PatternComponent::PatternEntry
 void game::CombatUIPanel::createPatternPreview(dzemikk::GameObject* parent,
                                                const HexPattern& pattern) {
 
-    constexpr float HEX_SIZE = 12.5f;
+    constexpr float HEX_SIZE = 15.0f;
 
     std::vector<glm::vec2> positions;
 

@@ -11,7 +11,7 @@
                     0.5,
                     0.5
                 ],
-                "id": "8e44403f-0adb-4ee8-ab5d-c78dfb057cde",
+                "id": "ec965d46-6e1b-4032-90e5-25ad5629fcac",
                 "pivot": [
                     0.5,
                     0.5
@@ -26,8 +26,8 @@
                     1.0
                 ],
                 "size": [
-                    25.0,
-                    25.0
+                    30.0,
+                    30.0
                 ],
                 "type": "RectTransform",
                 "zIndex": 0
@@ -39,14 +39,14 @@
                     1.0,
                     1.0
                 ],
-                "id": "7eed816f-2fae-4fcf-a0e2-3cc91c90886b",
+                "id": "2865d568-30d6-4bb0-a6cf-1a96053156d2",
                 "materialPath": "shaders/quad",
                 "texture": "textures/hex.png",
                 "type": "ImageRenderer"
             }
         ],
         "enabled": true,
-        "id": "d7ef73e3-24b9-4b61-b264-57836d3d9bd2",
+        "id": "65eac4fd-2783-4140-b403-9d94d1b293ba",
         "name": "Hex_UI"
     }
 }

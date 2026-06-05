@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GAME_PATTERN_COMPONENT_H
+#define GAME_PATTERN_COMPONENT_H
 
 #include "map/HexPattern.h"
 
@@ -73,6 +74,36 @@ class PatternComponent : public dzemikk::MonoBehaviour {
      * @brief Removes all patterns from the collection.
      */
     void clearPatterns();
+
+    /**
+     * @brief Adds instances to a pattern count.
+     *
+     * @param index Pattern index.
+     * @param amount Amount to add.
+     * @return true If successful.
+     * @return false Otherwise.
+     */
+    bool addCount(size_t index, int amount);
+
+    /**
+     * @brief Removes instances from a pattern count.
+     *
+     * @param index Pattern index.
+     * @param amount Amount to remove.
+     * @return true If successful.
+     * @return false Otherwise.
+     */
+    bool removeCount(size_t index, int amount);
+
+    /**
+     * @brief Sets the available count for a pattern.
+     *
+     * @param index Pattern index.
+     * @param count New count value.
+     * @return true If successful.
+     * @return false Otherwise.
+     */
+    bool setCount(size_t index, int count);
 
 #pragma endregion
 
@@ -151,3 +182,5 @@ class PatternComponent : public dzemikk::MonoBehaviour {
 };
 
 } // namespace game
+
+#endif

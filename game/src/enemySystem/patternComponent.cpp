@@ -91,3 +91,37 @@ int game::PatternComponent::findPattern(const HexPattern& pattern) const {
     return -1;
 }
 
+bool game::PatternComponent::addCount(size_t index, int amount) {
+    if (index >= _patterns.size()) {
+        return false;
+    }
+
+    _patterns[index].count += amount;
+
+    return true;
+}
+
+bool game::PatternComponent::removeCount(size_t index, int amount) {
+    if (index >= _patterns.size()) {
+        return false;
+    }
+
+    if (_patterns[index].count < amount) {
+        return false;
+    }
+
+    _patterns[index].count -= amount;
+
+    return true;
+}
+
+bool game::PatternComponent::setCount(size_t index, int count) {
+    if (index >= _patterns.size()) {
+        return false;
+    }
+
+    _patterns[index].count = count;
+
+    return true;
+}
+

@@ -4,11 +4,14 @@
 #include "enemySystem/patternComponent.h"
 #include "map/HexPattern.h"
 
+#include <events/mouse_event.h>
+
 #include <optional>
 #include <vector>
 
 namespace dzemikk {
 class Engine;
+class Collider;
 }
 
 namespace game {
@@ -16,8 +19,9 @@ namespace game {
 class PlayerEntity;
 class HexGrid;
 class PlayerPatternStatsComponent;
+class WorldHex;
 
-/**
+    /**
  * @brief Handles player pattern selection, placement and preview logic.
  *
  * Extends PatternComponent with gameplay functionality for placing
@@ -25,6 +29,7 @@ class PlayerPatternStatsComponent;
  */
 class PlayerPatternComponent : public PatternComponent {
   public:
+
     /**
      * @brief Represents a pattern placed on the grid.
      */
@@ -45,36 +50,6 @@ class PlayerPatternComponent : public PatternComponent {
 #pragma endregion
 
 #pragma region Pattern management
-
-    /**
-     * @brief Adds instances to a pattern count.
-     *
-     * @param index Pattern index.
-     * @param amount Amount to add.
-     * @return true If successful.
-     * @return false Otherwise.
-     */
-    bool addCount(size_t index, int amount);
-
-    /**
-     * @brief Removes instances from a pattern count.
-     *
-     * @param index Pattern index.
-     * @param amount Amount to remove.
-     * @return true If successful.
-     * @return false Otherwise.
-     */
-    bool removeCount(size_t index, int amount);
-
-    /**
-     * @brief Sets the available count for a pattern.
-     *
-     * @param index Pattern index.
-     * @param count New count value.
-     * @return true If successful.
-     * @return false Otherwise.
-     */
-    bool setCount(size_t index, int count);
 
     /**
      * @brief Activates a pattern for placement.
@@ -113,19 +88,14 @@ class PlayerPatternComponent : public PatternComponent {
      * @return true If a pattern is active.
      * @return false Otherwise.
      */
-    bool hasActivePattern() const;
-
-    /**
-     * @brief Clears the currently active pattern.
-     */
-    void clearActivePattern();
+    [[nodiscard]] bool hasActivePattern() const;
 
     /**
      * @brief Returns the currently active pattern.
      *
      * @return const PatternEntry* Active pattern or nullptr.
      */
-    const PatternEntry* getActivePattern() const;
+    [[nodiscard]] const PatternEntry* getActivePattern() const;
 
 #pragma endregion
 
@@ -139,7 +109,7 @@ class PlayerPatternComponent : public PatternComponent {
     /**
      * @brief Removes the current preview.
      */
-    void clearPreview();
+    void deactivatePattern();
 
     /**
      * @brief Returns all placed patterns.
@@ -170,9 +140,8 @@ class PlayerPatternComponent : public PatternComponent {
 
 #pragma region Input listeners
 
-    ListenerID _cancelPatternListenerID = -1;
+    ListenerID _onMousePressedListenerID = -1;
     ListenerID _rotatePatternListenerID = -1;
-    ListenerID _confirmPatternListenerID = -1;
 
 #pragma endregion
 
@@ -180,6 +149,7 @@ class PlayerPatternComponent : public PatternComponent {
 
     HexCoord _currentPreviewOrigin;
     bool _currentPreviewValid = false;
+    dzemikk::Collider* _currentPreviewOriginCollider = nullptr;
 
     dzemikk::GameObject* _previewObject = nullptr;
     std::vector<dzemikk::GameObject*> _previewHexes;
@@ -189,17 +159,29 @@ class PlayerPatternComponent : public PatternComponent {
 
 #pragma region Helpers
 
-    void cancelPattern();
-    void rebuildPreview();
-    glm::vec3 axialToWorld(const HexCoord& coord, float hexSize);
+    static glm::vec3 axialToWorld(const HexCoord& coord, float hexSize);
     bool confirmPattern();
-    bool isCellOccupiedByPattern(const HexCoord& coord) const;
+    [[nodiscard]] bool isCellOccupiedByPattern(const HexCoord& coord) const;
     void restartPreview();
     void destroyPreview();
     void tryRemovePlacedPatternUnderCursor();
     void removePlacedPattern(size_t index);
 
 #pragma endregion
+
+    void onMouseButtonPressed(dzemikk::MouseButtonPressedEvent& e);
+    void onMouseScrolled(dzemikk::MouseScrolledEvent& e);
+
+    void handleLeftClick();
+    void handleRightClick();
+
+    bool updatePreviewOrigin();
+    void validateCurrentPattern();
+    [[nodiscard]] glm::vec4 getPatternPreviewColor() const;
+    void updatePreviewVisuals(dzemikk::Collider* collider, const glm::vec4& color);
+
+    void createPreviewFromPattern(const HexPattern& pattern);
+    WorldHex* getWorldHexUnderCursor();
 };
 
 } // namespace game
