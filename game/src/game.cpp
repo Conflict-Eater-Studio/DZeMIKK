@@ -56,6 +56,7 @@
 
 #include "ecs/components/postProcessEffect.h"
 #include "ecs/components/colorGradingEffect.h"
+#include "ecs/components/antiAliasingEffect.h"
 
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
@@ -197,6 +198,11 @@ void Game::setupMainCamera() {
     colorGrading->setSaturation(1.15f);
     colorGrading->setTemperature(0.1f);
     colorGrading->setTint(-0.05f);
+
+    auto antiAliasing = cameraGO->addComponent<dzemikk::AntiAliasingEffect>();
+    antiAliasing->setEnabled(true);
+    antiAliasing->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/fxaa"));
+    antiAliasing->setPriority(10);
 
     _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
     auto postProccessEffect = cameraGO->addComponent<dzemikk::PostProcessEffect>();
