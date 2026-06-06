@@ -1,6 +1,8 @@
 #ifndef GAME_ENEMY_TYPES_H
 #define GAME_ENEMY_TYPES_H
 
+#include <cstdint>
+
 namespace game {
 
 /**

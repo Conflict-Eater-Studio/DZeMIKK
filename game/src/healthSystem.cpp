@@ -1,66 +1,68 @@
 #include "healthSystem.h"
 
 #include <algorithm>
-
-#include <ecs/gameobject.h>
-#include <ecs/components/ui/uiTextRenderer.h>
+#include <cmath>
+#include <iomanip>
+#include <sstream>
 
 namespace game {
 
 void HealthSystem::start() {
-    _currentHealth = std::clamp(_currentHealth, 0, _maxHealth);
+    _currentHealth = std::clamp(_currentHealth, 0.0f, _maxHealth);
+
+    updateUI();
 }
 
-void HealthSystem::setHealth(int value) {
-    _currentHealth = std::clamp(value, 0, _maxHealth);
-    if (_slider) {
-        updateUI();
-    }
-    if (_currentHealth == 0) {
-    }
+void HealthSystem::setHealth(float value) {
+    _currentHealth = std::clamp(value, 0.0f, _maxHealth);
+
+    updateUI();
 }
 
-void HealthSystem::setMaxHealth(int value, bool healToFull) {
-    _maxHealth = std::max(1, value);
+void HealthSystem::setMaxHealth(float value, bool healToFull) {
+    _maxHealth = std::max(1.0f, value);
+
     if (healToFull) {
         _currentHealth = _maxHealth;
     } else {
         _currentHealth = std::min(_currentHealth, _maxHealth);
     }
-    if (_slider) {
-        _slider->setMaxValue(1.0F);
-        _slider->setMinValue(0.0F);
-        updateUI();
-    }
+
+    updateUI();
 }
 
-void HealthSystem::damage(int amount) {
-    if (amount <= 0 || isDead()) {
+void HealthSystem::damage(float amount) {
+    if (amount <= 0.0f || isDead()) {
         return;
     }
+
     setHealth(_currentHealth - amount);
 }
 
-void HealthSystem::heal(int amount) {
-    if (amount <= 0 || isDead()) {
+void HealthSystem::heal(float amount) {
+    if (amount <= 0.0f || isDead()) {
         return;
     }
+
     setHealth(_currentHealth + amount);
 }
-void HealthSystem::setSlider(dzemikk::UISlider* slider) {
-    _slider = slider;
+
+void HealthSystem::setTextRenderer(dzemikk::UITextRenderer* textRenderer) {
+
+    _textRenderer = textRenderer;
+    updateUI();
 }
 
-int HealthSystem::getMaxHealth() const {
+float HealthSystem::getMaxHealth() const {
     return _maxHealth;
 }
 
-int HealthSystem::getCurrentHealth() const {
+float HealthSystem::getCurrentHealth() const {
     return _currentHealth;
 }
 
 bool HealthSystem::isDead() const {
-    return _currentHealth <= 0;
+    return _currentHealth <= 0.0f;
 }
 
 std::string HealthSystem::typeName() const {
@@ -68,26 +70,16 @@ std::string HealthSystem::typeName() const {
 }
 
 void HealthSystem::updateUI() {
-    if (!_slider)
+    if (!_textRenderer) {
         return;
-
-    float value = _currentHealth / static_cast<float>(_maxHealth);
-    _slider->onValueChanged(value);
-
-    auto* sliderGO = _slider->getOwner();
-
-    if (!sliderGO)
-        return;
-
-    for (auto* child : sliderGO->getChildren()) {
-        if (child->getName() == "Empty") {
-
-            auto* text = child->getComponent<dzemikk::UITextRenderer>();
-            if (text) {
-                text->text = std::to_string(_currentHealth) + "/" + std::to_string(_maxHealth);
-            }
-        }
     }
+
+    std::ostringstream ss;
+
+    ss << std::fixed << std::setprecision(1) << _currentHealth << "/"
+       << static_cast<int>(std::round(_maxHealth));
+
+    _textRenderer->text = ss.str();
 }
 
 } // namespace game

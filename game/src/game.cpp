@@ -434,12 +434,16 @@ void Game::setupPlayer() {
     combatPlayerPanel->setAssetManager(_engine->getAssetManager());
     combatPlayerPanel->setCanvas(playerPanel);
 
-    //auto playerHealthbarGO = _mainScene.get()->findGameObjectByName("Player_Healthbar_Slider");
+    auto playerHealthGO =
+        _mainScene.get()->findGameObjectByName("Player_Avatar_Panel")->findDescendantByName("Health_Holder");
 
-    //auto playerHealthSystem = playerHealthbarGO->addComponent<game::HealthSystem>();
-    //playerHealthSystem->setSlider(playerHealthbarGO->getComponent<dzemikk::UISlider>());
-    //playerHealthSystem->setMaxHealth(30.0F);
-    //playerHealthSystem->setHealth(30.0F);
+    auto playerHealthSystem = playerHealthGO->addComponent<game::HealthSystem>();
+    playerHealthSystem->setOwner(playerHealthGO);
+    playerHealthSystem->setHealth(30.0F);
+    playerHealthSystem->setMaxHealth(30.0F);
+    playerHealthSystem->setTextRenderer(
+        playerHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
+    playerHealthSystem->damage(3.2);
 }
 
 void Game::setupEnemies() {
@@ -534,10 +538,13 @@ void Game::setupEnemies() {
     combatEnamyPanel->setAssetManager(_engine->getAssetManager());
     combatEnamyPanel->setCanvas(enemyPanel);
 
-    //auto enemyHealthbarGO = _mainScene.get()->findGameObjectByName("Enemy_Healthbar_Slider");
+    auto enemyHealthGO = _mainScene.get()
+                             ->findGameObjectByName("Enemy_Avatar_Panel")
+                             ->findDescendantByName("Health_Holder");
 
-    //auto enemyHealthSystem = enemyHealthbarGO->addComponent<game::HealthSystem>();
-    //enemyHealthSystem->setSlider(enemyHealthbarGO->getComponent<dzemikk::UISlider>());
+    auto enemyHealthSystem = enemyHealthGO->addComponent<game::HealthSystem>();
+    enemyHealthSystem->setOwner(enemyHealthGO);
+    enemyHealthSystem->setTextRenderer(enemyHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
 }
 
 void Game::registerDefaultTerritories() {

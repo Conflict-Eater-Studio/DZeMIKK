@@ -2,35 +2,40 @@
 #define DZEMIKK_HEALTHSYSTEM_H
 
 #include "ecs/components/monobehaviour.h"
-#include "ecs/components/ui/uiSlider.h"
+#include "ecs/components/ui/uiTextRenderer.h"
 
 #include <string>
 
 namespace game {
 
 class HealthSystem : public dzemikk::MonoBehaviour {
-public:
+  public:
     using Base = dzemikk::MonoBehaviour;
 
     void start() override;
 
-    void setHealth(int value);
-    void setMaxHealth(int value, bool healToFull = false);
-    void damage(int amount);
-    void heal(int amount);
-    void setSlider(dzemikk::UISlider* slider);
+    void setHealth(float value);
+    void setMaxHealth(float value, bool healToFull = false);
 
-    [[nodiscard]] int getMaxHealth() const;
-    [[nodiscard]] int getCurrentHealth() const;
+    void damage(float amount);
+    void heal(float amount);
+
+    void setTextRenderer(dzemikk::UITextRenderer* textRenderer);
+
+    [[nodiscard]] float getMaxHealth() const;
+    [[nodiscard]] float getCurrentHealth() const;
     [[nodiscard]] bool isDead() const;
 
     [[nodiscard]] std::string typeName() const override;
-private:
-    int _maxHealth = 100;
-    int _currentHealth = 100;
-    dzemikk::UISlider* _slider = nullptr;
 
+  private:
     void updateUI();
+
+  private:
+    float _maxHealth = 100.0f;
+    float _currentHealth = 100.0f;
+
+    dzemikk::UITextRenderer* _textRenderer = nullptr;
 };
 
 } // namespace game
