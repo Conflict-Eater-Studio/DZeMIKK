@@ -8,35 +8,43 @@
 class Game;
 namespace game {
 
-    class PlayerMovement : public dzemikk::MonoBehaviour {
-        public:
-        PlayerMovement() = default;
+class PlayerPatternComponent;
 
-        void start() override;
-        void update(double deltaTime) override;
-        [[nodiscard]] std::string typeName() const override {
-            return "PlayerMovement";
-        }
+class PlayerMovement : public dzemikk::MonoBehaviour {
+  public:
+    PlayerMovement() = default;
 
-        void setSpeed(float speed);
-        float getSpeed() const;
-        void setPlayerEntity(PlayerEntity* playerEntity);
-        void setHexGrid(HexGrid* hexGrid);
-        void moveTo(HexGrid::HexCellPtr cell);
+    void start() override;
+    void update(double deltaTime) override;
+    [[nodiscard]] std::string typeName() const override {
+        return "PlayerMovement";
+    }
 
-        void setGame(Game* game);
-        void stopMovement();
-    private:
-        PlayerEntity* _playerEntity = nullptr;
-        HexGrid* _hexGrid = nullptr;
-        std::vector<HexGrid::HexCellPtr> _path;
-        float _speed = 1.0f;
-        int _step = 1;
-        float _duration = 0.0f;
+    void setSpeed(float speed);
+    float getSpeed() const;
+    void setPlayerEntity(PlayerEntity* playerEntity);
+    void setHexGrid(HexGrid* hexGrid);
+    void moveTo(HexGrid::HexCellPtr cell);
 
-        Game* _game = nullptr;
+    void setGame(Game* game);
+    void stopMovement();
 
-    };
-}
+    [[nodiscard]] std::vector<HexGrid::HexCellPtr> findPath(const HexGrid::HexCellPtr& startCell,
+                                                            const HexGrid::HexCellPtr& targetCell);
+
+  private:
+    PlayerEntity* _playerEntity = nullptr;
+    HexGrid* _hexGrid = nullptr;
+    std::vector<HexGrid::HexCellPtr> _path;
+    float _speed = 1.0F;
+    int _step = 1;
+    float _duration = 0.0F;
+
+    Game* _game = nullptr;
+
+    static bool isWalkableCell(const HexGrid::HexCellPtr& cell);
+    void tryUnlockBlockingPattern(const HexGrid::HexCellPtr& cell);
+};
+} // namespace game
 
 #endif

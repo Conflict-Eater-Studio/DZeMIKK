@@ -74,6 +74,18 @@ void World::update(double dt) {
                 color = glm::vec4(1.0F, 1.0F, 0.0F, 1.0F);
             }
 
+            if (cell->getHexCell()->getType() == HexCell::Type::BlockingPattern) {
+                color = glm::vec4(0.0F, 1.0F, 0.0F, 1.0F);
+            }
+
+            if (cell->getHexCell()->getType() == HexCell::Type::Bridge) {
+                color = glm::vec4(0.0F, 1.0F, 1.0F, 1.0F);
+            }
+
+            if (cell->getHexCell()->getType() == HexCell::Type::BlockingBridge) {
+                color = glm::vec4(1.0F, 1.0F, 0.0F, 1.0F);
+            }
+
             cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setColor(color);
             cell->getHexCell()->setDirty(false);
         }
@@ -93,7 +105,8 @@ boost::uuids::uuid World::addChunk(const ChunkDefinition& config) {
                                .chunkId = config.chunkId,
                                .steps = config.steps,
                                .generator = g,
-                               .dirFromParent = config.dirFromParent});
+                               .dirFromParent = config.dirFromParent,
+                               .unlockPattern = config.unlockPattern});
 
     _worldDefinition.chunks.back().chunkId = id;
     renderChunk(id);

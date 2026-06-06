@@ -222,6 +222,7 @@ void Game::setupWorld() {
             dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Sphere);
 
     _worldGO = _mainScene.get()->findGameObjectByName("World");
+    _worldGO->addTag("World");
     auto* world = _worldGO->addComponent<game::World>(1);
     world->setModel(model);
     world->setMaterial(material);
@@ -402,6 +403,7 @@ void Game::setupInputCallbacks() {
 
 void Game::setupPlayer() {
     auto playerGO = _mainScene.get()->findGameObjectByName("Player");
+    playerGO->addTag("Player");
 
     dzemikk::AnimationClip* clip = nullptr;
     auto skeleton =
@@ -450,15 +452,16 @@ void Game::setupEnemies() {
     enemyManager->setWorld(_worldGO->getComponent<game::World>());
     enemyManager->setAssetManager(_engine->getAssetManager());
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c1Config = {
-        {.personality = game::EnemyPersonality::Aggressive,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 15,
-         .territoryPattern = "1"}};
+    std::vector<game::EnemySpawnConfig> c1Config = {{
+        .personality = game::EnemyPersonality::Aggressive,
+        .type = game::EnemyType::Normal,
+        .count = 1,
+        .hp = 15,
+        .territoryPattern = "1",
+    }};
     enemyManager->setSpawnConfig(_chunkIds["c1"], c1Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c2Config = {
+    std::vector<game::EnemySpawnConfig> c2Config = {
         {.personality = game::EnemyPersonality::Balanced,
          .type = game::EnemyType::Normal,
          .count = 1,
@@ -466,7 +469,7 @@ void Game::setupEnemies() {
          .territoryPattern = "2"}};
     enemyManager->setSpawnConfig(_chunkIds["c2"], c2Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c3Config = {
+    std::vector<game::EnemySpawnConfig> c3Config = {
         {.personality = game::EnemyPersonality::Aggressive,
          .type = game::EnemyType::Special,
          .count = 1,
@@ -475,7 +478,7 @@ void Game::setupEnemies() {
     };
     enemyManager->setSpawnConfig(_chunkIds["c3"], c3Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c4Config = {
+    std::vector<game::EnemySpawnConfig> c4Config = {
         {.personality = game::EnemyPersonality::Aggressive,
          .type = game::EnemyType::Normal,
          .count = 1,
@@ -484,7 +487,7 @@ void Game::setupEnemies() {
     };
     enemyManager->setSpawnConfig(_chunkIds["c4"], c4Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c6Config = {
+    std::vector<game::EnemySpawnConfig> c6Config = {
         {.personality = game::EnemyPersonality::Aggressive,
          .type = game::EnemyType::Normal,
          .count = 1,
@@ -498,7 +501,7 @@ void Game::setupEnemies() {
     };
     enemyManager->setSpawnConfig(_chunkIds["c6"], c6Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c7Config = {
+    std::vector<game::EnemySpawnConfig> c7Config = {
         {.personality = game::EnemyPersonality::Defensive,
          .type = game::EnemyType::Normal,
          .count = 1,
@@ -512,7 +515,7 @@ void Game::setupEnemies() {
     };
     enemyManager->setSpawnConfig(_chunkIds["c7"], c7Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c8Config = {
+    std::vector<game::EnemySpawnConfig> c8Config = {
         {.personality = game::EnemyPersonality::Balanced,
          .type = game::EnemyType::Normal,
          .count = 1,
@@ -526,7 +529,7 @@ void Game::setupEnemies() {
     };
     enemyManager->setSpawnConfig(_chunkIds["c8"], c8Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c9Config = {
+    std::vector<game::EnemySpawnConfig> c9Config = {
         {.personality = game::EnemyPersonality::Balanced,
          .type = game::EnemyType::Normal,
          .count = 1,
@@ -535,7 +538,7 @@ void Game::setupEnemies() {
     };
     enemyManager->setSpawnConfig(_chunkIds["c9"], c9Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c10Config = {
+    std::vector<game::EnemySpawnConfig> c10Config = {
         {.personality = game::EnemyPersonality::Defensive,
          .type = game::EnemyType::Normal,
          .count = 1,
@@ -549,7 +552,7 @@ void Game::setupEnemies() {
     };
     enemyManager->setSpawnConfig(_chunkIds["c10"], c10Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c12Config = {
+    std::vector<game::EnemySpawnConfig> c12Config = {
         {.personality = game::EnemyPersonality::Defensive,
          .type = game::EnemyType::Special,
          .count = 1,
@@ -558,7 +561,7 @@ void Game::setupEnemies() {
     };
     enemyManager->setSpawnConfig(_chunkIds["c12"], c12Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c13Config = {
+    std::vector<game::EnemySpawnConfig> c13Config = {
         {.personality = game::EnemyPersonality::Defensive,
          .type = game::EnemyType::Normal,
          .count = 1,
@@ -567,7 +570,7 @@ void Game::setupEnemies() {
     };
     enemyManager->setSpawnConfig(_chunkIds["c13"], c13Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c15Config = {
+    std::vector<game::EnemySpawnConfig> c15Config = {
         {.personality = game::EnemyPersonality::Aggressive,
          .type = game::EnemyType::Normal,
          .count = 1,
@@ -581,7 +584,7 @@ void Game::setupEnemies() {
     };
     enemyManager->setSpawnConfig(_chunkIds["c15"], c15Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c16Config = {
+    std::vector<game::EnemySpawnConfig> c16Config = {
         {.personality = game::EnemyPersonality::Balanced,
          .type = game::EnemyType::Normal,
          .count = 1,
@@ -595,7 +598,7 @@ void Game::setupEnemies() {
     };
     enemyManager->setSpawnConfig(_chunkIds["c16"], c16Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c17Config = {
+    std::vector<game::EnemySpawnConfig> c17Config = {
         {.personality = game::EnemyPersonality::Aggressive,
          .type = game::EnemyType::Normal,
          .count = 1,

@@ -1,25 +1,25 @@
 #include "stateMachine/combatState.h"
-#include "enemySystem/enemyEntity.h"
-#include "map/HexGrid.h"
-#include "map/HexCell.h"
-#include "enemySystem/enemyManager.h"
-#include "player/playerMovement.h"
-#include "enemySystem/combatArenaBuilder.h"
-#include "player/playerPatternComponent.h"
 
-#include "game.h"
 #include "camera/cameraController.h"
-#include <ecs/scene.h>
-#include <ecs/gameobject.h>
-#include <ecs/components/meshRenderer.h>
-#include <assetManager/assetHandle.h>
-#include <iostream>
-#include <enemySystem/enemyPatternComponent.h>
-#include "ui/combatUIPanel.h"
-#include "healthSystem.h"
-
+#include "enemySystem/combatArenaBuilder.h"
+#include "enemySystem/enemyEntity.h"
+#include "enemySystem/enemyManager.h"
+#include "game.h"
 #include "gameStateMachine.h"
+#include "healthSystem.h"
+#include "map/HexCell.h"
+#include "map/HexGrid.h"
+#include "player/playerMovement.h"
+#include "player/playerPatternComponent.h"
 #include "stateMachine/explorationState.h"
+#include "ui/combatUIPanel.h"
+
+#include <assetManager/assetHandle.h>
+#include <ecs/components/meshRenderer.h>
+#include <ecs/gameobject.h>
+#include <ecs/scene.h>
+#include <enemySystem/enemyPatternComponent.h>
+#include <iostream>
 
 const char* patternTypeToString(game::HexPattern::Type type) {
     switch (type) {
@@ -73,7 +73,6 @@ void game::CombatState::onEnter() {
     }
 
     _player->teleportTo(arena.centerCell);
-
 
     _playerPatternComponent = playerGO->getComponent<PlayerPatternComponent>();
 
@@ -132,7 +131,6 @@ void game::CombatState::onExit() {
         cell->setDirty(true);
     }
 
-
     auto enemyCell = grid->findCellByEntity(_currentEnemy);
 
     if (enemyCell) {
@@ -166,7 +164,7 @@ void game::CombatState::onUpdate(float dt) {
 
 void game::CombatState::startNewTurn() {
     _phase = CombatPhase::EnemyPlanning;
-    
+
     _playerPatternComponent->clearPlacedPatterns();
     _playerPatternComponent->clearPreview();
     _playerPatternComponent->clearActivePattern();
@@ -187,7 +185,7 @@ void game::CombatState::startNewTurn() {
     auto* enemyManagerGO = _game->getCurrentScene().get()->findGameObjectByName("EnemyManager");
     auto* patternComponent = enemyManagerGO->getComponent<EnemyPatternComponent>();
     patternComponent->clearUsage();
-    
+
     generateEnemyBlockedCells();
     auto enemyPanel = _game->getCurrentScene().get()->findGameObjectByName("Enemy_Panel");
     auto* enemyPanelUI = enemyPanel->getComponent<CombatUIPanel>();
@@ -221,7 +219,7 @@ void game::CombatState::generateEnemyBlockedCells() {
         territory.push_back(cell);
     }
 
-    if (territory.empty()) 
+    if (territory.empty())
         return;
 
     std::shuffle(territory.begin(), territory.end(), std::mt19937(std::random_device{}()));
@@ -566,7 +564,7 @@ void game::CombatState::resolveConflict() {
             if (!cell)
                 continue;
 
-            HexCoord offset = _currentEnemy->getCell().get()->getCoord() -  cell->getCoord();
+            HexCoord offset = _currentEnemy->getCell().get()->getCoord() - cell->getCoord();
 
             auto& effect = enemyEffects[offset];
 
@@ -637,8 +635,8 @@ void game::CombatState::resolveConflict() {
         healEnemy += enemy.heal;
     }
 
-
-    auto* playerHealth = _game->getCurrentScene().get()
+    auto* playerHealth = _game->getCurrentScene()
+                             .get()
                              ->findGameObjectByName("Player_Healthbar_Slider")
                              ->getComponent<HealthSystem>();
 
@@ -647,13 +645,28 @@ void game::CombatState::resolveConflict() {
         playerHealth->heal(static_cast<int>(std::round(healPlayer)));
     }
 
-    auto* enemyHealth = _game->getCurrentScene().get()
+    auto* enemyHealth = _game->getCurrentScene()
+                            .get()
                             ->findGameObjectByName("Enemy_Healthbar_Slider")
                             ->getComponent<HealthSystem>();
 
     if (enemyHealth) {
         enemyHealth->damage(static_cast<int>(std::round(damageToEnemy)));
         enemyHealth->heal(static_cast<int>(std::round(healEnemy)));
+    }
+
+    if (enemyHealth->isDead()) {
+        auto* grid = _game->getCurrentScene()
+                         .get()
+                         ->findGameObjectByTag("World")
+                         ->getComponent<World>()
+                         ->getGrid();
+
+        auto enemyChunkId = grid->findChunkForCoord(_currentEnemy->getCell()->getCoord())->getId();
+        auto enemyConfig = _currentEnemy->getConfig();
+        for (const auto& childChunk : enemyConfig.blocksChunks) {
+            grid->unlockBridge({enemyChunkId, childChunk}, _currentEnemy->getId());
+        }
     }
 
     if (playerHealth->isDead() || enemyHealth->isDead()) {

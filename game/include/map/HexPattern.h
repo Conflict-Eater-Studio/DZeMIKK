@@ -3,6 +3,7 @@
 
 #include "map/HexCoord.h"
 
+#include <algorithm>
 #include <nlohmann/json.hpp>
 #include <vector>
 
@@ -53,5 +54,4 @@ inline void from_json(const nlohmann::json& j, HexPattern& pat) {
 // NOLINTEND(readability-identifier-naming)
 
 } // namespace game
-
 #endif // GAME_HEXPATTERN_H

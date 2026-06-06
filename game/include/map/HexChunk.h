@@ -24,7 +24,7 @@ class HexChunk {
         int steps{0};
         std::function<float(int, int)> generator;
         HexCoord::Direction dirFromParent{HexCoord::Direction::R180};
-        std::optional<HexPattern> unlockPatter = std::nullopt;
+        std::optional<HexPattern> unlockPattern = std::nullopt;
     };
 
     HexChunk(Config config, HexChunk* parent, unsigned int seed = 42);

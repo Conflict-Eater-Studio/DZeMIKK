@@ -1,10 +1,10 @@
 #pragma once
 
 #include "ecs/components/monobehaviour.h"
+#include "enemyTypes.h"
 #include "map/HexGrid.h"
 
 #include <random>
-#include "enemyTypes.h"
 
 namespace dzemikk {
 class AssetManager;
@@ -17,14 +17,6 @@ class TerritoryPattern;
 
 class EnemyManager : public dzemikk::MonoBehaviour {
   public:
-    struct EnemySpawnConfig {
-        EnemyPersonality personality;
-        EnemyType type;
-        int count;
-        int hp;
-        std::string territoryPattern;
-    };
-
     EnemyManager(unsigned int seed = 1);
 
     void setWorld(World* world);
@@ -47,10 +39,10 @@ class EnemyManager : public dzemikk::MonoBehaviour {
     std::unordered_map<boost::uuids::uuid, std::vector<EnemySpawnConfig>> _spawnRules;
     std::unordered_map<HexCoord, EnemyEntity*> _cellToEnemy;
 
-    void spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnConfig& cfg);
+    void spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnConfig& cfg,
+                    const boost::uuids::uuid& spawnChunkId);
     void assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPtr centerCell,
-                                       const TerritoryPattern& pattern);
-    HexChunk* findChunkForCoord(const HexCoord& coord);
+                         const TerritoryPattern& pattern);
     bool canPlacePattern(HexCoord center, const TerritoryPattern& pattern);
 };
 

@@ -29,20 +29,21 @@ class PatternComponent : public dzemikk::MonoBehaviour {
 
     void clearPatterns();
 
-    bool canUsePattern(size_t index) const;
+    [[nodiscard]] bool canUsePattern(size_t index) const;
 
     virtual bool usePattern(size_t index) = 0;
 
-    size_t getPatternCount() const;
+    [[nodiscard]] size_t getPatternCount() const;
 
     PatternEntry* getPattern(size_t index);
-    const PatternEntry* getPattern(size_t index) const;
+    [[nodiscard]] const PatternEntry* getPattern(size_t index) const;
 
-    const std::vector<PatternEntry>& getPatterns() const;
+    [[nodiscard]] const std::vector<PatternEntry>& getPatterns() const;
 
-    int findPattern(const HexPattern& pattern) const;
+    [[nodiscard]] int findPattern(const HexPattern& pattern) const;
+    [[nodiscard]] bool hasPattern(const HexPattern& pattern) const;
 
-    std::string typeName() const override;
+    [[nodiscard]] std::string typeName() const override;
 
   protected:
     std::vector<PatternEntry> _patterns;
