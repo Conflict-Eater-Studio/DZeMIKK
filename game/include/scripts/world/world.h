@@ -1,14 +1,13 @@
 #ifndef GAME_WORLD_H
 #define GAME_WORLD_H
 
-#include "boost/uuid/random_generator.hpp"
 #include "boost/uuid/string_generator.hpp"
 #include "boost/uuid/uuid_io.hpp"
+#include "map/HexPattern.h"
 #pragma once
 
 #include "ecs/components/monobehaviour.h"
 #include "ecs/components/transform.h"
-#include "ecs/serialize/serializedRef.h"
 #include "map/HexGrid.h"
 #include "renderer/material.h"
 #include "renderer/model.h"
@@ -16,7 +15,6 @@
 
 #include <nlohmann/json.hpp>
 #include <random>
-#include <tuple>
 #include <unordered_set>
 
 namespace game {
@@ -29,6 +27,7 @@ class World : public dzemikk::MonoBehaviour {
         int steps;
         std::string generatorId{"default"};
         HexCoord::Direction dirFromParent;
+        std::optional<HexPattern> unlockPattern = std::nullopt;
     };
 
     struct WorldDefinition {
@@ -93,7 +92,7 @@ class World : public dzemikk::MonoBehaviour {
         return _reservedTerritory.insert(coord).second;
     }
 
-    bool isTerritoryReserved(const HexCoord& coord) const {
+    [[nodiscard]] bool isTerritoryReserved(const HexCoord& coord) const {
         return _reservedTerritory.contains(coord);
     }
 
@@ -124,13 +123,12 @@ class World : public dzemikk::MonoBehaviour {
 // NOLINTBEGIN(readability-identifier-naming)
 // --- JSON Serialization for ChunkDefinition ---
 inline void to_json(nlohmann::json& j, const World::ChunkDefinition& def) {
-    j = nlohmann::json{
-        {"parentChunkId", boost::uuids::to_string(def.parentChunkId)},
-        {"chunkId", boost::uuids::to_string(def.chunkId)},
-        {"steps", def.steps},
-        {"generatorId", def.generatorId},
-        {"dirFromParent", def.dirFromParent},
-    };
+    j = nlohmann::json{{"parentChunkId", boost::uuids::to_string(def.parentChunkId)},
+                       {"chunkId", boost::uuids::to_string(def.chunkId)},
+                       {"steps", def.steps},
+                       {"generatorId", def.generatorId},
+                       {"dirFromParent", def.dirFromParent},
+                       {"unlockPattern", def.unlockPattern}};
 }
 
 inline void from_json(const nlohmann::json& j, World::ChunkDefinition& def) {

@@ -7,8 +7,7 @@ void game::PatternComponent::addPattern(const HexPattern& pattern, int count) {
     _patterns.push_back(PatternEntry{.pattern = pattern, .count = count});
 }
 
-void game::PatternComponent::insertPattern(size_t index, const HexPattern& pattern,
-                                                 int count) {
+void game::PatternComponent::insertPattern(size_t index, const HexPattern& pattern, int count) {
     index = std::min(index, _patterns.size());
 
     _patterns.insert(_patterns.begin() +
@@ -125,3 +124,33 @@ bool game::PatternComponent::setCount(size_t index, int count) {
     return true;
 }
 
+bool game::PatternComponent::hasPattern(const HexPattern& pattern) const {
+    for (const auto& p : _patterns) {
+        auto pat = p.pattern;
+
+        if (pat.getEffectStrength() != pattern.getEffectStrength() ||
+            pat.getType() != pattern.getType()) {
+            return false;
+        }
+
+        if (pat.getHexes().size() != pattern.getHexes().size()) {
+            return false;
+        }
+
+        bool valid = false;
+        for (size_t i = 0; i < 6; i++) {
+            // NOTE: is_permutation is good enough for <100 elemets in the array. (If any pattern
+            // has more than 100 hexes then we have offically lost our minds. >_<)
+            valid = std::is_permutation(pat.getHexes().begin(), pat.getHexes().end(),
+                                        pattern.getHexes().begin());
+
+            if (valid) {
+                return true;
+            }
+
+            (void)pat.rotate(HexPattern::Rotation::Clockwise);
+        }
+    }
+
+    return false;
+}

@@ -74,15 +74,17 @@ void World::update(double dt) {
                 color = glm::vec4(1.0F, 1.0F, 0.0F, 1.0F);
             }
 
-            /*
-            if (cell->getHexCell()->getGenState() == HexCell::GenState::Normal) {
-                color = glm::vec4(1.0F, 1.0F, 1.0F, 1.0F);
-            } else if (cell->getHexCell()->getGenState() == HexCell::GenState::Blocked) {
-                color = glm::vec4(0.2F, 0.2F, 0.2F, 1.0F);
-            } else if (cell->getHexCell()->getGenState() == HexCell::GenState::Protected) {
-                color = glm::vec4(0.2F, 0.5F, 1.0F, 1.0F);
+            if (cell->getHexCell()->getType() == HexCell::Type::BlockingPattern) {
+                color = glm::vec4(0.0F, 1.0F, 0.0F, 1.0F);
             }
-            */
+
+            if (cell->getHexCell()->getType() == HexCell::Type::Bridge) {
+                color = glm::vec4(0.0F, 1.0F, 1.0F, 1.0F);
+            }
+
+            if (cell->getHexCell()->getType() == HexCell::Type::BlockingBridge) {
+                color = glm::vec4(1.0F, 1.0F, 0.0F, 1.0F);
+            }
 
             cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setColor(color);
             cell->getHexCell()->setDirty(false);
@@ -103,7 +105,8 @@ boost::uuids::uuid World::addChunk(const ChunkDefinition& config) {
                                .chunkId = config.chunkId,
                                .steps = config.steps,
                                .generator = g,
-                               .dirFromParent = config.dirFromParent});
+                               .dirFromParent = config.dirFromParent,
+                               .unlockPattern = config.unlockPattern});
 
     _worldDefinition.chunks.back().chunkId = id;
     renderChunk(id);
@@ -137,14 +140,16 @@ bool World::hasHexVisual(const HexCoord& coord) const {
 
 dzemikk::Transform* World::getHexTransformByCell(HexCell cell) {
     for (auto* transform : _hexTransforms) {
-        if (!transform)
+        if (!transform) {
             continue;
+        }
 
         auto* worldHex = transform->getOwner()->getComponent<WorldHex>();
-        if (!worldHex)
+        if (!worldHex) {
             continue;
+        }
 
-        if (worldHex->getHexCell().get()->getCoord() == cell.getCoord()) {
+        if (worldHex->getHexCell()->getCoord() == cell.getCoord()) {
             return transform;
         }
     }

@@ -35,6 +35,7 @@
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
 #endif
+#include "ecs/components/colorGradingEffect.h"
 #include "ecs/components/fxaaPostProcessEffect.h"
 #include "ecs/components/outlinePostProcessEffect.h"
 #include "ecs/components/postProcessEffect.h"
@@ -51,12 +52,8 @@
 #include <ecs/components/animator.h>
 #include <ecs/components/skinnedMeshRenderer.h>
 #include <gameStateMachine.h>
-#include <iostream>
 #include <healthSystem.h>
-
-#include "ecs/components/postProcessEffect.h"
-#include "ecs/components/colorGradingEffect.h"
-
+#include <iostream>
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
@@ -167,30 +164,33 @@ void Game::setupMainCamera() {
     _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
     auto fxaaProcessEffect = cameraGO->addComponent<dzemikk::OutlinePostProcessEffect>();
     fxaaProcessEffect->setEnabled(false);
-    fxaaProcessEffect->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/outline"));
+    fxaaProcessEffect->setShader(
+        _engine->getAssetManager()->get<dzemikk::Shader>("shaders/outline"));
     fxaaProcessEffect->setPriority(1);
     fxaaProcessEffect->setColor(glm::vec3(1.0F, 0.0F, 0.0F));
-    _engine->getInput()->OnKeyPressed.addListener
-     ([this, fxaaProcessEffect](dzemikk::KeyPressedEvent& event) {
-         if (event.GetKeyCode() == GLFW_KEY_F1) {
-             _engine->getAssetManager()->reload<dzemikk::Shader>("shaders/outline");
-             _engine->getAssetManager()->reload<dzemikk::Shader>("shaders/grain");
-         }
-         if (event.GetKeyCode() == GLFW_KEY_3) {
-             fxaaProcessEffect->setEnabled(false);
-         }
-         if (event.GetKeyCode() == GLFW_KEY_4) {
-             fxaaProcessEffect->setEnabled(false);
-         }
-     });
+    _engine->getInput()->OnKeyPressed.addListener(
+        [this, fxaaProcessEffect](dzemikk::KeyPressedEvent& event) {
+            if (event.GetKeyCode() == GLFW_KEY_F1) {
+                _engine->getAssetManager()->reload<dzemikk::Shader>("shaders/outline");
+                _engine->getAssetManager()->reload<dzemikk::Shader>("shaders/grain");
+            }
+            if (event.GetKeyCode() == GLFW_KEY_3) {
+                fxaaProcessEffect->setEnabled(false);
+            }
+            if (event.GetKeyCode() == GLFW_KEY_4) {
+                fxaaProcessEffect->setEnabled(false);
+            }
+        });
     auto postProccessEffect2 = cameraGO->addComponent<dzemikk::PostProcessEffect>();
     postProccessEffect2->setEnabled(false);
-    postProccessEffect2->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/grayscale"));
+    postProccessEffect2->setShader(
+        _engine->getAssetManager()->get<dzemikk::Shader>("shaders/grayscale"));
     postProccessEffect2->setPriority(2);
 
     auto colorGrading = cameraGO->addComponent<dzemikk::ColorGradingEffect>();
     colorGrading->setEnabled(false);
-    colorGrading->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/color_grading"));
+    colorGrading->setShader(
+        _engine->getAssetManager()->get<dzemikk::Shader>("shaders/color_grading"));
     colorGrading->setPriority(0);
     colorGrading->setExposure(0.1f);
     colorGrading->setContrast(1.1f);
@@ -208,7 +208,6 @@ void Game::setupMainCamera() {
     _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(_mainCamera);
 }
 
-
 void Game::setupWorld() {
     auto shader = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
     auto shader2 = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile2");
@@ -224,11 +223,11 @@ void Game::setupWorld() {
             dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Sphere);
 
     _worldGO = _mainScene.get()->findGameObjectByName("World");
+    _worldGO->addTag("World");
     auto* world = _worldGO->addComponent<game::World>(1);
     world->setModel(model);
     world->setMaterial(material);
     world->setMaterial2(material2);
-    // world->setEnemyModel(enemyModel);
     world->setResourceModel(resourceModel);
     world->setPlayer(_playerEntity);
     world->registerGenerator("full", [](int step, int maxSteps) { return 1.0F; });
@@ -241,8 +240,11 @@ void Game::setupWorld() {
                                .dirFromParent = game::HexCoord::Direction::R0}); // connect chunk
     _chunkIds["c2"] = c2;
 
-    auto c3 = world->addChunk(
-        {.parentChunkId = c2, .steps = 15, .dirFromParent = game::HexCoord::Direction::R330});
+    auto c3 = world->addChunk({.parentChunkId = c2,
+                               .steps = 15,
+                               .dirFromParent = game::HexCoord::Direction::R330,
+                               .unlockPattern = game::HexPattern(
+                                   {{-1, 1}, {0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 1.2F)});
     _chunkIds["c3"] = c3;
 
     auto c4 = world->addChunk(
@@ -402,6 +404,7 @@ void Game::setupInputCallbacks() {
 
 void Game::setupPlayer() {
     auto playerGO = _mainScene.get()->findGameObjectByName("Player");
+    playerGO->addTag("Player");
 
     dzemikk::AnimationClip* clip = nullptr;
     auto skeleton =
@@ -429,7 +432,8 @@ void Game::setupPlayer() {
     patternComponent->setGrid(_hexGrid);
 
     auto playerPanel = _mainScene.get()->findGameObjectByName("Player_Panel");
-    auto combatPlayerPanel = playerPanel->addComponent<game::CombatUIPanel>(true, game::CombatUIPanel::Mode::AvailablePatterns);
+    auto combatPlayerPanel = playerPanel->addComponent<game::CombatUIPanel>(
+        true, game::CombatUIPanel::Mode::AvailablePatterns);
     combatPlayerPanel->setPatternsComponent(patternComponent);
     combatPlayerPanel->setAssetManager(_engine->getAssetManager());
     combatPlayerPanel->setCanvas(playerPanel);
@@ -454,85 +458,166 @@ void Game::setupEnemies() {
     enemyManager->setWorld(_worldGO->getComponent<game::World>());
     enemyManager->setAssetManager(_engine->getAssetManager());
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c1Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 15, "1"}};
+    std::vector<game::EnemySpawnConfig> c1Config = {{
+        .personality = game::EnemyPersonality::Aggressive,
+        .type = game::EnemyType::Normal,
+        .count = 1,
+        .hp = 15,
+        .territoryPattern = "1",
+    }};
     enemyManager->setSpawnConfig(_chunkIds["c1"], c1Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c2Config = {
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 20, "2"}};
+    std::vector<game::EnemySpawnConfig> c2Config = {
+        {.personality = game::EnemyPersonality::Balanced,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 20,
+         .territoryPattern = "2"}};
     enemyManager->setSpawnConfig(_chunkIds["c2"], c2Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c3Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Special, 1, 30, "3"},
+    std::vector<game::EnemySpawnConfig> c3Config = {
+        {.personality = game::EnemyPersonality::Aggressive,
+         .type = game::EnemyType::Special,
+         .count = 1,
+         .hp = 30,
+         .territoryPattern = "3"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c3"], c3Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c4Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20, "2"},
+    std::vector<game::EnemySpawnConfig> c4Config = {
+        {.personality = game::EnemyPersonality::Aggressive,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 20,
+         .territoryPattern = "2"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c4"], c4Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c6Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 20, "2"},
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "3"},
+    std::vector<game::EnemySpawnConfig> c6Config = {
+        {.personality = game::EnemyPersonality::Aggressive,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 20,
+         .territoryPattern = "2"},
+        {.personality = game::EnemyPersonality::Defensive,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 25,
+         .territoryPattern = "3"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c6"], c6Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c7Config = {
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "3"},
-        {game::EnemyPersonality::Balanced, game::EnemyType::Special, 1, 35, "4"},
+    std::vector<game::EnemySpawnConfig> c7Config = {
+        {.personality = game::EnemyPersonality::Defensive,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 25,
+         .territoryPattern = "3"},
+        {.personality = game::EnemyPersonality::Balanced,
+         .type = game::EnemyType::Special,
+         .count = 1,
+         .hp = 35,
+         .territoryPattern = "4"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c7"], c7Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c8Config = {
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 30, "3"},
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 25, "3"},
+    std::vector<game::EnemySpawnConfig> c8Config = {
+        {.personality = game::EnemyPersonality::Balanced,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 30,
+         .territoryPattern = "3"},
+        {.personality = game::EnemyPersonality::Aggressive,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 25,
+         .territoryPattern = "3"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c8"], c8Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c9Config = {
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35, "4"},
+    std::vector<game::EnemySpawnConfig> c9Config = {
+        {.personality = game::EnemyPersonality::Balanced,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 35,
+         .territoryPattern = "4"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c9"], c9Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c10Config = {
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 25, "3"},
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 30, "3"},
+    std::vector<game::EnemySpawnConfig> c10Config = {
+        {.personality = game::EnemyPersonality::Defensive,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 25,
+         .territoryPattern = "3"},
+        {.personality = game::EnemyPersonality::Defensive,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 30,
+         .territoryPattern = "3"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c10"], c10Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c12Config = {
-        {game::EnemyPersonality::Defensive, game::EnemyType::Special, 1, 40, "5"},
+    std::vector<game::EnemySpawnConfig> c12Config = {
+        {.personality = game::EnemyPersonality::Defensive,
+         .type = game::EnemyType::Special,
+         .count = 1,
+         .hp = 40,
+         .territoryPattern = "5"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c12"], c12Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c13Config = {
-        {game::EnemyPersonality::Defensive, game::EnemyType::Normal, 1, 35, "4"},
+    std::vector<game::EnemySpawnConfig> c13Config = {
+        {.personality = game::EnemyPersonality::Defensive,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 35,
+         .territoryPattern = "4"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c13"], c13Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c15Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 35, "4"},
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 40, "5"},
+    std::vector<game::EnemySpawnConfig> c15Config = {
+        {.personality = game::EnemyPersonality::Aggressive,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 35,
+         .territoryPattern = "4"},
+        {.personality = game::EnemyPersonality::Balanced,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 40,
+         .territoryPattern = "5"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c15"], c15Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c16Config = {
-        {game::EnemyPersonality::Balanced, game::EnemyType::Normal, 1, 35, "4"},
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 30, "1"},
+    std::vector<game::EnemySpawnConfig> c16Config = {
+        {.personality = game::EnemyPersonality::Balanced,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 35,
+         .territoryPattern = "4"},
+        {.personality = game::EnemyPersonality::Aggressive,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 30,
+         .territoryPattern = "1"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c16"], c16Config);
 
-    std::vector<game::EnemyManager::EnemySpawnConfig> c17Config = {
-        {game::EnemyPersonality::Aggressive, game::EnemyType::Normal, 1, 50, "6"},
+    std::vector<game::EnemySpawnConfig> c17Config = {
+        {.personality = game::EnemyPersonality::Aggressive,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 50,
+         .territoryPattern = "6"},
     };
     enemyManager->setSpawnConfig(_chunkIds["c17"], c17Config);
 
     enemyManager->spawnEnemiesPerChunk();
 
-    auto enemyPatternComponent = enemyManagerGO->addComponent<game::EnemyPatternComponent>();
-    auto enemyPanel = _mainScene.get()->findGameObjectByName("Enemy_Panel");
-    auto combatEnamyPanel =
+    auto* enemyPatternComponent = enemyManagerGO->addComponent<game::EnemyPatternComponent>();
+    auto* enemyPanel = _mainScene.get()->findGameObjectByName("Enemy_Panel");
+    auto* combatEnamyPanel =
         enemyPanel->addComponent<game::CombatUIPanel>(false, game::CombatUIPanel::Mode::EnemyUsage);
     combatEnamyPanel->setPatternsComponent(enemyPatternComponent);
     combatEnamyPanel->setAssetManager(_engine->getAssetManager());
@@ -545,32 +630,33 @@ void Game::setupEnemies() {
     auto enemyHealthSystem = enemyHealthGO->addComponent<game::HealthSystem>();
     enemyHealthSystem->setOwner(enemyHealthGO);
     enemyHealthSystem->setTextRenderer(enemyHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
+
 }
 
 void Game::registerDefaultTerritories() {
-    game::TerritoryPatternRegistry::instance().registerPattern({"1",
-                                                                {{1, 0},
-                                                                 {1, -1},
-                                                                 {0, -1},
+    game::TerritoryPatternRegistry::instance().registerPattern({.name = "1",
+                                                                .offsets = {{1, 0},
+                                                                            {1, -1},
+                                                                            {0, -1},
 
-                                                                 {-1, 0},
-                                                                 {-1, 1},
-                                                                 {0, 1}}});
+                                                                            {-1, 0},
+                                                                            {-1, 1},
+                                                                            {0, 1}}});
 
-    game::TerritoryPatternRegistry::instance().registerPattern({"2",
-                                                                {{1, 0},
-                                                                 {1, -1},
-                                                                 {0, -1},
+    game::TerritoryPatternRegistry::instance().registerPattern({.name = "2",
+                                                                .offsets = {{1, 0},
+                                                                            {1, -1},
+                                                                            {0, -1},
 
-                                                                 {-1, 0},
-                                                                 {-1, 1},
-                                                                 {0, 1},
+                                                                            {-1, 0},
+                                                                            {-1, 1},
+                                                                            {0, 1},
 
-                                                                 {1, 1},
-                                                                 {-1, -1}}});
+                                                                            {1, 1},
+                                                                            {-1, -1}}});
 
-    game::TerritoryPatternRegistry::instance().registerPattern({"3",
-                                                                {
+    game::TerritoryPatternRegistry::instance().registerPattern({.name = "3",
+                                                                .offsets = {
                                                                     {1, 0},
                                                                     {1, -1},
                                                                     {0, -1},
@@ -586,9 +672,8 @@ void Game::registerDefaultTerritories() {
                                                                     {-2, 2},
                                                                 }});
 
-
-    game::TerritoryPatternRegistry::instance().registerPattern({"4",
-                                                                {
+    game::TerritoryPatternRegistry::instance().registerPattern({.name = "4",
+                                                                .offsets = {
                                                                     {1, 0},
                                                                     {1, -1},
                                                                     {0, -1},
@@ -608,8 +693,8 @@ void Game::registerDefaultTerritories() {
                                                                     {-2, 2},
                                                                 }});
 
-    game::TerritoryPatternRegistry::instance().registerPattern({"5",
-                                                                {
+    game::TerritoryPatternRegistry::instance().registerPattern({.name = "5",
+                                                                .offsets = {
                                                                     {1, 0},
                                                                     {1, -1},
                                                                     {0, -1},
@@ -632,8 +717,8 @@ void Game::registerDefaultTerritories() {
                                                                 }});
 
     game::TerritoryPatternRegistry::instance().registerPattern(
-        {"6",
-         {
+        {.name = "6",
+         .offsets = {
              {1, 0},  {1, -1}, {0, -1}, {-1, 0}, {-1, 1},  {0, 1},
 
              {2, 0},  {2, -1}, {1, -2}, {0, -2}, {-1, -1}, {-2, 0},

@@ -2,6 +2,7 @@
 #define GAME_ENEMY_TYPES_H
 
 #include <cstdint>
+#include "boost/uuid/uuid.hpp"
 
 namespace game {
 
@@ -15,6 +16,16 @@ enum class EnemyPersonality : std::uint8_t { Aggressive, Defensive, Balanced };
  */
 enum class EnemyType : std::uint8_t { Normal, Special };
 
+struct EnemySpawnConfig {
+    EnemyPersonality personality;
+    EnemyType type;
+    int count;
+    int hp;
+    std::string territoryPattern;
+    std::vector<boost::uuids::uuid> blocksChunks;
+};
+
 } // namespace game
 
 #endif 
+

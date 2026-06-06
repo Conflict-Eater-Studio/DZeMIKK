@@ -1,15 +1,16 @@
 #include "enemySystem/enemyManager.h"
+
 #include "enemySystem/enemyEntity.h"
 #include "enemySystem/territoryPatternRegistry.h"
 #include "scripts/world/world.h"
 
+#include <animation/animationstatemachine.h>
+#include <assetManager/assetmanager.h>
+#include <ecs/components/animator.h>
+#include <ecs/components/skinnedMeshRenderer.h>
 #include <ecs/gameobject.h>
 #include <ecs/scene.h>
 #include <ecs/serialize/prefabSerializer.h>
-#include <assetManager/assetmanager.h>
-#include <ecs/components/skinnedMeshRenderer.h>
-#include <ecs/components/animator.h>
-#include <animation/animationstatemachine.h>
 
 #include <iostream>
 
@@ -54,7 +55,7 @@ void game::EnemyManager::spawnEnemiesPerChunk() {
         size_t cursor = 0;
 
         for (const auto& cfg : ruleIt->second) {
-            spawnFromConfig(cfg, availableCells, cursor);
+            spawnFromConfig(cfg, availableCells, cursor, chunkId);
         }
     }
 }
@@ -74,7 +75,7 @@ std::vector<game::HexChunk::HexCellPtr> game::EnemyManager::collectAvailableCell
 
 void game::EnemyManager::spawnFromConfig(const EnemySpawnConfig& cfg,
                                          std::vector<HexChunk::HexCellPtr>& availableCells,
-                                         size_t& cursor) {
+                                         size_t& cursor, const boost::uuids::uuid& spawnChunkId) {
 
     const auto* pattern = TerritoryPatternRegistry::instance().get(cfg.territoryPattern);
 
@@ -92,17 +93,18 @@ void game::EnemyManager::spawnFromConfig(const EnemySpawnConfig& cfg,
                 continue;
             }
 
-            spawnEnemy(cell, cfg);
+            spawnEnemy(cell, cfg, spawnChunkId);
             break;
         }
     }
 }
 
-void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnConfig& cfg) {
+void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnConfig& cfg,
+                                    const boost::uuids::uuid& spawnChunkId) {
     if (!_assetManager || !cell) {
         return;
     }
-    
+
     std::string prefabPath;
 
     switch (cfg.personality) {
@@ -125,10 +127,12 @@ void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnC
     auto* enemyGO =
         dzemikk::PrefabSerializer::instantiate(*scene, *enemyPrefab.get(), _assetManager);
 
+    enemyGO->addTag("Enemy");
     enemyGO->setParent(getOwner());
 
-    enemyGO->transform()->setPosition(cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
-                                      glm::vec3(0.0F, 0.4F, 0.0F));
+    enemyGO->transform()->setPosition(
+        cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
+        glm::vec3(0.0F, 0.4F, 0.0F));
 
     dzemikk::AnimationClip* clip = nullptr;
     auto skeleton =
@@ -143,6 +147,7 @@ void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnC
     enemy->setHp(cfg.hp);
     enemy->setEnemyType(cfg.type);
     enemy->setEnemyPersonality(cfg.personality);
+    enemy->setConfig(cfg);
 
     enemy->onEnter(cell);
 
@@ -154,13 +159,17 @@ void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnC
     if (pattern) {
         assignTerritory(enemy, cell, *pattern);
     }
+
+    for (const auto& blockedChunkId : cfg.blocksChunks) {
+        _world->getGrid()->lockBridge({spawnChunkId, blockedChunkId}, enemy->getId());
+    }
 }
 
 void game::EnemyManager::assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPtr centerCell,
                                          const TerritoryPattern& pattern) {
     auto* grid = _world->getGrid();
     const HexCoord center = centerCell->getCoord();
-    HexChunk* chunk = findChunkForCoord(center);
+    HexChunk* chunk = grid->findChunkForCoord(center);
 
     for (const auto& offset : pattern.offsets) {
         HexCoord coord = center + offset;
@@ -206,7 +215,8 @@ game::HexChunk* game::EnemyManager::findChunkForCoord(const game::HexCoord& coor
     return nullptr;
 }
 
-bool game::EnemyManager::canPlacePattern(game::HexCoord center, const game::TerritoryPattern& pattern) {
+bool game::EnemyManager::canPlacePattern(game::HexCoord center,
+                                         const game::TerritoryPattern& pattern) {
     auto* grid = _world->getGrid();
 
     for (const auto& offset : pattern.offsets) {

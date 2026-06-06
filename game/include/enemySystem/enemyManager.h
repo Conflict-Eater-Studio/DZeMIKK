@@ -24,23 +24,13 @@ class TerritoryPattern;
  */
 class EnemyManager : public dzemikk::MonoBehaviour {
   public:
-    /**
-     * @brief Configuration describing a group of enemies to spawn.
-     */
-    struct EnemySpawnConfig {
-        EnemyPersonality personality;
-        EnemyType type;
-        int count;
-        int hp;
-        std::string territoryPattern;
-    };
 
     /**
      * @brief Constructs an EnemyManager with a deterministic random seed.
      *
      * @param seed Random generator seed.
      */
-    explicit EnemyManager(unsigned int seed = 1);
+    EnemyManager(unsigned int seed = 1);
 
 #pragma region Configuration
 
@@ -93,17 +83,21 @@ class EnemyManager : public dzemikk::MonoBehaviour {
   private:
 #pragma region Spawning
 
-    void spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnConfig& cfg);
+    void spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnConfig& cfg,
+                    const boost::uuids::uuid& spawnChunkId);
     void assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPtr centerCell,
                          const TerritoryPattern& pattern);
+
     static std::vector<HexChunk::HexCellPtr> collectAvailableCells(HexChunk* chunk);
     void spawnFromConfig(const EnemySpawnConfig& cfg,
-                         std::vector<HexChunk::HexCellPtr>& availableCells, size_t& cursor);
+                         std::vector<HexChunk::HexCellPtr>& availableCells, size_t& cursor,
+                         const boost::uuids::uuid& spawnChunkId);
 #pragma endregion
 
 #pragma region Helpers
 
     HexChunk* findChunkForCoord(const HexCoord& coord);
+
     bool canPlacePattern(HexCoord center, const TerritoryPattern& pattern);
 
 #pragma endregion
@@ -136,4 +130,4 @@ class EnemyManager : public dzemikk::MonoBehaviour {
 
 } // namespace game
 
-#endif // GAME_ENEMY_ENTITY_H
+#endif

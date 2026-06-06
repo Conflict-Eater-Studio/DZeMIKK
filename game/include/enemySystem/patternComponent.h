@@ -170,6 +170,7 @@ class PatternComponent : public dzemikk::MonoBehaviour {
     [[nodiscard]] int findPattern(const HexPattern& pattern) const;
 
 #pragma endregion
+    [[nodiscard]] bool hasPattern(const HexPattern& pattern) const;
 
     [[nodiscard]] std::string typeName() const override;
 

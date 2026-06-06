@@ -19,7 +19,14 @@ class HexCell {
     friend class HexChunk;
 
     enum class State : uint8_t { Prop, Item, Player, Enemy, Empty };
-    enum class Type : uint8_t { Normal, PlayerBattleHex, EnemyBattleHex, Bridge};
+    enum class Type : uint8_t {
+        Normal,
+        PlayerBattleHex,
+        EnemyBattleHex,
+        Bridge,
+        BlockingPattern,
+        BlockingBridge
+    };
     enum class GenState : uint8_t { Normal, Blocked, Protected };
 
     HexCell() : _coord(0, 0) {}
@@ -87,7 +94,6 @@ class HexCell {
     }
 
   private:
-
     void setCoord(const HexCoord& coord) {
         _coord = coord;
     }

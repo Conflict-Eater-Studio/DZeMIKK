@@ -117,6 +117,14 @@ class EnemyEntity : public Entity {
         return "EnemyEntity";
     }
 
+    void setConfig(const EnemySpawnConfig& config) {
+        _config = config;
+    }
+
+    [[nodiscard]] EnemySpawnConfig getConfig() const {
+        return _config;
+    }
+
   private:
 #pragma region Territory
 
@@ -138,6 +146,7 @@ class EnemyEntity : public Entity {
     EnemyActionWeights _actionWeights;
 
 #pragma endregion
+    EnemySpawnConfig _config;
 };
 
 } // namespace game

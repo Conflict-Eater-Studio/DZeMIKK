@@ -3,7 +3,10 @@
 
 #include "map/HexCoord.h"
 
+#include <algorithm>
+#include <nlohmann/json.hpp>
 #include <vector>
+
 namespace game {
 class HexPattern {
   public:
@@ -29,6 +32,26 @@ class HexPattern {
     Type _type{Type::ATK};
     float _effectStrength{1.0F};
 };
-} // namespace game
 
+// NOLINTBEGIN(readability-identifier-naming)
+inline void to_json(nlohmann::json& j, const HexPattern& pat) {
+    j = nlohmann::json{{"hexes", pat.getHexes()},
+                       {"effectStrenght", pat.getEffectStrength()},
+                       {"type", pat.getType()}};
+}
+
+inline void from_json(const nlohmann::json& j, HexPattern& pat) {
+    if (!j.contains("hexes") || !j.contains("effectStrenght") || !j.contains("type") ||
+        !j["hexes"].is_array() || j["hexes"].empty() || !j["effectStrenght"].is_number_float() ||
+        !j["type"].is_number_integer()) {
+        throw std::runtime_error("Invalid JSON for World::ChunkDefinition");
+    }
+
+    std::vector<HexCoord> hexes = j["hexes"].get<std::vector<HexCoord>>();
+    pat = HexPattern(hexes, static_cast<HexPattern::Type>(j["type"].get<int>(),
+                                                          j["effectStrenght"].get<float>()));
+}
+// NOLINTEND(readability-identifier-naming)
+
+} // namespace game
 #endif // GAME_HEXPATTERN_H

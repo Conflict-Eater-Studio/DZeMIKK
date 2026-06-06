@@ -214,6 +214,10 @@ bool GameObject::hasTag(const std::string& tag) const {
     return _tags.contains(tag);
 }
 
+const std::unordered_set<std::string>& GameObject::getTags() const {
+    return _tags;
+}
+
 // --- Child search
 GameObject* GameObject::findChildByName(const std::string& name) {
     auto it = std::ranges::find_if(
