@@ -33,8 +33,9 @@ bool game::EnemyPatternComponent::usePattern(size_t index) {
 }
 
 void game::EnemyPatternComponent::registerPatternUsage(const HexPattern* pattern) {
-    if (!pattern)
+    if (!pattern) {
         return;
+    }
 
     _patternUsage[pattern]++;
 }
@@ -46,8 +47,9 @@ void game::EnemyPatternComponent::clearUsage() {
 uint32_t game::EnemyPatternComponent::getUsageCount(const HexPattern* pattern) const {
     auto it = _patternUsage.find(pattern);
 
-    if (it == _patternUsage.end())
+    if (it == _patternUsage.end()) {
         return 0;
+    }
 
     return it->second;
 }

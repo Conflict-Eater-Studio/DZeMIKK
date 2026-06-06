@@ -6,12 +6,12 @@ namespace game {
 /**
  * @brief Defines enemy behavioral tendencies.
  */
-enum class EnemyPersonality { Aggressive, Defensive, Balanced };
+enum class EnemyPersonality : std::uint8_t { Aggressive, Defensive, Balanced };
 
 /**
  * @brief Defines available enemy categories.
  */
-enum class EnemyType { Normal, Special };
+enum class EnemyType : std::uint8_t { Normal, Special };
 
 } // namespace game
 
