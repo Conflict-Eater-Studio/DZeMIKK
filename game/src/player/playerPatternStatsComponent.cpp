@@ -2,8 +2,10 @@
 #include <iostream>
 
 float game::PlayerPatternStatsComponent::Stats::getTypeRatio(HexPattern::Type type) const {
-    if (actionsTotal == 0)
+    if (actionsTotal == 0) {
         return 0.0f;
+    }
+
     auto it = placedByType.find(type);
     uint32_t value = (it != placedByType.end()) ? it->second : 0;
     return static_cast<float>(value) / static_cast<float>(actionsTotal);
@@ -77,16 +79,18 @@ uint32_t game::PlayerPatternStatsComponent::getTotalActions() const {
 
 uint32_t game::PlayerPatternStatsComponent::getPlacedCountByType(HexPattern::Type type) const {
     auto it = _stats.placedByType.find(type);
-    if (it == _stats.placedByType.end())
+    if (it == _stats.placedByType.end()) {
         return 0;
+    }
 
     return it->second;
 }
 
 uint32_t game::PlayerPatternStatsComponent::getRemovedCountByType(HexPattern::Type type) const {
     auto it = _stats.removedByType.find(type);
-    if (it == _stats.removedByType.end())
+    if (it == _stats.removedByType.end()) {
         return 0;
+    }
 
     return it->second;
 }
