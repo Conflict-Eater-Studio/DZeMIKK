@@ -458,12 +458,13 @@ void Game::setupEnemies() {
     enemyManager->setWorld(_worldGO->getComponent<game::World>());
     enemyManager->setAssetManager(_engine->getAssetManager());
 
-    std::vector<game::EnemySpawnConfig> c1Config = {{
-        .personality = game::EnemyPersonality::Aggressive,
-        .type = game::EnemyType::Normal,
-        .count = 1,
-        .hp = 15,
-        .territoryPattern = "1",
+    std::vector<game::EnemySpawnConfig> c1Config = {
+        {.personality = game::EnemyPersonality::Aggressive,
+         .type = game::EnemyType::Normal,
+         .count = 1,
+         .hp = 15,
+         .territoryPattern = "1",
+         //.blocksChunks = {_chunkIds["c2"]},
     }};
     enemyManager->setSpawnConfig(_chunkIds["c1"], c1Config);
 
