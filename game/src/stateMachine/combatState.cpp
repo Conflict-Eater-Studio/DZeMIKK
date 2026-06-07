@@ -9,6 +9,7 @@
 #include "healthSystem.h"
 #include "map/HexCell.h"
 #include "map/HexGrid.h"
+#include "map/HexChunk.h"
 #include "player/playerMovement.h"
 #include "player/playerPatternComponent.h"
 #include "stateMachine/explorationState.h"
@@ -20,70 +21,29 @@
 #include <ecs/components/meshRenderer.h>
 #include <ecs/gameobject.h>
 #include <ecs/scene.h>
+#include <ecs/components/transform.h>
 #include <enemySystem/enemyPatternComponent.h>
 #include <iostream>
 
 void game::CombatState::onEnter() {
-
     _phase = CombatPhase::PreparingBoard;
 
     _game->getCameraController()->setMode(CameraController::Mode::Combat);
-
     _game->enableCombatUI(true);
 
-    auto scene = _game->getCurrentScene();
+    initializeCombat();
 
-    auto playerGO = scene.get()->findGameObjectByName("Player");
-    _player = playerGO->getComponent<game::PlayerEntity>();
-
-    auto* worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
-    auto* world = worldGO->getComponent<game::World>();
-
-    auto* enemyManagerGO = scene.get()->findGameObjectByName("EnemyManager");
-    auto* enemyManager = enemyManagerGO->getComponent<game::EnemyManager>();
-
-    auto playerCell = _game->getHexGrid()->findCellByEntity(_player);
-    _currentEnemy = enemyManager->getEnemyByCell(playerCell.get());
-
-    CombatArenaBuilder builder;
-
-    auto arena = builder.build(_currentEnemy, _player, _game->getHexGrid(), world);
-
-    if (!arena.centerCell) {
+    if (!_arenaCenterCell) {
         return;
     }
 
-    auto* movement = _player->getOwner()->getComponent<PlayerMovement>();
+    setupInput();
+    setupEnemyHealth();
 
-    if (movement) {
-        movement->stopMovement();
-    }
+    collectAnimatedHexes();
 
-    _player->teleportTo(arena.centerCell);
-
-    _playerPatternComponent = playerGO->getComponent<PlayerPatternComponent>();
-
-    _endTurnListenerId = _game->getEngine()->getInput()->OnKeyPressed.addListener(
-        [this](dzemikk::KeyPressedEvent& e) {
-            if (e.GetKeyCode() != GLFW_KEY_SPACE) {
-                return;
-            }
-
-            if (_phase == CombatPhase::PlayerTurn) {
-                endPlayerTurn();
-            } else if (_phase == CombatPhase::ResolveTurn) {
-                startNewTurn();
-            }
-        });
-
-    auto* enemyHealthGO = _game->getCurrentScene()
-                             .get()
-                             ->findGameObjectByName("Enemy_Avatar_Panel")
-                             ->findDescendantByName("Health_Holder");
-
-    auto* enemyHealthSystem = enemyHealthGO->getComponent<game::HealthSystem>();
-
-    enemyHealthSystem->setMaxHealth((float)_currentEnemy->getHp(), true);
+    _boardTransition = 0.0F;
+    _enterAnimation = true;
 
     startNewTurn();
 }
@@ -150,10 +110,31 @@ void game::CombatState::onExit() {
 }
 
 void game::CombatState::onUpdate(float dt) {
-    if (_shouldLeaveCombat) {
-        _shouldLeaveCombat = false;
-        _game->setExplorationState();
-        return;
+    if (_exitAnimation) {
+
+        _boardTransition -= dt * _animationExitSpeed;
+
+        if (_boardTransition <= 0.0F) {
+
+            _boardTransition = 0.0F;
+            _exitAnimation = false;
+
+            _game->setExplorationState();
+            return;
+        }
+
+        updateBoardVisibility(_boardTransition, true);
+    }
+
+    if (_enterAnimation) {
+        _boardTransition += dt * _animationEnterSpeed;
+
+        if (_boardTransition >= 1.0F) {
+            _boardTransition = 1.0F;
+            _enterAnimation = false;
+        }
+
+        updateBoardVisibility(_boardTransition, false);
     }
 }
 
@@ -284,6 +265,174 @@ void game::CombatState::resolveConflict() {
     }
 
     if (playerHealth->isDead() || enemyHealth->isDead()) {
-        _shouldLeaveCombat = true;
+        _exitAnimation = true;
+        _boardTransition = 1.0F;
     }
 }
+
+void game::CombatState::updateBoardVisibility(float factor, bool exiting) {
+    constexpr float DelayPerRing = 0.05F;
+
+    for (auto& hex : _hiddenHexes) {
+
+        float delay = (float)hex.distance * DelayPerRing;
+
+        float localFactor = 0.0F;
+
+        if (!exiting) {
+            localFactor = (factor - delay) / (1.0F - delay);
+
+        } else {
+
+            localFactor = ((1.0F - factor) - delay) / (1.0F - delay);
+            localFactor = 1.0F - localFactor;
+        }
+
+        localFactor = glm::clamp(localFactor, 0.0F, 1.0F);
+
+        auto pos = hex.transform->getPosition();
+
+        pos.y = glm::mix(hex.startY, hex.startY + _hiddenOffsetY, localFactor);
+
+        hex.transform->setPosition(pos);
+    }
+}
+
+void game::CombatState::initializeCombat() {
+    auto* scene = _game->getCurrentScene().get();
+
+    auto* playerGO = scene->findGameObjectByName("Player");
+    _player = playerGO->getComponent<PlayerEntity>();
+
+    auto* worldGO = scene->findGameObjectByName("World");
+    auto* world = worldGO->getComponent<World>();
+
+    auto* enemyManagerGO = scene->findGameObjectByName("EnemyManager");
+    auto* enemyManager = enemyManagerGO->getComponent<EnemyManager>();
+
+    auto playerCell = _game->getHexGrid()->findCellByEntity(_player);
+
+    _currentEnemy = enemyManager->getEnemyByCell(playerCell.get());
+
+    auto arena = CombatArenaBuilder::build(_currentEnemy, _player, _game->getHexGrid(), world);
+
+    _arenaCenterCell = arena.centerCell.get();
+
+    if (!_arenaCenterCell) {
+        return;
+    }
+
+    if (auto* movement = _player->getOwner()->getComponent<PlayerMovement>()) {
+
+        movement->stopMovement();
+    }
+
+    _player->teleportTo(arena.centerCell);
+
+    _playerPatternComponent = playerGO->getComponent<PlayerPatternComponent>();
+}
+
+void game::CombatState::setupInput() {
+    _endTurnListenerId = _game->getEngine()->getInput()->OnKeyPressed.addListener(
+        [this](dzemikk::KeyPressedEvent& e) {
+            if (e.GetKeyCode() != GLFW_KEY_SPACE) {
+                return;
+            }
+
+            if (_phase == CombatPhase::PlayerTurn) {
+                endPlayerTurn();
+            } else if (_phase == CombatPhase::ResolveTurn) {
+                startNewTurn();
+            }
+        });
+}
+
+void game::CombatState::setupEnemyHealth() {
+    auto* enemyHealthGO = _game->getCurrentScene().get()
+                              ->findGameObjectByName("Enemy_Avatar_Panel")
+                              ->findDescendantByName("Health_Holder");
+
+    auto* enemyHealthSystem = enemyHealthGO->getComponent<HealthSystem>();
+
+    enemyHealthSystem->setMaxHealth(static_cast<float>(_currentEnemy->getHp()), true);
+}
+
+void game::CombatState::collectAnimatedHexes() {
+
+    _hiddenHexes.clear();
+
+    auto* world = _game->getCurrentScene().get()->findGameObjectByName("World")->getComponent<World>();
+
+    const HexCoord centerCoord = _arenaCenterCell->getCoord();
+
+    int visibleRadius = 18;
+
+    auto playerCellPtr = _player->getCell();
+    auto enemyCellPtr = _currentEnemy->getCell();
+
+    for (const auto& chunk : _game->getHexGrid()->getChunks()) {
+
+        for (const auto& [coord, cellPtr] : chunk.second->getHexes()) {
+
+            auto* cell = cellPtr.get();
+
+            if (!shouldAnimateCell(cell, centerCoord, visibleRadius, playerCellPtr.get(),
+                                   enemyCellPtr.get())) {
+                continue;
+            }
+
+            addCellToAnimation(cell, world, centerCoord);
+        }
+    }
+}
+
+bool game::CombatState::shouldAnimateCell(HexCell* cell, const HexCoord& centerCoord,
+                                          int visibleRadius, HexCell* playerCell,
+                                          HexCell* enemyCell) const {
+    if (!cell) {
+        return false;
+    }
+
+    if (HexCoord::distance(cell->getCoord(), centerCoord) > visibleRadius) {
+        return false;
+    }
+
+    if (_player->getTerritory().contains(cell)) {
+        return false;
+    }
+
+    if (_currentEnemy->getTerritory().contains(cell)) {
+        return false;
+    }
+
+    if (cell == playerCell || cell == enemyCell) {
+        return false;
+    }
+
+    return true;
+}
+
+void game::CombatState::addCellToAnimation(HexCell* cell, World* world,
+                                           const HexCoord& centerCoord) {
+    int distance = HexCoord::distance(cell->getCoord(), centerCoord);
+
+    if (auto* transform = world->getHexTransformByCell(*cell)) {
+
+        _hiddenHexes.push_back({transform, transform->getPosition().y, distance});
+    }
+
+    auto* entity = cell->getEntity();
+
+    if (!entity || !entity->getOwner()) {
+        return;
+    }
+
+    auto* entityTransform = entity->getOwner()->getComponent<dzemikk::Transform>();
+
+    if (!entityTransform) {
+        return;
+    }
+
+    _hiddenHexes.push_back({entityTransform, entityTransform->getPosition().y, distance});
+}
+
