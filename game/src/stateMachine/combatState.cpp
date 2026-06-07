@@ -107,6 +107,8 @@ void game::CombatState::onExit() {
 
     _currentEnemy = nullptr;
     _game->getEngine()->getInput()->OnKeyPressed.removeListener(_endTurnListenerId);
+
+    dzemikk::UIActionRegistry::get().unregisterAction("Confirm_Round");
 }
 
 void game::CombatState::onUpdate(float dt) {
@@ -135,6 +137,15 @@ void game::CombatState::onUpdate(float dt) {
         }
 
         updateBoardVisibility(_boardTransition, false);
+    }
+
+    if (_phase == CombatPhase::ResolveTurn) {
+
+        _resultTimer -= dt;
+
+        if (_resultTimer <= 0.0f) {
+            startNewTurn();
+        }
     }
 }
 
@@ -175,14 +186,17 @@ void game::CombatState::startNewTurn() {
     enemyPanelUI->refreshVisuals();
 
     _phase = CombatPhase::PlayerTurn;
+    _playerPatternComponent->setInteractionEnabled(true);
 }
 
 void game::CombatState::endPlayerTurn() {
-
+    _playerPatternComponent->setInteractionEnabled(false);
     _phase = CombatPhase::ResolveTurn;
 
     resolveConflict();
     showEnemyPlannedPatterns();
+
+    _resultTimer = 2.0f;
 }
 
 glm::vec4 game::CombatState::getPatternColor(HexPattern::Type type) {
@@ -350,10 +364,16 @@ void game::CombatState::setupInput() {
 
             if (_phase == CombatPhase::PlayerTurn) {
                 endPlayerTurn();
-            } else if (_phase == CombatPhase::ResolveTurn) {
-                startNewTurn();
             }
         });
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent&) {
+            if (_phase == CombatPhase::PlayerTurn) {
+                endPlayerTurn();
+            }
+        },
+        "Confirm_Round");
 }
 
 void game::CombatState::setupEnemyHealth() {

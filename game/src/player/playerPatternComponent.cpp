@@ -49,6 +49,9 @@ void game::PlayerPatternComponent::start() {
 }
 
 void game::PlayerPatternComponent::update(double deltaTime) {
+    if (!_interactionEnabled) {
+        return;
+    }
 
     if (_activePatternIndex < 0) {
         return;
@@ -68,6 +71,10 @@ void game::PlayerPatternComponent::onDestroy() {
 }
 
 bool game::PlayerPatternComponent::usePattern(size_t index) {
+    if (!_interactionEnabled) {
+        return false;
+    }
+
     if (!canUsePattern(index)) {
         return false;
     }
@@ -91,6 +98,14 @@ void game::PlayerPatternComponent::setEngine(dzemikk::Engine* engine) {
 
 std::string game::PlayerPatternComponent::typeName() const {
     return "PlayerPatternComponent";
+}
+
+void game::PlayerPatternComponent::setInteractionEnabled(bool enabled) {
+    _interactionEnabled = enabled;
+
+    if (!enabled) {
+        deactivatePattern();
+    }
 }
 
 bool game::PlayerPatternComponent::hasActivePattern() const {
@@ -269,10 +284,18 @@ void game::PlayerPatternComponent::onMouseButtonPressed(dzemikk::MouseButtonPres
 }
 
 void game::PlayerPatternComponent::handleLeftClick() {
+    if (!_interactionEnabled) {
+        return;
+    }
+
     confirmPattern();
 }
 
 void game::PlayerPatternComponent::handleRightClick() {
+    if (!_interactionEnabled) {
+        return;
+    }
+    
     if (_activePatternIndex >= 0) {
         deactivatePattern();
     }
@@ -402,6 +425,10 @@ game::WorldHex* game::PlayerPatternComponent::getWorldHexUnderCursor() {
 }
 
 void game::PlayerPatternComponent::onMouseScrolled(dzemikk::MouseScrolledEvent& e) {
+    if (!_interactionEnabled) {
+        return;
+    }
+
     if (_activePatternIndex < 0) {
         return;
     }

@@ -122,6 +122,8 @@ class PlayerPatternComponent : public PatternComponent {
 
     [[nodiscard]] std::string typeName() const override;
 
+    void setInteractionEnabled(bool enabled);
+
   private:
 #pragma region Pattern data
 
@@ -156,6 +158,8 @@ class PlayerPatternComponent : public PatternComponent {
     std::vector<dzemikk::GameObject*> _confirmedHexes;
 
 #pragma endregion
+
+    bool _interactionEnabled = true;
 
 #pragma region Helpers
 

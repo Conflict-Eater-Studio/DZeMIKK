@@ -2804,6 +2804,11 @@
                                     "zIndex": 1
                                 },
                                 {
+                                    "events": {
+                                        "click": [
+                                            "Confirm_Round"
+                                        ]
+                                    },
                                     "hoverColor": [
                                         0.0235294122248888,
                                         0.0,

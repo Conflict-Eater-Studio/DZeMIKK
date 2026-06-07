@@ -110,6 +110,8 @@ class CombatState : public IGameState {
 
     int _roundCount = 0;
 
+    float _resultTimer = 0;
+
     /**
      * @brief Stores animation data for a single combat cell.
      */
