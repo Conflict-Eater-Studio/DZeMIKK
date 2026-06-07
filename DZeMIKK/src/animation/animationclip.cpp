@@ -72,22 +72,6 @@ void AnimationClip::apply(float timeInSeconds) const {
     }
 }
 
-void AnimationClip::setApplyRootMotion(bool apply) {
-    _applyRootMotion = apply;
-}
-
-bool AnimationClip::applyRootMotion() const {
-    return _applyRootMotion;
-}
-
-void AnimationClip::setRootMotionBoneName(const std::string& boneName) {
-    _rootMotionBoneName = boneName;
-}
-
-const std::string& AnimationClip::rootMotionBoneName() const {
-    return _rootMotionBoneName;
-}
-
 void AnimationClip::setLoop(bool loop) {
     _loop = loop;
 }

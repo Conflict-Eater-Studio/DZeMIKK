@@ -30,6 +30,12 @@ namespace dzemikk {
         }
 
         clip->apply(_currentTime);
+
+        if (_applyRootMotion && _skeleton) {
+            RootMotionDelta rootDelta = extractRootMotionDelta();
+            applyRootMotionDelta(rootDelta);
+        }
+
         _currentTime += deltaTime;
 
         std::vector<Transition> transitions = _currentState->getTransitions();
