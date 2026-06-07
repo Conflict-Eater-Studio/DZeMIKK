@@ -651,7 +651,7 @@
                                             ],
                                             "position": [
                                                 0.0,
-                                                -170.0
+                                                -180.0
                                             ],
                                             "rotation": 0.0,
                                             "scale": [
@@ -705,15 +705,15 @@
                                             ],
                                             "size": [
                                                 300.0,
-                                                680.0
+                                                660.0
                                             ],
                                             "type": "RectTransform",
                                             "zIndex": 0
                                         },
                                         {
                                             "color": [
-                                                1.0,
-                                                0.9117647409439087,
+                                                0.36274510622024536,
+                                                0.3307381868362427,
                                                 0.0,
                                                 1.0
                                             ],
@@ -726,6 +726,56 @@
                                     "enabled": true,
                                     "id": "9bfba8bb-3e95-49aa-92d3-2f8c89aff46c",
                                     "name": "Empty"
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "28481d88-e7cb-46c7-83b2-88eec53d075d",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                -76.0,
+                                                -317.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                150.0,
+                                                32.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                0.9137254953384399,
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "id": "17c35786-07a2-4424-9873-756e1a6d1850",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "textures/ui grafiki/Patterns_panel_ramka(1).png",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "bb29948c-213f-42de-976c-4295c367064c",
+                                    "name": "Decor"
                                 }
                             ],
                             "components": [
@@ -745,7 +795,7 @@
                                     ],
                                     "position": [
                                         -770.0,
-                                        -20.0
+                                        -32.5
                                     ],
                                     "rotation": 0.0,
                                     "scale": [
@@ -754,7 +804,7 @@
                                     ],
                                     "size": [
                                         300.0,
-                                        680.0
+                                        660.0
                                     ],
                                     "type": "RectTransform",
                                     "zIndex": 0
@@ -902,7 +952,7 @@
                                             ],
                                             "position": [
                                                 0.0,
-                                                -170.0
+                                                -180.0
                                             ],
                                             "rotation": 0.0,
                                             "scale": [
@@ -956,14 +1006,14 @@
                                             ],
                                             "size": [
                                                 300.0,
-                                                680.0
+                                                660.0
                                             ],
                                             "type": "RectTransform",
                                             "zIndex": 0
                                         },
                                         {
                                             "color": [
-                                                0.5647059082984924,
+                                                0.30980393290519714,
                                                 0.0,
                                                 0.0,
                                                 1.0
@@ -977,6 +1027,56 @@
                                     "enabled": true,
                                     "id": "b522f273-4ed5-4d8e-bbc7-17298f4c2557",
                                     "name": "Empty"
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "b5abf725-0c61-4c2d-bcf8-9df14757697f",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                76.0,
+                                                -317.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                150.0,
+                                                32.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                0.0,
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "id": "0a618758-39c3-4f84-9813-d3941d41f2b8",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "textures/ui grafiki/1.png",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "ab0b1151-fc21-4780-b2bb-55c9cd4d5d37",
+                                    "name": "Decor"
                                 }
                             ],
                             "components": [
@@ -996,7 +1096,7 @@
                                     ],
                                     "position": [
                                         770.0,
-                                        -20.0
+                                        -32.5
                                     ],
                                     "rotation": 0.0,
                                     "scale": [
@@ -1005,7 +1105,7 @@
                                     ],
                                     "size": [
                                         300.0,
-                                        680.0
+                                        660.0
                                     ],
                                     "type": "RectTransform",
                                     "zIndex": 0
@@ -2191,14 +2291,14 @@
                                             ],
                                             "size": [
                                                 500.0,
-                                                120.0
+                                                170.0
                                             ],
                                             "type": "RectTransform",
                                             "zIndex": 0
                                         },
                                         {
                                             "color": [
-                                                0.563725471496582,
+                                                0.30882352590560913,
                                                 0.0,
                                                 0.0,
                                                 1.0
@@ -2250,9 +2350,9 @@
                                                 },
                                                 {
                                                     "color": [
-                                                        0.29019609093666077,
-                                                        0.29019609093666077,
-                                                        0.29019609093666077,
+                                                        1.0,
+                                                        0.0,
+                                                        0.0,
                                                         1.0
                                                     ],
                                                     "id": "af2db065-4166-470c-8207-b1df71d1028b",
@@ -2332,8 +2432,8 @@
                                                 0.5
                                             ],
                                             "position": [
-                                                200.0,
-                                                0.0
+                                                220.0,
+                                                20.0
                                             ],
                                             "rotation": 0.0,
                                             "scale": [
@@ -2363,6 +2463,56 @@
                                     "enabled": true,
                                     "id": "a556f5d7-c7ae-4ecb-b803-c5dd3dde7f2c",
                                     "name": "Avatar_Holder"
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "19716622-7abf-4b6c-b763-dae0b4ff6364",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                178.0,
+                                                -72.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                150.0,
+                                                32.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                0.0,
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "id": "b270f5c1-70e5-4d53-965a-644690174eee",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "textures/ui grafiki/1.png",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "409fd283-0f9c-47a9-9b24-7b3098683da6",
+                                    "name": "Decor"
                                 }
                             ],
                             "components": [
@@ -2381,8 +2531,8 @@
                                         0.5
                                     ],
                                     "position": [
-                                        630.0,
-                                        430.0
+                                        610.0,
+                                        410.0
                                     ],
                                     "rotation": 0.0,
                                     "scale": [
@@ -2391,7 +2541,7 @@
                                     ],
                                     "size": [
                                         500.0,
-                                        120.0
+                                        170.0
                                     ],
                                     "type": "RectTransform",
                                     "zIndex": 0
@@ -2450,8 +2600,8 @@
                                         },
                                         {
                                             "color": [
-                                                1.0,
-                                                0.9137254953384399,
+                                                0.364705890417099,
+                                                0.3294117748737335,
                                                 0.0,
                                                 1.0
                                             ],
@@ -2464,6 +2614,56 @@
                                     "enabled": true,
                                     "id": "c07e8b7b-35d9-4205-af83-f237815172d5",
                                     "name": "Empty"
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "0c1b804d-6fc1-4baf-8498-e90163376df2",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                -76.0,
+                                                -43.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                150.0,
+                                                32.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                0.9137254953384399,
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "id": "a1f463bd-41d2-4c44-bcb5-e8bfe063ac1a",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "textures/ui grafiki/Patterns_panel_ramka(1).png",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "40f2b98c-26ca-4c96-9cf1-a0df287a41df",
+                                    "name": "Decor"
                                 }
                             ],
                             "components": [
@@ -3302,15 +3502,15 @@
                                     ],
                                     "size": [
                                         500.0,
-                                        120.0
+                                        170.0
                                     ],
                                     "type": "RectTransform",
                                     "zIndex": 0
                                 },
                                 {
                                     "color": [
-                                        1.0,
-                                        0.9137254953384399,
+                                        0.364705890417099,
+                                        0.3294117748737335,
                                         0.0,
                                         1.0
                                     ],
@@ -3443,8 +3643,8 @@
                                         0.5
                                     ],
                                     "position": [
-                                        -200.0,
-                                        0.0
+                                        -220.0,
+                                        20.0
                                     ],
                                     "rotation": 0.0,
                                     "scale": [
@@ -3474,6 +3674,56 @@
                             "enabled": true,
                             "id": "19f1def1-bd87-457b-9799-1933a14d8a8b",
                             "name": "Avatar_Holder"
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "22b76978-a6df-493d-8157-388ac2f42b74",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        -178.0,
+                                        -72.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        150.0,
+                                        32.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        0.9137254953384399,
+                                        0.0,
+                                        1.0
+                                    ],
+                                    "id": "85032f0a-1fb8-4b1a-b0a6-ed1b7f1dc362",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "textures/ui grafiki/Patterns_panel_ramka(1).png",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "b64b7fd4-f6f7-4fea-94f3-e220be3abab1",
+                            "name": "Decor"
                         }
                     ],
                     "components": [
@@ -3492,8 +3742,8 @@
                                 0.5
                             ],
                             "position": [
-                                -630.0,
-                                430.0
+                                -610.0,
+                                410.0
                             ],
                             "rotation": 0.0,
                             "scale": [
@@ -3502,7 +3752,7 @@
                             ],
                             "size": [
                                 500.0,
-                                120.0
+                                170.0
                             ],
                             "type": "RectTransform",
                             "zIndex": 0

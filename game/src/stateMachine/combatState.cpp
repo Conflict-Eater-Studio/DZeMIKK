@@ -86,6 +86,7 @@ void game::CombatState::onExit() {
         cell->setDirty(true);
     }
 
+
     auto enemyCell = grid->findCellByEntity(_currentEnemy);
 
     if (enemyCell) {

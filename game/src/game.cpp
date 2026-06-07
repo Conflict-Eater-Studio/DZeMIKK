@@ -93,7 +93,7 @@ void Game::start() {
 
     setupSkybox();
 
-    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay.json");
+    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay5.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
@@ -105,6 +105,8 @@ void Game::start() {
     setupPlayer();
     registerDefaultTerritories();
     setupEnemies();
+
+
 
     auto root = _mainScene.get()->findGameObjectByName("Root");
     _stateMachine = root->addComponent<game::GameStateMachine>();
