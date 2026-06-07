@@ -76,6 +76,7 @@ public:
     void setLoop(bool loop);
     void setDuration(float duration);
     void setTickrate(float tickrate);
+    void setPlaybackSpeed(float speed);
     void setTracks(std::vector<std::unique_ptr<IAnimationTrack>> tracks);
 
     [[nodiscard]] bool isLoop() const;
@@ -86,6 +87,7 @@ public:
     std::vector<std::unique_ptr<IAnimationTrack>> _tracks;
     float _durationInTicks = 0;
     float _ticksPerSecond = 0;
+    float _playbackSpeed = 1.0f;
     bool _loop = true;
     std::string _nameInSkeleton;
 };
