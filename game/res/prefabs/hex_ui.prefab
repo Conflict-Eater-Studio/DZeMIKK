@@ -1,6 +1,57 @@
 {
     "root": {
-        "children": [],
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "fdc5b12e-9979-4f20-83f9-bdf686af38f3",
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            -1.0,
+                            2.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            40.0,
+                            40.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 0
+                    },
+                    {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "id": "66cf3bd7-51ea-43d4-8583-f278b8f683f5",
+                        "materialPath": "shaders/quad",
+                        "texture": "textures/ui grafiki/ui patterns/leczenie.png",
+                        "type": "ImageRenderer"
+                    }
+                ],
+                "enabled": true,
+                "id": "abccc3bd-871d-46af-9975-3dcf706433cd",
+                "name": "Empty"
+            }
+        ],
         "components": [
             {
                 "anchorMax": [
@@ -11,7 +62,7 @@
                     0.5,
                     0.5
                 ],
-                "id": "ec965d46-6e1b-4032-90e5-25ad5629fcac",
+                "id": "b425db2e-9e33-441c-8da4-981066006616",
                 "pivot": [
                     0.5,
                     0.5
@@ -35,18 +86,18 @@
             {
                 "color": [
                     1.0,
-                    1.0,
-                    1.0,
+                    0.0,
+                    0.0,
                     1.0
                 ],
-                "id": "2865d568-30d6-4bb0-a6cf-1a96053156d2",
+                "id": "83c1971a-e9dd-461a-8a39-afb44aae22aa",
                 "materialPath": "shaders/quad",
                 "texture": "textures/hex.png",
                 "type": "ImageRenderer"
             }
         ],
         "enabled": true,
-        "id": "65eac4fd-2783-4140-b403-9d94d1b293ba",
+        "id": "a81807eb-f1aa-4d3d-9804-fd3bf40f40a1",
         "name": "Hex_UI"
     }
 }

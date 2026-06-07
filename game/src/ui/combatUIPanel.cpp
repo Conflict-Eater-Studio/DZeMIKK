@@ -6,6 +6,8 @@
 #include <ecs/components/ui/gridLayout.h>
 #include <ecs/serialize/prefabSerializer.h>
 #include <ecs/components/ui/uiActionRegistry.h>
+#include <ecs/components/ui/imageRenderer.h>
+#include <renderer/texture.h>
 
 #include <iostream>
 
@@ -110,6 +112,15 @@ void game::CombatUIPanel::createPatternPreview(dzemikk::GameObject* parent,
 
     glm::vec2 center = (minPos + maxPos) * 0.5F;
 
+    std::string texturePath = "";
+    if (pattern.getType() == HexPattern::Type::ATK) {
+        texturePath = "textures/ui grafiki/ui patterns/atak.png";
+    } else if (pattern.getType() == HexPattern::Type::DEF) {
+        texturePath = "textures/ui grafiki/ui patterns/tarcza.png";
+    } else if (pattern.getType() == HexPattern::Type::HEAL) {
+        texturePath = "textures/ui grafiki/ui patterns/leczenie.png";
+    }
+
     for (size_t i = 0; i < positions.size(); ++i) {
 
         auto* hexGO = dzemikk::PrefabSerializer::instantiate(*getOwner()->getScene(),
@@ -119,6 +130,15 @@ void game::CombatUIPanel::createPatternPreview(dzemikk::GameObject* parent,
 
         auto* transform = hexGO->rectTransform();
         transform->setPosition(glm::vec3(positions[i] - center, 0.0F));
+
+        auto* renderer = hexGO->getComponent<dzemikk::ImageRenderer>();
+        glm::vec4 color = getPatternBaseColor(pattern.getType());
+        renderer->setColor({color.r, color.g, color.b, 1.0F});
+        
+        auto* hexChild = hexGO->findChildByName("Empty");
+        auto* hexChildRenderer = hexChild->getComponent<dzemikk::ImageRenderer>();
+
+        hexChildRenderer->setTexture(_assetManager->get<dzemikk::Texture>(texturePath));
     }
 }
 
@@ -155,13 +175,13 @@ std::string game::CombatUIPanel::buildPatternName(const HexPattern& pattern) {
 glm::vec4 game::CombatUIPanel::getPatternBaseColor(HexPattern::Type type) {
     switch (type) {
     case HexPattern::Type::ATK:
-        return {1.F, 0.F, 0.F, 1.F};
+        return {1.F, 0.F, 0.F, 0.55F};
     case HexPattern::Type::DEF:
-        return {0.F, 0.F, 1.F, 1.F};
+        return {0.F, 0.F, 1.F, 0.55F};
     case HexPattern::Type::HEAL:
-        return {0.F, 1.F, 0.F, 1.F};
+        return {0.F, 1.F, 0.F, 0.55F};
     default:
-        return {0.3F, 0.3F, 0.3F, 1.F};
+        return {0.3F, 0.3F, 0.3F, 0.55F};
     }
 }
 
@@ -340,6 +360,10 @@ void game::CombatUIPanel::setupPatternSlotContent(dzemikk::GameObject* patternGO
             setupCountText(child, usageCount, uiEntry);
         } else if (child->getName() == "HexHolder") {
             createPatternPreview(child, pattern);
+        } else if (child->getName() == "Empty") {
+            auto* renderer = child->getComponent<dzemikk::ImageRenderer>();
+            glm::vec4 color = getPatternBaseColor(pattern.getType());
+            renderer->setColor({color.r, color.g, color.b, 1.0F});
         }
     }
 }

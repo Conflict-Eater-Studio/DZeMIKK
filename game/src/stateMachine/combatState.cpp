@@ -139,6 +139,15 @@ void game::CombatState::onUpdate(float dt) {
 }
 
 void game::CombatState::startNewTurn() {
+    _roundCount++;
+    auto* textGO = _game->getCurrentScene()
+                       .get()
+                       ->findGameObjectByName("Round_Number")
+                       ->findChildByName("Text");
+    auto* textRenderer = textGO->getComponent<dzemikk::UITextRenderer>();
+    std::string textFill = "ROUND " + std::to_string(_roundCount);
+    textRenderer->text = textFill;
+
     _phase = CombatPhase::EnemyPlanning;
 
     _playerPatternComponent->clearPlacedPatterns();

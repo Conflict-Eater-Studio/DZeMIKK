@@ -108,6 +108,8 @@ class CombatState : public IGameState {
      */
     float _animationExitSpeed = 1.0F;
 
+    int _roundCount = 0;
+
     /**
      * @brief Stores animation data for a single combat cell.
      */

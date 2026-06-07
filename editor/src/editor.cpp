@@ -35,6 +35,18 @@
 #include <iostream>
 #include <renderer/font.h>
 
+struct SkyboxInitContext {
+    dzemikk::AssetHandle<dzemikk::Shader> shader;
+    dzemikk::Renderer* renderer{};
+    dzemikk::Engine* engine{};
+};
+
+void onSkyboxLoad(const dzemikk::AssetHandle<dzemikk::Skybox>& skybox, SkyboxInitContext& ctx) {
+    auto skyboxShader = ctx.engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox");
+    skybox.get()->setShader(skyboxShader);
+    ctx.renderer->setSkybox(skybox);
+}
+
 namespace editor {
 
 Editor::Editor(dzemikk::Engine* engine) : _engine(engine) {
@@ -317,6 +329,14 @@ void Editor::setupEditor() {
             }
         }
     }
+
+    auto skyboxShader = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/skybox");
+
+    SkyboxInitContext sCtx(skyboxShader, _engine->getRenderer(), _engine);
+    dzemikk::AssetManager::AssetTask<dzemikk::Skybox, SkyboxInitContext> taskSk;
+    taskSk.context = sCtx;
+    taskSk.onLoad = onSkyboxLoad;
+    _engine->getAssetManager()->getAsync("textures/Skybox", taskSk);
 
     _editorInitialized = true;
 }

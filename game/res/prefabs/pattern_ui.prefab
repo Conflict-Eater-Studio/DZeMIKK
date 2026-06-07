@@ -13,7 +13,7 @@
                             0.5,
                             0.5
                         ],
-                        "id": "2c8a479a-92bf-4cf9-ae0b-8ae4b81366d2",
+                        "id": "b3a573e2-d6fc-4dee-adf4-1a5df6ba01bb",
                         "pivot": [
                             0.5,
                             0.5
@@ -42,7 +42,7 @@
                         ],
                         "font": "fonts/Lato-Regular.ttf",
                         "horizontalAlign": 1,
-                        "id": "5cbdb198-fa7c-4b3b-8d1a-a0317fcef0ff",
+                        "id": "4c8efa2f-2f11-446c-9e8a-7dfb602821e0",
                         "scale": 0.30000001192092896,
                         "text": "atk1",
                         "type": "UITextRenderer",
@@ -50,7 +50,7 @@
                     }
                 ],
                 "enabled": true,
-                "id": "cff61a87-fe40-480b-8675-d0a2fa47c2d0",
+                "id": "498a4b34-eb7e-4308-8209-c0a8e95c5c8e",
                 "name": "Button_Text"
             },
             {
@@ -67,7 +67,7 @@
                                     0.5,
                                     0.5
                                 ],
-                                "id": "c9009cdb-533a-41d1-934f-24ca4427653d",
+                                "id": "26acced7-8dba-4489-879e-6fb1543b86a1",
                                 "pivot": [
                                     0.5,
                                     0.5
@@ -96,7 +96,7 @@
                                 ],
                                 "font": "fonts/Lato-Regular.ttf",
                                 "horizontalAlign": 1,
-                                "id": "35c8bff7-6d38-46d0-8fe2-dc7859a86c33",
+                                "id": "4cbaae98-b17b-45cb-93bf-77d9cc550f74",
                                 "scale": 0.30000001192092896,
                                 "text": "x-1",
                                 "type": "UITextRenderer",
@@ -104,7 +104,7 @@
                             }
                         ],
                         "enabled": true,
-                        "id": "e4d1e9b2-a4d8-4180-ac06-fee97a4f374f",
+                        "id": "1a485bc4-3b27-44d1-8914-175f488760c5",
                         "name": "Text_Count"
                     }
                 ],
@@ -118,7 +118,7 @@
                             0.5,
                             0.5
                         ],
-                        "id": "2978134e-7215-4b5b-adde-e1eec65ea5eb",
+                        "id": "2ffc92ab-163c-4f0c-887c-32ebccfa480d",
                         "pivot": [
                             0.5,
                             0.5
@@ -146,14 +146,14 @@
                             0.0,
                             0.3137255012989044
                         ],
-                        "id": "bee9988a-2d5f-4dda-aed9-ccd79c8404c8",
+                        "id": "76651b76-5399-4510-9aca-db3f0caa756d",
                         "materialPath": "shaders/quad",
                         "texture": "",
                         "type": "ImageRenderer"
                     }
                 ],
                 "enabled": true,
-                "id": "611db82f-ee83-415d-a679-746d12070ba5",
+                "id": "9d9455d7-495d-4f8f-8211-aa76dd80ad4f",
                 "name": "Count"
             },
             {
@@ -168,7 +168,7 @@
                             0.5,
                             0.5
                         ],
-                        "id": "cb9c14f3-90f7-4861-b74e-f3e4059048b2",
+                        "id": "7261f0ca-654e-4127-98e1-0c205ad1398d",
                         "pivot": [
                             0.5,
                             0.5
@@ -191,8 +191,58 @@
                     }
                 ],
                 "enabled": true,
-                "id": "d81dbc16-5394-4096-b40f-5b44341f7b66",
+                "id": "3d3a42ee-f7a9-4da3-874f-dc70de50d079",
                 "name": "HexHolder"
+            },
+            {
+                "children": [],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "1fb1d7a8-6084-4466-bd7a-38493b9fcad0",
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            120.0,
+                            120.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 0
+                    },
+                    {
+                        "color": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            1.0
+                        ],
+                        "id": "f595675b-ed6c-4d9c-bf3c-fb731fbea558",
+                        "materialPath": "shaders/quad",
+                        "texture": "textures/ui grafiki/ui patterns/ramka_podpattern.png",
+                        "type": "ImageRenderer"
+                    }
+                ],
+                "enabled": true,
+                "id": "1fa59bc0-fd1c-47da-9177-dadd35d4d173",
+                "name": "Empty"
             }
         ],
         "components": [
@@ -205,7 +255,7 @@
                     0.5,
                     0.5
                 ],
-                "id": "947be52a-44b3-493c-ab9a-bda6e6968d3e",
+                "id": "b7d24cb2-2605-4109-aee0-dddfed88c8c7",
                 "pivot": [
                     0.5,
                     0.5
@@ -231,20 +281,20 @@
                     0.6666666865348816,
                     0.0,
                     0.0,
-                    1.0
+                    0.5490196347236633
                 ],
-                "id": "6cab12ee-c458-428e-a83d-d427e026573d",
+                "id": "ae834846-e17e-4e56-b583-1343d2c8d0af",
                 "normalColor": [
                     1.0,
                     0.0,
                     0.0,
-                    1.0
+                    0.5490196347236633
                 ],
                 "pressedColor": [
                     0.23529411852359772,
                     0.0,
                     0.0,
-                    1.0
+                    0.5490196347236633
                 ],
                 "type": "UIButton"
             },
@@ -253,16 +303,16 @@
                     1.0,
                     0.0,
                     0.0,
-                    1.0
+                    0.5490196347236633
                 ],
-                "id": "f82a73f6-7523-418e-af2c-aa0821a5494f",
+                "id": "e28edcbf-c09c-4ee2-9a94-f919498c7a67",
                 "materialPath": "shaders/quad",
-                "texture": "",
+                "texture": "textures/ui grafiki/ui patterns/tlo_podpattern.png",
                 "type": "ImageRenderer"
             }
         ],
         "enabled": true,
-        "id": "92133871-2060-43f2-bf5f-d352663c0842",
+        "id": "2d142965-34af-4d6d-bd0c-bd6371ad32fb",
         "name": "Pattern_UI"
     }
 }
