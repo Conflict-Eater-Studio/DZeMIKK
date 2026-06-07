@@ -577,7 +577,7 @@
                                                     "verticalAlign": 1
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "ef9dbf46-af9f-4209-b300-c1196c952157",
                                             "name": "Text"
                                         },
@@ -629,7 +629,7 @@
                                                     "type": "GridLayout"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "4bc14c0d-c6fb-49c0-9a04-7b4e561d31e5",
                                             "name": "Patterns"
                                         }
@@ -673,7 +673,7 @@
                                             "type": "VerticalLayout"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "c4d8e2c1-f870-4edf-8eab-a5887bfedf89",
                                     "name": "VerticaLayout"
                                 },
@@ -712,9 +712,9 @@
                                         },
                                         {
                                             "color": [
-                                                0.36274510622024536,
-                                                0.3307381868362427,
-                                                0.0,
+                                                0.4019607901573181,
+                                                0.3210655748844147,
+                                                0.005911193788051605,
                                                 1.0
                                             ],
                                             "id": "b010416b-a762-4f6f-8940-02203651f599",
@@ -723,7 +723,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "9bfba8bb-3e95-49aa-92d3-2f8c89aff46c",
                                     "name": "Empty"
                                 },
@@ -762,9 +762,9 @@
                                         },
                                         {
                                             "color": [
-                                                1.0,
-                                                0.9137254953384399,
-                                                0.0,
+                                                0.9372549057006836,
+                                                0.7490196228027344,
+                                                0.01568627543747425,
                                                 1.0
                                             ],
                                             "id": "17c35786-07a2-4424-9873-756e1a6d1850",
@@ -773,7 +773,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "bb29948c-213f-42de-976c-4295c367064c",
                                     "name": "Decor"
                                 }
@@ -822,7 +822,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "f7c98ef8-d246-4da9-8dcc-1fd525967a00",
                             "name": "Player_Panel"
                         },
@@ -878,7 +878,7 @@
                                                     "verticalAlign": 1
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "3d0c0f83-acd6-43e3-afca-2bb35c3e680c",
                                             "name": "Text"
                                         },
@@ -930,7 +930,7 @@
                                                     "type": "GridLayout"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "67fb4997-c245-4c1b-ae54-5871f9397f44",
                                             "name": "Patterns"
                                         }
@@ -974,7 +974,7 @@
                                             "type": "VerticalLayout"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "b918f52c-ac07-4070-aed8-37cf9d62c5fd",
                                     "name": "VerticaLayout"
                                 },
@@ -1013,9 +1013,9 @@
                                         },
                                         {
                                             "color": [
-                                                0.30980393290519714,
-                                                0.0,
-                                                0.0,
+                                                0.12156862765550613,
+                                                0.003921568859368563,
+                                                0.40784314274787903,
                                                 1.0
                                             ],
                                             "id": "7040abe2-28ca-4bb7-ad4f-402fb10f6485",
@@ -1024,7 +1024,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "b522f273-4ed5-4d8e-bbc7-17298f4c2557",
                                     "name": "Empty"
                                 },
@@ -1063,9 +1063,9 @@
                                         },
                                         {
                                             "color": [
-                                                1.0,
-                                                0.0,
-                                                0.0,
+                                                0.29019609093666077,
+                                                0.01568627543747425,
+                                                0.9372549057006836,
                                                 1.0
                                             ],
                                             "id": "0a618758-39c3-4f84-9813-d3941d41f2b8",
@@ -1074,7 +1074,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "ab0b1151-fc21-4780-b2bb-55c9cd4d5d37",
                                     "name": "Decor"
                                 }
@@ -1123,7 +1123,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "115d0278-709b-423a-8c9d-ab85095f1893",
                             "name": "Enemy_Panel"
                         },
@@ -1179,7 +1179,7 @@
                                                             "type": "ImageRenderer"
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "b0bab6db-6c54-4fdf-93aa-7970219981cc",
                                                     "name": "Image"
                                                 },
@@ -1231,7 +1231,7 @@
                                                             "verticalAlign": 0
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "6ef73dc3-eda7-43dc-b919-5414e1b01d95",
                                                     "name": "Text"
                                                 },
@@ -1283,7 +1283,7 @@
                                                             "verticalAlign": 0
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "82003211-515b-4cce-9059-3c739f435185",
                                                     "name": "Text2"
                                                 }
@@ -1327,7 +1327,7 @@
                                                     "type": "VerticalLayout"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "08d57639-6cae-4c43-963d-1dbd3b76295b",
                                             "name": "1"
                                         },
@@ -1379,7 +1379,7 @@
                                                             "type": "ImageRenderer"
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "6ad688b7-40f7-4e69-98a1-c0dca0cbbf3a",
                                                     "name": "Image"
                                                 },
@@ -1431,7 +1431,7 @@
                                                             "verticalAlign": 0
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "9ac83f25-2ab0-486e-a393-00b29b851ac0",
                                                     "name": "Text"
                                                 }
@@ -1475,7 +1475,7 @@
                                                     "type": "VerticalLayout"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "51348623-a38e-46ab-8a8d-ab38f2b29ee9",
                                             "name": "2"
                                         },
@@ -1527,7 +1527,7 @@
                                                             "type": "ImageRenderer"
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "e65821cd-7ad0-496a-a5c2-92e3e3a0a34a",
                                                     "name": "Image"
                                                 },
@@ -1579,7 +1579,7 @@
                                                             "verticalAlign": 0
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "8ad51458-d886-4dbf-83cf-605765ca0759",
                                                     "name": "Text"
                                                 }
@@ -1623,7 +1623,7 @@
                                                     "type": "VerticalLayout"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "1fae89e1-e36e-46b1-9488-f0bcd6626fd0",
                                             "name": "3"
                                         },
@@ -1679,7 +1679,7 @@
                                                                     "verticalAlign": 1
                                                                 }
                                                             ],
-                                                            "enabled": true,
+                                                            "enabled": false,
                                                             "id": "37012970-280c-4ac4-ac72-c39d4e810e23",
                                                             "name": "Text"
                                                         }
@@ -1728,7 +1728,7 @@
                                                             "type": "ImageRenderer"
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "56e9bd77-1995-45f2-b086-fd965f728bb7",
                                                     "name": "Image"
                                                 },
@@ -1780,7 +1780,7 @@
                                                             "verticalAlign": 0
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "b1a9cd9c-56c4-4811-a3df-7793df19ef48",
                                                     "name": "Text"
                                                 }
@@ -1824,7 +1824,7 @@
                                                     "type": "VerticalLayout"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "e2126334-f18e-4053-ac5e-b4fe20dd8b5a",
                                             "name": "4"
                                         }
@@ -1861,7 +1861,7 @@
                                             "zIndex": 0
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "59fed4a6-2b51-4c36-9e4f-ec0290f7381c",
                                     "name": "Items_container"
                                 },
@@ -1911,7 +1911,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "a1f731cb-921a-4c4d-890c-7dde919a8287",
                                     "name": "Empty"
                                 }
@@ -1960,7 +1960,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "7e6b2156-1a50-4867-9e92-5dd5a337b3e2",
                             "name": "Actions_Panel"
                         },
@@ -2016,7 +2016,7 @@
                                                     "verticalAlign": 1
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "7de3cb1c-4384-483a-b3b6-5647ab8ebb93",
                                             "name": "Name"
                                         },
@@ -2070,7 +2070,7 @@
                                                                     "type": "ImageRenderer"
                                                                 }
                                                             ],
-                                                            "enabled": true,
+                                                            "enabled": false,
                                                             "id": "a1b43dac-09e2-4f21-81ea-939ea96fa39e",
                                                             "name": "Empty"
                                                         }
@@ -2119,7 +2119,7 @@
                                                             "type": "ImageRenderer"
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "6cb56685-4a7d-469f-8ee2-13bca9547b72",
                                                     "name": "Heart"
                                                 },
@@ -2171,7 +2171,7 @@
                                                             "verticalAlign": 1
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "e015e38d-4cd1-43f8-a40f-788f379fb241",
                                                     "name": "Text"
                                                 }
@@ -2215,7 +2215,7 @@
                                                     "type": "HorizontalLayout"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "fa23f885-f5f0-4131-ab34-4bb88af92c2a",
                                             "name": "Health_Holder"
                                         }
@@ -2259,7 +2259,7 @@
                                             "type": "VerticalLayout"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "620d5269-12ec-44b2-9d8a-bd41459845ee",
                                     "name": "Info_Box"
                                 },
@@ -2298,9 +2298,9 @@
                                         },
                                         {
                                             "color": [
-                                                0.30882352590560913,
-                                                0.0,
-                                                0.0,
+                                                0.12259338796138763,
+                                                0.0019944189116358757,
+                                                0.406862735748291,
                                                 1.0
                                             ],
                                             "id": "08e0f416-7d37-4c23-8335-c910b92dacec",
@@ -2309,7 +2309,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "e51d36cf-9578-4149-8911-a03931ecb43e",
                                     "name": "Empty"
                                 },
@@ -2350,9 +2350,9 @@
                                                 },
                                                 {
                                                     "color": [
-                                                        1.0,
-                                                        0.0,
-                                                        0.0,
+                                                        0.29019609093666077,
+                                                        0.01568627543747425,
+                                                        0.9372549057006836,
                                                         1.0
                                                     ],
                                                     "id": "af2db065-4166-470c-8207-b1df71d1028b",
@@ -2361,7 +2361,7 @@
                                                     "type": "ImageRenderer"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "220c703d-f367-4707-b1bd-0c874da88815",
                                             "name": "Empty"
                                         },
@@ -2411,7 +2411,7 @@
                                                     "type": "ImageRenderer"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "4a1ac35b-5271-4475-91c8-1ccb818dafbd",
                                             "name": "Avatar"
                                         }
@@ -2460,7 +2460,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "a556f5d7-c7ae-4ecb-b803-c5dd3dde7f2c",
                                     "name": "Avatar_Holder"
                                 },
@@ -2499,9 +2499,9 @@
                                         },
                                         {
                                             "color": [
-                                                1.0,
-                                                0.0,
-                                                0.0,
+                                                0.29019609093666077,
+                                                0.01568627543747425,
+                                                0.9372549057006836,
                                                 1.0
                                             ],
                                             "id": "b270f5c1-70e5-4d53-965a-644690174eee",
@@ -2510,7 +2510,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "409fd283-0f9c-47a9-9b24-7b3098683da6",
                                     "name": "Decor"
                                 }
@@ -2559,7 +2559,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "a90cad2e-e671-4cc1-bac1-3775f8de99ae",
                             "name": "Enemy_Avatar_Panel"
                         },
@@ -2600,9 +2600,9 @@
                                         },
                                         {
                                             "color": [
-                                                0.364705890417099,
-                                                0.3294117748737335,
-                                                0.0,
+                                                0.40392157435417175,
+                                                0.32156863808631897,
+                                                0.007843137718737125,
                                                 1.0
                                             ],
                                             "id": "b6ebfffe-5339-4b21-baf2-80af84ab47c8",
@@ -2611,7 +2611,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "c07e8b7b-35d9-4205-af83-f237815172d5",
                                     "name": "Empty"
                                 },
@@ -2650,9 +2650,9 @@
                                         },
                                         {
                                             "color": [
-                                                1.0,
-                                                0.9137254953384399,
-                                                0.0,
+                                                0.9372549057006836,
+                                                0.7490196228027344,
+                                                0.01568627543747425,
                                                 1.0
                                             ],
                                             "id": "a1f463bd-41d2-4c44-bcb5-e8bfe063ac1a",
@@ -2661,7 +2661,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "40f2b98c-26ca-4c96-9cf1-a0df287a41df",
                                     "name": "Decor"
                                 }
@@ -2710,7 +2710,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "2350382f-1afb-48b4-8b54-d5b42d8de0ce",
                             "name": "Tooltips_Panel"
                         },
@@ -2764,7 +2764,7 @@
                                             "verticalAlign": 1
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "df1bae0a-4d28-4a4a-93a3-c9facff32166",
                                     "name": "Text"
                                 },
@@ -2814,7 +2814,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "769ddde0-649a-44f5-a431-570dffc6e682",
                                     "name": "Empty"
                                 }
@@ -2863,7 +2863,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "81c3c567-c3ec-4518-8350-39cfc3d7d617",
                             "name": "Round_Number"
                         },
@@ -2917,7 +2917,7 @@
                                             "verticalAlign": 1
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "dd72502e-276c-4f4f-9445-fa5816ea9e08",
                                     "name": "Button_Text"
                                 },
@@ -2967,7 +2967,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "0bacaa44-3060-4836-b966-c9565588833f",
                                     "name": "Empty"
                                 }
@@ -3010,31 +3010,31 @@
                                         ]
                                     },
                                     "hoverColor": [
-                                        0.0235294122248888,
-                                        0.0,
-                                        0.10196078568696976,
-                                        0.5490196347236633
-                                    ],
-                                    "id": "755d619f-0160-4f6d-87b0-cbe1fc681604",
-                                    "normalColor": [
-                                        1.0,
-                                        0.9411764740943909,
+                                        0.5588235259056091,
+                                        0.4446808695793152,
                                         0.0,
                                         1.0
                                     ],
+                                    "id": "755d619f-0160-4f6d-87b0-cbe1fc681604",
+                                    "normalColor": [
+                                        0.9372549057006836,
+                                        0.7490196228027344,
+                                        0.01568627543747425,
+                                        1.0
+                                    ],
                                     "pressedColor": [
-                                        0.0,
-                                        0.0,
-                                        0.0,
-                                        0.5490196347236633
+                                        0.3480392098426819,
+                                        0.2783442735671997,
+                                        0.006824297830462456,
+                                        1.0
                                     ],
                                     "type": "UIButton"
                                 },
                                 {
                                     "color": [
-                                        1.0,
-                                        0.9411764740943909,
-                                        0.0,
+                                        0.9372549057006836,
+                                        0.7490196228027344,
+                                        0.01568627543747425,
                                         1.0
                                     ],
                                     "id": "5ab32478-6e9a-4cce-a121-7c8bb16bc480",
@@ -3043,7 +3043,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "dcc97e2b-dd74-4d1c-9328-e1a1a334c5c3",
                             "name": "Confirm_Round"
                         }
@@ -3080,7 +3080,7 @@
                             "zIndex": 0
                         }
                     ],
-                    "enabled": true,
+                    "enabled": false,
                     "id": "9c97366d-f255-4050-9dac-297eee08f3cd",
                     "name": "Combat"
                 },
@@ -3509,9 +3509,9 @@
                                 },
                                 {
                                     "color": [
-                                        0.364705890417099,
-                                        0.3294117748737335,
-                                        0.0,
+                                        0.40392157435417175,
+                                        0.32156863808631897,
+                                        0.007843137718737125,
                                         1.0
                                     ],
                                     "id": "9348d179-96ec-4fc4-a5b9-347c88dd2dc6",
@@ -3561,9 +3561,9 @@
                                         },
                                         {
                                             "color": [
-                                                1.0,
-                                                0.9137254953384399,
-                                                0.0,
+                                                0.9372549057006836,
+                                                0.7490196228027344,
+                                                0.01568627543747425,
                                                 1.0
                                             ],
                                             "id": "2f03a30b-f686-4d81-934d-ef617e650408",
@@ -3710,9 +3710,9 @@
                                 },
                                 {
                                     "color": [
-                                        1.0,
-                                        0.9137254953384399,
-                                        0.0,
+                                        0.9372549057006836,
+                                        0.7490196228027344,
+                                        0.01568627543747425,
                                         1.0
                                     ],
                                     "id": "85032f0a-1fb8-4b1a-b0a6-ed1b7f1dc362",
