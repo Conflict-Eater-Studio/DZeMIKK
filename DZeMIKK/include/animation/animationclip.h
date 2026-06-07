@@ -83,19 +83,12 @@ public:
     void setName(const std::string& name);
     std::string getName();
 
-    void setApplyRootMotion(bool apply);
-    [[nodiscard]] bool applyRootMotion() const;
-    void setRootMotionBoneName(const std::string& boneName);
-    [[nodiscard]] const std::string& rootMotionBoneName() const;
-
   private:
     std::vector<std::unique_ptr<IAnimationTrack>> _tracks;
     float _durationInTicks = 0;
     float _ticksPerSecond = 0;
     float _playbackSpeed = 1.0f;
     bool _loop = true;
-    bool _applyRootMotion = false;
-    std::string _rootMotionBoneName;
     std::string _nameInSkeleton;
 };
 }
