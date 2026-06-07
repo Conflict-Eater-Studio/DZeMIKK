@@ -16,10 +16,12 @@ set(GAME_SOURCES
     ${SRC_DIR}/stateMachine/gameStateMachine.cpp
     ${SRC_DIR}/stateMachine/explorationState.cpp
     ${SRC_DIR}/stateMachine/combatState.cpp
+    ${SRC_DIR}/stateMachine/combatResolver.cpp
     ${SRC_DIR}/enemySystem/enemyEntity.cpp
     ${SRC_DIR}/enemySystem/enemyManager.cpp
     ${SRC_DIR}/enemySystem/territoryPatternRegistry.cpp
     ${SRC_DIR}/enemySystem/enemyActionWeights.cpp
+    ${SRC_DIR}/enemySystem/enemyPlanner.cpp
     ${SRC_DIR}/player/playerPatternComponent.cpp
     ${SRC_DIR}/enemySystem/enemyPatternComponent.cpp
     ${SRC_DIR}/enemySystem/patternComponent.cpp
@@ -50,12 +52,15 @@ set(GAME_HEADERS
     ${INC_DIR}/stateMachine/gameStateMachine.h
     ${INC_DIR}/stateMachine/explorationState.h
     ${INC_DIR}/stateMachine/combatState.h
+    ${INC_DIR}/stateMachine/combatTypes.h
+    ${INC_DIR}/stateMachine/combatResolver.h
     ${INC_DIR}/enemySystem/enemyEntity.h
     ${INC_DIR}/enemySystem/enemyManager.h
     ${INC_DIR}/enemySystem/enemyTypes.h
     ${INC_DIR}/enemySystem/territoryPattern.h
     ${INC_DIR}/enemySystem/territoryPatternRegistry.h
     ${INC_DIR}/enemySystem/enemyActionWeights.h
+    ${INC_DIR}/enemySystem/enemyPlanner.h
     ${INC_DIR}/player/playerPatternComponent.h
     ${INC_DIR}/enemySystem/patternComponent.h
     ${INC_DIR}/enemySystem/enemyPatternComponent.h

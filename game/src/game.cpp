@@ -447,7 +447,6 @@ void Game::setupPlayer() {
     playerHealthSystem->setMaxHealth(30.0F);
     playerHealthSystem->setTextRenderer(
         playerHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
-    playerHealthSystem->damage(3.2);
 }
 
 void Game::setupEnemies() {
