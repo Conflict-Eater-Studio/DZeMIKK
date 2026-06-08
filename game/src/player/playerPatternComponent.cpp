@@ -44,7 +44,7 @@ void game::PlayerPatternComponent::start() {
 
     // hp1
     addPattern(HexPattern({{0, 0}}, HexPattern::Type::HEAL), -1);
-    addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::HEAL, 1.1F), -1);
+    addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::HEAL, 0.6F), -1);
 
     // bonus
     addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::BONUSHEX, 1.0F), 1);
@@ -172,6 +172,13 @@ bool game::PlayerPatternComponent::confirmPattern() {
     }
 
     PlacedPattern placed(pattern, _currentPreviewOrigin);
+
+    for (const auto& offset : pattern.getHexes()) {
+        HexCoord worldCoord(_currentPreviewOrigin.q() + offset.r(),
+                            _currentPreviewOrigin.r() + offset.q());
+
+        placed.worldCells.push_back(worldCoord);
+    }
 
     for (auto* object : _previewHexes) {
         if (object) {

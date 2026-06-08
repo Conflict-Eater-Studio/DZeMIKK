@@ -205,7 +205,7 @@ void game::CombatState::startNewTurn() {
         }
     }
 
-    constexpr glm::vec4 WhiteColor = {1.f, 1.f, 1.f, 1.f};
+    constexpr glm::vec4 WhiteColor = {1.F, 1.F, 1.F, 1.F};
 
     for (auto* cell : _currentEnemy->getTerritory()) {
 
@@ -301,7 +301,7 @@ void game::CombatState::showEnemyPlannedPatterns() {
 
 void game::CombatState::resolveConflict() {
     auto result = CombatResolver::resolve(*_playerPatternComponent, _plannedPatterns,
-                                   _currentEnemy->getCell()->getCoord());
+                                   _currentEnemy->getCell()->getCoord(), _player->getCell()->getCoord());
 
     auto* playerHealth = _game->getCurrentScene().get()->findGameObjectByName("Player_Avatar_Panel")
                              ->findDescendantByName("Health_Holder")

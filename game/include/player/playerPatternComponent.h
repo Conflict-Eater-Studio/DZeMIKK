@@ -38,6 +38,8 @@ class PlayerPatternComponent : public PatternComponent {
         HexPattern pattern;
         HexCoord origin;
         std::vector<dzemikk::GameObject*> objects;
+
+        std::vector<HexCoord> worldCells;
     };
 
     using ListenerID = uint32_t;

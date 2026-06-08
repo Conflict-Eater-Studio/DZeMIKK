@@ -45,7 +45,8 @@ class CombatResolver {
      */
     [[nodiscard]] static Result resolve(const PlayerPatternComponent& playerPatterns,
                                         const std::vector<PlannedPattern>& enemyPatterns,
-                                        const HexCoord& enemyCenter);
+                                        const HexCoord& enemyCenter,
+                                        const HexCoord& playerCenter);
 
   private:
     /**
