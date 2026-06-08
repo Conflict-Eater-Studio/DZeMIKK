@@ -207,9 +207,10 @@ namespace dzemikk {
     RootMotionDelta Animator::extractRootMotionDelta() {
         RootMotionDelta delta;
 
+        AnimationClip* clip = _currentState->getClip();
+
         int boneIndex = -1;
         if (_rootMotionBoneName.empty()) {
-            AnimationClip* clip = _currentState->getClip();
             if (clip) {
                 for (const auto& track : clip->getTracks()) {
                     auto* boneTrack = dynamic_cast<BoneTrack*>(track.get());
@@ -233,7 +234,9 @@ namespace dzemikk {
             return delta;
         }
 
-        RootMotionMode mode = _rootMotionMode;
+        if (clip == nullptr) return delta;
+        RootMotionMode mode = clip->getRootMotionMode();
+        if (mode == RootMotionMode::None) return delta;
 
         if (mode == RootMotionMode::Position || mode == RootMotionMode::PositionAndRotation) {
             glm::vec3 prevPos = glm::vec3(_prevRootWorldTransform[3]);
@@ -269,7 +272,11 @@ namespace dzemikk {
         if (!_owner) return;
         Transform* transform = _owner->transform();
         if (!transform) return;
-        RootMotionMode mode = _rootMotionMode;
+        if (_currentState == nullptr) return;
+        AnimationClip* clip = _currentState->getClip();
+        if (clip == nullptr) return;
+        RootMotionMode mode = clip->getRootMotionMode();
+        if (mode == RootMotionMode::None) return;
 
         if (mode == RootMotionMode::Position || mode == RootMotionMode::PositionAndRotation) {
             transform->translate(delta.deltaPosition);

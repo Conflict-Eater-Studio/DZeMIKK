@@ -25,7 +25,10 @@ void PlayerMovement::update(double deltaTime) {
     _animator->setInt("isMoving", 1);
     HexGrid::HexCellPtr ptr = _path[_step % _path.size()];
 
+    _height = ptr->getHeight();
+
     if (_animator->getCurrentState()->getClip()->isFinished()) {
+        ptr->setHeight(_height);
         _playerEntity->tryMove(ptr);
         _animator->setInt("direction", -1);
         _animator->play("Idle");

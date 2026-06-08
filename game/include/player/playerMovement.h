@@ -39,7 +39,7 @@ namespace game {
         float _speed = 1.0f;
         int _step = 1;
         float _duration = 0.0f;
-
+        float _height = 0.0f;
         Game* _game = nullptr;
         dzemikk::Animator* _animator = nullptr;
 

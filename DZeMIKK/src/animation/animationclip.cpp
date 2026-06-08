@@ -68,6 +68,8 @@ void AnimationClip::apply(float timeInSeconds) const {
     } else if (_durationInTicks > 0.0f && time > _durationInTicks) {
         keyframe = _durationInTicks;
         _isFinished = true;
+    } else {
+        _isFinished = false;
     }
 
     for (auto& track : _tracks) {
@@ -104,6 +106,12 @@ bool AnimationClip::isFinished() const {
 }
 void AnimationClip::setFinished(bool finished) {
     _isFinished = finished;
+}
+void AnimationClip::setRootMotionMode(RootMotionMode mode) {
+    _rootMotionMode = mode;
+}
+RootMotionMode AnimationClip::getRootMotionMode() const {
+    return _rootMotionMode;
 }
 }
 

@@ -411,8 +411,9 @@ void Game::setupPlayer() {
 
     forwardClip = skeleton->getClip("forward_1_0");
     forwardClip->setLoop(false);
+    forwardClip->setRootMotionMode(dzemikk::RootMotionMode::Position);
     playerGO->transform()->rotateAround(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-
+    playerGO->transform()->setScale(glm::vec3(0.015f, 0.015f, 0.015f));
     auto animator = playerGO->getComponent<dzemikk::Animator>();
     animator->getStateMachine()->getState("Idle")->setClip(idleClip);
     animator->getStateMachine()->getState("R30")->setClip(forwardClip);
@@ -424,7 +425,6 @@ void Game::setupPlayer() {
 
     animator->setApplyRootMotion(true);
     animator->setSkeleton(skeleton.get());
-    animator->setRootMotionMode(dzemikk::RootMotionMode::Position);
 
     _playerEntity = playerGO->addComponent<game::PlayerEntity>();
     _playerMovement = playerGO->addComponent<game::PlayerMovement>();
