@@ -166,7 +166,7 @@ class PlayerPatternComponent : public PatternComponent {
     std::vector<dzemikk::GameObject*> _previewHexes;
     std::vector<dzemikk::GameObject*> _confirmedHexes;
 
-    float _combatBoardOffset = -5.0f;
+    float _combatBoardOffset = -5.0F;
 
 #pragma endregion
 

@@ -144,7 +144,7 @@ void game::CombatState::onUpdate(float dt) {
 
         _resultTimer -= dt;
 
-        if (_resultTimer <= 0.0f) {
+        if (_resultTimer <= 0.0F) {
             startNewTurn();
         }
     }
@@ -200,7 +200,7 @@ void game::CombatState::endPlayerTurn() {
     resolveConflict();
     showEnemyPlannedPatterns();
 
-    _resultTimer = 2.0f;
+    _resultTimer = 2.0F;
 }
 
 glm::vec4 game::CombatState::getPatternColor(HexPattern::Type type) {
