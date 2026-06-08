@@ -22,6 +22,7 @@ void PlayerMovement::update(double deltaTime) {
         return;
     }
 
+    _animator->setInt("isMoving", 1);
     HexGrid::HexCellPtr ptr = _path[_step % _path.size()];
 
     if (_animator->getCurrentState()->getClip()->isFinished()) {

@@ -61,7 +61,9 @@ namespace dzemikk {
         if (_currentState == nullptr) {
             return;
         }
-
+        if (_currentState->getClip() != nullptr) {
+            _currentState->getClip()->setFinished(false);
+        }
         _currentTime = 0.0f;
         _hasPrevRootTransform = false;
     }

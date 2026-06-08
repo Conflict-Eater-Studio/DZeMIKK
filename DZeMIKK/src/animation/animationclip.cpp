@@ -102,5 +102,8 @@ std::string AnimationClip::getName() {
 bool AnimationClip::isFinished() const {
     return _isFinished;
 }
+void AnimationClip::setFinished(bool finished) {
+    _isFinished = finished;
+}
 }
 

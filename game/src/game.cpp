@@ -410,7 +410,7 @@ void Game::setupPlayer() {
     idleClip->setLoop(true);
 
     forwardClip = skeleton->getClip("forward_1_0");
-
+    forwardClip->setLoop(false);
     playerGO->transform()->rotateAround(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 
     auto animator = playerGO->getComponent<dzemikk::Animator>();
