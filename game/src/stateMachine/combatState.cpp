@@ -165,12 +165,22 @@ void game::CombatState::startNewTurn() {
     _playerPatternComponent->clearPlacedPatterns();
     _playerPatternComponent->deactivatePattern();
 
-    for (auto* cell : _currentEnemy->getTerritory()) {
-        cell->setDirty(true);
-    }
-
     auto* worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
     auto* world = worldGO->getComponent<World>();
+
+    for (auto* cell : _currentEnemy->getTerritory()) {
+        auto* transform = world->getHexTransformByCell(*cell);
+        if (!transform) {
+            continue;
+        }
+
+        auto* mesh = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+        if (!mesh) {
+            continue;
+        }
+
+        mesh->setColor({0.0F, 0.0F, 0.5F, 1.0F});
+    }
 
     auto* enemyManagerGO = _game->getCurrentScene().get()->findGameObjectByName("EnemyManager");
     auto* patternComponent = enemyManagerGO->getComponent<EnemyPatternComponent>();
@@ -184,6 +194,41 @@ void game::CombatState::startNewTurn() {
     _plannedPatterns.clear();
     _plannedPatterns =
         planner.planTurn(_game, _currentEnemy, patternComponent, _game->getHexGrid(), 0.75F, _playerPatternComponent->getPlayerPatternStatsComponent());
+
+    std::unordered_set<HexCell*> usedCells;
+
+    for (const auto& pattern : _plannedPatterns) {
+        for (auto* cell : pattern.cells) {
+            if (cell) {
+                usedCells.insert(cell);
+            }
+        }
+    }
+
+    constexpr glm::vec4 WhiteColor = {1.f, 1.f, 1.f, 1.f};
+
+    for (auto* cell : _currentEnemy->getTerritory()) {
+
+        if (!cell) {
+            continue;
+        }
+
+        if (usedCells.contains(cell)) {
+            continue;
+        }
+
+        auto* transform = world->getHexTransformByCell(*cell);
+        if (!transform) {
+            continue;
+        }
+
+        auto* mesh = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+        if (!mesh) {
+            continue;
+        }
+
+        mesh->setColor(WhiteColor);
+    }
 
     auto* enemyPanel = _game->getCurrentScene().get()->findGameObjectByName("Enemy_Panel");
     auto* enemyPanelUI = enemyPanel->getComponent<CombatUIPanel>();
