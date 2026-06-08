@@ -6,22 +6,26 @@ std::string game::EnemyPatternComponent::typeName() const {
 
 void game::EnemyPatternComponent::start() {
     // atk1
-    addPattern(HexPattern({{-1, 1}, {0, 0}, {1, -1}}, HexPattern::Type::ATK, 1.2F), 100);
+    addPattern(HexPattern({{0, 0}}, HexPattern::Type::ATK, 1.0F), -1);
+    addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::ATK, 1.1F), -1);
+    // addPattern(HexPattern({{-1, 1}, {0, 0}, {1, -1}}, HexPattern::Type::ATK, 1.2F), -1);
 
     // atk2
-    addPattern(HexPattern({{-1, 0}, {0, 0}, {1, -1}}, HexPattern::Type::ATK, 1.2F), -1);
+    // addPattern(HexPattern({{-1, 0}, {0, 0}, {1, -1}}, HexPattern::Type::ATK, 1.2F), -1);
 
     // atk3
-    addPattern(HexPattern({{0, 0}, {1, -1}, {-1, 0}, {0, 1}}, HexPattern::Type::ATK, 1.3F), -1);
+    // addPattern(HexPattern({{0, 0}, {1, -1}, {-1, 0}, {0, 1}}, HexPattern::Type::ATK, 1.3F), -1);
 
     // def1
-    addPattern(HexPattern({{0, 0}}, HexPattern::Type::DEF), 100);
+    addPattern(HexPattern({{0, 0}}, HexPattern::Type::DEF), -1);
+    addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::DEF, 1.1F), -1);
 
     // def2
-    addPattern(HexPattern({{-1, 1}, {0, 0}, {1, -1}}, HexPattern::Type::DEF, 1.2F), 100);
+    // addPattern(HexPattern({{-1, 1}, {0, 0}, {1, -1}}, HexPattern::Type::DEF, 1.2F), -1);
 
     // hp1
-    addPattern(HexPattern({{0, 0}}, HexPattern::Type::HEAL, 0.5F), 100);
+    addPattern(HexPattern({{0, 0}}, HexPattern::Type::HEAL), -1);
+    addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::HEAL, 1.1F), -1);
 }
 
 void game::EnemyPatternComponent::update(double deltaTime) {}

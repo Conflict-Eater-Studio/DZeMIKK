@@ -22,6 +22,9 @@ set(GAME_SOURCES
     ${SRC_DIR}/enemySystem/territoryPatternRegistry.cpp
     ${SRC_DIR}/enemySystem/enemyActionWeights.cpp
     ${SRC_DIR}/enemySystem/enemyPlanner.cpp
+    ${SRC_DIR}/enemySystem/behaviorTree/bTNode.cpp
+    ${SRC_DIR}/enemySystem/behaviorTree/healthNodes.cpp
+    ${SRC_DIR}/enemySystem/behaviorTree/playerStyleNodes.cpp
     ${SRC_DIR}/player/playerPatternComponent.cpp
     ${SRC_DIR}/enemySystem/enemyPatternComponent.cpp
     ${SRC_DIR}/enemySystem/patternComponent.cpp
@@ -61,6 +64,9 @@ set(GAME_HEADERS
     ${INC_DIR}/enemySystem/territoryPatternRegistry.h
     ${INC_DIR}/enemySystem/enemyActionWeights.h
     ${INC_DIR}/enemySystem/enemyPlanner.h
+    ${INC_DIR}/enemySystem/behaviorTree/bTNode.h
+    ${INC_DIR}/enemySystem/behaviorTree/healthNodes.h
+    ${INC_DIR}/enemySystem/behaviorTree/playerStyleNodes.h
     ${INC_DIR}/player/playerPatternComponent.h
     ${INC_DIR}/enemySystem/patternComponent.h
     ${INC_DIR}/enemySystem/enemyPatternComponent.h

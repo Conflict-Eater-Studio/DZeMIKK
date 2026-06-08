@@ -6,6 +6,7 @@
 #include <optional>
 #include <vector>
 #include <player/playerPatternComponent.h>
+#include "enemySystem/behaviorTree/bTNode.h"
 
 class Game;
 
@@ -25,11 +26,7 @@ class HexPattern;
  */
 class EnemyPlanner {
   public:
-    struct ContextModifiers {
-        float attack = 1.0f;
-        float defense = 1.0f;
-        float heal = 1.0f;
-    };
+    EnemyPlanner();
 
     /**
      * @brief Creates a combat plan for the specified enemy.
@@ -50,18 +47,10 @@ class EnemyPlanner {
                                          const PlayerPatternStatsComponent* playerStats);
 
   private:
-    /**
-     * @brief Returns the selection weight for a pattern type.
-     *
-     * @param enemy Enemy entity being evaluated.
-     * @param type Pattern type.
-     *
-     * @return float Weight assigned to the pattern type.
-     */
-    static float getTypeWeight(const EnemyEntity* enemy, HexPattern::Type type);
+    std::unique_ptr<BTNode> _root;
 
     static float getUtilityWeight(const EnemyEntity* enemy,
-                                         const ContextModifiers& modifiers, HexPattern::Type type);
+                                         const BTNode::ContextModifiers& modifiers, HexPattern::Type type);
 
     /**
      * @brief Calculates the score of a pattern for the given enemy.
@@ -71,8 +60,7 @@ class EnemyPlanner {
      *
      * @return float Calculated pattern score.
      */
-    static float scorePattern(const EnemyEntity* enemy,
-                                            const ContextModifiers& modifiers,
+    static float scorePattern(const EnemyEntity* enemy, const BTNode::ContextModifiers& modifiers,
                                             const HexPattern& pattern);
 
     /**
@@ -83,7 +71,7 @@ class EnemyPlanner {
      * @return HexPattern::Type Selected pattern type.
      */
     static HexPattern::Type choosePatternType(const EnemyEntity* enemy,
-                                          const ContextModifiers& modifiers);
+                                              const BTNode::ContextModifiers& modifiers);
 
     /**
      * @brief Generates all valid placement candidates for the enemy.
@@ -98,7 +86,7 @@ class EnemyPlanner {
     static std::vector<PlacementCandidate>
     generateCandidates(EnemyEntity* enemy, EnemyPatternComponent* patternComponent, HexGrid* grid,
                        const std::vector<HexCell*>& availableCells,
-                       const ContextModifiers& modifiers);
+                       const BTNode::ContextModifiers& modifiers);
 
     /**
      * @brief Attempts to place a pattern on the grid.
@@ -138,9 +126,9 @@ class EnemyPlanner {
     std::vector<PlannedPattern> fillEnemyBoard(EnemyEntity* enemy,
                                                EnemyPatternComponent* patternComponent,
                                                HexGrid* grid, float coverage,
-                                               const ContextModifiers& modifiers);
+                                               const BTNode::ContextModifiers& modifiers);
 
-    ContextModifiers evaluateBehaviorTree(Game* game, EnemyEntity* enemy,
+    BTNode::ContextModifiers evaluateBehaviorTree(Game* game, EnemyEntity* enemy,
                                        const PlayerPatternStatsComponent* playerStats);
 };
 
