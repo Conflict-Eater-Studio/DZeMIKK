@@ -6,11 +6,18 @@
 
 #include <ecs/scene.h>
 #include <ecs/gameobject.h>
+#include <healthSystem.h>
 
-std::vector<game::PlannedPattern> game::EnemyPlanner::planTurn(EnemyEntity* enemy,
-                                                         EnemyPatternComponent* patternComponent,
-                                                         HexGrid* grid, float coverage) {
-    return fillEnemyBoard(enemy, patternComponent, grid, coverage);
+#include "player/playerPatternStatsComponent.h"
+
+std::vector<game::PlannedPattern>
+game::EnemyPlanner::planTurn(Game* game, EnemyEntity* enemy,
+                             EnemyPatternComponent* patternComponent,
+                             HexGrid* grid, float coverage,
+                             const PlayerPatternStatsComponent* playerStats) {
+    ContextModifiers modifiers = evaluateBehaviorTree(game, enemy, playerStats);
+
+    return fillEnemyBoard(enemy, patternComponent, grid, coverage, modifiers);
 }
 
 float game::EnemyPlanner::getTypeWeight(const EnemyEntity* enemy, HexPattern::Type type) {
@@ -31,28 +38,51 @@ float game::EnemyPlanner::getTypeWeight(const EnemyEntity* enemy, HexPattern::Ty
     }
 }
 
-float game::EnemyPlanner::scorePattern(const EnemyEntity* enemy, const HexPattern& pattern) {
-    float typeWeight = getTypeWeight(enemy, pattern.getType());
-
-    return typeWeight * pattern.getEffectStrength();
-}
-
-game::HexPattern::Type game::EnemyPlanner::choosePatternType(const EnemyEntity* enemy) {
+float game::EnemyPlanner::getUtilityWeight(const EnemyEntity* enemy, const ContextModifiers& modifiers,
+                                     HexPattern::Type type) {
     const auto& weights = enemy->getActionWeights();
 
-    float attackWeight = std::max(0.0F, weights.attack);
-    float defenseWeight = std::max(0.0F, weights.defense);
-    float healWeight = std::max(0.0F, weights.heal);
+    switch (type) {
+
+    case HexPattern::Type::ATK:
+        return weights.attack * modifiers.attack;
+
+    case HexPattern::Type::DEF:
+        return weights.defense * modifiers.defense;
+
+    case HexPattern::Type::HEAL:
+        return weights.heal * modifiers.heal;
+
+    default:
+        return 0.0f;
+    }
+}
+
+float game::EnemyPlanner::scorePattern(const EnemyEntity* enemy, const ContextModifiers& modifiers,
+                                 const HexPattern& pattern) {
+    float utility = getUtilityWeight(enemy, modifiers, pattern.getType());
+
+    return utility * pattern.getEffectStrength();
+}
+
+game::HexPattern::Type game::EnemyPlanner::choosePatternType(const EnemyEntity* enemy,
+                                                             const ContextModifiers& modifiers) {
+
+    float attackWeight = std::max(0.0f, getUtilityWeight(enemy, modifiers, HexPattern::Type::ATK));
+
+    float defenseWeight = std::max(0.0f, getUtilityWeight(enemy, modifiers, HexPattern::Type::DEF));
+
+    float healWeight = std::max(0.0f, getUtilityWeight(enemy, modifiers, HexPattern::Type::HEAL));
 
     float totalWeight = attackWeight + defenseWeight + healWeight;
 
-    if (totalWeight <= 0.0F) {
+    if (totalWeight <= 0.0f) {
         return HexPattern::Type::ATK;
     }
 
     static std::mt19937 rng(std::random_device{}());
 
-    std::uniform_real_distribution<float> dist(0.0F, totalWeight);
+    std::uniform_real_distribution<float> dist(0.0f, totalWeight);
 
     float roll = dist(rng);
 
@@ -71,7 +101,8 @@ game::HexPattern::Type game::EnemyPlanner::choosePatternType(const EnemyEntity* 
 
 std::vector<game::PlacementCandidate>
 game::EnemyPlanner::generateCandidates(EnemyEntity* enemy, EnemyPatternComponent* patternComponent,
-                                       HexGrid* grid, const std::vector<HexCell*>& availableCells) {
+                                       HexGrid* grid, const std::vector<HexCell*>& availableCells,
+                                       const ContextModifiers& modifiers) {
     std::vector<PlacementCandidate> result;
 
     if (!patternComponent) {
@@ -108,7 +139,7 @@ game::EnemyPlanner::generateCandidates(EnemyEntity* enemy, EnemyPatternComponent
 
                 candidate.cells = std::move(cells);
 
-                candidate.score = scorePattern(enemy, pattern);
+                candidate.score = scorePattern(enemy, modifiers, pattern);
 
                 result.push_back(std::move(candidate));
             }
@@ -165,7 +196,7 @@ game::EnemyPlanner::chooseCandidate(std::vector<PlacementCandidate>& candidates)
         candidates.begin(), candidates.end(),
         [](const PlacementCandidate& a, const PlacementCandidate& b) { return a.score > b.score; });
 
-    size_t topCount = std::min<size_t>(5, candidates.size());
+    size_t topCount = std::min<size_t>(3, candidates.size());
 
     static std::mt19937 rng(std::random_device{}());
 
@@ -176,7 +207,8 @@ game::EnemyPlanner::chooseCandidate(std::vector<PlacementCandidate>& candidates)
 
 std::vector<game::PlannedPattern>
 game::EnemyPlanner::fillEnemyBoard(EnemyEntity* enemy, EnemyPatternComponent* patternComponent,
-                                   HexGrid* grid, float coverage) {
+                                   HexGrid* grid, float coverage,
+                                   const ContextModifiers& modifiers) {
 
     std::vector<PlannedPattern> plannedPatterns;
 
@@ -205,9 +237,9 @@ game::EnemyPlanner::fillEnemyBoard(EnemyEntity* enemy, EnemyPatternComponent* pa
 
     while (occupiedCount < targetFill) {
 
-        auto candidates = generateCandidates(enemy, patternComponent, grid, availableCells);
+        auto candidates = generateCandidates(enemy, patternComponent, grid, availableCells, modifiers);
 
-        HexPattern::Type desiredType = choosePatternType(enemy);
+        HexPattern::Type desiredType = choosePatternType(enemy, modifiers);
 
         std::vector<PlacementCandidate> filteredCandidates;
 
@@ -271,4 +303,83 @@ game::EnemyPlanner::fillEnemyBoard(EnemyEntity* enemy, EnemyPatternComponent* pa
     }
 
     return plannedPatterns;
+}
+
+game::EnemyPlanner::ContextModifiers
+game::EnemyPlanner::evaluateBehaviorTree(Game* game, game::EnemyEntity* enemy,
+                                   const game::PlayerPatternStatsComponent* playerStats) {
+    ContextModifiers modifiers;
+
+    if (!enemy) {
+        return modifiers;
+    }
+
+    //
+    // ROOT
+    // Selector
+    //
+    // ??? LowHealth
+    // ??? PlayerAggressive
+    // ??? PlayerDefensive
+    // ??? Default
+    //
+
+    auto* enemyHealthGO = game->getCurrentScene()
+                              .get()
+                              ->findGameObjectByName("Enemy_Avatar_Panel")
+                              ->findDescendantByName("Health_Holder");
+
+    auto* enemyHealthSystem = enemyHealthGO->getComponent<HealthSystem>();
+    float hpPercent = enemyHealthSystem->getCurrentHealth() / enemyHealthSystem->getMaxHealth();
+
+    //
+    // LowHealth
+    //
+    if (hpPercent < 0.40f) {
+
+        modifiers.attack = 0.5f;
+        modifiers.defense = 1.5f;
+        modifiers.heal = 4.0f;
+
+        return modifiers;
+    }
+
+    //
+    // PlayerAggressive
+    //
+    if (playerStats) {
+
+        float attackRatio = playerStats->getStats().getTypeRatio(HexPattern::Type::ATK);
+
+        if (attackRatio > 0.50f) {
+
+            modifiers.attack = 0.9f;
+            modifiers.defense = 2.0f;
+            modifiers.heal = 1.0f;
+
+            return modifiers;
+        }
+    }
+
+    //
+    // PlayerDefensive
+    //
+    if (playerStats) {
+
+        float defenseRatio = playerStats->getStats().getTypeRatio(HexPattern::Type::DEF);
+
+        if (defenseRatio > 0.50f) {
+
+            modifiers.attack = 2.2f;
+            modifiers.defense = 0.8f;
+            modifiers.heal = 1.0f;
+
+            return modifiers;
+        }
+    }
+
+    //
+    // Default
+    //
+    return modifiers;
 }

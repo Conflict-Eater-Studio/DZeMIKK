@@ -5,6 +5,7 @@
 
 #include <optional>
 #include <vector>
+#include <player/playerPatternComponent.h>
 
 class Game;
 
@@ -24,6 +25,12 @@ class HexPattern;
  */
 class EnemyPlanner {
   public:
+    struct ContextModifiers {
+        float attack = 1.0f;
+        float defense = 1.0f;
+        float heal = 1.0f;
+    };
+
     /**
      * @brief Creates a combat plan for the specified enemy.
      *
@@ -37,9 +44,10 @@ class EnemyPlanner {
      *
      * @return std::vector<PlannedPattern> Planned enemy pattern executions.
      */
-    std::vector<PlannedPattern> planTurn(EnemyEntity* enemy,
+    std::vector<PlannedPattern> planTurn(Game* game, EnemyEntity* enemy,
                                          EnemyPatternComponent* patternComponent, HexGrid* grid,
-                                         float coverage = 0.75F);
+                                         float coverage,
+                                         const PlayerPatternStatsComponent* playerStats);
 
   private:
     /**
@@ -52,6 +60,9 @@ class EnemyPlanner {
      */
     static float getTypeWeight(const EnemyEntity* enemy, HexPattern::Type type);
 
+    static float getUtilityWeight(const EnemyEntity* enemy,
+                                         const ContextModifiers& modifiers, HexPattern::Type type);
+
     /**
      * @brief Calculates the score of a pattern for the given enemy.
      *
@@ -60,7 +71,9 @@ class EnemyPlanner {
      *
      * @return float Calculated pattern score.
      */
-    static float scorePattern(const EnemyEntity* enemy, const HexPattern& pattern);
+    static float scorePattern(const EnemyEntity* enemy,
+                                            const ContextModifiers& modifiers,
+                                            const HexPattern& pattern);
 
     /**
      * @brief Chooses a pattern type for the enemy.
@@ -69,7 +82,8 @@ class EnemyPlanner {
      *
      * @return HexPattern::Type Selected pattern type.
      */
-    static HexPattern::Type choosePatternType(const EnemyEntity* enemy);
+    static HexPattern::Type choosePatternType(const EnemyEntity* enemy,
+                                          const ContextModifiers& modifiers);
 
     /**
      * @brief Generates all valid placement candidates for the enemy.
@@ -83,7 +97,8 @@ class EnemyPlanner {
      */
     static std::vector<PlacementCandidate>
     generateCandidates(EnemyEntity* enemy, EnemyPatternComponent* patternComponent, HexGrid* grid,
-                       const std::vector<HexCell*>& availableCells);
+                       const std::vector<HexCell*>& availableCells,
+                       const ContextModifiers& modifiers);
 
     /**
      * @brief Attempts to place a pattern on the grid.
@@ -122,7 +137,11 @@ class EnemyPlanner {
      */
     std::vector<PlannedPattern> fillEnemyBoard(EnemyEntity* enemy,
                                                EnemyPatternComponent* patternComponent,
-                                               HexGrid* grid, float coverage);
+                                               HexGrid* grid, float coverage,
+                                               const ContextModifiers& modifiers);
+
+    ContextModifiers evaluateBehaviorTree(Game* game, EnemyEntity* enemy,
+                                       const PlayerPatternStatsComponent* playerStats);
 };
 
 } // namespace game

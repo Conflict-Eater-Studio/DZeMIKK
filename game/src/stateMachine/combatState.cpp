@@ -180,7 +180,7 @@ void game::CombatState::startNewTurn() {
 
     _plannedPatterns.clear();
     _plannedPatterns =
-        planner.planTurn(_currentEnemy, patternComponent, _game->getHexGrid(), 0.75F);
+        planner.planTurn(_game, _currentEnemy, patternComponent, _game->getHexGrid(), 0.75F, _playerPatternComponent->getPlayerPatternStatsComponent());
 
     auto* enemyPanel = _game->getCurrentScene().get()->findGameObjectByName("Enemy_Panel");
     auto* enemyPanelUI = enemyPanel->getComponent<CombatUIPanel>();

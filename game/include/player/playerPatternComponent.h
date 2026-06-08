@@ -124,6 +124,8 @@ class PlayerPatternComponent : public PatternComponent {
 
     void setInteractionEnabled(bool enabled);
 
+    PlayerPatternStatsComponent* getPlayerPatternStatsComponent();
+
   private:
 #pragma region Pattern data
 

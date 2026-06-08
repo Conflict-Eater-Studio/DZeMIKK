@@ -108,6 +108,10 @@ void game::PlayerPatternComponent::setInteractionEnabled(bool enabled) {
     }
 }
 
+game::PlayerPatternStatsComponent* game::PlayerPatternComponent::getPlayerPatternStatsComponent() {
+    return _playerPatternStats;
+}
+
 bool game::PlayerPatternComponent::hasActivePattern() const {
     return _activePatternIndex >= 0;
 }
