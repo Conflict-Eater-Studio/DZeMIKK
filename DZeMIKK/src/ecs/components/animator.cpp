@@ -237,10 +237,13 @@ namespace dzemikk {
             glm::vec3 prevPos = glm::vec3(_prevRootWorldTransform[3]);
             glm::vec3 currPos = glm::vec3(currentWorld[3]);
             glm::vec3 posDelta = currPos - prevPos;
-            if (getOwner()) {
-                posDelta *= getOwner()->transform()->getScale();
-            }
-            delta.deltaPosition = posDelta;
+            glm::quat currRot = getOwner()->transform()->getRotation();
+
+            glm::vec3 localPosDelta = currRot * posDelta;
+
+            localPosDelta *= getOwner()->transform()->getScale();
+
+            delta.deltaPosition = localPosDelta;
         }
 
         if (mode == RootMotionMode::Rotation || mode == RootMotionMode::PositionAndRotation) {
