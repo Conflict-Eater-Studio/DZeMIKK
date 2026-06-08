@@ -241,6 +241,7 @@ namespace dzemikk {
 
             glm::vec3 localPosDelta = currRot * posDelta;
 
+
             localPosDelta *= getOwner()->transform()->getScale();
 
             delta.deltaPosition = localPosDelta;

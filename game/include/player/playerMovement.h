@@ -6,6 +6,9 @@
 #include "ecs/components/monobehaviour.h"
 
 class Game;
+namespace dzemikk {
+    class Animator;
+}
 namespace game {
 
     class PlayerMovement : public dzemikk::MonoBehaviour {
@@ -26,6 +29,9 @@ namespace game {
 
         void setGame(Game* game);
         void stopMovement();
+
+        void setAnimator(dzemikk::Animator* animator);
+        [[nodiscard]] dzemikk::Animator* getAnimator() const;
     private:
         PlayerEntity* _playerEntity = nullptr;
         HexGrid* _hexGrid = nullptr;
@@ -35,6 +41,7 @@ namespace game {
         float _duration = 0.0f;
 
         Game* _game = nullptr;
+        dzemikk::Animator* _animator = nullptr;
 
     };
 }

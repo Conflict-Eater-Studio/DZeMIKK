@@ -35,6 +35,9 @@
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
 #endif
+
+#include "animation/animationclip.h"
+#include "ecs/components/colorGradingEffect.h"
 #include "ecs/components/fxaaPostProcessEffect.h"
 #include "ecs/components/outlinePostProcessEffect.h"
 #include "ecs/components/postProcessEffect.h"
@@ -51,12 +54,8 @@
 #include <ecs/components/animator.h>
 #include <ecs/components/skinnedMeshRenderer.h>
 #include <gameStateMachine.h>
-#include <iostream>
 #include <healthSystem.h>
-
-#include "ecs/components/postProcessEffect.h"
-#include "ecs/components/colorGradingEffect.h"
-
+#include <iostream>
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
@@ -94,8 +93,7 @@ void Game::start() {
     auto* sceneManager = _engine->getSceneManager();
 
     setupSkybox();
-
-    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay3.json");
+    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay4-sm.json");
 
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
@@ -403,18 +401,37 @@ void Game::setupInputCallbacks() {
 void Game::setupPlayer() {
     auto playerGO = _mainScene.get()->findGameObjectByName("Player");
 
-    dzemikk::AnimationClip* clip = nullptr;
-    auto skeleton =
-        playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
-    clip = skeleton->getClip("mixamo.com");
+    dzemikk::AnimationClip* idleClip = nullptr;
+    dzemikk::AnimationClip* forwardClip = nullptr;
+
+    auto skeleton = playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
+
+    idleClip = skeleton->getClip("idle");
+    idleClip->setLoop(true);
+
+    forwardClip = skeleton->getClip("forward_1_0");
+
+    playerGO->transform()->rotateAround(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+
     auto animator = playerGO->getComponent<dzemikk::Animator>();
-    animator->getStateMachine()->getState("Idle")->setClip(clip);
+    animator->getStateMachine()->getState("Idle")->setClip(idleClip);
+    animator->getStateMachine()->getState("R30")->setClip(forwardClip);
+    animator->getStateMachine()->getState("R90")->setClip(forwardClip);
+    animator->getStateMachine()->getState("R150")->setClip(forwardClip);
+    animator->getStateMachine()->getState("R210")->setClip(forwardClip);
+    animator->getStateMachine()->getState("R270")->setClip(forwardClip);
+    animator->getStateMachine()->getState("R330")->setClip(forwardClip);
+
+    animator->setApplyRootMotion(true);
+    animator->setSkeleton(skeleton.get());
+    animator->setRootMotionMode(dzemikk::RootMotionMode::Position);
 
     _playerEntity = playerGO->addComponent<game::PlayerEntity>();
     _playerMovement = playerGO->addComponent<game::PlayerMovement>();
     _playerMovement->setPlayerEntity(_playerEntity);
     _playerMovement->setSpeed(0.25F);
     _playerMovement->setGame(this);
+    _playerMovement->setAnimator(animator);
 
     animator->play("Idle");
 
