@@ -60,6 +60,8 @@ class PlayerPatternComponent : public PatternComponent {
      */
     bool usePattern(size_t index) override;
 
+    bool useBonusPatter(size_t index);
+
 #pragma endregion
 
 #pragma region Configuration

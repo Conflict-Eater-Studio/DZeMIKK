@@ -43,6 +43,9 @@ void game::PlayerPatternComponent::start() {
     addPattern(HexPattern({{0, 0}}, HexPattern::Type::HEAL), -1);
     addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::HEAL, 1.1F), -1);
 
+    // bonus
+    addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::BONUSHEX, 1.0F), 1);
+
     _playerPatternStats = getOwner()->getComponent<PlayerPatternStatsComponent>();
 
     _onMousePressedListenerID = _engine->getInput()->OnMouseButtonPressed.addListener(
@@ -93,6 +96,26 @@ bool game::PlayerPatternComponent::usePattern(size_t index) {
     destroyPreview();
     createPreviewFromPattern(entry.pattern);
 
+    return true;
+}
+
+bool game::PlayerPatternComponent::useBonusPatter(size_t index) {
+    if (!_interactionEnabled) {
+        return false;
+    }
+
+    if (!canUsePattern(index)) {
+        return false;
+    }
+
+    auto& entry = _patterns[index];
+
+    if (entry.count > 0) {
+        entry.count--;
+    }
+
+    //destroyPreview();
+    deactivatePattern();
     return true;
 }
 
@@ -367,6 +390,10 @@ glm::vec4 game::PlayerPatternComponent::getPatternPreviewColor() const {
                                      : glm::vec4(0.7F, 1.0F, 0.7F, 1.0F);
         break;
 
+    case HexPattern::Type::BONUSHEX:
+        color = _currentPreviewValid ? glm::vec4(1.0F, 0.84F, 0.0F, 1.0F)
+                                     : glm::vec4(1.0F, 0.84F, 0.7F, 1.0F);
+        break;
     default:
         color = glm::vec4(1.0F);
         break;

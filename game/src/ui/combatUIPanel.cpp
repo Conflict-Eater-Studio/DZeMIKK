@@ -1,5 +1,6 @@
 #include "ui/combatUIPanel.h"
 #include "enemySystem/enemyPatternComponent.h"
+#include "player/playerPatternComponent.h"
 
 #include <ecs/gameobject.h>
 #include <ecs/scene.h>
@@ -138,7 +139,11 @@ void game::CombatUIPanel::createPatternPreview(dzemikk::GameObject* parent,
         auto* hexChild = hexGO->findChildByName("Empty");
         auto* hexChildRenderer = hexChild->getComponent<dzemikk::ImageRenderer>();
 
-        hexChildRenderer->setTexture(_assetManager->get<dzemikk::Texture>(texturePath));
+        if (texturePath != "") {
+            hexChildRenderer->setTexture(_assetManager->get<dzemikk::Texture>(texturePath));
+        } else {
+            hexChildRenderer->enabled(false);
+        }
     }
 }
 
@@ -167,6 +172,9 @@ std::string game::CombatUIPanel::buildPatternName(const HexPattern& pattern) {
     case HexPattern::Type::HEAL:
         return "Heal";
 
+    case HexPattern::Type::BONUSHEX:
+        return "Bonus";
+
     default:
         return "Pattern";
     }
@@ -180,6 +188,8 @@ glm::vec4 game::CombatUIPanel::getPatternBaseColor(HexPattern::Type type) {
         return {0.F, 0.F, 1.F, 0.55F};
     case HexPattern::Type::HEAL:
         return {0.F, 1.F, 0.F, 0.55F};
+    case HexPattern::Type::BONUSHEX:
+        return {1.0F, 0.84F, 0.0F, 0.55F};
     default:
         return {0.3F, 0.3F, 0.3F, 0.55F};
     }
@@ -332,7 +342,13 @@ void game::CombatUIPanel::setupButton(dzemikk::UIButton* button, size_t index,
                     return;
                 }
 
-                _patterns->usePattern(index);
+                if (_patterns->getPattern(index)->pattern.getType() != HexPattern::Type::BONUSHEX) {
+                    _patterns->usePattern(index);
+                } else {
+                    auto* playerPatterns = dynamic_cast<PlayerPatternComponent*>(_patterns);
+                    playerPatterns->useBonusPatter(index);
+                }
+
                 refreshCounts();
             },
             actionId);

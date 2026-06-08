@@ -482,6 +482,9 @@ void game::CombatState::addCellToAnimation(HexCell* cell, World* world,
 }
 
 void game::CombatState::revealRandomEnemyPattern() {
+    if (_phase != CombatPhase::PlayerTurn) {
+        return;
+    }
 
     std::vector<int> available;
 
@@ -532,6 +535,10 @@ void game::CombatState::showPattern(int index) {
 }
 
 void game::CombatState::revealRandomEnemyCell() {
+    if (_phase != CombatPhase::PlayerTurn) {
+        return;
+    }
+
     struct Candidate {
         HexCell* cell;
         HexPattern::Type type;
