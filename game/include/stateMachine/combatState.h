@@ -61,6 +61,7 @@ class CombatState : public IGameState {
 
     void revealRandomEnemyPattern();
     void revealRandomEnemyCell();
+    void removeHiddenHex(HexCell* cell);
 
   private:
     Game* _game = nullptr;

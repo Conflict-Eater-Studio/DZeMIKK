@@ -357,6 +357,7 @@ void game::CombatState::initializeCombat() {
     _player->teleportTo(arena.centerCell);
 
     _playerPatternComponent = playerGO->getComponent<PlayerPatternComponent>();
+    _playerPatternComponent->setEnemyEntity(_currentEnemy);
 }
 
 void game::CombatState::setupInput() {
@@ -588,4 +589,18 @@ void game::CombatState::showCellColor(HexCell* cell, HexPattern::Type type) {
     }
 
     mesh->setColor(getPatternColor(type));
+}
+
+void game::CombatState::removeHiddenHex(HexCell* cell) {
+    auto* world =
+        _game->getCurrentScene().get()->findGameObjectByName("World")->getComponent<World>();
+
+    auto* transform = world->getHexTransformByCell(*cell);
+
+    if (!transform) {
+        return;
+    }
+
+    std::erase_if(_hiddenHexes,
+                  [transform](const AnimatedHex& hex) { return hex.transform == transform; });
 }

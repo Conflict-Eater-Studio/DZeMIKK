@@ -342,12 +342,7 @@ void game::CombatUIPanel::setupButton(dzemikk::UIButton* button, size_t index,
                     return;
                 }
 
-                if (_patterns->getPattern(index)->pattern.getType() != HexPattern::Type::BONUSHEX) {
-                    _patterns->usePattern(index);
-                } else {
-                    auto* playerPatterns = dynamic_cast<PlayerPatternComponent*>(_patterns);
-                    playerPatterns->useBonusPatter(index);
-                }
+                _patterns->usePattern(index);
 
                 refreshCounts();
             },

@@ -17,6 +17,7 @@ class Collider;
 namespace game {
 
 class PlayerEntity;
+class EnemyEntity;
 class HexGrid;
 class PlayerPatternStatsComponent;
 class WorldHex;
@@ -59,8 +60,6 @@ class PlayerPatternComponent : public PatternComponent {
      * @return false Otherwise.
      */
     bool usePattern(size_t index) override;
-
-    bool useBonusPatter(size_t index);
 
 #pragma endregion
 
@@ -128,6 +127,10 @@ class PlayerPatternComponent : public PatternComponent {
 
     PlayerPatternStatsComponent* getPlayerPatternStatsComponent();
 
+    void setPlayerEntity(game::PlayerEntity* playerEntity);
+    void setEnemyEntity(game::EnemyEntity* enemyEntity);
+    void setCombatBoardOffset(float offset);
+
   private:
 #pragma region Pattern data
 
@@ -141,6 +144,8 @@ class PlayerPatternComponent : public PatternComponent {
     dzemikk::Engine* _engine = nullptr;
     game::HexGrid* _grid = nullptr;
     PlayerPatternStatsComponent* _playerPatternStats = nullptr;
+    game::PlayerEntity* _playerEntity = nullptr;
+    game::EnemyEntity* _enemyEntity = nullptr;
 
 #pragma endregion
 
@@ -161,6 +166,8 @@ class PlayerPatternComponent : public PatternComponent {
     std::vector<dzemikk::GameObject*> _previewHexes;
     std::vector<dzemikk::GameObject*> _confirmedHexes;
 
+    float _combatBoardOffset = -5.0f;
+
 #pragma endregion
 
     bool _interactionEnabled = true;
@@ -169,6 +176,7 @@ class PlayerPatternComponent : public PatternComponent {
 
     static glm::vec3 axialToWorld(const HexCoord& coord, float hexSize);
     bool confirmPattern();
+    void confirmBonusHex(const HexPattern& pattern);
     [[nodiscard]] bool isCellOccupiedByPattern(const HexCoord& coord) const;
     void restartPreview();
     void destroyPreview();
@@ -185,6 +193,8 @@ class PlayerPatternComponent : public PatternComponent {
 
     bool updatePreviewOrigin();
     void validateCurrentPattern();
+    void validateCombatPattern(const HexPattern& pattern);
+    void validateBonusHexPattern(const HexPattern& pattern);
     [[nodiscard]] glm::vec4 getPatternPreviewColor() const;
     void updatePreviewVisuals(dzemikk::Collider* collider, const glm::vec4& color);
 
