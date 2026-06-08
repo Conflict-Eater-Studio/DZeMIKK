@@ -59,6 +59,9 @@ class CombatState : public IGameState {
      */
     void onUpdate(float dt) override;
 
+    void revealRandomEnemyPattern();
+    void revealRandomEnemyCell();
+
   private:
     Game* _game = nullptr;
     PlayerEntity* _player = nullptr;
@@ -70,6 +73,8 @@ class CombatState : public IGameState {
     ListenerID _endTurnListenerId = -1;
 
     std::vector<PlannedPattern> _plannedPatterns;
+    std::unordered_set<int> _revealedPatterns;
+    std::unordered_set<HexCell*> _revealedCells;
 
     /**
      * @brief Center cell of the combat arena.
@@ -203,6 +208,9 @@ class CombatState : public IGameState {
      * @param centerCoord Arena center coordinate.
      */
     void addCellToAnimation(HexCell* cell, World* world, const HexCoord& centerCoord);
+
+    void showPattern(int index);
+    void showCellColor(HexCell* cell, HexPattern::Type type);
 };
 
 } // namespace game

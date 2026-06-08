@@ -176,6 +176,9 @@ void game::CombatState::startNewTurn() {
     auto* patternComponent = enemyManagerGO->getComponent<EnemyPatternComponent>();
     patternComponent->clearUsage();
 
+    _revealedPatterns.clear();
+    _revealedCells.clear();
+
     EnemyPlanner planner;
 
     _plannedPatterns.clear();
@@ -359,6 +362,18 @@ void game::CombatState::initializeCombat() {
 void game::CombatState::setupInput() {
     _endTurnListenerId = _game->getEngine()->getInput()->OnKeyPressed.addListener(
         [this](dzemikk::KeyPressedEvent& e) {
+            if (e.GetKeyCode() == GLFW_KEY_1) {
+                std::cout << "ShowPattern";
+                revealRandomEnemyPattern();
+                return;
+            }
+
+            if (e.GetKeyCode() == GLFW_KEY_2) {
+                std::cout << "ShowPattern";
+                revealRandomEnemyCell();
+                return;
+            }
+
             if (e.GetKeyCode() != GLFW_KEY_SPACE) {
                 return;
             }
@@ -466,3 +481,104 @@ void game::CombatState::addCellToAnimation(HexCell* cell, World* world,
     _hiddenHexes.push_back({entityTransform, entityTransform->getPosition().y, distance});
 }
 
+void game::CombatState::revealRandomEnemyPattern() {
+
+    std::vector<int> available;
+
+    for (int i = 0; i < static_cast<int>(_plannedPatterns.size()); ++i) {
+        if (!_revealedPatterns.contains(i)) {
+            available.push_back(i);
+        }
+    }
+
+    if (available.empty()) {
+        return;
+    }
+
+    int randomIndex = available[rand() % available.size()];
+
+    _revealedPatterns.insert(randomIndex);
+
+    showPattern(randomIndex);
+}
+
+void game::CombatState::showPattern(int index) {
+
+    auto* world =
+        _game->getCurrentScene().get()->findGameObjectByName("World")->getComponent<World>();
+
+    constexpr glm::vec4 RevealedColor{0.25F, 0.25F, 0.25F, 1.0F};
+
+    const auto& pattern = _plannedPatterns[index];
+
+    for (auto* cell : pattern.cells) {
+
+        if (!cell) {
+            continue;
+        }
+
+        auto* transform = world->getHexTransformByCell(*cell);
+
+        if (!transform) {
+            continue;
+        }
+
+        auto* mesh = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+
+        if (mesh) {
+            mesh->setColor(RevealedColor);
+        }
+    }
+}
+
+void game::CombatState::revealRandomEnemyCell() {
+    struct Candidate {
+        HexCell* cell;
+        HexPattern::Type type;
+    };
+
+    std::vector<Candidate> available;
+
+    for (const auto& pattern : _plannedPatterns) {
+        for (auto* cell : pattern.cells) {
+            if (!cell) {
+                continue;
+            }
+
+            if (_revealedCells.contains(cell)) {
+                continue;
+            }
+
+            available.push_back({cell, pattern.type});
+        }
+    }
+
+    if (available.empty()) {
+        return;
+    }
+
+    const auto& revealed = available[rand() % available.size()];
+
+    _revealedCells.insert(revealed.cell);
+
+    showCellColor(revealed.cell, revealed.type);
+}
+
+void game::CombatState::showCellColor(HexCell* cell, HexPattern::Type type) {
+    auto* world =
+        _game->getCurrentScene().get()->findGameObjectByName("World")->getComponent<World>();
+
+    auto* transform = world->getHexTransformByCell(*cell);
+
+    if (!transform) {
+        return;
+    }
+
+    auto* mesh = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+
+    if (!mesh) {
+        return;
+    }
+
+    mesh->setColor(getPatternColor(type));
+}
