@@ -83,6 +83,8 @@ public:
     void setName(const std::string& name);
     std::string getName();
 
+    [[nodiscard]] bool isFinished() const;
+    void setFinished(bool finished);
   private:
     std::vector<std::unique_ptr<IAnimationTrack>> _tracks;
     float _durationInTicks = 0;
@@ -90,6 +92,7 @@ public:
     float _playbackSpeed = 1.0f;
     bool _loop = true;
     std::string _nameInSkeleton;
+    mutable bool _isFinished = false;
 };
 }
 

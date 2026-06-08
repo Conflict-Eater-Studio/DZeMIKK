@@ -61,10 +61,13 @@ void AnimationClip::apply(float timeInSeconds) const {
     }
 
     float keyframe = time;
+
     if (_loop) {
+        _isFinished = false;
         keyframe = fmod(keyframe, _durationInTicks);
     } else if (_durationInTicks > 0.0f && time > _durationInTicks) {
         keyframe = _durationInTicks;
+        _isFinished = true;
     }
 
     for (auto& track : _tracks) {
@@ -95,6 +98,9 @@ void AnimationClip::setName(const std::string& name) {
 }
 std::string AnimationClip::getName() {
     return _nameInSkeleton;
+}
+bool AnimationClip::isFinished() const {
+    return _isFinished;
 }
 }
 

@@ -8,6 +8,7 @@
 #if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
 #endif
+#include "animation/animationclip.h"
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
 
@@ -17,17 +18,20 @@ void PlayerMovement::start() {
 }
 void PlayerMovement::update(double deltaTime) {
     if (_path.empty() || _step >= _path.size()) {
-        _animator->setBool("isMoving", false);
+        _animator->setInt("isMoving", 0);
         return;
     }
 
-    _animator->setBool("isMoving", true);
+    HexGrid::HexCellPtr ptr = _path[_step % _path.size()];
 
-    _duration += deltaTime;
+    if (_animator->getCurrentState()->getClip()->isFinished()) {
+        _playerEntity->tryMove(ptr);
+        _animator->setInt("direction", -1);
+        _animator->play("Idle");
+        _step++;
+    }
 
-    if (_duration > _speed && _step < _path.size()) {
-        HexGrid::HexCellPtr ptr = _path[_step % _path.size()];
-
+    if (_step < _path.size()) {
         auto dir = HexCoord::dir(ptr->getCoord() - _playerEntity->getCell()->getCoord());
         if (dir.has_value()) {
 #if DZEMIKK_DEV_TOOLS
@@ -55,9 +59,7 @@ void PlayerMovement::update(double deltaTime) {
             }
         }
 
-        _playerEntity->tryMove(ptr);
-        _duration = 0.0f;
-        _step++;
+
     }
 
     if (auto cell = _playerEntity->getCell()) {
