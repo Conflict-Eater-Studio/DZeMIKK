@@ -1,6 +1,9 @@
 #include "assetManager/animationLoader.h"
 #include "animation/animationclip.h"
 #include "animation/boneTrack.h"
+#if DZEMIKK_DEV_TOOLS
+#include "spdlog/spdlog.h"
+#endif
 
 void dzemikk::AnimationLoader::load(const aiScene* scene, Skeleton& skeleton) {
     std::unordered_map<std::string, int> normalizedToBone;
@@ -89,6 +92,10 @@ void dzemikk::AnimationLoader::load(const aiScene* scene, Skeleton& skeleton) {
 
         std::string name =
             anim->mName.length > 0 ? anim->mName.C_Str() : "Anim_" + std::to_string(a);
+
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[AnimationLoader] Loaded animation: {}", name);
+#endif
 
         skeleton.addClip(name, clip);
     }
