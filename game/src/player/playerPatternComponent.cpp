@@ -1,7 +1,10 @@
 #include "player/playerPatternComponent.h"
 #include "player/playerPatternStatsComponent.h"
+#include "enemySystem/enemyEntity.h"
 #include "game.h"
 #include "scripts/world/worldHex.h"
+#include "gameStateMachine.h"
+#include "stateMachine/combatState.h"
 
 #include <iostream>
 
@@ -41,7 +44,7 @@ void game::PlayerPatternComponent::start() {
 
     // hp1
     addPattern(HexPattern({{0, 0}}, HexPattern::Type::HEAL), -1);
-    addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::HEAL, 1.1F), -1);
+    addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::HEAL, 0.6F), -1);
 
     // bonus
     addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::BONUSHEX, 1.0F), 1);
@@ -99,26 +102,6 @@ bool game::PlayerPatternComponent::usePattern(size_t index) {
     return true;
 }
 
-bool game::PlayerPatternComponent::useBonusPatter(size_t index) {
-    if (!_interactionEnabled) {
-        return false;
-    }
-
-    if (!canUsePattern(index)) {
-        return false;
-    }
-
-    auto& entry = _patterns[index];
-
-    if (entry.count > 0) {
-        entry.count--;
-    }
-
-    //destroyPreview();
-    deactivatePattern();
-    return true;
-}
-
 void game::PlayerPatternComponent::setEngine(dzemikk::Engine* engine) {
     _engine = engine;
 }
@@ -137,6 +120,18 @@ void game::PlayerPatternComponent::setInteractionEnabled(bool enabled) {
 
 game::PlayerPatternStatsComponent* game::PlayerPatternComponent::getPlayerPatternStatsComponent() {
     return _playerPatternStats;
+}
+
+void game::PlayerPatternComponent::setPlayerEntity(game::PlayerEntity* playerEntity) {
+    _playerEntity = playerEntity;
+}
+
+void game::PlayerPatternComponent::setEnemyEntity(game::EnemyEntity* enemyEntity) {
+    _enemyEntity = enemyEntity;
+}
+
+void game::PlayerPatternComponent::setCombatBoardOffset(float offset) {
+    _combatBoardOffset = offset;
 }
 
 bool game::PlayerPatternComponent::hasActivePattern() const {
@@ -169,14 +164,26 @@ bool game::PlayerPatternComponent::confirmPattern() {
         return false;
     }
 
-    PlacedPattern placed(_patterns[_activePatternIndex].pattern, _currentPreviewOrigin);
+    const auto& pattern = _patterns[_activePatternIndex].pattern;
+
+    if (pattern.getType() == HexPattern::Type::BONUSHEX) {
+        confirmBonusHex(pattern);
+        return true;
+    }
+
+    PlacedPattern placed(pattern, _currentPreviewOrigin);
+
+    for (const auto& offset : pattern.getHexes()) {
+        HexCoord worldCoord(_currentPreviewOrigin.q() + offset.r(),
+                            _currentPreviewOrigin.r() + offset.q());
+
+        placed.worldCells.push_back(worldCoord);
+    }
 
     for (auto* object : _previewHexes) {
-        if (!object) {
-            continue;
+        if (object) {
+            placed.objects.push_back(object);
         }
-
-        placed.objects.push_back(object);
     }
 
     _placedPatterns.push_back(placed);
@@ -191,6 +198,42 @@ bool game::PlayerPatternComponent::confirmPattern() {
     restartPreview();
 
     return true;
+}
+
+void game::PlayerPatternComponent::confirmBonusHex(const HexPattern& pattern) {
+    for (const auto& offset : pattern.getHexes()) {
+
+        HexCoord targetCoord(_currentPreviewOrigin.q() + offset.r(),
+                             _currentPreviewOrigin.r() + offset.q());
+
+        auto cell = _grid->getCell(targetCoord);
+
+        if (!cell) {
+            continue;
+        }
+
+        cell->setType(HexCell::Type::PlayerBattleHex);
+        cell->setDirty(true);
+
+        _playerEntity->addTerritoryCell(cell.get());
+
+        auto* root = _playerEntity->getOwner()->getScene()->findGameObjectByName("Root");
+        auto* stateMachine = root->getComponent<GameStateMachine>();
+        auto* state = stateMachine->getCurrentStateAs<CombatState>();
+        state->removeHiddenHex(cell.get());
+
+        auto* world = _playerEntity->getOwner()
+                          ->getScene()
+                          ->findGameObjectByName("World")
+                          ->getComponent<World>();
+        if (auto* worldHex = world->getHexTransformByCell(*cell.get())) {
+            glm::vec3 pos = worldHex->getPosition();
+            pos.y -= _combatBoardOffset;
+            worldHex->setPosition(pos);
+        }
+    }
+
+    deactivatePattern();
 }
 
 void game::PlayerPatternComponent::clearPlacedPatterns() {
@@ -348,9 +391,19 @@ bool game::PlayerPatternComponent::updatePreviewOrigin() {
 }
 
 void game::PlayerPatternComponent::validateCurrentPattern() {
-    bool validPattern = true;
 
     const auto& pattern = _patterns[_activePatternIndex].pattern;
+
+    if (pattern.getType() == HexPattern::Type::BONUSHEX) {
+        validateBonusHexPattern(pattern);
+        return;
+    }
+
+    validateCombatPattern(pattern);
+}
+
+void game::PlayerPatternComponent::validateCombatPattern(const HexPattern& pattern) {
+    bool validPattern = true;
 
     for (const auto& offset : pattern.getHexes()) {
 
@@ -367,6 +420,70 @@ void game::PlayerPatternComponent::validateCurrentPattern() {
     }
 
     _currentPreviewValid = validPattern;
+}
+
+void game::PlayerPatternComponent::validateBonusHexPattern(const HexPattern& pattern) {
+    bool valid = true;
+    bool touchesPlayerTerritory = false;
+
+    std::vector<HexCell*> bonusCells;
+
+    for (const auto& offset : pattern.getHexes()) {
+
+        HexCoord targetCoord(_currentPreviewOrigin.q() + offset.r(),
+                             _currentPreviewOrigin.r() + offset.q());
+
+        auto targetCell = _grid->getCell(targetCoord);
+
+        if (!targetCell) {
+            valid = false;
+            break;
+        }
+
+        if (isCellOccupiedByPattern(targetCoord)) {
+            valid = false;
+            break;
+        }
+
+        if (_playerEntity->getTerritory().contains(targetCell.get())) {
+            valid = false;
+            break;
+        }
+
+        if (_enemyEntity && _enemyEntity->getTerritory().contains(targetCell.get())) {
+            valid = false;
+            break;
+        }
+
+        bonusCells.push_back(targetCell.get());
+    }
+
+    if (!valid) {
+        _currentPreviewValid = false;
+        return;
+    }
+
+    for (auto* cell : bonusCells) {
+
+        for (const auto& neighbourCoord : HexCoord::getNeighbors(cell->getCoord())) {
+            auto neighbour = _grid->getCell(neighbourCoord);
+
+            if (!neighbour) {
+                continue;
+            }
+
+            if (_playerEntity->getTerritory().contains(neighbour.get())) {
+                touchesPlayerTerritory = true;
+                break;
+            }
+        }
+
+        if (touchesPlayerTerritory) {
+            break;
+        }
+    }
+
+    _currentPreviewValid = touchesPlayerTerritory;
 }
 
 glm::vec4 game::PlayerPatternComponent::getPatternPreviewColor() const {

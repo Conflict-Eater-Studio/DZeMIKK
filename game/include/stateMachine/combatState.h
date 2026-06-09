@@ -58,9 +58,23 @@ class CombatState : public IGameState {
      * @param dt Time elapsed since the previous frame.
      */
     void onUpdate(float dt) override;
-
+    
+    /**
+     * @brief Reveals one of the enemy's hidden planned patterns.
+     */
     void revealRandomEnemyPattern();
+
+    /**
+     * @brief Reveals a single hidden enemy cell.
+     */
     void revealRandomEnemyCell();
+
+    /**
+     * @brief Removes a cell from the hidden animation set.
+     *
+     * @param cell Cell to remove.
+     */
+    void removeHiddenHex(HexCell* cell);
 
   private:
     Game* _game = nullptr;
@@ -73,7 +87,15 @@ class CombatState : public IGameState {
     ListenerID _endTurnListenerId = -1;
 
     std::vector<PlannedPattern> _plannedPatterns;
+    
+    /**
+     * @brief Enemy patterns that have already been revealed.
+     */
     std::unordered_set<int> _revealedPatterns;
+
+    /**
+     * @brief Enemy cells that have already been revealed.
+     */
     std::unordered_set<HexCell*> _revealedCells;
 
     /**
@@ -113,8 +135,14 @@ class CombatState : public IGameState {
      */
     float _animationExitSpeed = 1.0F;
 
+    /**
+     * @brief Number of completed combat rounds.
+     */
     int _roundCount = 0;
 
+    /**
+     * @brief Timer used to delay result processing and transitions.
+     */
     float _resultTimer = 0;
 
     /**
@@ -209,7 +237,19 @@ class CombatState : public IGameState {
      */
     void addCellToAnimation(HexCell* cell, World* world, const HexCoord& centerCoord);
 
+    /**
+     * @brief Reveals a planned pattern by index.
+     *
+     * @param index Index of the pattern to reveal.
+     */
     void showPattern(int index);
+
+    /**
+     * @brief Displays a pattern color on a specific cell.
+     *
+     * @param cell Target cell.
+     * @param type Pattern type used to determine the color.
+     */
     void showCellColor(HexCell* cell, HexPattern::Type type);
 };
 

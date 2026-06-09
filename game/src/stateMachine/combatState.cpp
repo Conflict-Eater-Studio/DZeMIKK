@@ -144,7 +144,7 @@ void game::CombatState::onUpdate(float dt) {
 
         _resultTimer -= dt;
 
-        if (_resultTimer <= 0.0f) {
+        if (_resultTimer <= 0.0F) {
             startNewTurn();
         }
     }
@@ -165,12 +165,22 @@ void game::CombatState::startNewTurn() {
     _playerPatternComponent->clearPlacedPatterns();
     _playerPatternComponent->deactivatePattern();
 
-    for (auto* cell : _currentEnemy->getTerritory()) {
-        cell->setDirty(true);
-    }
-
     auto* worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
     auto* world = worldGO->getComponent<World>();
+
+    for (auto* cell : _currentEnemy->getTerritory()) {
+        auto* transform = world->getHexTransformByCell(*cell);
+        if (!transform) {
+            continue;
+        }
+
+        auto* mesh = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+        if (!mesh) {
+            continue;
+        }
+
+        mesh->setColor({0.0F, 0.0F, 0.5F, 1.0F});
+    }
 
     auto* enemyManagerGO = _game->getCurrentScene().get()->findGameObjectByName("EnemyManager");
     auto* patternComponent = enemyManagerGO->getComponent<EnemyPatternComponent>();
@@ -184,6 +194,41 @@ void game::CombatState::startNewTurn() {
     _plannedPatterns.clear();
     _plannedPatterns =
         planner.planTurn(_game, _currentEnemy, patternComponent, _game->getHexGrid(), 0.75F, _playerPatternComponent->getPlayerPatternStatsComponent());
+
+    std::unordered_set<HexCell*> usedCells;
+
+    for (const auto& pattern : _plannedPatterns) {
+        for (auto* cell : pattern.cells) {
+            if (cell) {
+                usedCells.insert(cell);
+            }
+        }
+    }
+
+    constexpr glm::vec4 WhiteColor = {1.F, 1.F, 1.F, 1.F};
+
+    for (auto* cell : _currentEnemy->getTerritory()) {
+
+        if (!cell) {
+            continue;
+        }
+
+        if (usedCells.contains(cell)) {
+            continue;
+        }
+
+        auto* transform = world->getHexTransformByCell(*cell);
+        if (!transform) {
+            continue;
+        }
+
+        auto* mesh = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+        if (!mesh) {
+            continue;
+        }
+
+        mesh->setColor(WhiteColor);
+    }
 
     auto* enemyPanel = _game->getCurrentScene().get()->findGameObjectByName("Enemy_Panel");
     auto* enemyPanelUI = enemyPanel->getComponent<CombatUIPanel>();
@@ -200,7 +245,7 @@ void game::CombatState::endPlayerTurn() {
     resolveConflict();
     showEnemyPlannedPatterns();
 
-    _resultTimer = 2.0f;
+    _resultTimer = 2.0F;
 }
 
 glm::vec4 game::CombatState::getPatternColor(HexPattern::Type type) {
@@ -256,7 +301,7 @@ void game::CombatState::showEnemyPlannedPatterns() {
 
 void game::CombatState::resolveConflict() {
     auto result = CombatResolver::resolve(*_playerPatternComponent, _plannedPatterns,
-                                   _currentEnemy->getCell()->getCoord());
+                                   _currentEnemy->getCell()->getCoord(), _player->getCell()->getCoord());
 
     auto* playerHealth = _game->getCurrentScene().get()->findGameObjectByName("Player_Avatar_Panel")
                              ->findDescendantByName("Health_Holder")
@@ -357,6 +402,7 @@ void game::CombatState::initializeCombat() {
     _player->teleportTo(arena.centerCell);
 
     _playerPatternComponent = playerGO->getComponent<PlayerPatternComponent>();
+    _playerPatternComponent->setEnemyEntity(_currentEnemy);
 }
 
 void game::CombatState::setupInput() {
@@ -588,4 +634,18 @@ void game::CombatState::showCellColor(HexCell* cell, HexPattern::Type type) {
     }
 
     mesh->setColor(getPatternColor(type));
+}
+
+void game::CombatState::removeHiddenHex(HexCell* cell) {
+    auto* world =
+        _game->getCurrentScene().get()->findGameObjectByName("World")->getComponent<World>();
+
+    auto* transform = world->getHexTransformByCell(*cell);
+
+    if (!transform) {
+        return;
+    }
+
+    std::erase_if(_hiddenHexes,
+                  [transform](const AnimatedHex& hex) { return hex.transform == transform; });
 }

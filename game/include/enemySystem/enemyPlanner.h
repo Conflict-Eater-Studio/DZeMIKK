@@ -26,6 +26,9 @@ class HexPattern;
  */
 class EnemyPlanner {
   public:
+    /**
+     * @brief Constructs a new EnemyPlanner instance.
+     */
     EnemyPlanner();
 
     /**
@@ -47,8 +50,26 @@ class EnemyPlanner {
                                          const PlayerPatternStatsComponent* playerStats);
 
   private:
+    /**
+     * @brief Root node of the enemy behavior tree.
+     *
+     * Used to evaluate combat context and produce modifiers that influence
+     * enemy decision making.
+     */
     std::unique_ptr<BTNode> _root;
 
+    /**
+     * @brief Returns the utility weight for a pattern type.
+     *
+     * Combines enemy characteristics and behavior tree modifiers to determine
+     * how desirable a pattern type is in the current combat context.
+     *
+     * @param enemy Enemy entity being evaluated.
+     * @param modifiers Behavior tree context modifiers.
+     * @param type Pattern type being evaluated.
+     *
+     * @return float Utility weight of the pattern type.
+     */
     static float getUtilityWeight(const EnemyEntity* enemy,
                                          const BTNode::ContextModifiers& modifiers, HexPattern::Type type);
 
@@ -128,6 +149,18 @@ class EnemyPlanner {
                                                HexGrid* grid, float coverage,
                                                const BTNode::ContextModifiers& modifiers);
 
+    /**
+     * @brief Evaluates the enemy behavior tree.
+     *
+     * Analyzes the current combat situation and produces context modifiers
+     * that influence pattern selection and placement decisions.
+     *
+     * @param game Active game instance.
+     * @param enemy Enemy entity being evaluated.
+     * @param playerStats Player pattern statistics used for decision making.
+     *
+     * @return BTNode::ContextModifiers Computed behavior modifiers.
+     */
     BTNode::ContextModifiers evaluateBehaviorTree(Game* game, EnemyEntity* enemy,
                                        const PlayerPatternStatsComponent* playerStats);
 };
