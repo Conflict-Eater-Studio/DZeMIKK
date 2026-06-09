@@ -17,6 +17,8 @@ void PlayerMovement::start() {
     _playerEntity->tryMove(_hexGrid->at({0, 0}));
 }
 void PlayerMovement::update(double deltaTime) {
+    if (!_animator) return;
+
     if (_path.empty() || _step >= _path.size()) {
         _animator->setInt("isMoving", 0);
         return;
@@ -45,6 +47,7 @@ void PlayerMovement::update(double deltaTime) {
             if (!_cachedPath.empty()) {
                 _path = _cachedPath;
                 _cachedPath.clear();
+                _step = 1;
             }
             _positionCached = false;
         }
@@ -57,14 +60,7 @@ void PlayerMovement::update(double deltaTime) {
     if (_step < _path.size()) {
         auto dir = HexCoord::dir(ptr->getCoord() - _playerEntity->getCell()->getCoord());
         if (dir.has_value()) {
-#if DZEMIKK_DEV_TOOLS
-            spdlog::info("Player moving direction: {}", static_cast<int>(dir.value()));
-#endif
             _animator->setInt("direction", static_cast<int>(dir.value()));
-            auto* transform = _playerEntity->getOwner()->transform();
-            if (transform) {
-
-            }
         }
 
 
@@ -90,13 +86,14 @@ void PlayerMovement::setHexGrid(HexGrid* hexGrid) {
 }
 void PlayerMovement::moveTo(HexGrid::HexCellPtr cell) {
     std::vector<HexGrid::HexCellPtr> path = _hexGrid->findPath(_playerEntity->getCell(), cell);
-    if (!_animator->getCurrentState()->getClip()->isFinished() && _animator->getCurrentState()->getName() != "Idle"){
+    if (!_animator->getCurrentState()->getClip()->isFinished()){
         _cachedPath = path;
-    }else {
+    }
+    if (_animator->getCurrentState()->getName() == "Idle") {
         _path = path;
+        _step = 1;
+        _positionCached = false;
     };
-    _positionCached = false;
-    _step = 1;
 }
 void PlayerMovement::setGame(Game* game) {
     _game = game;;
@@ -105,7 +102,6 @@ void PlayerMovement::setGame(Game* game) {
 void PlayerMovement::stopMovement() {
     _path.clear();
     _step = 0;
-    _duration = 0.0;
     _positionCached = false;
 }
 

@@ -36,20 +36,20 @@ namespace game {
 
         void setWorld(World* world);
     private:
-        PlayerEntity* _playerEntity = nullptr;
-        HexGrid* _hexGrid = nullptr;
         std::vector<HexGrid::HexCellPtr> _path;
         std::vector<HexGrid::HexCellPtr> _cachedPath;
+
+        World* _world = nullptr;
+        PlayerEntity* _playerEntity = nullptr;
+        HexGrid* _hexGrid = nullptr;
+        Game* _game = nullptr;
+        dzemikk::Animator* _animator = nullptr;
+        glm::vec3 _position;
 
         float _speed = 1.0f;
         int _step = 1;
         float _duration = 0.0f;
-        glm::vec3 _position;
         bool _positionCached = false;
-        Game* _game = nullptr;
-        dzemikk::Animator* _animator = nullptr;
-        World* _world = nullptr;
-
     };
 }
 
