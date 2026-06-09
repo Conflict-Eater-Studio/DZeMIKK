@@ -406,10 +406,10 @@ void Game::setupPlayer() {
 
     auto skeleton = playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
 
-    idleClip = skeleton->getClip("idle");
+    idleClip = skeleton->getClip("Idle");
     idleClip->setLoop(true);
 
-    forwardClip = skeleton->getClip("forward_1_0");
+    forwardClip = skeleton->getClip("0");
     forwardClip->setLoop(false);
     forwardClip->setRootMotionMode(dzemikk::RootMotionMode::Position);
     playerGO->transform()->rotateAround(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));

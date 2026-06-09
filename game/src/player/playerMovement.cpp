@@ -26,6 +26,7 @@ void PlayerMovement::update(double deltaTime) {
     HexGrid::HexCellPtr ptr = _path[_step % _path.size()];
 
     _height = ptr->getHeight();
+    ptr->setHeight(_playerEntity->getCell()->getHeight());
 
     if (_animator->getCurrentState()->getClip()->isFinished()) {
         ptr->setHeight(_height);
@@ -89,7 +90,7 @@ void PlayerMovement::moveTo(HexGrid::HexCellPtr cell) {
     _step = 1;
 }
 void PlayerMovement::setGame(Game* game) {
-    _game = game;
+    _game = game;;
 }
 
 void PlayerMovement::stopMovement() {
