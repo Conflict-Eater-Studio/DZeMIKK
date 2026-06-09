@@ -39,6 +39,8 @@ namespace game {
         PlayerEntity* _playerEntity = nullptr;
         HexGrid* _hexGrid = nullptr;
         std::vector<HexGrid::HexCellPtr> _path;
+        std::vector<HexGrid::HexCellPtr> _cachedPath;
+
         float _speed = 1.0f;
         int _step = 1;
         float _duration = 0.0f;

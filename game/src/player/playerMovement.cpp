@@ -42,6 +42,10 @@ void PlayerMovement::update(double deltaTime) {
     if (_animator->getCurrentState()->getClip()->isFinished()) {
         if (cellTransform) {
             cellTransform->setPosition(_position);
+            if (!_cachedPath.empty()) {
+                _path = _cachedPath;
+                _cachedPath.clear();
+            }
             _positionCached = false;
         }
         _playerEntity->tryMove(ptr);
@@ -85,7 +89,12 @@ void PlayerMovement::setHexGrid(HexGrid* hexGrid) {
     _hexGrid = hexGrid;
 }
 void PlayerMovement::moveTo(HexGrid::HexCellPtr cell) {
-    _path = _hexGrid->findPath(_playerEntity->getCell(), cell);
+    std::vector<HexGrid::HexCellPtr> path = _hexGrid->findPath(_playerEntity->getCell(), cell);
+    if (!_animator->getCurrentState()->getClip()->isFinished() && _animator->getCurrentState()->getName() != "Idle"){
+        _cachedPath = path;
+    }else {
+        _path = path;
+    };
     _positionCached = false;
     _step = 1;
 }
