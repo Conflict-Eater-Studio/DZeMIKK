@@ -1,9 +1,18 @@
 #include "scripts/world/world.h"
 
+#include "assetManager/assetHandle.h"
+#include "assetManager/assetmanager.h"
 #include "ecs/components/collider.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
+#include "ecs/serialize/prefabSerializer.h"
+#include "game.h"
+#include "map/ItemEntity.h"
+#include "map/ItemEntityBonusHex.h"
+#include "map/ItemEntityHealth.h"
+#include "map/ItemEntityRevealHex.h"
+#include "map/ItemEntityRevealPatter.h"
 #include "map/PlayerEntity.h"
 #include "scripts/world/worldHex.h"
 
@@ -49,6 +58,90 @@ nlohmann::json World::save() {
     return nlohmann::json{{"world", _worldDefinition}};
 }
 
+void World::spawnItem(const boost::uuids::uuid& chunkId, ItemEntity::ItemType type,
+                      std::vector<std::any>& args) {
+    if (_game == nullptr) {
+        return;
+    }
+
+    ItemEntity* item = nullptr;
+    dzemikk::GameObject* go = nullptr;
+
+    switch (type) {
+    case ItemEntity::ItemType::Heal: {
+        if (args.size() != 1) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::error("[World] ItemEntityHealth received incorrect args");
+#endif
+            return;
+        }
+
+        float healAmount = std::any_cast<float>(args[0]);
+
+        auto prefab =
+            _game->getEngine()->getAssetManager()->get<nlohmann::json>("prefabs/ItemHeal.prefab");
+        go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
+                                                    _game->getEngine()->getAssetManager(), _owner);
+        item = go->addComponent<game::ItemEntityHealth>(healAmount);
+        break;
+    }
+    case ItemEntity::ItemType::RevealPattern: {
+        if (args.size() != 0) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::error("[World] ItemEntityRevealPattern received incorrect args");
+#endif
+            return;
+        }
+
+        auto prefab = _game->getEngine()->getAssetManager()->get<nlohmann::json>(
+            "prefabs/ItemRevealPattern.prefab");
+        go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
+                                                    _game->getEngine()->getAssetManager(), _owner);
+        item = go->addComponent<ItemEntityRevealPattern>();
+        break;
+    }
+    case ItemEntity::ItemType::RevealHex: {
+        if (args.size() != 0) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::error("[World] ItemEntityRevealHex received incorrect args");
+#endif
+            return;
+        }
+
+        auto prefab = _game->getEngine()->getAssetManager()->get<nlohmann::json>(
+            "prefabs/ItemRevealHex.prefab");
+        go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
+                                                    _game->getEngine()->getAssetManager(), _owner);
+        item = go->addComponent<ItemEntityRevealHex>();
+        break;
+    }
+    case ItemEntity::ItemType::BonusHex: {
+        if (args.size() != 1) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::error("[World] ItemEntityBonusHex received incorrect args");
+#endif
+            return;
+        }
+
+        HexPattern pattern = std::any_cast<HexPattern>(args[0]);
+
+        auto prefab = _game->getEngine()->getAssetManager()->get<nlohmann::json>(
+            "prefabs/ItemBonusHex.prefab");
+        go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
+                                                    _game->getEngine()->getAssetManager(), _owner);
+        item = go->addComponent<ItemEntityBonusHex>(pattern);
+        break;
+    }
+    }
+
+    if (item != nullptr && go != nullptr) {
+        _grid.addItem(chunkId, item);
+        auto worldPos =
+            item->getCell()->getCoord().toWorldPosition(1.0F, 0.1F, item->getCell()->getHeight());
+        go->transform()->setPosition(worldPos + glm::vec3(0.0F, 0.5F, 0.0F));
+    }
+}
+
 void World::update(double dt) {
     for (const auto& chunk : _grid.getChunks()) {
         for (const auto& [coord, cell] : chunk.second->getHexes()) {
@@ -57,6 +150,21 @@ void World::update(double dt) {
                 continue;
             }
             spawnHexVisual(cell);
+        }
+    }
+
+    for (auto& [uuid, itemEntities] : _grid.getItemEntities()) {
+        for (auto it = itemEntities.begin(); it != itemEntities.end();) {
+            auto* item = *it;
+            if (item->isConsumed()) {
+                item->getCell()->setEntity(nullptr);
+                item->getCell()->setState(HexCell::State::Empty);
+                auto* owner = item->getOwner();
+                it = itemEntities.erase(it);
+                owner->destroy();
+            } else {
+                ++it;
+            }
         }
     }
 

@@ -9,6 +9,7 @@
 namespace game {
 class Entity : public dzemikk::MonoBehaviour {
   public:
+    using Base = dzemikk::MonoBehaviour;
     using HexCellPtr = std::shared_ptr<HexCell>;
 
     Entity() = default;

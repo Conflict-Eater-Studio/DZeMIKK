@@ -354,6 +354,11 @@ class GameObject {
      */
     void destroyChildren();
     /**
+     * @brief Destroys this GameObject along with all its children. The destroy is deffered until
+     * the end of the current update loop (update or fixedUpdate, whichever runs first)
+     */
+    void destroy();
+    /**
      * @brief Sets all components of this GameObject (and it's children) to enabled or disabled.
      * @param isEnabled Whether to enable or disable the components.
      */

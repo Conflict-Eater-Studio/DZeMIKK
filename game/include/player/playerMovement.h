@@ -12,6 +12,8 @@ class PlayerPatternComponent;
 
 class PlayerMovement : public dzemikk::MonoBehaviour {
   public:
+    using Base = dzemikk::MonoBehaviour;
+
     PlayerMovement() = default;
 
     void start() override;

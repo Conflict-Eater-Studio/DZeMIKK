@@ -15,9 +15,14 @@
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
+#include "ecs/serialize/prefabSerializer.h"
 #include "input/input.h"
 #include "map/HexCoord.h"
+#include "map/HexPattern.h"
+#include "map/ItemEntity.h"
+#include "map/ItemEntityHealth.h"
 #include "map/PlayerEntity.h"
+#include "player/inventory.h"
 #include "player/playerMovement.h"
 #include "renderer/cameraSystem.h"
 #include "renderer/material.h"
@@ -85,11 +90,8 @@ void onSkyboxLoad(const dzemikk::AssetHandle<dzemikk::Skybox>& skybox, SkyboxIni
 Game::Game(dzemikk::Engine* engine) : _engine(engine) {}
 
 void Game::start() {
-    game::Perlin perlin(1);
-
     auto* assetManager = _engine->getAssetManager();
     auto* sceneManager = _engine->getSceneManager();
-
 
     setupSkybox();
 
@@ -105,10 +107,10 @@ void Game::start() {
     setupPlayer();
     registerDefaultTerritories();
     setupEnemies();
+    // Setup Items ALWAYS after Enemies
+    setupItems();
 
-
-
-    auto root = _mainScene.get()->findGameObjectByName("Root");
+    auto* root = _mainScene.get()->findGameObjectByName("Root");
     _stateMachine = root->addComponent<game::GameStateMachine>();
 
     _cameraController = _mainCamera->getOwner()->addComponent<game::CameraController>();
@@ -127,6 +129,21 @@ void Game::start() {
             _stateMachine->setState(std::make_unique<game::CombatState>(this));
         },
         "C");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent&) {
+            if (auto* inventory = _playerGO->getComponent<game::Inventory>(); inventory) {
+                inventory->tryUseItem(game::ItemEntity::ItemType::RevealPattern);
+            }
+        },
+        "combat.reveal.randomPattern");
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent&) {
+            if (auto* inventory = _playerGO->getComponent<game::Inventory>(); inventory) {
+                inventory->tryUseItem(game::ItemEntity::ItemType::RevealHex);
+            }
+        },
+        "combat.reveal.randomHex");
 
     setupInputCallbacks();
 
@@ -227,6 +244,7 @@ void Game::setupWorld() {
     _worldGO = _mainScene.get()->findGameObjectByName("World");
     _worldGO->addTag("World");
     auto* world = _worldGO->addComponent<game::World>(1);
+    world->setGame(this);
     world->setModel(model);
     world->setMaterial(material);
     world->setMaterial2(material2);
@@ -406,7 +424,11 @@ void Game::setupInputCallbacks() {
 
 void Game::setupPlayer() {
     auto playerGO = _mainScene.get()->findGameObjectByName("Player");
+    _playerGO = playerGO;
     playerGO->addTag("Player");
+
+    auto* inventory = playerGO->addComponent<game::Inventory>();
+    inventory->setGame(this);
 
     dzemikk::AnimationClip* clip = nullptr;
     auto skeleton =
@@ -416,6 +438,7 @@ void Game::setupPlayer() {
     animator->getStateMachine()->getState("Idle")->setClip(clip);
 
     _playerEntity = playerGO->addComponent<game::PlayerEntity>();
+    _playerEntity->setGame(this);
     _playerMovement = playerGO->addComponent<game::PlayerMovement>();
     _playerMovement->setPlayerEntity(_playerEntity);
     _playerMovement->setSpeed(0.25F);
@@ -441,8 +464,10 @@ void Game::setupPlayer() {
     combatPlayerPanel->setAssetManager(_engine->getAssetManager());
     combatPlayerPanel->setCanvas(playerPanel);
 
-    auto playerHealthGO =
-        _mainScene.get()->findGameObjectByName("Player_Avatar_Panel")->findDescendantByName("Health_Holder");
+    auto playerHealthGO = _mainScene.get()
+                              ->findGameObjectByName("Player_Avatar_Panel")
+                              ->findDescendantByName("Health_Holder");
+    playerHealthGO->addTag("PlayerHealthSystem");
 
     auto playerHealthSystem = playerHealthGO->addComponent<game::HealthSystem>();
     playerHealthSystem->setOwner(playerHealthGO);
@@ -460,13 +485,13 @@ void Game::setupEnemies() {
     enemyManager->setWorld(_worldGO->getComponent<game::World>());
     enemyManager->setAssetManager(_engine->getAssetManager());
 
-    std::vector<game::EnemySpawnConfig> c1Config = {
-        {.personality = game::EnemyPersonality::Aggressive,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 15,
-         .territoryPattern = "1",
-         //.blocksChunks = {_chunkIds["c2"]},
+    std::vector<game::EnemySpawnConfig> c1Config = {{
+        .personality = game::EnemyPersonality::Aggressive,
+        .type = game::EnemyType::Normal,
+        .count = 1,
+        .hp = 15,
+        .territoryPattern = "1",
+        //.blocksChunks = {_chunkIds["c2"]},
     }};
     enemyManager->setSpawnConfig(_chunkIds["c1"], c1Config);
 
@@ -632,8 +657,42 @@ void Game::setupEnemies() {
 
     auto enemyHealthSystem = enemyHealthGO->addComponent<game::HealthSystem>();
     enemyHealthSystem->setOwner(enemyHealthGO);
-    enemyHealthSystem->setTextRenderer(enemyHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
+    enemyHealthSystem->setTextRenderer(
+        enemyHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
+}
 
+void Game::setupItems() {
+    if (_worldGO == nullptr || _worldGO->getComponent<game::World>() == nullptr) {
+        return;
+    }
+
+    auto* world = _worldGO->getComponent<game::World>();
+
+    // Heal Item steup
+    auto healChunks = {"c4", "c6", "c11", "c10", "c16", "c13"};
+    for (const auto& id : healChunks) {
+        world->addItem<game::ItemEntity::ItemType::Heal>(_chunkIds[id], 10.0F);
+    }
+
+    // Reveal Pattern Item setup
+    auto revealPatternChunks = {"c3", "c5", "c7", "c8", "c9", "c11", "c10", "c15", "c17", "c13"};
+    for (const auto& id : revealPatternChunks) {
+        world->addItem<game::ItemEntity::ItemType::RevealPattern>(_chunkIds[id]);
+    }
+
+    // Reveal Hex Item setup
+    auto revealPatternHex = {"c2", "c3", "c4", "c7", "c9", "c15", "c16"};
+    for (const auto& id : revealPatternChunks) {
+        world->addItem<game::ItemEntity::ItemType::RevealHex>(_chunkIds[id]);
+    }
+
+    // Bonus Hex Item Setup
+    game::HexPattern pat = game::HexPattern({{0, 0}}, game::HexPattern::Type::BONUSHEX);
+    auto bonusHex = {"c3", "c5", "c5", "c11", "c10", "c15", "c17", "c17"};
+    world->addItem<game::ItemEntity::ItemType::BonusHex>(_chunkIds["c1"], pat);
+    for (const auto& id : bonusHex) {
+        world->addItem<game::ItemEntity::ItemType::BonusHex>(_chunkIds[id], pat);
+    }
 }
 
 void Game::registerDefaultTerritories() {

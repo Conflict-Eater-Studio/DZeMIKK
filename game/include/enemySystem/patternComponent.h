@@ -17,6 +17,8 @@ namespace game {
  */
 class PatternComponent : public dzemikk::MonoBehaviour {
   public:
+    using Base = dzemikk::MonoBehaviour;
+
     /**
      * @brief Represents a pattern and its available count.
      */

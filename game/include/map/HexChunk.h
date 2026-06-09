@@ -4,11 +4,14 @@
 #include "boost/uuid/detail/nil_uuid.hpp"
 #include "map/HexCell.h"
 #include "map/HexPattern.h"
+#include "map/ItemEntity.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <optional>
 #include <random>
+#include <ranges>
 #include <unordered_map>
 #include <vector>
 
@@ -53,6 +56,35 @@ class HexChunk {
     void assignCell(HexCellPtr cell);
     bool setEntity(const HexCoord& coord, HexCell::Type entityType, Entity* entity = nullptr);
     void clean();
+
+    template <typename T> bool addItem(T* item) {
+        static_assert(std::is_base_of_v<ItemEntity, T>, "T must be derived from ItemEntity");
+
+        std::vector<HexCellPtr> candidates;
+        for (const auto& [coord, cell] : _hexes) {
+            if (cell->getState() == HexCell::State::Empty &&
+                cell->getType() == HexCell::Type::Normal && cell->getEntity() == nullptr) {
+                candidates.push_back(cell);
+            }
+        }
+
+        if (candidates.empty()) {
+            return false;
+        }
+
+        std::sort(
+            candidates.begin(), candidates.end(),
+            [](const HexCellPtr& a, const HexCellPtr& b) { return a->getCoord() < b->getCoord(); });
+
+        std::uniform_int_distribution<size_t> dist(0, candidates.size() - 1);
+        auto chosen = candidates[dist(_rng)];
+
+        chosen->setState(HexCell::State::Item);
+        chosen->setEntity(item);
+        item->onEnter(chosen);
+
+        return true;
+    }
 
   private:
     boost::uuids::uuid _id{boost::uuids::nil_uuid()};

@@ -42,7 +42,8 @@
             ],
             "enabled": true,
             "id": "06c01715-5e6d-4905-9f90-2bca8b8a4244",
-            "name": "Directional Light"
+            "name": "Directional Light",
+            "tags": []
         },
         {
             "children": [],
@@ -83,7 +84,8 @@
             ],
             "enabled": true,
             "id": "f596f462-d3bf-40aa-bb65-9db746fb5a56",
-            "name": "Editor Camera"
+            "name": "Editor Camera",
+            "tags": []
         },
         {
             "children": [],
@@ -124,7 +126,8 @@
             ],
             "enabled": true,
             "id": "1ba86b50-ba7c-4968-a838-fef96e8f472f",
-            "name": "UICamera"
+            "name": "UICamera",
+            "tags": []
         },
         {
             "children": [
@@ -177,7 +180,8 @@
                             ],
                             "enabled": true,
                             "id": "e815e11b-a05c-498a-b4c9-786cda0bd6ff",
-                            "name": "Player"
+                            "name": "Player",
+                            "tags": []
                         }
                     ],
                     "components": [
@@ -204,7 +208,8 @@
                     ],
                     "enabled": true,
                     "id": "123ced04-5ba2-4ea9-a8b1-373e0886d447",
-                    "name": "World"
+                    "name": "World",
+                    "tags": []
                 },
                 {
                     "children": [],
@@ -287,7 +292,8 @@
             ],
             "enabled": true,
             "id": "1cb575b2-38bb-4f81-9648-9934ca8961c6",
-            "name": "Root"
+            "name": "Root",
+            "tags": []
         },
         {
             "children": [
@@ -343,7 +349,8 @@
                             ],
                             "enabled": false,
                             "id": "f505fc1d-34bb-481a-98df-bc03caa0aa03",
-                            "name": "Button_Text"
+                            "name": "Button_Text",
+                            "tags": []
                         }
                     ],
                     "components": [
@@ -419,7 +426,8 @@
                     ],
                     "enabled": false,
                     "id": "a42d09e8-dbdc-48e9-a522-7dd813235428",
-                    "name": "Button"
+                    "name": "Button",
+                    "tags": []
                 },
                 {
                     "children": [
@@ -473,7 +481,8 @@
                             ],
                             "enabled": false,
                             "id": "a0f934a0-d56a-4d29-b361-09bca244b01a",
-                            "name": "Button_Text"
+                            "name": "Button_Text",
+                            "tags": []
                         }
                     ],
                     "components": [
@@ -549,7 +558,8 @@
                     ],
                     "enabled": false,
                     "id": "7e831a92-afbb-43af-8ee6-053f1239aa22",
-                    "name": "Button2"
+                    "name": "Button2",
+                    "tags": []
                 },
                 {
                     "children": [
@@ -607,7 +617,8 @@
                                             ],
                                             "enabled": false,
                                             "id": "ef9dbf46-af9f-4209-b300-c1196c952157",
-                                            "name": "Text"
+                                            "name": "Text",
+                                            "tags": []
                                         },
                                         {
                                             "children": [],
@@ -659,7 +670,8 @@
                                             ],
                                             "enabled": false,
                                             "id": "4bc14c0d-c6fb-49c0-9a04-7b4e561d31e5",
-                                            "name": "Patterns"
+                                            "name": "Patterns",
+                                            "tags": []
                                         }
                                     ],
                                     "components": [
@@ -703,7 +715,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "c4d8e2c1-f870-4edf-8eab-a5887bfedf89",
-                                    "name": "VerticaLayout"
+                                    "name": "VerticaLayout",
+                                    "tags": []
                                 },
                                 {
                                     "children": [],
@@ -753,7 +766,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "9bfba8bb-3e95-49aa-92d3-2f8c89aff46c",
-                                    "name": "Empty"
+                                    "name": "Empty",
+                                    "tags": []
                                 },
                                 {
                                     "children": [],
@@ -803,7 +817,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "bb29948c-213f-42de-976c-4295c367064c",
-                                    "name": "Decor"
+                                    "name": "Decor",
+                                    "tags": []
                                 }
                             ],
                             "components": [
@@ -852,7 +867,8 @@
                             ],
                             "enabled": false,
                             "id": "f7c98ef8-d246-4da9-8dcc-1fd525967a00",
-                            "name": "Player_Panel"
+                            "name": "Player_Panel",
+                            "tags": []
                         },
                         {
                             "children": [
@@ -908,7 +924,8 @@
                                             ],
                                             "enabled": false,
                                             "id": "3d0c0f83-acd6-43e3-afca-2bb35c3e680c",
-                                            "name": "Text"
+                                            "name": "Text",
+                                            "tags": []
                                         },
                                         {
                                             "children": [],
@@ -960,7 +977,8 @@
                                             ],
                                             "enabled": false,
                                             "id": "67fb4997-c245-4c1b-ae54-5871f9397f44",
-                                            "name": "Patterns"
+                                            "name": "Patterns",
+                                            "tags": []
                                         }
                                     ],
                                     "components": [
@@ -1004,7 +1022,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "b918f52c-ac07-4070-aed8-37cf9d62c5fd",
-                                    "name": "VerticaLayout"
+                                    "name": "VerticaLayout",
+                                    "tags": []
                                 },
                                 {
                                     "children": [],
@@ -1054,7 +1073,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "b522f273-4ed5-4d8e-bbc7-17298f4c2557",
-                                    "name": "Empty"
+                                    "name": "Empty",
+                                    "tags": []
                                 },
                                 {
                                     "children": [],
@@ -1104,7 +1124,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "ab0b1151-fc21-4780-b2bb-55c9cd4d5d37",
-                                    "name": "Decor"
+                                    "name": "Decor",
+                                    "tags": []
                                 }
                             ],
                             "components": [
@@ -1153,7 +1174,8 @@
                             ],
                             "enabled": false,
                             "id": "115d0278-709b-423a-8c9d-ab85095f1893",
-                            "name": "Enemy_Panel"
+                            "name": "Enemy_Panel",
+                            "tags": []
                         },
                         {
                             "children": [
@@ -1209,7 +1231,8 @@
                                                     ],
                                                     "enabled": false,
                                                     "id": "b0bab6db-6c54-4fdf-93aa-7970219981cc",
-                                                    "name": "Image"
+                                                    "name": "Image",
+                                                    "tags": []
                                                 },
                                                 {
                                                     "children": [],
@@ -1261,7 +1284,8 @@
                                                     ],
                                                     "enabled": false,
                                                     "id": "6ef73dc3-eda7-43dc-b919-5414e1b01d95",
-                                                    "name": "Text"
+                                                    "name": "Text",
+                                                    "tags": []
                                                 },
                                                 {
                                                     "children": [],
@@ -1313,7 +1337,8 @@
                                                     ],
                                                     "enabled": false,
                                                     "id": "82003211-515b-4cce-9059-3c739f435185",
-                                                    "name": "Text2"
+                                                    "name": "Text2",
+                                                    "tags": []
                                                 }
                                             ],
                                             "components": [
@@ -1357,7 +1382,8 @@
                                             ],
                                             "enabled": false,
                                             "id": "08d57639-6cae-4c43-963d-1dbd3b76295b",
-                                            "name": "1"
+                                            "name": "1",
+                                            "tags": []
                                         },
                                         {
                                             "children": [
@@ -1409,7 +1435,8 @@
                                                     ],
                                                     "enabled": false,
                                                     "id": "6ad688b7-40f7-4e69-98a1-c0dca0cbbf3a",
-                                                    "name": "Image"
+                                                    "name": "Image",
+                                                    "tags": []
                                                 },
                                                 {
                                                     "children": [],
@@ -1461,7 +1488,8 @@
                                                     ],
                                                     "enabled": false,
                                                     "id": "9ac83f25-2ab0-486e-a393-00b29b851ac0",
-                                                    "name": "Text"
+                                                    "name": "Text",
+                                                    "tags": []
                                                 }
                                             ],
                                             "components": [
@@ -1505,7 +1533,8 @@
                                             ],
                                             "enabled": false,
                                             "id": "51348623-a38e-46ab-8a8d-ab38f2b29ee9",
-                                            "name": "2"
+                                            "name": "2",
+                                            "tags": []
                                         },
                                         {
                                             "children": [
@@ -1557,7 +1586,8 @@
                                                     ],
                                                     "enabled": false,
                                                     "id": "e65821cd-7ad0-496a-a5c2-92e3e3a0a34a",
-                                                    "name": "Image"
+                                                    "name": "Image",
+                                                    "tags": []
                                                 },
                                                 {
                                                     "children": [],
@@ -1609,7 +1639,8 @@
                                                     ],
                                                     "enabled": false,
                                                     "id": "8ad51458-d886-4dbf-83cf-605765ca0759",
-                                                    "name": "Text"
+                                                    "name": "Text",
+                                                    "tags": []
                                                 }
                                             ],
                                             "components": [
@@ -1653,7 +1684,8 @@
                                             ],
                                             "enabled": false,
                                             "id": "1fae89e1-e36e-46b1-9488-f0bcd6626fd0",
-                                            "name": "3"
+                                            "name": "3",
+                                            "tags": []
                                         },
                                         {
                                             "children": [
@@ -1709,7 +1741,8 @@
                                                             ],
                                                             "enabled": false,
                                                             "id": "37012970-280c-4ac4-ac72-c39d4e810e23",
-                                                            "name": "Text"
+                                                            "name": "Text",
+                                                            "tags": []
                                                         }
                                                     ],
                                                     "components": [
@@ -1758,7 +1791,8 @@
                                                     ],
                                                     "enabled": false,
                                                     "id": "56e9bd77-1995-45f2-b086-fd965f728bb7",
-                                                    "name": "Image"
+                                                    "name": "Image",
+                                                    "tags": []
                                                 },
                                                 {
                                                     "children": [],
@@ -1810,7 +1844,8 @@
                                                     ],
                                                     "enabled": false,
                                                     "id": "b1a9cd9c-56c4-4811-a3df-7793df19ef48",
-                                                    "name": "Text"
+                                                    "name": "Text",
+                                                    "tags": []
                                                 }
                                             ],
                                             "components": [
@@ -1854,7 +1889,8 @@
                                             ],
                                             "enabled": false,
                                             "id": "e2126334-f18e-4053-ac5e-b4fe20dd8b5a",
-                                            "name": "4"
+                                            "name": "4",
+                                            "tags": []
                                         }
                                     ],
                                     "components": [
@@ -1891,7 +1927,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "59fed4a6-2b51-4c36-9e4f-ec0290f7381c",
-                                    "name": "Items_container"
+                                    "name": "Items_container",
+                                    "tags": []
                                 },
                                 {
                                     "children": [],
@@ -1941,7 +1978,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "a1f731cb-921a-4c4d-890c-7dde919a8287",
-                                    "name": "Empty"
+                                    "name": "Empty",
+                                    "tags": []
                                 }
                             ],
                             "components": [
@@ -1990,7 +2028,8 @@
                             ],
                             "enabled": false,
                             "id": "7e6b2156-1a50-4867-9e92-5dd5a337b3e2",
-                            "name": "Actions_Panel"
+                            "name": "Actions_Panel",
+                            "tags": []
                         },
                         {
                             "children": [
@@ -2046,7 +2085,8 @@
                                             ],
                                             "enabled": false,
                                             "id": "7de3cb1c-4384-483a-b3b6-5647ab8ebb93",
-                                            "name": "Name"
+                                            "name": "Name",
+                                            "tags": []
                                         },
                                         {
                                             "children": [
@@ -2100,7 +2140,8 @@
                                                             ],
                                                             "enabled": false,
                                                             "id": "a1b43dac-09e2-4f21-81ea-939ea96fa39e",
-                                                            "name": "Empty"
+                                                            "name": "Empty",
+                                                            "tags": []
                                                         }
                                                     ],
                                                     "components": [
@@ -2149,7 +2190,8 @@
                                                     ],
                                                     "enabled": false,
                                                     "id": "6cb56685-4a7d-469f-8ee2-13bca9547b72",
-                                                    "name": "Heart"
+                                                    "name": "Heart",
+                                                    "tags": []
                                                 },
                                                 {
                                                     "children": [],
@@ -2201,7 +2243,8 @@
                                                     ],
                                                     "enabled": false,
                                                     "id": "e015e38d-4cd1-43f8-a40f-788f379fb241",
-                                                    "name": "Text"
+                                                    "name": "Text",
+                                                    "tags": []
                                                 }
                                             ],
                                             "components": [
@@ -2245,7 +2288,8 @@
                                             ],
                                             "enabled": false,
                                             "id": "fa23f885-f5f0-4131-ab34-4bb88af92c2a",
-                                            "name": "Health_Holder"
+                                            "name": "Health_Holder",
+                                            "tags": []
                                         }
                                     ],
                                     "components": [
@@ -2289,7 +2333,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "620d5269-12ec-44b2-9d8a-bd41459845ee",
-                                    "name": "Info_Box"
+                                    "name": "Info_Box",
+                                    "tags": []
                                 },
                                 {
                                     "children": [],
@@ -2339,7 +2384,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "e51d36cf-9578-4149-8911-a03931ecb43e",
-                                    "name": "Empty"
+                                    "name": "Empty",
+                                    "tags": []
                                 },
                                 {
                                     "children": [
@@ -2391,7 +2437,8 @@
                                             ],
                                             "enabled": false,
                                             "id": "220c703d-f367-4707-b1bd-0c874da88815",
-                                            "name": "Empty"
+                                            "name": "Empty",
+                                            "tags": []
                                         },
                                         {
                                             "children": [],
@@ -2441,7 +2488,8 @@
                                             ],
                                             "enabled": false,
                                             "id": "4a1ac35b-5271-4475-91c8-1ccb818dafbd",
-                                            "name": "Avatar"
+                                            "name": "Avatar",
+                                            "tags": []
                                         }
                                     ],
                                     "components": [
@@ -2490,7 +2538,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "a556f5d7-c7ae-4ecb-b803-c5dd3dde7f2c",
-                                    "name": "Avatar_Holder"
+                                    "name": "Avatar_Holder",
+                                    "tags": []
                                 },
                                 {
                                     "children": [],
@@ -2540,7 +2589,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "409fd283-0f9c-47a9-9b24-7b3098683da6",
-                                    "name": "Decor"
+                                    "name": "Decor",
+                                    "tags": []
                                 }
                             ],
                             "components": [
@@ -2589,7 +2639,8 @@
                             ],
                             "enabled": false,
                             "id": "a90cad2e-e671-4cc1-bac1-3775f8de99ae",
-                            "name": "Enemy_Avatar_Panel"
+                            "name": "Enemy_Avatar_Panel",
+                            "tags": []
                         },
                         {
                             "children": [
@@ -2641,7 +2692,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "c07e8b7b-35d9-4205-af83-f237815172d5",
-                                    "name": "Empty"
+                                    "name": "Empty",
+                                    "tags": []
                                 },
                                 {
                                     "children": [],
@@ -2691,7 +2743,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "40f2b98c-26ca-4c96-9cf1-a0df287a41df",
-                                    "name": "Decor"
+                                    "name": "Decor",
+                                    "tags": []
                                 }
                             ],
                             "components": [
@@ -2740,7 +2793,8 @@
                             ],
                             "enabled": false,
                             "id": "2350382f-1afb-48b4-8b54-d5b42d8de0ce",
-                            "name": "Tooltips_Panel"
+                            "name": "Tooltips_Panel",
+                            "tags": []
                         },
                         {
                             "children": [
@@ -2794,7 +2848,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "df1bae0a-4d28-4a4a-93a3-c9facff32166",
-                                    "name": "Text"
+                                    "name": "Text",
+                                    "tags": []
                                 },
                                 {
                                     "children": [],
@@ -2844,7 +2899,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "769ddde0-649a-44f5-a431-570dffc6e682",
-                                    "name": "Empty"
+                                    "name": "Empty",
+                                    "tags": []
                                 }
                             ],
                             "components": [
@@ -2893,7 +2949,8 @@
                             ],
                             "enabled": false,
                             "id": "81c3c567-c3ec-4518-8350-39cfc3d7d617",
-                            "name": "Round_Number"
+                            "name": "Round_Number",
+                            "tags": []
                         },
                         {
                             "children": [
@@ -2947,7 +3004,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "dd72502e-276c-4f4f-9445-fa5816ea9e08",
-                                    "name": "Button_Text"
+                                    "name": "Button_Text",
+                                    "tags": []
                                 },
                                 {
                                     "children": [],
@@ -2997,7 +3055,8 @@
                                     ],
                                     "enabled": false,
                                     "id": "0bacaa44-3060-4836-b966-c9565588833f",
-                                    "name": "Empty"
+                                    "name": "Empty",
+                                    "tags": []
                                 }
                             ],
                             "components": [
@@ -3073,7 +3132,8 @@
                             ],
                             "enabled": false,
                             "id": "dcc97e2b-dd74-4d1c-9328-e1a1a334c5c3",
-                            "name": "Confirm_Round"
+                            "name": "Confirm_Round",
+                            "tags": []
                         }
                     ],
                     "components": [
@@ -3110,7 +3170,8 @@
                     ],
                     "enabled": false,
                     "id": "9c97366d-f255-4050-9dac-297eee08f3cd",
-                    "name": "Combat"
+                    "name": "Combat",
+                    "tags": []
                 },
                 {
                     "children": [
@@ -3166,7 +3227,8 @@
                                     ],
                                     "enabled": true,
                                     "id": "30f4247a-d387-46ec-bf06-4a0dd23dc396",
-                                    "name": "Name"
+                                    "name": "Name",
+                                    "tags": []
                                 },
                                 {
                                     "children": [
@@ -3220,7 +3282,8 @@
                                                     ],
                                                     "enabled": true,
                                                     "id": "4f81faaa-bdbc-497d-a089-116f2c951380",
-                                                    "name": "Empty"
+                                                    "name": "Empty",
+                                                    "tags": []
                                                 }
                                             ],
                                             "components": [
@@ -3269,7 +3332,8 @@
                                             ],
                                             "enabled": true,
                                             "id": "757b79f5-8cc1-481e-8bc9-c33bcf69cc2b",
-                                            "name": "Heart"
+                                            "name": "Heart",
+                                            "tags": []
                                         },
                                         {
                                             "children": [],
@@ -3321,7 +3385,8 @@
                                             ],
                                             "enabled": true,
                                             "id": "4710cdaf-6417-4431-b02e-2743baf78c31",
-                                            "name": "Text"
+                                            "name": "Text",
+                                            "tags": []
                                         }
                                     ],
                                     "components": [
@@ -3365,7 +3430,8 @@
                                     ],
                                     "enabled": true,
                                     "id": "b5db698d-fc00-451c-aece-38712df4c7ff",
-                                    "name": "Health_Holder"
+                                    "name": "Health_Holder",
+                                    "tags": []
                                 },
                                 {
                                     "children": [
@@ -3387,7 +3453,7 @@
                                                         0.5
                                                     ],
                                                     "position": [
-                                                        0.0,
+                                                        -103.33332824707031,
                                                         0.0
                                                     ],
                                                     "rotation": 0.0,
@@ -3396,7 +3462,7 @@
                                                         1.0
                                                     ],
                                                     "size": [
-                                                        500.0,
+                                                        93.33333587646484,
                                                         0.0
                                                     ],
                                                     "type": "RectTransform",
@@ -3419,7 +3485,272 @@
                                             ],
                                             "enabled": true,
                                             "id": "50b668a9-4ece-481b-b4a2-3884c14c373e",
-                                            "name": "Text"
+                                            "name": "Text",
+                                            "tags": []
+                                        },
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "id": "4902355a-0781-4562-8e68-7b7b02f66f5c",
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 2
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.0,
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "horizontalAlign": 1,
+                                                            "id": "a945e3a1-7b7a-4561-99eb-4b7c0169c4db",
+                                                            "scale": 0.5,
+                                                            "text": "RP 0",
+                                                            "type": "UITextRenderer",
+                                                            "verticalAlign": 1
+                                                        }
+                                                    ],
+                                                    "enabled": true,
+                                                    "id": "86b83257-d782-418b-9089-03702a83613c",
+                                                    "name": "Button_Text",
+                                                    "tags": []
+                                                }
+                                            ],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "c6f75ffc-b02b-480c-ac56-d7b8363c40b4",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        3.814697265625e-06,
+                                                        0.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        93.33333587646484,
+                                                        40.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 1
+                                                },
+                                                {
+                                                    "events": {
+                                                        "click": [
+                                                            "combat.reveal.randomPattern"
+                                                        ]
+                                                    },
+                                                    "hoverColor": [
+                                                        0.800000011920929,
+                                                        0.800000011920929,
+                                                        0.800000011920929,
+                                                        1.0
+                                                    ],
+                                                    "id": "fbdcbdbb-c166-4ea6-9271-9acddf16b679",
+                                                    "normalColor": [
+                                                        1.0,
+                                                        1.0,
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "pressedColor": [
+                                                        0.6000000238418579,
+                                                        0.6000000238418579,
+                                                        0.6000000238418579,
+                                                        1.0
+                                                    ],
+                                                    "type": "UIButton"
+                                                },
+                                                {
+                                                    "color": [
+                                                        1.0,
+                                                        1.0,
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "id": "2976ff7f-bc6e-48c4-8b0e-266337c4ce7b",
+                                                    "materialPath": "shaders/quad",
+                                                    "texture": "",
+                                                    "type": "ImageRenderer"
+                                                }
+                                            ],
+                                            "enabled": true,
+                                            "id": "c4eb99dd-3269-4259-a462-b0fb8d32e977",
+                                            "name": "UI_RevealPatternBtn",
+                                            "tags": []
+                                        },
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "id": "6d48b9dc-90fa-4833-a2a5-edfe83028d84",
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 2
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.0,
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "horizontalAlign": 1,
+                                                            "id": "a67af521-7f57-44aa-9dc5-690669dc0b1c",
+                                                            "scale": 0.5,
+                                                            "text": "RH 0",
+                                                            "type": "UITextRenderer",
+                                                            "verticalAlign": 1
+                                                        }
+                                                    ],
+                                                    "enabled": true,
+                                                    "id": "9caf55a5-33a7-4e69-a468-7027cc53fe8c",
+                                                    "name": "Button_Text",
+                                                    "tags": []
+                                                }
+                                            ],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "4018892e-2326-478e-aa57-fdf099e15b19",
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        103.33334350585938,
+                                                        0.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        93.33333587646484,
+                                                        40.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 1
+                                                },
+                                                {
+                                                    "events": {
+                                                        "click": [
+                                                            "combat.reveal.randomHex"
+                                                        ]
+                                                    },
+                                                    "hoverColor": [
+                                                        0.800000011920929,
+                                                        0.800000011920929,
+                                                        0.800000011920929,
+                                                        1.0
+                                                    ],
+                                                    "id": "8e6a8f9e-25ec-4aa2-98f9-03f8fc156407",
+                                                    "normalColor": [
+                                                        1.0,
+                                                        1.0,
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "pressedColor": [
+                                                        0.6000000238418579,
+                                                        0.6000000238418579,
+                                                        0.6000000238418579,
+                                                        1.0
+                                                    ],
+                                                    "type": "UIButton"
+                                                },
+                                                {
+                                                    "color": [
+                                                        1.0,
+                                                        1.0,
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "id": "2c975d1e-31eb-43d1-8d6c-3d720728037e",
+                                                    "materialPath": "shaders/quad",
+                                                    "texture": "",
+                                                    "type": "ImageRenderer"
+                                                }
+                                            ],
+                                            "enabled": true,
+                                            "id": "ec964ff9-386e-46ec-9b7e-e3ba07c56494",
+                                            "name": "UI_RevealHexBtn",
+                                            "tags": []
                                         }
                                     ],
                                     "components": [
@@ -3438,7 +3769,7 @@
                                                 0.5
                                             ],
                                             "position": [
-                                                10.0,
+                                                316.0,
                                                 -37.5
                                             ],
                                             "rotation": 0.0,
@@ -3447,16 +3778,24 @@
                                                 1.0
                                             ],
                                             "size": [
-                                                500.0,
-                                                46.66666793823242
+                                                300.0,
+                                                60.0
                                             ],
                                             "type": "RectTransform",
                                             "zIndex": 0
+                                        },
+                                        {
+                                            "childForceExpandHeight": false,
+                                            "childForceExpandWidth": true,
+                                            "id": "37a33aef-6bef-49ba-9cb6-f479fd7e7f9f",
+                                            "spacing": 10.0,
+                                            "type": "HorizontalLayout"
                                         }
                                     ],
                                     "enabled": true,
                                     "id": "2a24f938-c51e-47cb-b789-129d587a4f48",
-                                    "name": "Items_Holder"
+                                    "name": "Items_Holder",
+                                    "tags": []
                                 }
                             ],
                             "components": [
@@ -3500,7 +3839,8 @@
                             ],
                             "enabled": true,
                             "id": "8d96e90f-60b1-40f0-9794-0295cdebd6c7",
-                            "name": "Info_Box"
+                            "name": "Info_Box",
+                            "tags": []
                         },
                         {
                             "children": [],
@@ -3550,7 +3890,8 @@
                             ],
                             "enabled": true,
                             "id": "dbe958ee-02cd-425d-b985-5bdd18dee6f2",
-                            "name": "Empty"
+                            "name": "Empty",
+                            "tags": []
                         },
                         {
                             "children": [
@@ -3602,7 +3943,8 @@
                                     ],
                                     "enabled": true,
                                     "id": "c27649b1-1fba-45bf-91f1-a3bdc5539753",
-                                    "name": "Empty"
+                                    "name": "Empty",
+                                    "tags": []
                                 },
                                 {
                                     "children": [],
@@ -3652,7 +3994,8 @@
                                     ],
                                     "enabled": true,
                                     "id": "01b67d13-0120-4942-9790-a6e3bb6d2cc7",
-                                    "name": "Avatar"
+                                    "name": "Avatar",
+                                    "tags": []
                                 }
                             ],
                             "components": [
@@ -3701,7 +4044,8 @@
                             ],
                             "enabled": true,
                             "id": "19f1def1-bd87-457b-9799-1933a14d8a8b",
-                            "name": "Avatar_Holder"
+                            "name": "Avatar_Holder",
+                            "tags": []
                         },
                         {
                             "children": [],
@@ -3751,7 +4095,8 @@
                             ],
                             "enabled": true,
                             "id": "b64b7fd4-f6f7-4fea-94f3-e220be3abab1",
-                            "name": "Decor"
+                            "name": "Decor",
+                            "tags": []
                         }
                     ],
                     "components": [
@@ -3800,7 +4145,8 @@
                     ],
                     "enabled": true,
                     "id": "09263825-bbc6-4a88-bb1e-472dc0194772",
-                    "name": "Player_Avatar_Panel"
+                    "name": "Player_Avatar_Panel",
+                    "tags": []
                 }
             ],
             "components": [
@@ -3841,7 +4187,8 @@
             ],
             "enabled": true,
             "id": "be4b7f1f-02ba-4bfe-b52b-fc73cd70ec91",
-            "name": "Canvas"
+            "name": "Canvas",
+            "tags": []
         }
     ]
 }

@@ -15,6 +15,8 @@ namespace game {
  */
 class EnemyPatternComponent : public PatternComponent {
   public:
+    using Base = PatternComponent;
+
     void start() override;
     void update(double deltaTime) override;
     void onDestroy() override;

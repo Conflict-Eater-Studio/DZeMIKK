@@ -1,7 +1,7 @@
 #include "enemySystem/patternComponent.h"
 
-#include <ranges>
 #include <algorithm>
+#include <ranges>
 
 void game::PatternComponent::addPattern(const HexPattern& pattern, int count) {
     _patterns.push_back(PatternEntry{.pattern = pattern, .count = count});
@@ -130,11 +130,11 @@ bool game::PatternComponent::hasPattern(const HexPattern& pattern) const {
 
         if (pat.getEffectStrength() != pattern.getEffectStrength() ||
             pat.getType() != pattern.getType()) {
-            return false;
+            continue;
         }
 
         if (pat.getHexes().size() != pattern.getHexes().size()) {
-            return false;
+            continue;
         }
 
         bool valid = false;

@@ -1,14 +1,13 @@
 #ifndef GAME_WORLD_H
 #define GAME_WORLD_H
 
+#pragma once
 #include "boost/uuid/string_generator.hpp"
 #include "boost/uuid/uuid_io.hpp"
-#include "map/HexPattern.h"
-#pragma once
-
 #include "ecs/components/monobehaviour.h"
 #include "ecs/components/transform.h"
 #include "map/HexGrid.h"
+#include "map/HexPattern.h"
 #include "renderer/material.h"
 #include "renderer/model.h"
 #include "utils/perlin.h"
@@ -17,10 +16,14 @@
 #include <random>
 #include <unordered_set>
 
+class Game;
+
 namespace game {
 class PlayerEntity;
 class World : public dzemikk::MonoBehaviour {
   public:
+    using Base = dzemikk::MonoBehaviour;
+
     struct ChunkDefinition {
         boost::uuids::uuid parentChunkId;
         boost::uuids::uuid chunkId;
@@ -74,6 +77,15 @@ class World : public dzemikk::MonoBehaviour {
     boost::uuids::uuid addChunk(const ChunkDefinition& config);
     void renderChunk(boost::uuids::uuid id);
 
+    template <ItemEntity::ItemType T, typename... Args>
+    void addItem(boost::uuids::uuid chunkId, Args&&... args) {
+        std::vector<std::any> packedArgs{std::any(std::forward<Args>(args))...};
+        spawnItem(chunkId, T, packedArgs);
+    }
+
+    void spawnItem(const boost::uuids::uuid& chunkId, ItemEntity::ItemType type,
+                   std::vector<std::any>& args);
+
     nlohmann::json save();
     void load(const nlohmann::json& def);
 
@@ -98,11 +110,16 @@ class World : public dzemikk::MonoBehaviour {
 
     dzemikk::Transform* getHexTransformByCell(HexCell cell);
 
+    void setGame(Game* game) {
+        _game = game;
+    }
+
   private:
     void spawnHexVisual(const std::shared_ptr<HexCell>& cell);
 
     std::unordered_map<std::string, std::function<float(int step, int maxSteps)>> _generators;
 
+    Game* _game{nullptr};
     WorldDefinition _worldDefinition;
     HexGrid _grid;
     Perlin _perlin;

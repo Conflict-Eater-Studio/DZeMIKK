@@ -10,6 +10,8 @@
 namespace game {
 class WorldHex : public dzemikk::MonoBehaviour {
   public:
+    using Base = dzemikk::MonoBehaviour;
+
     WorldHex() = default;
 
     [[nodiscard]] std::string typeName() const override {

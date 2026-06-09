@@ -1,18 +1,62 @@
 #include "map/PlayerEntity.h"
 
 #include "ecs/gameobject.h"
+#include "ecs/scene.h"
+#include "game.h"
+#include "gameStateMachine.h"
+#include "healthSystem.h"
+#include "map/ItemEntity.h"
+#include "map/ItemEntityBonusHex.h"
+#include "map/ItemEntityHealth.h"
+#include "player/inventory.h"
+#include "player/playerPatternComponent.h"
+#include "spdlog/spdlog.h"
+#include "stateMachine/combatState.h"
 
 namespace game {
 void PlayerEntity::onEnter(HexCellPtr cell) {
+    if (auto* ent = dynamic_cast<ItemEntity*>(cell->getEntity())) {
+        if (_owner != nullptr && _owner->getScene() != nullptr) {
+            switch (ent->getItemType()) {
+            case ItemEntity::ItemType::Heal: {
+                auto* playerHealth = _owner->getScene()
+                                         ->findGameObjectByTag("PlayerHealthSystem")
+                                         ->getComponent<game::HealthSystem>();
+                float toHeal = dynamic_cast<ItemEntityHealth*>(ent)->getHealAmount();
+                playerHealth->heal(toHeal);
+                ent->consume();
+                break;
+            }
+            case ItemEntity::ItemType::RevealPattern: {
+                getOwner()->getComponent<Inventory>()->addItem(ItemEntity::ItemType::RevealPattern);
+                ent->consume();
+                break;
+            }
+            case ItemEntity::ItemType::RevealHex: {
+                getOwner()->getComponent<Inventory>()->addItem(ItemEntity::ItemType::RevealHex);
+                ent->consume();
+                break;
+            }
+            case ItemEntity::ItemType::BonusHex:
+                if (auto* ppc = getOwner()->getComponent<PlayerPatternComponent>(); ppc) {
+                    HexPattern toAdd = dynamic_cast<ItemEntityBonusHex*>(ent)->getHexPattern();
+                    ppc->addPattern(toAdd);
+                    ent->consume();
+                }
+                break;
+            }
+        }
+    }
+
     cell->setEntity(this);
     cell->setState(HexCell::State::Player);
     setCell(cell);
-    getOwner()->transform()->setPosition(cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
-                                         glm::vec3(0.0F, 0.4F, 0.0F));
+    getOwner()->transform()->setPosition(
+        cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
+        glm::vec3(0.0F, 0.4F, 0.0F));
 }
 
-void PlayerEntity::onExit() {
-}
+void PlayerEntity::onExit() {}
 
 void PlayerEntity::tryMove(const HexCellPtr& targetCell) {
     if (!targetCell) {
@@ -36,8 +80,14 @@ void PlayerEntity::tryMove(const HexCellPtr& targetCell) {
 }
 void PlayerEntity::teleportTo(const HexCellPtr& targetCell) {
 
-    if (!targetCell)
+    if (!targetCell) {
         return;
+    }
+
+    if (targetCell->getEntity() != nullptr) {
+        // Make the other entity perform its exit action
+        targetCell->getEntity()->onExit();
+    }
 
     if (getCell()) {
         getCell()->setEntity(nullptr);
@@ -49,7 +99,8 @@ void PlayerEntity::teleportTo(const HexCellPtr& targetCell) {
 
     setCell(targetCell);
 
-    getOwner()->transform()->setPosition(targetCell->getCoord().toWorldPosition(1.0F, 0.1F, targetCell->getHeight()) +
-                                         glm::vec3(0.0F, 0.4F, 0.0F));
+    getOwner()->transform()->setPosition(
+        targetCell->getCoord().toWorldPosition(1.0F, 0.1F, targetCell->getHeight()) +
+        glm::vec3(0.0F, 0.4F, 0.0F));
 }
 } // namespace game

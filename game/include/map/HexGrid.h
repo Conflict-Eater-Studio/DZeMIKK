@@ -81,6 +81,18 @@ class HexGrid {
     void unlockBridge(std::pair<boost::uuids::uuid, boost::uuids::uuid> bridgeId,
                       const boost::uuids::uuid& enemyId);
 
+    template <typename T> void addItem(boost::uuids::uuid chunkId, T* itemEntity) {
+        static_assert(std::is_base_of_v<ItemEntity, T>, "T must be derived from ItemEntity");
+
+        if (auto* chunk = _chunks[chunkId].get(); chunk) {
+            _itemEntities[chunkId].push_back(itemEntity);
+            chunk->addItem(itemEntity);
+        }
+    }
+    std::unordered_map<boost::uuids::uuid, std::vector<ItemEntity*>>& getItemEntities() {
+        return _itemEntities;
+    }
+
   private:
     static bool isBlockedCell(const HexCellPtr& cell);
     static bool isWalkableCell(const HexCellPtr& cell);
@@ -95,6 +107,8 @@ class HexGrid {
     std::mt19937 _rng;
     boost::uuids::uuid _rootChunkId;
     bool _cleaned{false};
+
+    std::unordered_map<boost::uuids::uuid /*Chunk ID*/, std::vector<ItemEntity*>> _itemEntities;
 
     static std::pair<HexCoord, HexCoord> closestPair(HexChunk* chunk1, HexChunk* chunk2);
     [[nodiscard]] bool neighboursChunk(const HexCoord& coord,

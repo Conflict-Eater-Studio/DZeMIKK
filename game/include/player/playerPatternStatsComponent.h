@@ -3,9 +3,8 @@
 
 #include "map/HexPattern.h"
 
-#include <ecs/components/monobehaviour.h>
-
 #include <cstdint>
+#include <ecs/components/monobehaviour.h>
 #include <unordered_map>
 
 namespace dzemikk {
@@ -22,6 +21,8 @@ namespace game {
  */
 class PlayerPatternStatsComponent : public dzemikk::MonoBehaviour {
   public:
+    using Base = dzemikk::MonoBehaviour;
+
     /**
      * @brief Aggregated pattern usage statistics.
      */
