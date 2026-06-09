@@ -667,9 +667,32 @@ void Game::setupItems() {
     }
 
     auto* world = _worldGO->getComponent<game::World>();
-    world->addItem<game::ItemEntity::ItemType::Heal>(_chunkIds["c1"], 10.0F);
-    world->addItem<game::ItemEntity::ItemType::RevealPattern>(_chunkIds["c1"]);
-    world->addItem<game::ItemEntity::ItemType::RevealHex>(_chunkIds["c1"]);
+
+    // Heal Item steup
+    auto healChunks = {"c4", "c6", "c11", "c10", "c16", "c13"};
+    for (const auto& id : healChunks) {
+        world->addItem<game::ItemEntity::ItemType::Heal>(_chunkIds[id], 10.0F);
+    }
+
+    // Reveal Pattern Item setup
+    auto revealPatternChunks = {"c3", "c5", "c7", "c8", "c9", "c11", "c10", "c15", "c17", "c13"};
+    for (const auto& id : revealPatternChunks) {
+        world->addItem<game::ItemEntity::ItemType::RevealPattern>(_chunkIds[id]);
+    }
+
+    // Reveal Hex Item setup
+    auto revealPatternHex = {"c2", "c3", "c4", "c7", "c9", "c15", "c16"};
+    for (const auto& id : revealPatternChunks) {
+        world->addItem<game::ItemEntity::ItemType::RevealHex>(_chunkIds[id]);
+    }
+
+    // Bonus Hex Item Setup
+    game::HexPattern pat = game::HexPattern({{0, 0}}, game::HexPattern::Type::BONUSHEX);
+    auto bonusHex = {"c3", "c5", "c5", "c11", "c10", "c15", "c17", "c17"};
+    world->addItem<game::ItemEntity::ItemType::BonusHex>(_chunkIds["c1"], pat);
+    for (const auto& id : bonusHex) {
+        world->addItem<game::ItemEntity::ItemType::BonusHex>(_chunkIds[id], pat);
+    }
 }
 
 void Game::registerDefaultTerritories() {

@@ -3,10 +3,9 @@
 
 #include "enemySystem/patternComponent.h"
 
-#include <ecs/components/monobehaviour.h>
 #include <assetManager/assetmanager.h>
+#include <ecs/components/monobehaviour.h>
 #include <ecs/components/ui/uiButton.h>
-
 #include <nlohmann/json.hpp>
 
 namespace game {
@@ -83,13 +82,12 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
      * @brief Updates visual state of all entries.
      */
     void refreshVisuals();
-
-  private:
     /**
      * @brief Creates the panel UI hierarchy.
      */
     void buildUI();
 
+  private:
     /**
      * @brief Creates a UI slot for a pattern.
      */

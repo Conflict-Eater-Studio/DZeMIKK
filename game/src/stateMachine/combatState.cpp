@@ -4,24 +4,24 @@
 #include "enemySystem/combatArenaBuilder.h"
 #include "enemySystem/enemyEntity.h"
 #include "enemySystem/enemyManager.h"
+#include "enemySystem/enemyPlanner.h"
 #include "game.h"
 #include "gameStateMachine.h"
 #include "healthSystem.h"
 #include "map/HexCell.h"
-#include "map/HexGrid.h"
 #include "map/HexChunk.h"
+#include "map/HexGrid.h"
 #include "player/playerMovement.h"
 #include "player/playerPatternComponent.h"
+#include "stateMachine/combatResolver.h"
 #include "stateMachine/explorationState.h"
 #include "ui/combatUIPanel.h"
-#include "stateMachine/combatResolver.h"
-#include "enemySystem/enemyPlanner.h"
 
 #include <assetManager/assetHandle.h>
 #include <ecs/components/meshRenderer.h>
+#include <ecs/components/transform.h>
 #include <ecs/gameobject.h>
 #include <ecs/scene.h>
-#include <ecs/components/transform.h>
 #include <enemySystem/enemyPatternComponent.h>
 #include <iostream>
 
@@ -85,7 +85,6 @@ void game::CombatState::onExit() {
         cell->setType(HexCell::Type::Normal);
         cell->setDirty(true);
     }
-
 
     auto enemyCell = grid->findCellByEntity(_currentEnemy);
 
@@ -193,7 +192,8 @@ void game::CombatState::startNewTurn() {
 
     _plannedPatterns.clear();
     _plannedPatterns =
-        planner.planTurn(_game, _currentEnemy, patternComponent, _game->getHexGrid(), 0.75F, _playerPatternComponent->getPlayerPatternStatsComponent());
+        planner.planTurn(_game, _currentEnemy, patternComponent, _game->getHexGrid(), 0.75F,
+                         _playerPatternComponent->getPlayerPatternStatsComponent());
 
     std::unordered_set<HexCell*> usedCells;
 
@@ -301,9 +301,12 @@ void game::CombatState::showEnemyPlannedPatterns() {
 
 void game::CombatState::resolveConflict() {
     auto result = CombatResolver::resolve(*_playerPatternComponent, _plannedPatterns,
-                                   _currentEnemy->getCell()->getCoord(), _player->getCell()->getCoord());
+                                          _currentEnemy->getCell()->getCoord(),
+                                          _player->getCell()->getCoord());
 
-    auto* playerHealth = _game->getCurrentScene().get()->findGameObjectByName("Player_Avatar_Panel")
+    auto* playerHealth = _game->getCurrentScene()
+                             .get()
+                             ->findGameObjectByName("Player_Avatar_Panel")
                              ->findDescendantByName("Health_Holder")
                              ->getComponent<HealthSystem>();
 
@@ -312,7 +315,8 @@ void game::CombatState::resolveConflict() {
         playerHealth->heal(result.healToPlayer);
     }
 
-    auto* enemyHealth = _game->getCurrentScene().get()
+    auto* enemyHealth = _game->getCurrentScene()
+                            .get()
                             ->findGameObjectByName("Enemy_Avatar_Panel")
                             ->findDescendantByName("Health_Holder")
                             ->getComponent<HealthSystem>();
@@ -439,7 +443,8 @@ void game::CombatState::setupInput() {
 }
 
 void game::CombatState::setupEnemyHealth() {
-    auto* enemyHealthGO = _game->getCurrentScene().get()
+    auto* enemyHealthGO = _game->getCurrentScene()
+                              .get()
                               ->findGameObjectByName("Enemy_Avatar_Panel")
                               ->findDescendantByName("Health_Holder");
 
@@ -452,7 +457,8 @@ void game::CombatState::collectAnimatedHexes() {
 
     _hiddenHexes.clear();
 
-    auto* world = _game->getCurrentScene().get()->findGameObjectByName("World")->getComponent<World>();
+    auto* world =
+        _game->getCurrentScene().get()->findGameObjectByName("World")->getComponent<World>();
 
     const HexCoord centerCoord = _arenaCenterCell->getCoord();
 

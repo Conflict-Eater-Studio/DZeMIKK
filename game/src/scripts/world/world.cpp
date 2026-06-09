@@ -9,6 +9,7 @@
 #include "ecs/serialize/prefabSerializer.h"
 #include "game.h"
 #include "map/ItemEntity.h"
+#include "map/ItemEntityBonusHex.h"
 #include "map/ItemEntityHealth.h"
 #include "map/ItemEntityRevealHex.h"
 #include "map/ItemEntityRevealPatter.h"
@@ -112,6 +113,23 @@ void World::spawnItem(const boost::uuids::uuid& chunkId, ItemEntity::ItemType ty
         go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
                                                     _game->getEngine()->getAssetManager(), _owner);
         item = go->addComponent<ItemEntityRevealHex>();
+        break;
+    }
+    case ItemEntity::ItemType::BonusHex: {
+        if (args.size() != 1) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::error("[World] ItemEntityBonusHex received incorrect args");
+#endif
+            return;
+        }
+
+        HexPattern pattern = std::any_cast<HexPattern>(args[0]);
+
+        auto prefab = _game->getEngine()->getAssetManager()->get<nlohmann::json>(
+            "prefabs/ItemBonusHex.prefab");
+        go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
+                                                    _game->getEngine()->getAssetManager(), _owner);
+        item = go->addComponent<ItemEntityBonusHex>(pattern);
         break;
     }
     }

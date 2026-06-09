@@ -6,21 +6,19 @@
 #include "gameStateMachine.h"
 #include "healthSystem.h"
 #include "map/ItemEntity.h"
+#include "map/ItemEntityBonusHex.h"
 #include "map/ItemEntityHealth.h"
 #include "player/inventory.h"
+#include "player/playerPatternComponent.h"
 #include "spdlog/spdlog.h"
 #include "stateMachine/combatState.h"
 
 namespace game {
 void PlayerEntity::onEnter(HexCellPtr cell) {
-    spdlog::info("Player entering cell at ({}, {})", cell->getCoord().q(), cell->getCoord().r());
     if (auto* ent = dynamic_cast<ItemEntity*>(cell->getEntity())) {
-        spdlog::info("Player stepped on an item: {}", ent->typeName());
         if (_owner != nullptr && _owner->getScene() != nullptr) {
-            spdlog::info("Player's scene is valid, applying item effect");
             switch (ent->getItemType()) {
             case ItemEntity::ItemType::Heal: {
-                spdlog::info("Applying heal item effect");
                 auto* playerHealth = _owner->getScene()
                                          ->findGameObjectByTag("PlayerHealthSystem")
                                          ->getComponent<game::HealthSystem>();
@@ -40,8 +38,11 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                 break;
             }
             case ItemEntity::ItemType::BonusHex:
-                // Grant a bonus to the player
-                // Implement the logic to grant a bonus here
+                if (auto* ppc = getOwner()->getComponent<PlayerPatternComponent>(); ppc) {
+                    HexPattern toAdd = dynamic_cast<ItemEntityBonusHex*>(ent)->getHexPattern();
+                    ppc->addPattern(toAdd);
+                    ent->consume();
+                }
                 break;
             }
         }
