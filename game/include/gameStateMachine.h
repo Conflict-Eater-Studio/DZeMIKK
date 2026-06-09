@@ -8,6 +8,8 @@ namespace game {
 
 class GameStateMachine : public dzemikk::MonoBehaviour {
   public:
+    using Base = dzemikk::MonoBehaviour;
+
     void start() override {};
     void lateUpdate(double dt) override {};
     void fixedUpdate(double dt) override {};
@@ -35,7 +37,6 @@ class GameStateMachine : public dzemikk::MonoBehaviour {
         return "GameStateMachine";
     }
 
-    
     [[nodiscard]] IGameState* getCurrentState() const {
         return _current.get();
     }

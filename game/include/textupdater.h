@@ -3,7 +3,7 @@
 
 namespace dzemikk {
 class TextUpdater : public MonoBehaviour {
-public:
+  public:
     using Base = MonoBehaviour;
     TextRenderer* text = nullptr;
     float time = 0.0f;
@@ -17,5 +17,5 @@ public:
         return "TextUpdater";
     };
 };
-}
+} // namespace dzemikk
 #endif

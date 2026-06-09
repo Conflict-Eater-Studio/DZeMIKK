@@ -1,0 +1,46 @@
+{
+    "root": {
+        "children": [],
+        "components": [
+            {
+                "id": "fbd9067c-be72-4bbe-b8e8-88601992259e",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.7071067690849304,
+                    -0.7071067690849304,
+                    -0.0,
+                    0.0
+                ],
+                "scale": [
+                    10.0,
+                    10.0,
+                    10.0
+                ],
+                "type": "Transform"
+            },
+            {
+                "color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "id": "b3b753b1-03c1-43cb-b93d-c23b766aa84d",
+                "materials": [
+                    "shaders/tile1",
+                    ""
+                ],
+                "model": "models/lisc.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "75c81b2f-c1f6-4366-9147-677c910fb1ed",
+        "name": "ItemHeal",
+        "tags": []
+    }
+}

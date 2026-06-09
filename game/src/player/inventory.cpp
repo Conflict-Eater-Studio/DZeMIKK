@@ -1,67 +1,74 @@
 #include "player/inventory.h"
 
-#include "assetManager/assetmanager.h"
-#include "ecs/components/ui/horizontalLayout.h"
+#include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
-#include "ecs/serialize/prefabSerializer.h"
+#include "game.h"
+#include "gameStateMachine.h"
+#include "map/ItemEntity.h"
+#include "stateMachine/combatState.h"
 
 namespace game {
+void Inventory::addItem(ItemEntity::ItemType item) {
+    _items[item]++;
 
-void Inventory::setHorizontalLayout(dzemikk::GameObject* horizontalLayout) {
-    _horizontalLayout = horizontalLayout;
+    if (_game != nullptr) {
+        dzemikk::GameObject* btn = nullptr;
+        std::string newText;
+        switch (item) {
+        case ItemEntity::ItemType::RevealPattern: {
+            btn = _game->getCurrentScene().get()->findGameObjectByName("UI_RevealPatternBtn");
+            newText = std::format("RP {}", _items[item]);
+            break;
+        }
+        case ItemEntity::ItemType::RevealHex: {
+            btn = _game->getCurrentScene().get()->findGameObjectByName("UI_RevealHexBtn");
+            newText = std::format("RH {}", _items[item]);
+            break;
+        }
+        default: {
+            break;
+        }
+        }
+
+        if (btn != nullptr) {
+            btn->getChildren().at(0)->getComponent<dzemikk::UITextRenderer>()->text = newText;
+        }
+    }
 }
 
-dzemikk::GameObject* Inventory::getHorizontalLayout() const {
-    return _horizontalLayout;
-}
-
-void Inventory::setMainScene(dzemikk::Scene* mainScene) {
-    _mainScene = mainScene;
-}
-
-void Inventory::setAssetManager(dzemikk::AssetManager* assetManager) {
-    _assetManager = assetManager;
-}
-
-void Inventory::addItem(dzemikk::GameObject* item) const {
-    if (_horizontalLayout == nullptr || item == nullptr) {
+void Inventory::tryUseItem(ItemEntity::ItemType item) {
+    if (_game == nullptr) {
         return;
     }
 
-    _horizontalLayout->addChild(item);
+    if (_items.contains(item) && _items[item] > 0) {
+        _items[item]--;
+        std::string newText;
+        dzemikk::GameObject* btn = nullptr;
+        if (auto* cs = _game->getStateMachine()->getCurrentStateAs<CombatState>(); cs) {
+            switch (item) {
+            case ItemEntity::ItemType::RevealPattern: {
+                btn = _game->getCurrentScene().get()->findGameObjectByName("UI_RevealPatternBtn");
+                cs->revealRandomEnemyPattern();
+                newText = std::format("RP {}", _items[item]);
+                break;
+            }
+            case ItemEntity::ItemType::RevealHex: {
+                btn = _game->getCurrentScene().get()->findGameObjectByName("UI_RevealHexBtn");
+                cs->revealRandomEnemyCell();
+                newText = std::format("RH {}", _items[item]);
+                break;
+            }
+            default: {
+                break;
+            }
+            }
+        }
 
-    auto* horizontalLayoutComponent = _horizontalLayout->getComponent<dzemikk::HorizontalLayout>();
-    if (horizontalLayoutComponent != nullptr) {
-        horizontalLayoutComponent->rebuild();
+        if (btn != nullptr) {
+            btn->getChildren().at(0)->getComponent<dzemikk::UITextRenderer>()->text = newText;
+        }
     }
 }
-
-void Inventory::addItem(ItemName itemName) {
-    if (_mainScene == nullptr || _assetManager == nullptr) {
-        return;
-    }
-
-    const auto prefabIt = _itemPrefabs.find(itemName);
-    if (prefabIt == _itemPrefabs.end() || prefabIt->second.get() == nullptr) {
-        return;
-    }
-
-    auto* itemInstance = dzemikk::PrefabSerializer::instantiate(
-        *_mainScene, *prefabIt->second.get(), _assetManager);
-    addItem(itemInstance);
-}
-
-void Inventory::setItem1Prefab(const dzemikk::AssetHandle<nlohmann::json>& prefab) {
-    _itemPrefabs[Item1] = prefab;
-}
-
-void Inventory::setItem2Prefab(const dzemikk::AssetHandle<nlohmann::json>& prefab) {
-    _itemPrefabs[Item2] = prefab;
-}
-
-void Inventory::setItem3Prefab(const dzemikk::AssetHandle<nlohmann::json>& prefab) {
-    _itemPrefabs[Item3] = prefab;
-}
-
 } // namespace game

@@ -19,7 +19,7 @@ class PlayerMovement;
 class CameraController;
 class GameStateMachine;
 
-}
+} // namespace game
 class Game {
   public:
     Game(const Game&) = default;
@@ -53,6 +53,7 @@ class Game {
     void setupInputCallbacks();
     void setupPlayer();
     void setupEnemies();
+    void setupItems();
     void registerDefaultTerritories();
 
     dzemikk::Engine* _engine;

@@ -450,6 +450,12 @@ void GameObject::destroyChildren() {
     }
 }
 
+void GameObject::destroy() {
+    if (_scene) {
+        _scene->destroyGameObject(this);
+    }
+}
+
 void GameObject::addScenePending(MonoBehaviour* mono) {
     if (_scene) {
         _scene->addPending(mono);

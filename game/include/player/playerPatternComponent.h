@@ -5,14 +5,13 @@
 #include "map/HexPattern.h"
 
 #include <events/mouse_event.h>
-
 #include <optional>
 #include <vector>
 
 namespace dzemikk {
 class Engine;
 class Collider;
-}
+} // namespace dzemikk
 
 namespace game {
 
@@ -21,7 +20,7 @@ class HexGrid;
 class PlayerPatternStatsComponent;
 class WorldHex;
 
-    /**
+/**
  * @brief Handles player pattern selection, placement and preview logic.
  *
  * Extends PatternComponent with gameplay functionality for placing
@@ -29,6 +28,7 @@ class WorldHex;
  */
 class PlayerPatternComponent : public PatternComponent {
   public:
+    using Base = PatternComponent;
 
     /**
      * @brief Represents a pattern placed on the grid.

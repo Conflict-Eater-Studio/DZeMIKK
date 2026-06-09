@@ -19,6 +19,8 @@ namespace game {
  */
 class CameraController : public dzemikk::MonoBehaviour {
   public:
+    using Base = dzemikk::MonoBehaviour;
+
     /**
      * @brief Available camera behavior modes.
      */

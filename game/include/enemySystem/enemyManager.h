@@ -24,6 +24,7 @@ class TerritoryPattern;
  */
 class EnemyManager : public dzemikk::MonoBehaviour {
   public:
+    using Base = dzemikk::MonoBehaviour;
 
     /**
      * @brief Constructs an EnemyManager with a deterministic random seed.

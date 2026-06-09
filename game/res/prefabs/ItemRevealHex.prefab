@@ -1,0 +1,45 @@
+{
+    "root": {
+        "children": [],
+        "components": [
+            {
+                "id": "61c2daf4-95a9-4a88-a482-9d6c2cd6c420",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    10.0,
+                    10.0,
+                    10.0
+                ],
+                "type": "Transform"
+            },
+            {
+                "color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "id": "0578494f-2611-4571-a88f-a3f92d5818df",
+                "materials": [
+                    "shaders/tile1"
+                ],
+                "model": "models/muszla.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "0439fd63-9b54-468d-b20c-4a8154d8559c",
+        "name": "ItemRevealHex",
+        "tags": []
+    }
+}
