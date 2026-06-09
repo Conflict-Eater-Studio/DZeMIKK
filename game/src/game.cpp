@@ -843,10 +843,10 @@ void Game::setupTotems() {
 
     manager->setAssetManager(_engine->getAssetManager());
 
-    manager->setSpawnConfig(_chunkIds["c1"],
+    manager->setSpawnConfig(_chunkIds["chunkMain1"],
                             {{.count = 1, .prefabPath = "prefabs/totem/totem_container.prefab"}});
 
-    manager->setSpawnConfig(_chunkIds["c2"],
+    manager->setSpawnConfig(_chunkIds["chunkMain2"],
                             {{.count = 1, .prefabPath = "prefabs/totem/totem_container.prefab"},
 
                              {.count = 2, .prefabPath = "prefabs/totem/totem_container.prefab"}});
