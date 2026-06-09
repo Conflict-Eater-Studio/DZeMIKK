@@ -59,6 +59,7 @@
 #include <gameStateMachine.h>
 #include <healthSystem.h>
 #include <iostream>
+#include "totem/totemManager.h"
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
@@ -107,8 +108,9 @@ void Game::start() {
     setupPlayer();
     registerDefaultTerritories();
     setupEnemies();
-    // Setup Items ALWAYS after Enemies
+    // Setup Items and Totems ALWAYS after Enemies
     setupItems();
+    setupTotems();
 
     auto* root = _mainScene.get()->findGameObjectByName("Root");
     _stateMachine = root->addComponent<game::GameStateMachine>();
@@ -793,4 +795,24 @@ void Game::registerDefaultTerritories() {
 
 void Game::setExplorationState() {
     _stateMachine->setState(std::make_unique<game::ExplorationState>(this));
+}
+
+void Game::setupTotems() {
+    auto* go = _mainScene.get()->findGameObjectByName("TotemManager");
+
+    auto* manager = go->addComponent<game::TotemManager>();
+
+    manager->setWorld(_worldGO->getComponent<game::World>());
+
+    manager->setAssetManager(_engine->getAssetManager());
+
+    manager->setSpawnConfig(_chunkIds["c1"],
+                            {{.count = 1, .prefabPath = "prefabs/totem/totem_container.prefab"}});
+
+    manager->setSpawnConfig(_chunkIds["c2"],
+                            {{.count = 1, .prefabPath = "prefabs/totem/totem_container.prefab"},
+
+                             {.count = 2, .prefabPath = "prefabs/totem/totem_container.prefab"}});
+
+    manager->spawnTotemsPerChunk();
 }

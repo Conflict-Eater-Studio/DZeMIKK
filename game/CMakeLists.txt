@@ -35,6 +35,7 @@ set(GAME_SOURCES
     ${SRC_DIR}/healthSystem.cpp
     ${SRC_DIR}/totem/totemSpawnConfig.cpp
     ${SRC_DIR}/totem/totemEntity.cpp
+    ${SRC_DIR}/totem/totemManager.cpp
 )
 
 set(GAME_HEADERS
@@ -79,6 +80,7 @@ set(GAME_HEADERS
     ${INC_DIR}/healthSystem.h
     ${INC_DIR}/totem/totemSpawnConfig.h
     ${INC_DIR}/totem/totemEntity.h
+    ${INC_DIR}/totem/totemManager.h
 )
 
 add_executable(game

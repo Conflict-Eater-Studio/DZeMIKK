@@ -55,6 +55,7 @@ class Game {
     void setupEnemies();
     void setupItems();
     void registerDefaultTerritories();
+    void setupTotems();
 
     dzemikk::Engine* _engine;
     dzemikk::AssetHandle<dzemikk::Scene> _mainScene;
