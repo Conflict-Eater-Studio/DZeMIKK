@@ -46,6 +46,7 @@ void game::CombatUIPanel::clear() {
 }
 
 void game::CombatUIPanel::buildUI() {
+    std::cout << "BuildUI" << std::endl;
     if (!_patterns || !_patternsContainer) {
         return;
     }
@@ -73,7 +74,7 @@ void game::CombatUIPanel::createPatternSlot(const PatternComponent::PatternEntry
     uiEntry.root = patternGO;
     uiEntry.button = patternGO->getComponent<dzemikk::UIButton>();
 
-    const uint32_t usageCount = getUsageCount(entry);
+    const uint32_t usageCount = getPatternCount(entry);
 
     const auto color = applyUsageTint(getPatternBaseColor(entry.pattern.getType()), usageCount);
 
@@ -196,11 +197,11 @@ glm::vec4 game::CombatUIPanel::getPatternBaseColor(HexPattern::Type type) {
 }
 
 glm::vec4 game::CombatUIPanel::applyUsageTint(glm::vec4 base, uint32_t count) {
-    float intensity = std::min(1.0F, (float)count * 0.2F);
+    //float intensity = std::min(1.0F, (float)count * 0.2F);
 
-    base.r += intensity * 0.3F;
-    base.g += intensity * 0.3F;
-    base.b += intensity * 0.3F;
+    //base.r += intensity * 0.3F;
+    //base.g += intensity * 0.3F;
+    //base.b += intensity * 0.3F;
 
     return base;
 }
@@ -404,5 +405,14 @@ void game::CombatUIPanel::setupCountText(dzemikk::GameObject* countRoot, uint32_
 
         text->text = std::to_string(usageCount);
         uiEntry.countText = text;
+    }
+}
+
+void game::CombatUIPanel::addPatternSlot(const PatternComponent::PatternEntry& entry) {
+    const size_t index = _uiEntries.size();
+    createPatternSlot(entry, index);
+
+    if (auto* grid = _patternsContainer->getComponent<dzemikk::GridLayout>()) {
+        grid->rebuild();
     }
 }

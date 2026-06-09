@@ -12,6 +12,7 @@
 #include "player/playerPatternComponent.h"
 #include "spdlog/spdlog.h"
 #include "stateMachine/combatState.h"
+#include <ui/combatUIPanel.h>
 
 namespace game {
 void PlayerEntity::onEnter(HexCellPtr cell) {
@@ -42,6 +43,13 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                     HexPattern toAdd = dynamic_cast<ItemEntityBonusHex*>(ent)->getHexPattern();
                     ppc->addPattern(toAdd);
                     ent->consume();
+
+                    auto pattern = ppc->getPattern(ppc->getPatternCount() - 1);
+
+                    auto playerPanel =
+                        this->getOwner()->getScene()->findGameObjectByName("Player_Panel");
+                    auto combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
+                    combatPlayerPanel->addPatternSlot(*pattern);
                 }
                 break;
             }

@@ -87,6 +87,8 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
      */
     void buildUI();
 
+    void addPatternSlot(const PatternComponent::PatternEntry& entry);
+
   private:
     /**
      * @brief Creates a UI slot for a pattern.

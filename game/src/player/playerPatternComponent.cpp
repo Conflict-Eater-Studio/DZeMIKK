@@ -47,7 +47,7 @@ void game::PlayerPatternComponent::start() {
     addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::HEAL, 0.6F), -1);
 
     // bonus
-    addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::BONUSHEX, 1.0F), 1);
+    //addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::BONUSHEX, 1.0F), 1);
 
     _playerPatternStats = getOwner()->getComponent<PlayerPatternStatsComponent>();
 

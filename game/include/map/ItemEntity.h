@@ -5,6 +5,8 @@
 #include "assetManager/assetHandle.h"
 #include "renderer/model.h"
 
+#include <iostream>
+
 namespace game {
 class ItemEntity : public Entity {
   public:
