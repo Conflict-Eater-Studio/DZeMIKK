@@ -10,7 +10,7 @@ namespace dzemikk {
     class Animator;
 }
 namespace game {
-
+    class World;
     class PlayerMovement : public dzemikk::MonoBehaviour {
         public:
         PlayerMovement() = default;
@@ -23,6 +23,7 @@ namespace game {
 
         void setSpeed(float speed);
         float getSpeed() const;
+
         void setPlayerEntity(PlayerEntity* playerEntity);
         void setHexGrid(HexGrid* hexGrid);
         void moveTo(HexGrid::HexCellPtr cell);
@@ -32,6 +33,8 @@ namespace game {
 
         void setAnimator(dzemikk::Animator* animator);
         [[nodiscard]] dzemikk::Animator* getAnimator() const;
+
+        void setWorld(World* world);
     private:
         PlayerEntity* _playerEntity = nullptr;
         HexGrid* _hexGrid = nullptr;
@@ -39,9 +42,11 @@ namespace game {
         float _speed = 1.0f;
         int _step = 1;
         float _duration = 0.0f;
-        float _height = 0.0f;
+        glm::vec3 _position;
+        bool _positionCached = false;
         Game* _game = nullptr;
         dzemikk::Animator* _animator = nullptr;
+        World* _world = nullptr;
 
     };
 }

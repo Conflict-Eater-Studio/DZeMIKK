@@ -25,11 +25,25 @@ void PlayerMovement::update(double deltaTime) {
     _animator->setInt("isMoving", 1);
     HexGrid::HexCellPtr ptr = _path[_step % _path.size()];
 
-    _height = ptr->getHeight();
-    ptr->setHeight(_playerEntity->getCell()->getHeight());
+    dzemikk::Transform* cellTransform = _world->getHexTransformByCell(*ptr);
+
+    if (cellTransform) {
+        if (!_positionCached) {
+            _position = cellTransform->getPosition();
+            _positionCached = true;
+        }
+
+        glm::vec3 newPosition = _position;
+        newPosition.y = _playerEntity->getCell()->getHeight();
+
+        cellTransform->setPosition(newPosition);
+    }
 
     if (_animator->getCurrentState()->getClip()->isFinished()) {
-        ptr->setHeight(_height);
+        if (cellTransform) {
+            cellTransform->setPosition(_position);
+            _positionCached = false;
+        }
         _playerEntity->tryMove(ptr);
         _animator->setInt("direction", -1);
         _animator->play("Idle");
@@ -45,22 +59,7 @@ void PlayerMovement::update(double deltaTime) {
             _animator->setInt("direction", static_cast<int>(dir.value()));
             auto* transform = _playerEntity->getOwner()->transform();
             if (transform) {
-                float yaw = 0.0f;
-                switch (dir.value()) {
-                    case HexCoord::Direction::R0:   yaw = 0.0f;   break;
-                    case HexCoord::Direction::R30:  yaw = -30.0f;  break;
-                    case HexCoord::Direction::R60:  yaw = -60.0f;  break;
-                    case HexCoord::Direction::R90:  yaw = -90.0f;  break;
-                    case HexCoord::Direction::R120: yaw = -120.0f; break;
-                    case HexCoord::Direction::R150: yaw = -150.0f; break;
-                    case HexCoord::Direction::R180: yaw = -180.0f; break;
-                    case HexCoord::Direction::R210: yaw = -210.0f; break;
-                    case HexCoord::Direction::R240: yaw = -240.0f; break;
-                    case HexCoord::Direction::R270: yaw = -270.0f; break;
-                    case HexCoord::Direction::R300: yaw = -300.0f; break;
-                    case HexCoord::Direction::R330: yaw = -330.0f; break;
-                }
-                transform->setEulerAngles({0.0f, yaw, 0.0f});
+
             }
         }
 
@@ -87,6 +86,7 @@ void PlayerMovement::setHexGrid(HexGrid* hexGrid) {
 }
 void PlayerMovement::moveTo(HexGrid::HexCellPtr cell) {
     _path = _hexGrid->findPath(_playerEntity->getCell(), cell);
+    _positionCached = false;
     _step = 1;
 }
 void PlayerMovement::setGame(Game* game) {
@@ -97,6 +97,7 @@ void PlayerMovement::stopMovement() {
     _path.clear();
     _step = 0;
     _duration = 0.0;
+    _positionCached = false;
 }
 
 void PlayerMovement::setAnimator(dzemikk::Animator* animator) {
@@ -105,6 +106,9 @@ void PlayerMovement::setAnimator(dzemikk::Animator* animator) {
 
 dzemikk::Animator* PlayerMovement::getAnimator() const {
     return _animator;
+}
+void PlayerMovement::setWorld(World* world) {
+    _world = world;
 }
 
 } // namespace game
