@@ -233,6 +233,34 @@
                     "enabled": true,
                     "id": "71331b7f-d7e8-49ac-be35-98b315b240a2",
                     "name": "EnemyManager"
+                },
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "id": "2754dfe4-5da7-4f06-9a4e-db1576731aaa",
+                            "position": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": [
+                                1.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "type": "Transform"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "fb9f6901-0cf6-4648-9897-0efa03cc6f2a",
+                    "name": "TotemManager"
                 }
             ],
             "components": [

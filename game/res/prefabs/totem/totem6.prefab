@@ -1,0 +1,44 @@
+{
+    "root": {
+        "children": [],
+        "components": [
+            {
+                "id": "341d0d44-8f9d-493d-8c4e-b38e0b494822",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.5004725456237793,
+                    -0.5004725456237793,
+                    -0.4995270073413849,
+                    -0.4995270073413849
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "type": "Transform"
+            },
+            {
+                "color": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "id": "2944d72f-c89b-4705-8318-fdd419302e55",
+                "materials": [
+                    "shaders/tile1"
+                ],
+                "model": "models/totem/totem6.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "8a320b6c-2d2f-495b-8635-76d7087b7037",
+        "name": "Totem6"
+    }
+}

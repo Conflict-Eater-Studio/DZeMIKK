@@ -1,0 +1,214 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "82a2961b-105f-45fc-b28b-adf26c50a735",
+                        "position": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "type": "Transform"
+                    }
+                ],
+                "enabled": true,
+                "id": "96baa9ee-6b9b-4f2c-99e9-adf896bf59c1",
+                "name": "Totem"
+            },
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "d997f9cd-143d-4210-a40d-31f91ae6ab94",
+                        "position": [
+                            0.0,
+                            -0.699999988079071,
+                            0.20000000298023224
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.5,
+                            0.5,
+                            1.5
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "id": "6ed395f4-8616-4a5c-9dc4-ccf1528d96ff",
+                        "materials": [
+                            "shaders/tile1"
+                        ],
+                        "model": "primitive/0",
+                        "type": "MeshRenderer"
+                    }
+                ],
+                "enabled": true,
+                "id": "fbf02e45-b86a-4c58-8735-a621e1818b13",
+                "name": "platform"
+            },
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "id": "cea62127-f154-40ec-8dee-a143c1730f13",
+                                "position": [
+                                    -0.6000000238418579,
+                                    2.0,
+                                    0.15000000596046448
+                                ],
+                                "rotation": [
+                                    -0.4835973083972931,
+                                    0.4947865903377533,
+                                    -0.5051596164703369,
+                                    -0.5158814191818237
+                                ],
+                                "scale": [
+                                    0.20000000298023224,
+                                    0.20000000298023224,
+                                    0.20000000298023224
+                                ],
+                                "type": "Transform"
+                            },
+                            {
+                                "color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "id": "f0da6671-e814-4945-918e-350f96191e81",
+                                "materials": [
+                                    "shaders/tile1"
+                                ],
+                                "model": "models/totem/skrzydlo.fbx",
+                                "type": "MeshRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "979ca1e1-8923-4650-839c-320f266c9dbf",
+                        "name": "Left"
+                    },
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "id": "e3e68e0e-b844-4607-acb9-f338b93b4207",
+                                "position": [
+                                    0.6000000238418579,
+                                    2.0,
+                                    0.0
+                                ],
+                                "rotation": [
+                                    0.500313937664032,
+                                    -0.5001426339149475,
+                                    -0.4998571574687958,
+                                    -0.49968603253364563
+                                ],
+                                "scale": [
+                                    0.20000000298023224,
+                                    0.20000000298023224,
+                                    0.20000000298023224
+                                ],
+                                "type": "Transform"
+                            },
+                            {
+                                "color": [
+                                    1.0,
+                                    1.0,
+                                    1.0,
+                                    1.0
+                                ],
+                                "id": "0b3b9bc5-47c7-47ba-b467-775a879bd018",
+                                "materials": [
+                                    "shaders/tile1"
+                                ],
+                                "model": "models/totem/skrzydlo.fbx",
+                                "type": "MeshRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "e78f013c-9cdd-40d7-9645-774967c3dafb",
+                        "name": "Right"
+                    }
+                ],
+                "components": [
+                    {
+                        "id": "28845584-189f-4993-9b86-2a1b75d9ce2d",
+                        "position": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "type": "Transform"
+                    }
+                ],
+                "enabled": true,
+                "id": "193fb3ba-4c27-4006-8930-7f18e13bc876",
+                "name": "Wings"
+            }
+        ],
+        "components": [
+            {
+                "id": "fb680b73-a6f1-4605-bb54-73eeffa77925",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "type": "Transform"
+            }
+        ],
+        "enabled": true,
+        "id": "c7dc5c3f-3f00-4205-9b31-f74a5bede5d9",
+        "name": "TotemContainer"
+    }
+}
