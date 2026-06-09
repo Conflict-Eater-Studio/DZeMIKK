@@ -254,78 +254,92 @@ void Game::setupWorld() {
     world->setPlayer(_playerEntity);
     world->registerGenerator("full", [](int step, int maxSteps) { return 1.0F; });
 
-    auto c1 = world->addChunk({.steps = 7});
-    _chunkIds["c1"] = c1;
+    auto chunkMain1 = world->addChunk({.steps = 7});
+    _chunkIds["chunkMain1"] = chunkMain1;
 
-    auto c2 = world->addChunk({.parentChunkId = c1,
-                               .steps = 12,
-                               .dirFromParent = game::HexCoord::Direction::R0}); // connect chunk
-    _chunkIds["c2"] = c2;
+    auto chunkMain2 =
+        world->addChunk({.parentChunkId = chunkMain1,
+                         .steps = 12,
+                         .dirFromParent = game::HexCoord::Direction::R0}); // connect chunk
+    _chunkIds["chunkMain2"] = chunkMain2;
 
-    auto c3 = world->addChunk({.parentChunkId = c2,
-                               .steps = 15,
-                               .dirFromParent = game::HexCoord::Direction::R330,
-                               .unlockPattern = game::HexPattern(
-                                   {{-1, 1}, {0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 1.2F)});
-    _chunkIds["c3"] = c3;
+    auto chunkMain2Sub1 =
+        world->addChunk({.parentChunkId = chunkMain2,
+                         .steps = 15,
+                         .dirFromParent = game::HexCoord::Direction::R330,
+                         .unlockPattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
+                                                           game::HexPattern::Type::ATK, 1.2F)});
+    _chunkIds["chunkMain2Sub1"] = chunkMain2Sub1;
 
-    auto c4 = world->addChunk(
-        {.parentChunkId = c3, .steps = 11, .dirFromParent = game::HexCoord::Direction::R330});
-    _chunkIds["c4"] = c4;
+    auto chunkMain2Sub2 = world->addChunk({.parentChunkId = chunkMain2Sub1,
+                                           .steps = 11,
+                                           .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["chunkMain2Sub2"] = chunkMain2Sub2;
 
-    auto c5 = world->addChunk(
-        {.parentChunkId = c4, .steps = 9, .dirFromParent = game::HexCoord::Direction::R0});
-    _chunkIds["c5"] = c5;
+    auto chunkMain2Sub3 = world->addChunk({.parentChunkId = chunkMain2Sub2,
+                                           .steps = 9,
+                                           .dirFromParent = game::HexCoord::Direction::R0});
+    _chunkIds["chunkMain2Sub3"] = chunkMain2Sub3;
 
-    auto c6 = world->addChunk(
-        {.parentChunkId = c2, .steps = 17, .dirFromParent = game::HexCoord::Direction::R30});
-    _chunkIds["c6"] = c6;
+    auto chunkMain3 = world->addChunk({.parentChunkId = chunkMain2,
+                                       .steps = 17,
+                                       .dirFromParent = game::HexCoord::Direction::R30});
+    _chunkIds["chunkMain3"] = chunkMain3;
 
-    auto c7 = world->addChunk({.parentChunkId = c6,
-                               .steps = 15,
-                               .dirFromParent = game::HexCoord::Direction::R30}); // connect chunk
-    _chunkIds["c7"] = c7;
+    auto chunkMain4 =
+        world->addChunk({.parentChunkId = chunkMain3,
+                         .steps = 15,
+                         .dirFromParent = game::HexCoord::Direction::R30}); // connect chunk
+    _chunkIds["chunkMain4"] = chunkMain4;
 
-    auto c8 = world->addChunk(
-        {.parentChunkId = c7, .steps = 19, .dirFromParent = game::HexCoord::Direction::R330});
-    _chunkIds["c8"] = c8;
+    auto chunkMain5 = world->addChunk({.parentChunkId = chunkMain4,
+                                       .steps = 19,
+                                       .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["chunkMain5"] = chunkMain5;
 
-    auto c9 = world->addChunk(
-        {.parentChunkId = c8, .steps = 15, .dirFromParent = game::HexCoord::Direction::R30});
-    _chunkIds["c9"] = c9;
+    auto chunkMain6 = world->addChunk({.parentChunkId = chunkMain5,
+                                       .steps = 15,
+                                       .dirFromParent = game::HexCoord::Direction::R30});
+    _chunkIds["chunkMain6"] = chunkMain6;
 
-    auto c10 = world->addChunk({.parentChunkId = c9,
-                                .steps = 24,
-                                .dirFromParent = game::HexCoord::Direction::R0}); // connect chunk
-    _chunkIds["c10"] = c10;
+    auto chunkMain7 =
+        world->addChunk({.parentChunkId = chunkMain6,
+                         .steps = 24,
+                         .dirFromParent = game::HexCoord::Direction::R0}); // connect chunk
+    _chunkIds["chunkMain7"] = chunkMain7;
 
-    auto c11 = world->addChunk(
-        {.parentChunkId = c7, .steps = 14, .dirFromParent = game::HexCoord::Direction::R30});
-    _chunkIds["c11"] = c11;
+    auto chunkMain4Sub1 = world->addChunk({.parentChunkId = chunkMain4,
+                                           .steps = 14,
+                                           .dirFromParent = game::HexCoord::Direction::R30});
+    _chunkIds["chunkMain4Sub1"] = chunkMain4Sub1;
 
-    auto c12 = world->addChunk(
-        {.parentChunkId = c10, .steps = 22, .dirFromParent = game::HexCoord::Direction::R330});
-    _chunkIds["c12"] = c12;
+    auto chunkMain7Sub1 = world->addChunk({.parentChunkId = chunkMain7,
+                                           .steps = 22,
+                                           .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["chunkMain7Sub1"] = chunkMain7Sub1;
 
-    auto c13 = world->addChunk(
-        {.parentChunkId = c12, .steps = 15, .dirFromParent = game::HexCoord::Direction::R0});
-    _chunkIds["c13"] = c13;
+    auto chunkMain7Sub2 = world->addChunk({.parentChunkId = chunkMain7Sub1,
+                                           .steps = 15,
+                                           .dirFromParent = game::HexCoord::Direction::R0});
+    _chunkIds["chunkMain7Sub2"] = chunkMain7Sub2;
 
-    auto c14 = world->addChunk(
-        {.parentChunkId = c13, .steps = 17, .dirFromParent = game::HexCoord::Direction::R330});
-    _chunkIds["c14"] = c14;
+    auto chunkMain7Sub3 = world->addChunk({.parentChunkId = chunkMain7Sub2,
+                                           .steps = 17,
+                                           .dirFromParent = game::HexCoord::Direction::R330});
+    _chunkIds["chunkMain7Sub3"] = chunkMain7Sub3;
 
-    auto c15 = world->addChunk(
-        {.parentChunkId = c10, .steps = 17, .dirFromParent = game::HexCoord::Direction::R30});
-    _chunkIds["c15"] = c15;
+    auto chunkMain8 = world->addChunk({.parentChunkId = chunkMain7,
+                                       .steps = 17,
+                                       .dirFromParent = game::HexCoord::Direction::R30});
+    _chunkIds["chunkMain8"] = chunkMain8;
 
-    auto c16 = world->addChunk(
-        {.parentChunkId = c15, .steps = 22, .dirFromParent = game::HexCoord::Direction::R0});
-    _chunkIds["c16"] = c16;
+    auto chunkMain9 = world->addChunk(
+        {.parentChunkId = chunkMain8, .steps = 22, .dirFromParent = game::HexCoord::Direction::R0});
+    _chunkIds["chunkMain9"] = chunkMain9;
 
-    auto c17 = world->addChunk(
-        {.parentChunkId = c16, .steps = 30, .dirFromParent = game::HexCoord::Direction::R0});
-    _chunkIds["c17"] = c17;
+    auto chunkMain10 = world->addChunk(
+        {.parentChunkId = chunkMain9, .steps = 30, .dirFromParent = game::HexCoord::Direction::R0});
+    _chunkIds["chunkMain10"] = chunkMain10;
 
     // Removes all hexes with gen state Blocked
     world->getGrid()->clean();
@@ -487,161 +501,180 @@ void Game::setupEnemies() {
     enemyManager->setWorld(_worldGO->getComponent<game::World>());
     enemyManager->setAssetManager(_engine->getAssetManager());
 
-    std::vector<game::EnemySpawnConfig> c1Config = {{
+    std::vector<game::EnemySpawnConfig> chunkMain1Config = {{
         .personality = game::EnemyPersonality::Aggressive,
         .type = game::EnemyType::Normal,
         .count = 1,
         .hp = 15,
         .territoryPattern = "1",
-        //.blocksChunks = {_chunkIds["c2"]},
+        .blocksChunks = {_chunkIds["chunkMain2"]},
     }};
-    enemyManager->setSpawnConfig(_chunkIds["c1"], c1Config);
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain1"], chunkMain1Config);
 
-    std::vector<game::EnemySpawnConfig> c2Config = {
-        {.personality = game::EnemyPersonality::Balanced,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 20,
-         .territoryPattern = "2"}};
-    enemyManager->setSpawnConfig(_chunkIds["c2"], c2Config);
+    std::vector<game::EnemySpawnConfig> chunkMain2Config = {{
+        .personality = game::EnemyPersonality::Balanced,
+        .type = game::EnemyType::Normal,
+        .count = 1,
+        .hp = 20,
+        .territoryPattern = "2",
+        .blocksChunks = {_chunkIds["chunkMain3"]},
+    }};
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain2"], chunkMain2Config);
 
-    std::vector<game::EnemySpawnConfig> c3Config = {
+    std::vector<game::EnemySpawnConfig> chunkMain2Sub1Config = {
         {.personality = game::EnemyPersonality::Aggressive,
          .type = game::EnemyType::Special,
          .count = 1,
          .hp = 30,
-         .territoryPattern = "3"},
+         .territoryPattern = "3",
+         .blocksChunks = {_chunkIds["chunkMain2Sub2"]}},
     };
-    enemyManager->setSpawnConfig(_chunkIds["c3"], c3Config);
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain2Sub1"], chunkMain2Sub1Config);
 
-    std::vector<game::EnemySpawnConfig> c4Config = {
+    std::vector<game::EnemySpawnConfig> chunkMain2Sub2Config = {
         {.personality = game::EnemyPersonality::Aggressive,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 20,
-         .territoryPattern = "2"},
+         .territoryPattern = "2",
+         .blocksChunks = {_chunkIds["chunkMain2Sub3"]}},
     };
-    enemyManager->setSpawnConfig(_chunkIds["c4"], c4Config);
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain2Sub2"], chunkMain2Sub2Config);
 
-    std::vector<game::EnemySpawnConfig> c6Config = {
+    std::vector<game::EnemySpawnConfig> chunkMain3Config = {
         {.personality = game::EnemyPersonality::Aggressive,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 20,
-         .territoryPattern = "2"},
+         .territoryPattern = "2",
+         .blocksChunks = {_chunkIds["chunkMain4"]}},
         {.personality = game::EnemyPersonality::Defensive,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 25,
-         .territoryPattern = "3"},
+         .territoryPattern = "3",
+         .blocksChunks = {_chunkIds["chunkMain4"]}},
     };
-    enemyManager->setSpawnConfig(_chunkIds["c6"], c6Config);
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain3"], chunkMain3Config);
 
-    std::vector<game::EnemySpawnConfig> c7Config = {
+    std::vector<game::EnemySpawnConfig> chunkMain4Config = {
         {.personality = game::EnemyPersonality::Defensive,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 25,
-         .territoryPattern = "3"},
+         .territoryPattern = "3",
+         .blocksChunks = {_chunkIds["chunkMain5"]}},
         {.personality = game::EnemyPersonality::Balanced,
          .type = game::EnemyType::Special,
          .count = 1,
          .hp = 35,
-         .territoryPattern = "4"},
+         .territoryPattern = "4",
+         .blocksChunks = {_chunkIds["chunkMain4Sub1"]}},
     };
-    enemyManager->setSpawnConfig(_chunkIds["c7"], c7Config);
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain4"], chunkMain4Config);
 
-    std::vector<game::EnemySpawnConfig> c8Config = {
+    std::vector<game::EnemySpawnConfig> chunkMain5Config = {
         {.personality = game::EnemyPersonality::Balanced,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 30,
-         .territoryPattern = "3"},
+         .territoryPattern = "3",
+         .blocksChunks = {_chunkIds["chunkMain6"]}},
         {.personality = game::EnemyPersonality::Aggressive,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 25,
-         .territoryPattern = "3"},
+         .territoryPattern = "3",
+         .blocksChunks = {_chunkIds["chunkMain6"]}},
     };
-    enemyManager->setSpawnConfig(_chunkIds["c8"], c8Config);
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain5"], chunkMain5Config);
 
-    std::vector<game::EnemySpawnConfig> c9Config = {
+    std::vector<game::EnemySpawnConfig> chunkMain6Config = {
         {.personality = game::EnemyPersonality::Balanced,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 35,
-         .territoryPattern = "4"},
+         .territoryPattern = "4",
+         .blocksChunks = {_chunkIds["chunkMain7"]}},
     };
-    enemyManager->setSpawnConfig(_chunkIds["c9"], c9Config);
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain6"], chunkMain6Config);
 
-    std::vector<game::EnemySpawnConfig> c10Config = {
+    std::vector<game::EnemySpawnConfig> chunkMain7Config = {
         {.personality = game::EnemyPersonality::Defensive,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 25,
-         .territoryPattern = "3"},
+         .territoryPattern = "3",
+         .blocksChunks = {_chunkIds["chunkMain8"]}},
         {.personality = game::EnemyPersonality::Defensive,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 30,
-         .territoryPattern = "3"},
+         .territoryPattern = "3",
+         .blocksChunks = {_chunkIds["chunkMain8"]}},
     };
-    enemyManager->setSpawnConfig(_chunkIds["c10"], c10Config);
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain7"], chunkMain7Config);
 
-    std::vector<game::EnemySpawnConfig> c12Config = {
+    std::vector<game::EnemySpawnConfig> chunkMain7Sub1Config = {
         {.personality = game::EnemyPersonality::Defensive,
          .type = game::EnemyType::Special,
          .count = 1,
          .hp = 40,
-         .territoryPattern = "5"},
+         .territoryPattern = "5",
+         .blocksChunks = {_chunkIds["chunkMain7Sub2"]}},
     };
-    enemyManager->setSpawnConfig(_chunkIds["c12"], c12Config);
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain7Sub1"], chunkMain7Sub1Config);
 
-    std::vector<game::EnemySpawnConfig> c13Config = {
-        {.personality = game::EnemyPersonality::Defensive,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 35,
-         .territoryPattern = "4"},
-    };
-    enemyManager->setSpawnConfig(_chunkIds["c13"], c13Config);
+    std::vector<game::EnemySpawnConfig> chunkMain7Sub2Config = {{
+        .personality = game::EnemyPersonality::Defensive,
+        .type = game::EnemyType::Normal,
+        .count = 1,
+        .hp = 35,
+        .territoryPattern = "4",
+        .blocksChunks = {_chunkIds["chunkMain7Sub3"]},
+    }};
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain7Sub2"], chunkMain7Sub2Config);
 
-    std::vector<game::EnemySpawnConfig> c15Config = {
+    std::vector<game::EnemySpawnConfig> chunkMain8Config = {
         {.personality = game::EnemyPersonality::Aggressive,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 35,
-         .territoryPattern = "4"},
+         .territoryPattern = "4",
+         .blocksChunks = {_chunkIds["chunkMain9"]}},
         {.personality = game::EnemyPersonality::Balanced,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 40,
-         .territoryPattern = "5"},
+         .territoryPattern = "5",
+         .blocksChunks = {_chunkIds["chunkMain9"]}},
     };
-    enemyManager->setSpawnConfig(_chunkIds["c15"], c15Config);
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain8"], chunkMain8Config);
 
-    std::vector<game::EnemySpawnConfig> c16Config = {
+    std::vector<game::EnemySpawnConfig> chunkMain9Config = {
         {.personality = game::EnemyPersonality::Balanced,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 35,
-         .territoryPattern = "4"},
+         .territoryPattern = "4",
+         .blocksChunks = {_chunkIds["chunkMain10"]}},
         {.personality = game::EnemyPersonality::Aggressive,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 30,
-         .territoryPattern = "1"},
+         .territoryPattern = "1",
+         .blocksChunks = {_chunkIds["chunkMain10"]}},
     };
-    enemyManager->setSpawnConfig(_chunkIds["c16"], c16Config);
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain9"], chunkMain9Config);
 
-    std::vector<game::EnemySpawnConfig> c17Config = {
+    std::vector<game::EnemySpawnConfig> chunkMain10Config = {
         {.personality = game::EnemyPersonality::Aggressive,
          .type = game::EnemyType::Normal,
          .count = 1,
          .hp = 50,
          .territoryPattern = "6"},
     };
-    enemyManager->setSpawnConfig(_chunkIds["c17"], c17Config);
+    enemyManager->setSpawnConfig(_chunkIds["chunkMain10"], chunkMain10Config);
 
     enemyManager->spawnEnemiesPerChunk();
 
@@ -671,27 +704,31 @@ void Game::setupItems() {
     auto* world = _worldGO->getComponent<game::World>();
 
     // Heal Item steup
-    auto healChunks = {"c4", "c6", "c11", "c10", "c16", "c13"};
+    auto healChunks = {"chunkMain2Sub2", "chunkMain3",     "chunkMain4Sub1",
+                       "chunkMain7",     "chunkMain7Sub2", "chunkMain9"};
     for (const auto& id : healChunks) {
         world->addItem<game::ItemEntity::ItemType::Heal>(_chunkIds[id], 10.0F);
     }
 
     // Reveal Pattern Item setup
-    auto revealPatternChunks = {"c3", "c5", "c7", "c8", "c9", "c11", "c10", "c15", "c17", "c13"};
+    auto revealPatternChunks = {"chunkMain2Sub1", "chunkMain2Sub3", "chunkMain4", "chunkMain4Sub1",
+                                "chunkMain5",     "chunkMain6",     "chunkMain7", "chunkMain7Sub1",
+                                "chunkMain7Sub3", "chunkMain9"};
     for (const auto& id : revealPatternChunks) {
         world->addItem<game::ItemEntity::ItemType::RevealPattern>(_chunkIds[id]);
     }
 
     // Reveal Hex Item setup
-    auto revealPatternHex = {"c2", "c3", "c4", "c7", "c9", "c15", "c16"};
+    auto revealPatternHex = {"chunkMain2", "chunkMain2Sub1", "chunkMain2Sub2", "chunkMain4",
+                             "chunkMain6", "chunkMain7Sub1", "chunkMain7Sub2"};
     for (const auto& id : revealPatternChunks) {
         world->addItem<game::ItemEntity::ItemType::RevealHex>(_chunkIds[id]);
     }
 
     // Bonus Hex Item Setup
     game::HexPattern pat = game::HexPattern({{0, 0}}, game::HexPattern::Type::BONUSHEX);
-    auto bonusHex = {"c3", "c5", "c5", "c11", "c10", "c15", "c17", "c17"};
-    world->addItem<game::ItemEntity::ItemType::BonusHex>(_chunkIds["c1"], pat);
+    auto bonusHex = {"chunkMain2Sub1", "chunkMain2Sub3", "chunkMain2Sub3", "chunkMain4Sub1",
+                     "chunkMain7",     "chunkMain7Sub1", "chunkMain7Sub3", "chunkMain7Sub3"};
     for (const auto& id : bonusHex) {
         world->addItem<game::ItemEntity::ItemType::BonusHex>(_chunkIds[id], pat);
     }
