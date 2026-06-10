@@ -61,6 +61,8 @@
 #include <healthSystem.h>
 #include <iostream>
 #include "totem/totemManager.h"
+#include <audio/sound.h>
+#include <audio/audioManager.h>
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)

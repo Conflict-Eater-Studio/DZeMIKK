@@ -17,6 +17,19 @@
 #include <assetManager/assetmanager.h>
 #include <ecs/components/collider.h>
 #include <ecs/components/meshRenderer.h>
+#include <audio/sound.h>
+#include <audio/audioManager.h>
+
+namespace playerPatternComponentSound{
+    struct SoundInitContext {
+        dzemikk::AudioManager* audioManager;
+    };
+
+    void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
+        ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
+        ctx.audioManager->getSFXGroup()->setVolume(0.3F);
+    }
+}
 
 namespace {
 constexpr std::string_view BATTLE_HEX_PREFAB = "prefabs/battle_hex.prefab";
@@ -195,6 +208,12 @@ bool game::PlayerPatternComponent::confirmPattern() {
     _previewHexes.clear();
     _previewObject = nullptr;
 
+    playerPatternComponentSound::SoundInitContext sCtx(_engine->getAudioManager());
+    dzemikk::AssetManager::AssetTask<dzemikk::Sound, playerPatternComponentSound::SoundInitContext> taskS;
+    taskS.context = sCtx;
+    taskS.onLoad = playerPatternComponentSound::onSFXLoad;
+    _engine->getAssetManager()->getAsync("audio/prime_polozenie_patternu.wav", taskS);
+
     restartPreview();
 
     return true;
@@ -232,6 +251,13 @@ void game::PlayerPatternComponent::confirmBonusHex(const HexPattern& pattern) {
             worldHex->setPosition(pos);
         }
     }
+
+        playerPatternComponentSound::SoundInitContext sCtx(_engine->getAudioManager());
+    dzemikk::AssetManager::AssetTask<dzemikk::Sound, playerPatternComponentSound::SoundInitContext>
+        taskS;
+    taskS.context = sCtx;
+    taskS.onLoad = playerPatternComponentSound::onSFXLoad;
+    _engine->getAssetManager()->getAsync("audio/prime_polozenie_patternu.wav", taskS);
 
     deactivatePattern();
 }

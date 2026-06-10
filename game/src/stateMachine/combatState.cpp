@@ -24,8 +24,34 @@
 #include <ecs/scene.h>
 #include <enemySystem/enemyPatternComponent.h>
 #include <iostream>
+#include <assetManager/soundHandler.h>
+#include <audio/audioManager.h>
+
+namespace combatSound {
+    FMOD::Channel* combatFMODChannel = nullptr;
+
+    struct SoundInitContext {
+        dzemikk::AudioManager* audioManager;
+    };
+
+    void onMusicLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
+        combatFMODChannel = ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::Music, true);
+        ctx.audioManager->getMusicGroup()->setVolume(0.1F);
+    }
+
+    void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
+        ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
+        ctx.audioManager->getSFXGroup()->setVolume(0.5F);
+    }
+}
 
 void game::CombatState::onEnter() {
+    combatSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
+    dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS;
+    taskS.context = sCtx;
+    taskS.onLoad = combatSound::onMusicLoad;
+    _game->getEngine()->getAssetManager()->getAsync("audio/wartwa_na_czas_walki.wav", taskS);
+
     _phase = CombatPhase::PreparingBoard;
 
     _game->getCameraController()->setMode(CameraController::Mode::Combat);
@@ -45,11 +71,16 @@ void game::CombatState::onEnter() {
     _boardTransition = 0.0F;
     _enterAnimation = true;
 
+    dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS2;
+    taskS2.context = sCtx;
+    taskS2.onLoad = combatSound::onSFXLoad;
+    _game->getEngine()->getAssetManager()->getAsync("audio/prime_wznoszeniePol.wav",
+                                                    taskS2);
+
     startNewTurn();
 }
 
 void game::CombatState::onExit() {
-
     _game->enableCombatUI(false);
 
     auto scene = _game->getCurrentScene();
@@ -109,6 +140,8 @@ void game::CombatState::onExit() {
     _game->getEngine()->getInput()->OnKeyPressed.removeListener(_endTurnListenerId);
 
     dzemikk::UIActionRegistry::get().unregisterAction("Confirm_Round");
+
+    _game->getEngine()->getAudioManager()->stop(combatSound::combatFMODChannel);
 }
 
 void game::CombatState::onUpdate(float dt) {
@@ -245,6 +278,13 @@ void game::CombatState::endPlayerTurn() {
     resolveConflict();
     showEnemyPlannedPatterns();
 
+    combatSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
+    dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS;
+    taskS.context = sCtx;
+    taskS.onLoad = combatSound::onSFXLoad;
+    _game->getEngine()->getAssetManager()->getAsync("audio/prime_zakonczenie_tury.wav",
+                                                    taskS);
+
     _resultTimer = 2.0F;
 }
 
@@ -340,9 +380,36 @@ void game::CombatState::resolveConflict() {
         }
     }
 
-    if (playerHealth->isDead() || enemyHealth->isDead()) {
+    if (playerHealth->isDead()) {
         _exitAnimation = true;
         _boardTransition = 1.0F;
+
+        combatSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
+        dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS;
+        taskS.context = sCtx;
+        taskS.onLoad = combatSound::onSFXLoad;
+        _game->getEngine()->getAssetManager()->getAsync("audio/prime_przegrana_walka_enhanced.wav", taskS);
+
+        dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS2;
+        taskS2.context = sCtx;
+        taskS2.onLoad = combatSound::onSFXLoad;
+        _game->getEngine()->getAssetManager()->getAsync("audio/prime_wznoszeniePol.wav", taskS2);
+    }
+
+    if (enemyHealth->isDead()) {
+        _exitAnimation = true;
+        _boardTransition = 1.0F;
+
+        combatSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
+        dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS;
+        taskS.context = sCtx;
+        taskS.onLoad = combatSound::onSFXLoad;
+        _game->getEngine()->getAssetManager()->getAsync("audio/prime_gra_WYgrana.wav", taskS);
+
+        dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS2;
+        taskS2.context = sCtx;
+        taskS2.onLoad = combatSound::onSFXLoad;
+        _game->getEngine()->getAssetManager()->getAsync("audio/prime_wznoszeniePol.wav", taskS2);
     }
 }
 

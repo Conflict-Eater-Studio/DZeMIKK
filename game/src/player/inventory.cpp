@@ -7,6 +7,20 @@
 #include "gameStateMachine.h"
 #include "map/ItemEntity.h"
 #include "stateMachine/combatState.h"
+#include <audio/sound.h>
+#include <audio/audioManager.h>
+#include <assetManager/assetmanager.h>
+
+namespace inventorySound {
+struct SoundInitContext {
+    dzemikk::AudioManager* audioManager;
+};
+
+void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
+    ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
+    ctx.audioManager->getSFXGroup()->setVolume(0.5F);
+}
+} // namespace playerEntitySound
 
 namespace game {
 void Inventory::addItem(ItemEntity::ItemType item) {
@@ -41,6 +55,12 @@ void Inventory::tryUseItem(ItemEntity::ItemType item) {
     if (_game == nullptr) {
         return;
     }
+
+    inventorySound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
+    dzemikk::AssetManager::AssetTask<dzemikk::Sound, inventorySound::SoundInitContext> taskS;
+    taskS.context = sCtx;
+    taskS.onLoad = inventorySound::onSFXLoad;
+    _game->getEngine()->getAssetManager()->getAsync("audio/prime_uzycie_itemu-Fmin.wav", taskS);
 
     if (_items.contains(item) && _items[item] > 0) {
         _items[item]--;

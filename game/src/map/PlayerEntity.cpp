@@ -13,6 +13,19 @@
 #include "spdlog/spdlog.h"
 #include "stateMachine/combatState.h"
 #include <ui/combatUIPanel.h>
+#include <audio/sound.h>
+#include <audio/audioManager.h>
+
+namespace playerEntitySound {
+    struct SoundInitContext {
+        dzemikk::AudioManager* audioManager;
+    };
+
+    void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
+        ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
+        ctx.audioManager->getSFXGroup()->setVolume(0.5F);
+    }
+}
 
 namespace game {
 void PlayerEntity::onEnter(HexCellPtr cell) {
@@ -26,16 +39,43 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                 float toHeal = dynamic_cast<ItemEntityHealth*>(ent)->getHealAmount();
                 playerHealth->heal(toHeal);
                 ent->consume();
+
+                playerEntitySound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
+                dzemikk::AssetManager::AssetTask<dzemikk::Sound,
+                                                 playerEntitySound::SoundInitContext>
+                    taskS;
+                taskS.context = sCtx;
+                taskS.onLoad = playerEntitySound::onSFXLoad;
+                _game->getEngine()->getAssetManager()->getAsync("audio/prime_uzycie_itemu-Fmin.wav",
+                                                                taskS);
                 break;
             }
             case ItemEntity::ItemType::RevealPattern: {
                 getOwner()->getComponent<Inventory>()->addItem(ItemEntity::ItemType::RevealPattern);
                 ent->consume();
+
+                playerEntitySound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
+                dzemikk::AssetManager::AssetTask<dzemikk::Sound,
+                                                 playerEntitySound::SoundInitContext>
+                    taskS;
+                taskS.context = sCtx;
+                taskS.onLoad = playerEntitySound::onSFXLoad;
+                _game->getEngine()->getAssetManager()->getAsync(
+                    "audio/prime_uzycie_itemu-Fmin.wav", taskS);
                 break;
             }
             case ItemEntity::ItemType::RevealHex: {
                 getOwner()->getComponent<Inventory>()->addItem(ItemEntity::ItemType::RevealHex);
                 ent->consume();
+
+                playerEntitySound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
+                dzemikk::AssetManager::AssetTask<dzemikk::Sound,
+                                                 playerEntitySound::SoundInitContext>
+                    taskS;
+                taskS.context = sCtx;
+                taskS.onLoad = playerEntitySound::onSFXLoad;
+                _game->getEngine()->getAssetManager()->getAsync("audio/prime_uzycie_itemu-Fmin.wav",
+                                                                taskS);
                 break;
             }
             case ItemEntity::ItemType::BonusHex:
@@ -50,6 +90,15 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                         this->getOwner()->getScene()->findGameObjectByName("Player_Panel");
                     auto combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
                     combatPlayerPanel->addPatternSlot(*pattern);
+
+                    playerEntitySound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
+                    dzemikk::AssetManager::AssetTask<dzemikk::Sound,
+                                                     playerEntitySound::SoundInitContext>
+                        taskS;
+                    taskS.context = sCtx;
+                    taskS.onLoad = playerEntitySound::onSFXLoad;
+                    _game->getEngine()->getAssetManager()->getAsync(
+                        "audio/prime_uzycie_itemu-Fmin.wav", taskS);
                 }
                 break;
             }
