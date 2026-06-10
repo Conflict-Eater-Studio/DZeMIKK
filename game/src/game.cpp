@@ -113,7 +113,7 @@ void Game::start() {
     setupEnemies();
     // Setup Items and Totems ALWAYS after Enemies
     setupItems();
-    setupTotems();
+    //setupTotems();
 
     auto* root = _mainScene.get()->findGameObjectByName("Root");
     _stateMachine = root->addComponent<game::GameStateMachine>();
