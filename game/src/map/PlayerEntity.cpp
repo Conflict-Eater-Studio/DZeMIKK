@@ -15,6 +15,7 @@
 #include <ui/combatUIPanel.h>
 #include <audio/sound.h>
 #include <audio/audioManager.h>
+#include <totem/totemEntity.h>
 
 namespace playerEntitySound {
     struct SoundInitContext {
@@ -117,6 +118,11 @@ void PlayerEntity::onExit() {}
 
 void PlayerEntity::tryMove(const HexCellPtr& targetCell) {
     if (!targetCell) {
+        return;
+    }
+    
+    if (auto* totem = dynamic_cast<TotemEntity*>(targetCell->getEntity())) {
+        totem->use();
         return;
     }
 

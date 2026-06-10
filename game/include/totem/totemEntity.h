@@ -4,6 +4,8 @@
 
 #include "totem/totemSpawnConfig.h"
 
+class Game;
+
 namespace game {
 
 class TotemEntity : public Entity {
@@ -18,10 +20,6 @@ class TotemEntity : public Entity {
         return "TotemEntity";
     }
 
-  private:
-    TotemSpawnConfig _config;
-
-  public:
     void setConfig(const TotemSpawnConfig& cfg) {
         _config = cfg;
     }
@@ -29,6 +27,17 @@ class TotemEntity : public Entity {
     const TotemSpawnConfig& getConfig() const {
         return _config;
     }
+
+    void setGame(Game* game) {
+        _game = game;
+    }
+
+    void use();
+
+  private:
+    TotemSpawnConfig _config;
+    bool _isUsed = false;
+    Game* _game;
 };
 
 } // namespace game

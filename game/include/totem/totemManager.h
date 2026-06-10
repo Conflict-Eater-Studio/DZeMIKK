@@ -6,6 +6,8 @@
 #include "map/HexChunk.h"
 #include <random>
 
+class Game;
+
 namespace dzemikk {
 class AssetManager;
 }
@@ -21,6 +23,7 @@ class TotemManager : public dzemikk::MonoBehaviour {
 
     void setWorld(World* world);
     void setAssetManager(dzemikk::AssetManager* assetManager);
+    void setGame(Game* game);
 
     void setSpawnConfig(const boost::uuids::uuid& chunkId,
                         const std::vector<TotemSpawnConfig>& config);
@@ -40,6 +43,7 @@ class TotemManager : public dzemikk::MonoBehaviour {
     World* _world = nullptr;
 
     dzemikk::AssetManager* _assetManager = nullptr;
+    Game* _game = nullptr;
 
     std::mt19937 _rng;
 

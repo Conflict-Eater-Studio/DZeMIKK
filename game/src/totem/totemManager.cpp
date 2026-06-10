@@ -1,6 +1,7 @@
 #include "totem/totemManager.h"
 #include "scripts/world/world.h"
 #include "totem/totemEntity.h"
+#include "game.h"
 
 #include <assetManager/assetmanager.h>
 #include <ecs/gameobject.h>
@@ -15,6 +16,10 @@ void game::TotemManager::setWorld(World* world) {
 
 void game::TotemManager::setAssetManager(dzemikk::AssetManager* assetManager) {
     _assetManager = assetManager;
+}
+
+void game::TotemManager::setGame(Game* game) {
+    _game = game;
 }
 
 void game::TotemManager::setSpawnConfig(const boost::uuids::uuid& chunkId,
@@ -103,10 +108,11 @@ void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnC
     auto* totem = totemGO->addComponent<TotemEntity>();
 
     totem->setConfig(cfg);
+    totem->setGame(_game);
 
     totem->onEnter(cell);
 
-        std::uniform_int_distribution<size_t> dist(0, cfg.segmentPool.size() - 1);
+    std::uniform_int_distribution<size_t> dist(0, cfg.segmentPool.size() - 1);
 
     for (int i = 0; i < 3; i++) {
 

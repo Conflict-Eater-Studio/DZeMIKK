@@ -113,7 +113,7 @@ void Game::start() {
     setupEnemies();
     // Setup Items and Totems ALWAYS after Enemies
     setupItems();
-    //setupTotems();
+    setupTotems();
 
     auto* root = _mainScene.get()->findGameObjectByName("Root");
     _stateMachine = root->addComponent<game::GameStateMachine>();
@@ -846,13 +846,13 @@ void Game::setupTotems() {
 
     manager->setAssetManager(_engine->getAssetManager());
 
-    manager->setSpawnConfig(_chunkIds["chunkMain1"],
-                            {{.count = 1, .prefabPath = "prefabs/totem/totem_container.prefab"}});
+    manager->setGame(this);
 
     manager->setSpawnConfig(_chunkIds["chunkMain2"],
-                            {{.count = 1, .prefabPath = "prefabs/totem/totem_container.prefab"},
-
-                             {.count = 2, .prefabPath = "prefabs/totem/totem_container.prefab"}});
+                            {{.count = 1,
+                              .pattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
+                                                          game::HexPattern::Type::ATK, 1.2F),
+                              .prefabPath = "prefabs/totem/totem_container.prefab"}});
 
     manager->spawnTotemsPerChunk();
 }
