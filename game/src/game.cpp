@@ -52,6 +52,7 @@
 #include "stateMachine/combatState.h"
 #include "stateMachine/explorationState.h"
 #include "ui/combatUIPanel.h"
+#include "map/HexPattern.h"
 
 #include <animation/animationstatemachine.h>
 #include <ecs/components/animator.h>

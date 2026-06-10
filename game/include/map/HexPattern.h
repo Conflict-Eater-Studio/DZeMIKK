@@ -13,7 +13,10 @@ class HexPattern {
     enum class Type : uint8_t { ATK, DEF, HEAL, BONUSHEX };
     enum class Rotation : uint8_t { Clockwise, CounterClockwise };
 
+    HexPattern() : _hexes({{0, 0}}), _type(Type::ATK), _effectStrength(1.0F) {}
+
     HexPattern(std::vector<HexCoord> hexes, Type type, float effectStrength = 1.0F);
+    ~HexPattern() = default;
 
     [[nodiscard]] const std::vector<HexCoord>& getHexes() const;
     [[nodiscard]] const std::vector<HexCoord>& rotate(Rotation rotation = Rotation::Clockwise);

@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "41221418-4af4-4c47-9278-0997d92984b2",
+                        "id": "39b84921-7c4c-45e2-ac97-8ada88e4879b",
                         "position": [
                             0.0,
                             0.0,
@@ -26,7 +26,7 @@
                     }
                 ],
                 "enabled": true,
-                "id": "d4b7277b-dfbf-444a-9fc6-342a7d00298c",
+                "id": "908c397c-ed22-4253-ba12-6fa2717082cc",
                 "name": "Totem",
                 "tags": []
             },
@@ -34,7 +34,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "e671e9ef-9f88-4264-b3b4-d76520520de6",
+                        "id": "0487c457-80ed-4921-870b-558f77c63d3f",
                         "position": [
                             0.0,
                             -0.699999988079071,
@@ -60,7 +60,7 @@
                             1.0,
                             1.0
                         ],
-                        "id": "13220588-e797-4043-ae96-be5dda186239",
+                        "id": "229a958e-bf8b-43f4-9f59-a2a2208fe417",
                         "materials": [
                             "shaders/tile1"
                         ],
@@ -69,7 +69,7 @@
                     }
                 ],
                 "enabled": true,
-                "id": "11d3c130-e81b-4fb6-ab60-6071c2a73637",
+                "id": "8c8f2eb2-15a3-4a41-aa9d-0b5e0f1eebb7",
                 "name": "platform",
                 "tags": []
             },
@@ -79,7 +79,7 @@
                         "children": [],
                         "components": [
                             {
-                                "id": "267c3b4f-de83-471c-93bc-2b15291be425",
+                                "id": "65a7eb5d-f2eb-4182-840b-efbbc2971a1e",
                                 "position": [
                                     -0.6000000238418579,
                                     2.0,
@@ -105,7 +105,7 @@
                                     1.0,
                                     1.0
                                 ],
-                                "id": "7e70e5f5-319c-4d1d-8cb5-c8aa2978bf47",
+                                "id": "1564b89b-f197-49fa-954d-3f044055f6f6",
                                 "materials": [
                                     "shaders/tile1"
                                 ],
@@ -114,7 +114,7 @@
                             }
                         ],
                         "enabled": true,
-                        "id": "c2431c2f-5757-4568-b613-3a4299755f22",
+                        "id": "c1d13ce3-3c84-45b8-803c-8bb00a88991c",
                         "name": "Left",
                         "tags": []
                     },
@@ -122,7 +122,7 @@
                         "children": [],
                         "components": [
                             {
-                                "id": "9b534961-5756-44cc-bd4b-a3e7c4a56969",
+                                "id": "e3b28355-f335-49e4-8f07-f01b049921af",
                                 "position": [
                                     0.6000000238418579,
                                     2.0,
@@ -148,7 +148,7 @@
                                     1.0,
                                     1.0
                                 ],
-                                "id": "7b5ebb1e-480e-479c-991e-ac6cf459d2c5",
+                                "id": "5ddf2c3b-547e-446f-b243-600cc197c558",
                                 "materials": [
                                     "shaders/tile1"
                                 ],
@@ -157,14 +157,14 @@
                             }
                         ],
                         "enabled": true,
-                        "id": "ff2dfc04-7644-4009-a2ab-13fa7cf68619",
+                        "id": "b7123898-4d1d-45ef-b3c2-a376e0f6fd35",
                         "name": "Right",
                         "tags": []
                     }
                 ],
                 "components": [
                     {
-                        "id": "6e9f5f37-5e98-4e7b-969c-80a383b691ca",
+                        "id": "7c153e55-46b5-4656-b9b2-2c9064adde19",
                         "position": [
                             0.0,
                             0.0,
@@ -185,14 +185,54 @@
                     }
                 ],
                 "enabled": true,
-                "id": "01e7a1f4-e710-43b3-ba20-cf6ef67bda03",
+                "id": "20aaafc6-71fc-4ade-adc5-d773139ce182",
                 "name": "Wings",
+                "tags": []
+            },
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "10442513-ef1a-47a8-868b-abd9be7a67c1",
+                        "position": [
+                            0.0,
+                            2.4000000953674316,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "castsShadows": false,
+                        "color": [
+                            1.0,
+                            0.0,
+                            0.9411764144897461
+                        ],
+                        "intensity": 1.0,
+                        "range": 10.0,
+                        "type": "PointLight"
+                    }
+                ],
+                "enabled": true,
+                "id": "50595a78-b6e6-44bf-8b2f-e1b3e8b40cda",
+                "name": "Light",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "e5212f23-813a-4e87-8b3b-beab5b461cea",
+                "id": "a550cdd4-7bba-45b6-9491-a09938eb242b",
                 "position": [
                     0.0,
                     0.0,
@@ -213,7 +253,7 @@
             }
         ],
         "enabled": true,
-        "id": "db6dea20-eeaf-41c3-a1cc-6f9c7717e67b",
+        "id": "94f8c4a6-8874-4513-aad1-530eca03c441",
         "name": "TotemContainer",
         "tags": []
     }

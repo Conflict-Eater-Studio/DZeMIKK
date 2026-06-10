@@ -65,7 +65,8 @@ std::vector<game::HexChunk::HexCellPtr> game::EnemyManager::collectAvailableCell
 
     for (const auto& [coord, cell] : chunk->getHexes()) {
         if (cell && cell->getState() == HexCell::State::Empty &&
-            cell->getGenState() == HexCell::GenState::Normal) {
+            cell->getGenState() == HexCell::GenState::Normal &&
+            cell->getType() == HexCell::Type::Normal) {
             result.push_back(cell);
         }
     }

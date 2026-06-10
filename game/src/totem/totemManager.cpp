@@ -5,6 +5,7 @@
 #include <assetManager/assetmanager.h>
 #include <ecs/gameobject.h>
 #include <ecs/serialize/prefabSerializer.h>
+#include <ecs/components/meshRenderer.h>
 
 game::TotemManager::TotemManager(unsigned int seed) : _rng(seed) {}
 
@@ -33,6 +34,9 @@ std::vector<game::HexChunk::HexCellPtr> game::TotemManager::collectAvailableCell
             continue;
 
         if (cell->getGenState() != HexCell::GenState::Normal)
+            continue;
+
+        if (cell->getType() != HexCell::Type::Normal)
             continue;
 
         result.push_back(cell);
@@ -87,6 +91,15 @@ void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnC
 
     totemGO->transform()->setScale({0.8, 0.8, 0.8});
 
+    auto* rendererTotemGO = totemGO->findChildByName("platform")->getComponent<dzemikk::MeshRenderer>();
+    rendererTotemGO->setCullingRadius(60.0F);
+
+    rendererTotemGO = totemGO->findDescendantByName("Left")->getComponent<dzemikk::MeshRenderer>();
+    rendererTotemGO->setCullingRadius(60.0F);
+
+    rendererTotemGO = totemGO->findDescendantByName("Right")->getComponent<dzemikk::MeshRenderer>();
+    rendererTotemGO->setCullingRadius(60.0F);
+
     auto* totem = totemGO->addComponent<TotemEntity>();
 
     totem->setConfig(cfg);
@@ -107,5 +120,8 @@ void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnC
         segmentGO->setParent(totemGO);
 
         segmentGO->transform()->setPosition(glm::vec3(0.0f, static_cast<float>(i), 0.0f));
+
+        auto* rendererSegmentGO = segmentGO->getComponent<dzemikk::MeshRenderer>();
+        rendererSegmentGO->setCullingRadius(60.0F);
     }
 }

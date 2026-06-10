@@ -2,10 +2,13 @@
 #include <string>
 #include <vector>
 
+#include "map/HexPattern.h"
+
 namespace game {
 
 struct TotemSpawnConfig {
     int count = 1;
+    HexPattern pattern;
 
     std::string prefabPath = "prefabs/totem/totem_container.prefab";
 

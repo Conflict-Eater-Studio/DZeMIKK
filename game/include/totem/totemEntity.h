@@ -8,6 +8,8 @@ namespace game {
 
 class TotemEntity : public Entity {
   public:
+    TotemEntity() = default;
+    ~TotemEntity() = default;
     void onEnter(HexCellPtr cell) override;
     void onExit() override;
 
