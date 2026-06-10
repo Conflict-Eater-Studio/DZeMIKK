@@ -216,8 +216,7 @@ game::HexChunk* game::EnemyManager::findChunkForCoord(const game::HexCoord& coor
     return nullptr;
 }
 
-bool game::EnemyManager::canPlacePattern(game::HexCoord center,
-                                         const game::TerritoryPattern& pattern) {
+bool game::EnemyManager::canPlacePattern(HexCoord center, const game::TerritoryPattern& pattern) {
     auto* grid = _world->getGrid();
 
     for (const auto& offset : pattern.offsets) {
@@ -226,7 +225,26 @@ bool game::EnemyManager::canPlacePattern(game::HexCoord center,
         if (_world->isTerritoryReserved(c)) {
             return false;
         }
+
+        auto cell = grid->getCell(c);
+
+        if (!cell) {
+            return false;
+        }
+
+        if (cell->getState() != HexCell::State::Empty) {
+            return false;
+        }
+
+        if (cell->getGenState() != HexCell::GenState::Normal) {
+            return false;
+        }
+
+        if (cell->getType() != HexCell::Type::Normal) {
+            return false;
+        }
     }
+
     return true;
 }
 

@@ -8,13 +8,13 @@
 #include <ecs/components/light/pointLight.h>
 
 void game::TotemEntity::onEnter(HexCellPtr cell) {
-    if (!cell)
+    if (!cell) {
         return;
+    }
 
-    std::cout << "Toten enter" << std::endl;
-
-    if (getCell())
+    if (getCell()) {
         onExit();
+    }
 
     setCell(cell);
 
@@ -23,8 +23,9 @@ void game::TotemEntity::onEnter(HexCellPtr cell) {
 }
 
 void game::TotemEntity::onExit() {
-    if (!getCell())
+    if (!getCell()) {
         return;
+    }
 
     getCell()->setEntity(nullptr);
     getCell()->setState(HexCell::State::Empty);
@@ -39,17 +40,17 @@ void game::TotemEntity::use() {
 
     _isUsed = true;
 
-    auto playerGO = _game->getCurrentScene().get()->findGameObjectByName("Player");
-    auto patternComponent = playerGO->getComponent<game::PlayerPatternComponent>();
+    auto* playerGO = _game->getCurrentScene().get()->findGameObjectByName("Player");
+    auto* patternComponent = playerGO->getComponent<game::PlayerPatternComponent>();
     patternComponent->addPattern(_config.pattern);
 
-    auto pattern = patternComponent->getPattern(patternComponent->getPatternCount() - 1);
+    auto* pattern = patternComponent->getPattern(patternComponent->getPatternCount() - 1);
 
-    auto playerPanel = this->getOwner()->getScene()->findGameObjectByName("Player_Panel");
-    auto combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
+    auto* playerPanel = this->getOwner()->getScene()->findGameObjectByName("Player_Panel");
+    auto* combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
     combatPlayerPanel->addPatternSlot(*pattern);
 
-    auto lightGO = this->getOwner()->findChildByName("Light");
-    auto lightComp = lightGO->getComponent<dzemikk::PointLight>();
+    auto* lightGO = this->getOwner()->findChildByName("Light");
+    auto* lightComp = lightGO->getComponent<dzemikk::PointLight>();
     lightComp->enabled(false);
 }

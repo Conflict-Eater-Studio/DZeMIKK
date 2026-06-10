@@ -32,17 +32,21 @@ std::vector<game::HexChunk::HexCellPtr> game::TotemManager::collectAvailableCell
 
     for (auto& [coord, cell] : chunk->getHexes()) {
 
-        if (!cell)
+        if (!cell) {
             continue;
+        }
 
-        if (cell->getState() != HexCell::State::Empty)
+        if (cell->getState() != HexCell::State::Empty) {
             continue;
+        }
 
-        if (cell->getGenState() != HexCell::GenState::Normal)
+        if (cell->getGenState() != HexCell::GenState::Normal) {
             continue;
+        }
 
-        if (cell->getType() != HexCell::Type::Normal)
+        if (cell->getType() != HexCell::Type::Normal) {
             continue;
+        }
 
         result.push_back(cell);
     }
@@ -51,16 +55,18 @@ std::vector<game::HexChunk::HexCellPtr> game::TotemManager::collectAvailableCell
 }
 
 void game::TotemManager::spawnTotemsPerChunk() {
-    if (!_world || !_assetManager)
+    if (!_world || !_assetManager) {
         return;
+    }
 
     const auto& chunks = _world->getGrid()->getChunks();
 
     for (const auto& [chunkId, chunk] : chunks) {
         auto it = _spawnRules.find(chunkId);
 
-        if (it == _spawnRules.end())
+        if (it == _spawnRules.end()) {
             continue;
+        }
 
         auto available = collectAvailableCells(chunk.get());
 
@@ -77,8 +83,9 @@ void game::TotemManager::spawnTotemsPerChunk() {
 }
 
 void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnConfig& cfg) {
-    if (!cell)
+    if (!cell) {
         return;
+    }
 
     auto prefab = _assetManager->get<nlohmann::json>(cfg.prefabPath);
 
@@ -91,8 +98,8 @@ void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnC
     totemGO->setParent(getOwner());
 
     totemGO->transform()->setPosition(
-        cell->getCoord().toWorldPosition(1.0f, 0.1f, cell->getHeight()) +
-        glm::vec3(0.f, 1.25f, 0.f));
+        cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
+        glm::vec3(0.F, 1.25F, 0.F));
 
     totemGO->transform()->setScale({0.8, 0.8, 0.8});
 
@@ -125,7 +132,7 @@ void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnC
 
         segmentGO->setParent(totemGO);
 
-        segmentGO->transform()->setPosition(glm::vec3(0.0f, static_cast<float>(i), 0.0f));
+        segmentGO->transform()->setPosition(glm::vec3(0.0F, static_cast<float>(i), 0.0F));
 
         auto* rendererSegmentGO = segmentGO->getComponent<dzemikk::MeshRenderer>();
         rendererSegmentGO->setCullingRadius(60.0F);
