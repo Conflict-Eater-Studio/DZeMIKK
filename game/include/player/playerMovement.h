@@ -36,6 +36,18 @@ namespace game {
 
         void setWorld(World* world);
     private:
+        struct CellLerp {
+            HexGrid::HexCellPtr cell;
+            float startY;
+            float targetY;
+            float progress;
+        };
+        std::vector<CellLerp> _cellLerps;
+
+        float lerpCellTo(const HexGrid::HexCellPtr& cell, float targetY);
+        void updateCellLerps(double deltaTime);
+        bool isCellLerping(const HexGrid::HexCellPtr& cell) const;
+        void rotateToDirection(int direction);
         std::vector<HexGrid::HexCellPtr> _path;
         std::vector<HexGrid::HexCellPtr> _cachedPath;
 
@@ -46,7 +58,8 @@ namespace game {
         dzemikk::Animator* _animator = nullptr;
         glm::vec3 _position;
 
-        float _speed = 1.0f;
+        float _speed = 100.0f;
+        int _lastDirection = -1;
         int _step = 1;
         float _duration = 0.0f;
         bool _positionCached = false;
