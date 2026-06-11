@@ -12,6 +12,7 @@
 #include "animation/animationclip.h"
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
+#include "glm/ext/scalar_common.hpp"
 
 namespace game {
 void PlayerMovement::start() {
@@ -53,7 +54,7 @@ void PlayerMovement::update(double deltaTime) {
             }
             _positionCached = false;
         }
-        rotateToDirection(_lastDirection);
+        rotateToDirection(_playerDir);
         _playerEntity->tryMove(currentTargetCell);
         _animator->setInt("direction", -1);
         _animator->play("Idle");
@@ -63,9 +64,20 @@ void PlayerMovement::update(double deltaTime) {
     if (_step < _path.size()) {
         auto dir = HexCoord::dir(currentTargetCell->getCoord() - _playerEntity->getCell()->getCoord());
         if (dir.has_value()) {
-            int direction = static_cast<int>(dir.value());
-            _animator->setInt("direction", direction);
-            _lastDirection = direction;
+            int hexDir = static_cast<int>(dir.value());
+            int relativeDir = 3;
+            if (hexDir == _playerDir) {
+                _animator->setInt("direction",relativeDir);
+            }else {
+                int offset = hexDir - _playerDir;
+                int anim = (relativeDir + offset + 12) % 12;
+                _animator->setInt("direction",  anim);
+                spdlog::info(
+                    "hexDir={}, playerDir={}, relativeDir={}, offset={}, anim={}",
+                    hexDir, _playerDir, relativeDir, offset, anim);
+            }
+
+            _playerDir = hexDir;
         }
     }
 
@@ -157,8 +169,12 @@ void PlayerMovement::updateCellLerps(double deltaTime) {
     }
 }
 void PlayerMovement::rotateToDirection(int direction) {
-    float angle = -direction * 30.0f;
+    float angle = directionToAngle(direction);
     _playerEntity->getOwner()->transform()->setRotation(
         glm::angleAxis(glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f)));
+}
+float PlayerMovement::directionToAngle(int direction) {
+    float angle = -direction * 30.0f;
+    return angle;
 }
 } // namespace game

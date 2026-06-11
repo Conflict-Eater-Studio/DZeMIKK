@@ -48,6 +48,7 @@ namespace game {
         void updateCellLerps(double deltaTime);
         bool isCellLerping(const HexGrid::HexCellPtr& cell) const;
         void rotateToDirection(int direction);
+        float directionToAngle(int direction);
         std::vector<HexGrid::HexCellPtr> _path;
         std::vector<HexGrid::HexCellPtr> _cachedPath;
 
@@ -59,7 +60,7 @@ namespace game {
         glm::vec3 _position;
 
         float _speed = 100.0f;
-        int _lastDirection = -1;
+        int _playerDir = 3;
         int _step = 1;
         float _duration = 0.0f;
         bool _positionCached = false;
