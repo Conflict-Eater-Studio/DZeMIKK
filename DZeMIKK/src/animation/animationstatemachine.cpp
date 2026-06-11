@@ -3,7 +3,6 @@
 #include "animation/animationstate.h"
 #include "animation/transition.h"
 #include "assetManager/assetmanager.h"
-#include "spdlog/spdlog.h"
 
 namespace dzemikk {
     AnimationState* AnimationStateMachine::addState() {

@@ -10,7 +10,6 @@
 #include "map/ItemEntityHealth.h"
 #include "player/inventory.h"
 #include "player/playerPatternComponent.h"
-#include "spdlog/spdlog.h"
 #include "stateMachine/combatState.h"
 #include <ui/combatUIPanel.h>
 #include <audio/sound.h>

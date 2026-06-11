@@ -6,7 +6,6 @@
 #include "ecs/components/ui/uiTextRenderer.h"
 
 #include <nlohmann/json.hpp>
-#include <spdlog/spdlog.h>
 #include <limits>
 #include <vector>
 

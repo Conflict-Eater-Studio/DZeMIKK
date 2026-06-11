@@ -12,6 +12,16 @@
 
 The project provides batch scripts for common build configurations:
 
-- `build-debug.bat`
-- `build-release.bat`
-- `build-relwithdebinfo.bat`
+- `compile/compile.exe`
+
+### Build Limitations
+
+- **Release configuration excludes development tools.**
+  The following components are available only in:
+  - Debug
+  - RelWithDebInfo
+
+  Excluded from Release builds:
+  - ImGui debug interface
+  - FMOD debug library (`fmodL_vc.lib`)
+  - spdlog development logging system

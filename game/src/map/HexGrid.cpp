@@ -14,10 +14,6 @@
 #include <utility>
 #include <vector>
 
-#if DZEMIKK_DEV_TOOLS
-#include "spdlog/spdlog.h"
-#endif
-
 namespace game {
 HexGrid::HexGrid(unsigned int seed) : _rng(seed), _seed(seed) {}
 
