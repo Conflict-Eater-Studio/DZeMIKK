@@ -309,6 +309,11 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
     if (cell->getType() == HexCell::Type::EnemyBattleHex) {
         meshRenderer->setColor(glm::vec4(1.0F, 0.0F, 0.0F, 1.0F));
     }
+
+    auto texture = _game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
+        "textures/assets/hex_wypukly_BaseColor.png");
+    meshRenderer->getMaterial(0)->setTexture(texture);
+
     meshRenderer->setTransform(obj->transform());
     auto* worldHex = obj->addComponent<WorldHex>();
     worldHex->setHexCell(cell);

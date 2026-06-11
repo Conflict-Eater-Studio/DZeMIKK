@@ -4,6 +4,10 @@ out vec4 FragColor;
 
 in vec3 FragPos;
 in vec3 Normal;
+in vec2 TexCoord;
+
+uniform sampler2D texture;
+uniform int hasTexture;
 
 uniform vec3 objectColor;
 uniform vec3 viewPos;
@@ -152,11 +156,33 @@ void main() {
             spot;
     }
 
-    vec3 ambient = objectColor * 0.05;
+    vec3 texColor = texture(texture, TexCoord).rgb;
+
+    bool isWhiteTint = (distance(objectColor, vec3(1.0)) < 0.001);
+
+    vec3 baseColor;
+
+    if (hasTexture == 1)
+    {
+        if (isWhiteTint)
+        {
+            baseColor = texColor;
+        }
+        else
+        {
+            baseColor = objectColor * texColor;
+        }
+    }
+    else
+    {
+        baseColor = objectColor;
+    }
+
+    vec3 ambient = baseColor * 0.05;
 
     vec3 finalColor =
         ambient +
-        diffuseLighting * objectColor +
+        diffuseLighting * baseColor +
         specularLighting;
 
     FragColor = vec4(finalColor, 1.0);

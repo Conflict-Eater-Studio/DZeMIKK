@@ -38,7 +38,7 @@ constexpr std::string_view PREVIEW_OBJECT_NAME = "PatternPreview";
 
 void game::PlayerPatternComponent::start() {
     // atk1
-    addPattern(HexPattern({{0, 0}}, HexPattern::Type::ATK, 1.0F), -1);
+    addPattern(HexPattern({{0, 0}}, HexPattern::Type::ATK, 10.0F), -1);
     addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::ATK, 1.1F), -1);
     //addPattern(HexPattern({{-1, 1}, {0, 0}, {1, -1}}, HexPattern::Type::ATK, 1.2F), -1);
 

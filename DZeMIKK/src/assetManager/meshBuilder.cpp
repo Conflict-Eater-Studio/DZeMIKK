@@ -1,5 +1,6 @@
 #include "assetManager/meshBuilder.h"
 #include <assimp/scene.h>
+#include <iostream>
 
 dzemikk::MeshBuilder::RawStaticMesh dzemikk::MeshBuilder::buildStaticMeshRaw(const aiMesh* mesh) {
 
@@ -9,6 +10,18 @@ dzemikk::MeshBuilder::RawStaticMesh dzemikk::MeshBuilder::buildStaticMeshRaw(con
 
     const auto* positions = mesh->mVertices;
     const auto* normals = mesh->mNormals;
+    const auto* texCoords = mesh->mTextureCoords[0];
+
+    bool hasUV = mesh->HasTextureCoords(0);
+    std::cout << "Mesh has UV: " << hasUV << std::endl;
+
+    std::cout << "[Mesh Debug] UV channels: " << mesh->GetNumUVChannels() << std::endl;
+
+    if (hasUV && mesh->mTextureCoords[0]) {
+        std::cout << "UV channel 0 exists\n";
+    } else {
+        std::cout << "NO UVs in mesh!\n";
+    }
 
     for (unsigned int v = 0; v < mesh->mNumVertices; ++v) {
 
@@ -22,6 +35,13 @@ dzemikk::MeshBuilder::RawStaticMesh dzemikk::MeshBuilder::buildStaticMeshRaw(con
             vertex.normal = {n.x, n.y, n.z};
         } else {
             vertex.normal = glm::vec3(0.0F);
+        }
+
+        if (mesh->HasTextureCoords(0)) {
+            const auto& uv = texCoords[v];
+            vertex.uv = {uv.x, uv.y};
+        } else {
+            vertex.uv = glm::vec2(0.0f);
         }
     }
 
@@ -89,6 +109,18 @@ std::shared_ptr<dzemikk::StaticMesh> dzemikk::MeshBuilder::buildStaticMesh(const
 
     const auto* positions = aiMesh->mVertices;
     const auto* normals = aiMesh->mNormals;
+    const auto* texCoords = aiMesh->mTextureCoords[0];
+
+    bool hasUV = aiMesh->HasTextureCoords(0);
+    std::cout << "Mesh has UV: " << hasUV << std::endl;
+
+    std::cout << "[Mesh Debug] UV channels: " << aiMesh->GetNumUVChannels() << std::endl;
+
+    if (hasUV && aiMesh->mTextureCoords[0]) {
+        std::cout << "UV channel 0 exists\n";
+    } else {
+        std::cout << "NO UVs in mesh!\n";
+    }
 
     for (unsigned int v = 0; v < aiMesh->mNumVertices; ++v) {
 
@@ -102,6 +134,13 @@ std::shared_ptr<dzemikk::StaticMesh> dzemikk::MeshBuilder::buildStaticMesh(const
             vertex.normal = {n.x, n.y, n.z};
         } else {
             vertex.normal = glm::vec3(0.0F);
+        }
+
+        if (aiMesh->HasTextureCoords(0)) {
+            const auto& uv = texCoords[v];
+            vertex.uv = {uv.x, uv.y};
+        } else {
+            vertex.uv = glm::vec2(0.0f);
         }
     }
 

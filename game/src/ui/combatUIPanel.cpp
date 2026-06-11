@@ -46,7 +46,6 @@ void game::CombatUIPanel::clear() {
 }
 
 void game::CombatUIPanel::buildUI() {
-    std::cout << "BuildUI" << std::endl;
     if (!_patterns || !_patternsContainer) {
         return;
     }

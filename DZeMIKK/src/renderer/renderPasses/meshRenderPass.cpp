@@ -115,6 +115,14 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
 
             shader->bind();
 
+            if (material->getTexture()) {
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, material->getTexture()->getId());
+                shader->setInt("texture", 0);
+            }
+
+            shader->setInt("hasTexture", material->getTexture() ? 1 : 0);
+
             shader->setFloat("shininess", 6.0f);
             shader->setFloat("specularStrength", .5f);
             shader->setInt("dirLightCount", ctx.directionalCount);
@@ -172,6 +180,7 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
             }
 
             mesh->drawInstanced(batch.models, batch.instanceVBO);
+            glBindTexture(GL_TEXTURE_2D, 0);
             Profiler::Get().stats.drawCalls++;
         }
     }

@@ -36,7 +36,7 @@
                         -0.8638684153556824,
                         -0.2591605484485626
                     ],
-                    "intensity": 0.5590000152587891,
+                    "intensity": 0.8159999847412109,
                     "type": "DirectionalLight"
                 }
             ],
@@ -237,7 +237,8 @@
                     ],
                     "enabled": true,
                     "id": "71331b7f-d7e8-49ac-be35-98b315b240a2",
-                    "name": "EnemyManager"
+                    "name": "EnemyManager",
+                    "tags": []
                 },
                 {
                     "children": [],
@@ -265,7 +266,8 @@
                     ],
                     "enabled": true,
                     "id": "fb9f6901-0cf6-4648-9897-0efa03cc6f2a",
-                    "name": "TotemManager"
+                    "name": "TotemManager",
+                    "tags": []
                 }
             ],
             "components": [

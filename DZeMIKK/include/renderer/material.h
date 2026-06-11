@@ -2,6 +2,7 @@
 #define DZEMIKK_MATERIAL_H
 
 #include "assetManager/assetHandle.h"
+#include "renderer/texture.h"
 
 namespace dzemikk {
 
@@ -73,6 +74,18 @@ namespace dzemikk {
 
         #pragma endregion
 
+        [[nodiscard]] const AssetHandle<Texture>& getTextureHandle() const {
+            return _texture;
+        }
+
+        [[nodiscard]] Texture* getTexture() const {
+            return _texture.get();
+        }
+
+        void setTexture(AssetHandle<Texture> texture) {
+            _texture = texture;
+        }
+
     private:
         #pragma region Data
 
@@ -80,6 +93,8 @@ namespace dzemikk {
          * @brief Non-owning pointer to shader resource.
          */
         AssetHandle<Shader> _shader;
+
+        AssetHandle<Texture> _texture;
 
         #pragma endregion
     };

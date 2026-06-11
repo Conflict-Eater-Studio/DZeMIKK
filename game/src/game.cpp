@@ -840,7 +840,7 @@ void Game::setExplorationState() {
 void Game::setupTotems() {
     auto* go = _mainScene.get()->findGameObjectByName("TotemManager");
 
-    auto* manager = go->addComponent<game::TotemManager>();
+    auto* manager = go->addComponent<game::TotemManager>(2);
 
     manager->setWorld(_worldGO->getComponent<game::World>());
 
@@ -855,4 +855,5 @@ void Game::setupTotems() {
                               .prefabPath = "prefabs/totem/totem_container.prefab"}});
 
     manager->spawnTotemsPerChunk();
+
 }

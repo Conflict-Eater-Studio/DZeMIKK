@@ -7,6 +7,7 @@
 #include <ecs/gameobject.h>
 #include <ecs/serialize/prefabSerializer.h>
 #include <ecs/components/meshRenderer.h>
+#include <renderer/texture.h>
 
 game::TotemManager::TotemManager(unsigned int seed) : _rng(seed) {}
 
@@ -136,5 +137,9 @@ void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnC
 
         auto* rendererSegmentGO = segmentGO->getComponent<dzemikk::MeshRenderer>();
         rendererSegmentGO->setCullingRadius(60.0F);
+
+        auto texture = _assetManager->get<dzemikk::Texture>("textures/totems/a.png");
+
+        rendererSegmentGO->getMaterial(0)->setTexture(texture);
     }
 }
