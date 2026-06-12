@@ -6,8 +6,8 @@ in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoord;
 
-uniform sampler2D texture;
-uniform int hasTexture;
+uniform sampler2D diffuseTexture;
+uniform bool useTexture;
 
 uniform vec3 objectColor;
 uniform vec3 viewPos;
@@ -156,22 +156,17 @@ void main() {
             spot;
     }
 
-    vec3 texColor = texture(texture, TexCoord).rgb;
-
-    bool isWhiteTint = (distance(objectColor, vec3(1.0)) < 0.001);
-
     vec3 baseColor;
 
-    if (hasTexture == 1)
+    if(useTexture)
     {
-        if (isWhiteTint)
-        {
+        vec3 texColor = texture(diffuseTexture, TexCoord).rgb;
+
+        // bia³y = ignoruj kolor bazowy
+        if(objectColor == vec3(1.0))
             baseColor = texColor;
-        }
         else
-        {
-            baseColor = objectColor * texColor;
-        }
+            baseColor = texColor * objectColor;
     }
     else
     {
