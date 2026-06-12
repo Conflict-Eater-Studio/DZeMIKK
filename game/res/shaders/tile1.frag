@@ -6,7 +6,7 @@ in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoord;
 
-uniform sampler2D texture;
+uniform sampler2D texSampler;
 uniform int hasTexture;
 
 uniform vec3 objectColor;
@@ -156,7 +156,7 @@ void main() {
             spot;
     }
 
-    vec3 texColor = texture(texture, TexCoord).rgb;
+    vec3 texColor = texture(texSampler, TexCoord).rgb;
 
     bool isWhiteTint = (distance(objectColor, vec3(1.0)) < 0.001);
 

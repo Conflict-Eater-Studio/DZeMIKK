@@ -27,6 +27,14 @@ class Entity : public dzemikk::MonoBehaviour {
         return _cell;
     }
 
+    [[nodiscard]] virtual nlohmann::json save() const {
+        auto j = nlohmann::json{{"type", typeName()}};
+        if (_cell != nullptr) {
+            j["cell"] = _cell->getCoord();
+        }
+        return j;
+    }
+
   protected:
     void setCell(HexCellPtr cell) {
         _cell = std::move(cell);

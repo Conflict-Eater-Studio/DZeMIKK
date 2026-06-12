@@ -11,7 +11,6 @@
 #include <ecs/gameobject.h>
 #include <ecs/scene.h>
 #include <ecs/serialize/prefabSerializer.h>
-
 #include <iostream>
 
 game::EnemyManager::EnemyManager(unsigned int seed) : _rng(seed) {}
@@ -164,6 +163,12 @@ void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnC
     for (const auto& blockedChunkId : cfg.blocksChunks) {
         _world->getGrid()->lockBridge({spawnChunkId, blockedChunkId}, enemy->getId());
     }
+
+    auto chunkDefIt =
+        std::ranges::find_if(_world->getWorldDefinition().chunks, [&](const auto& chunkDef) {
+            return chunkDef.chunkId == spawnChunkId;
+        });
+    chunkDefIt->enemies.emplace_back(enemy);
 }
 
 void game::EnemyManager::assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPtr centerCell,

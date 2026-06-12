@@ -39,6 +39,13 @@ class ItemEntity : public Entity {
         return _consumed;
     }
 
+    [[nodiscard]] nlohmann::json save() const override {
+        auto j = Base::save();
+        j["itemType"] = static_cast<uint8_t>(_itemType);
+        j["consumed"] = _consumed;
+        return j;
+    }
+
   protected:
     ItemType _itemType{ItemType::Heal};
     bool _consumed{false};

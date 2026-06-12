@@ -47,7 +47,7 @@ inline void from_json(const nlohmann::json& j, HexPattern& pat) {
     if (!j.contains("hexes") || !j.contains("effectStrenght") || !j.contains("type") ||
         !j["hexes"].is_array() || j["hexes"].empty() || !j["effectStrenght"].is_number_float() ||
         !j["type"].is_number_integer()) {
-        throw std::runtime_error("Invalid JSON for World::ChunkDefinition");
+        throw std::runtime_error("Invalid JSON");
     }
 
     std::vector<HexCoord> hexes = j["hexes"].get<std::vector<HexCoord>>();

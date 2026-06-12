@@ -135,6 +135,11 @@ void World::spawnItem(const boost::uuids::uuid& chunkId, ItemEntity::ItemType ty
     }
 
     if (item != nullptr && go != nullptr) {
+        auto chunkDefIt = std::ranges::find_if(_worldDefinition.chunks, [&](const auto& chunkDef) {
+            return chunkDef.chunkId == chunkId;
+        });
+        chunkDefIt->items.emplace_back(item);
+
         _grid.addItem(chunkId, item);
         auto worldPos =
             item->getCell()->getCoord().toWorldPosition(1.0F, 0.1F, item->getCell()->getHeight());

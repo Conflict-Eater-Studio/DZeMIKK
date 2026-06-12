@@ -60,6 +60,10 @@ class HexCell {
     [[nodiscard]] bool isDirty() const {
         return _dirty;
     }
+    [[nodiscard]] bool isCheckpoint() const {
+        return _isChekpoint;
+    }
+
     void setState(State state) {
         _state = state;
         _dirty = true;
@@ -83,6 +87,10 @@ class HexCell {
     void setDirty(bool dirty) {
         _dirty = dirty;
     }
+    void setCheckpoint(bool checkpoint) {
+        _isChekpoint = checkpoint;
+        _dirty = true;
+    }
 
     bool operator<(const HexCell& other) const {
         return std::make_tuple(_coord.q(), _coord.r()) <
@@ -102,12 +110,12 @@ class HexCell {
     State _state{State::Empty};
     Type _type{Type::Normal};
     GenState _genState{GenState::Normal};
-
     Entity* _entity = nullptr;
 
     float _height{0.0F};
-
     bool _dirty = false;
+
+    bool _isChekpoint = false;
 };
 } // namespace game
 namespace std {

@@ -33,6 +33,19 @@ class EnemyEntity : public Entity {
 
 #pragma endregion
 
+#pragma region Save State
+
+    [[nodiscard]] nlohmann::json save() const override {
+        auto j = Entity::save();
+        j["hp"] = _hp;
+        j["type"] = static_cast<int>(_type);
+        j["personality"] = static_cast<int>(_personality);
+        j["config"] = _config;
+        return j;
+    }
+
+#pragma endregion
+
 #pragma region Territory
 
     /**

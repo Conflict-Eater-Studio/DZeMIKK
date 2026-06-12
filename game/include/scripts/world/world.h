@@ -2,10 +2,10 @@
 #define GAME_WORLD_H
 
 #pragma once
-#include "boost/uuid/string_generator.hpp"
 #include "boost/uuid/uuid_io.hpp"
 #include "ecs/components/monobehaviour.h"
 #include "ecs/components/transform.h"
+#include "enemySystem/enemyEntity.h"
 #include "map/HexGrid.h"
 #include "map/HexPattern.h"
 #include "renderer/material.h"
@@ -20,6 +20,7 @@ class Game;
 
 namespace game {
 class PlayerEntity;
+class EnemyEntity;
 class World : public dzemikk::MonoBehaviour {
   public:
     using Base = dzemikk::MonoBehaviour;
@@ -31,6 +32,8 @@ class World : public dzemikk::MonoBehaviour {
         std::string generatorId{"default"};
         HexCoord::Direction dirFromParent;
         std::optional<HexPattern> unlockPattern = std::nullopt;
+        std::vector<ItemEntity*> items;
+        std::vector<EnemyEntity*> enemies;
     };
 
     struct WorldDefinition {
@@ -55,6 +58,9 @@ class World : public dzemikk::MonoBehaviour {
     }
     [[nodiscard]] PlayerEntity* getPlayer() {
         return _player;
+    }
+    [[nodiscard]] WorldDefinition& getWorldDefinition() {
+        return _worldDefinition;
     }
 
     void setModel(const dzemikk::AssetHandle<dzemikk::Model>& model) {
@@ -140,17 +146,30 @@ class World : public dzemikk::MonoBehaviour {
 // NOLINTBEGIN(readability-identifier-naming)
 // --- JSON Serialization for ChunkDefinition ---
 inline void to_json(nlohmann::json& j, const World::ChunkDefinition& def) {
-    j = nlohmann::json{{"parentChunkId", boost::uuids::to_string(def.parentChunkId)},
-                       {"chunkId", boost::uuids::to_string(def.chunkId)},
-                       {"steps", def.steps},
-                       {"generatorId", def.generatorId},
-                       {"dirFromParent", def.dirFromParent},
-                       {"unlockPattern", def.unlockPattern}};
+    j = nlohmann::json{
+        {"parentChunkId", boost::uuids::to_string(def.parentChunkId)},
+        {"chunkId", boost::uuids::to_string(def.chunkId)},
+        {"steps", def.steps},
+        {"generatorId", def.generatorId},
+        {"dirFromParent", def.dirFromParent},
+        {"unlockPattern", def.unlockPattern},
+        {"items", nlohmann::json::array()},
+        {"enemies", nlohmann::json::array()},
+    };
+
+    for (const auto& item : def.items) {
+        j["items"].emplace_back(item->save());
+    }
+
+    for (const auto& enemy : def.enemies) {
+        j["enemies"].emplace_back(enemy->save());
+    }
 }
 
 inline void from_json(const nlohmann::json& j, World::ChunkDefinition& def) {
     if (!j.contains("parentChunkId") || !j.contains("steps") || !j.contains("generatorId") ||
-        !j.contains("dirFromParent") || !j.contains("chunkId")) {
+        !j.contains("dirFromParent") || !j.contains("chunkId") || !j.contains("items") ||
+        !j.contains("enemies")) {
         throw std::runtime_error("Invalid JSON for World::ChunkDefinition");
     }
 
@@ -159,6 +178,11 @@ inline void from_json(const nlohmann::json& j, World::ChunkDefinition& def) {
     j.at("steps").get_to(def.steps);
     j.at("generatorId").get_to(def.generatorId);
     j.at("dirFromParent").get_to(def.dirFromParent);
+    if (j.contains("unlockPattern") && !j["unlockPattern"].is_null()) {
+        def.unlockPattern = j["unlockPattern"].get<HexPattern>();
+    } else {
+        def.unlockPattern = std::nullopt;
+    }
 }
 
 // --- JSON Serialization for WorldDefinition ---

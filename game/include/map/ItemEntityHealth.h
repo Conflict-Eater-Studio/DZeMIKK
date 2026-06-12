@@ -26,6 +26,12 @@ class ItemEntityHealth : public ItemEntity {
         return _healAmount;
     }
 
+    [[nodiscard]] nlohmann::json save() const override {
+        auto j = Base::save();
+        j["healAmount"] = _healAmount;
+        return j;
+    }
+
   private:
     float _healAmount{10.0F};
 };

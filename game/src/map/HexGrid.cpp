@@ -120,6 +120,7 @@ void HexGrid::makeBridge(const boost::uuids::uuid& parentChunkId, const boost::u
 
     BridgeInfo bridgeInfo{.parentId = parentChunkId, .childId = chunkId, .hexes = {}};
 
+    bool addCheckpoint = true;
     for (const auto& hex : hexes) {
         HexChunk* owningChunk = nullptr;
 
@@ -142,10 +143,18 @@ void HexGrid::makeBridge(const boost::uuids::uuid& parentChunkId, const boost::u
         if (owningChunk != nullptr) {
             owningChunk->getCell(hex)->setGenState(HexCell::GenState::Protected);
             owningChunk->getCell(hex)->setType(HexCell::Type::Bridge);
+            if (addCheckpoint) {
+                owningChunk->getCell(hex)->setCheckpoint(true);
+                addCheckpoint = false;
+            }
             bridgeInfo.hexes.insert(owningChunk->getCell(hex).get());
         } else {
             auto cell = std::make_shared<HexCell>(hex, HexCell::State::Empty, HexCell::Type::Bridge,
                                                   HexCell::GenState::Protected);
+            if (addCheckpoint) {
+                cell->setCheckpoint(true);
+                addCheckpoint = false;
+            }
             bridgeInfo.hexes.insert(cell.get());
             _chunks[chunkId]->assignCell(cell);
         }
@@ -153,6 +162,7 @@ void HexGrid::makeBridge(const boost::uuids::uuid& parentChunkId, const boost::u
 
     _chunks[parentChunkId]->protectPathToOrigin(closest.first);
     _chunks[chunkId]->protectPathToOrigin(closest.second);
+
     _bridges[{parentChunkId, chunkId}] = std::move(bridgeInfo);
 }
 
