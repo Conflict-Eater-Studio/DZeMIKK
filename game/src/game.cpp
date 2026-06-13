@@ -505,11 +505,11 @@ void Game::setupEnemies() {
     enemyManager->setAssetManager(_engine->getAssetManager());
 
     std::vector<game::EnemySpawnConfig> chunkMain1Config = {{
-        .personality = game::EnemyPersonality::Aggressive,
+        .personality = game::EnemyPersonality::Balanced,
         .type = game::EnemyType::Normal,
         .count = 1,
-        .hp = 15,
-        .territoryPattern = "1",
+        .hp = 20,
+        .territoryPattern = "2",
         .blocksChunks = {_chunkIds["chunkMain2"]},
     }};
     enemyManager->setSpawnConfig(_chunkIds["chunkMain1"], chunkMain1Config);

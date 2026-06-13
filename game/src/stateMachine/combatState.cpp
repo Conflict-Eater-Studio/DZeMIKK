@@ -16,6 +16,7 @@
 #include "stateMachine/combatResolver.h"
 #include "stateMachine/explorationState.h"
 #include "ui/combatUIPanel.h"
+#include "player/playerPatternStatsComponent.h"
 
 #include <assetManager/assetHandle.h>
 #include <ecs/components/meshRenderer.h>
@@ -26,6 +27,8 @@
 #include <iostream>
 #include <assetManager/soundHandler.h>
 #include <audio/audioManager.h>
+
+#include <fstream>
 
 namespace combatSound {
     FMOD::Channel* combatFMODChannel = nullptr;
@@ -184,6 +187,37 @@ void game::CombatState::onUpdate(float dt) {
 
 void game::CombatState::startNewTurn() {
     _roundCount++;
+
+    //Player statystics 
+    auto* stats = _playerPatternComponent->getPlayerPatternStatsComponent();
+
+    if (stats) {
+
+        const auto& s = stats->getStats();
+
+        std::ofstream file("player_profile.csv", std::ios::app);
+
+        file << _roundCount << "," << s.getTypeRatio(HexPattern::Type::ATK) << ","
+             << s.getTypeRatio(HexPattern::Type::DEF) << ","
+             << s.getTypeRatio(HexPattern::Type::HEAL) << "\n";
+    }
+
+
+    //Enemy health
+    auto* enemyHealthGO = _game->getCurrentScene()
+                              .get()
+                              ->findGameObjectByName("Enemy_Avatar_Panel")
+                              ->findDescendantByName("Health_Holder");
+
+    auto* enemyHealthSystem = enemyHealthGO->getComponent<HealthSystem>();
+
+    if (enemyHealthSystem) {
+
+        std::ofstream hpFile("enemy_hp.csv", std::ios::app);
+
+        hpFile << _roundCount << "," << enemyHealthSystem->getCurrentHealth() << "\n";
+    }
+
     auto* textGO = _game->getCurrentScene()
                        .get()
                        ->findGameObjectByName("Round_Number")

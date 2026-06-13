@@ -46,6 +46,19 @@ game::EnemyPlanner::planTurn(Game* game, EnemyEntity* enemy,
                              const PlayerPatternStatsComponent* playerStats) {
     BTNode::ContextModifiers modifiers = evaluateBehaviorTree(game, enemy, playerStats);
 
+    const auto& baseWeights = enemy->getActionWeights();
+
+    float finalAtk = baseWeights.attack * modifiers.attack;
+
+    float finalDef = baseWeights.defense * modifiers.defense;
+
+    float finalHeal = baseWeights.heal * modifiers.heal;
+
+    std::ofstream file("enemy_weights.csv", std::ios::app);
+
+    file << finalAtk << "," << finalDef << "," << finalHeal << "," << modifiers.attack << ","
+         << modifiers.defense << "," << modifiers.heal << "\n";
+
     return fillEnemyBoard(enemy, patternComponent, grid, coverage, modifiers);
 }
 
