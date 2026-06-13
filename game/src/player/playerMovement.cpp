@@ -9,10 +9,10 @@
 #if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
 #endif
+
 #include "animation/animationclip.h"
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
-#include "glm/ext/scalar_common.hpp"
 
 namespace game {
 void PlayerMovement::start() {
@@ -37,22 +37,14 @@ void PlayerMovement::update(double deltaTime) {
 
     dzemikk::Transform* cellTransform = _world->getHexTransformByCell(*currentTargetCell);
 
-    if (cellTransform) {
-        if (!_positionCached) {
-            _position = cellTransform->getPosition();
-            _positionCached = true;
-        }
-    }
-
     if (_animator->getCurrentState()->getClip()->isFinished()) {
         if (cellTransform) {
-            lerpCellTo(currentTargetCell, _position.y);
+            lerpCellTo(currentTargetCell, currentTargetCell->getHeight());
             if (!_cachedPath.empty()) {
                 _path = _cachedPath;
                 _cachedPath.clear();
                 _step = 1;
             }
-            _positionCached = false;
         }
         rotateToDirection(_playerDir);
         _playerEntity->tryMove(currentTargetCell);
@@ -88,10 +80,10 @@ void PlayerMovement::update(double deltaTime) {
     }
 }
 void PlayerMovement::setSpeed(float speed) {
-    _speed = speed;
+    _lerpSpeed = speed;
 }
 float PlayerMovement::getSpeed() const {
-    return _speed;
+    return _lerpSpeed;
 }
 void PlayerMovement::setPlayerEntity(PlayerEntity* playerEntity) {
     _playerEntity = playerEntity;
@@ -107,17 +99,15 @@ void PlayerMovement::moveTo(HexGrid::HexCellPtr cell) {
     if (_animator->getCurrentState()->getName() == "Idle") {
         _path = path;
         _step = 1;
-        _positionCached = false;
     };
 }
 void PlayerMovement::setGame(Game* game) {
-    _game = game;;
+    _game = game;
 }
 
 void PlayerMovement::stopMovement() {
     _path.clear();
     _step = 0;
-    _positionCached = false;
 }
 
 void PlayerMovement::setAnimator(dzemikk::Animator* animator) {
@@ -153,7 +143,7 @@ float PlayerMovement::lerpCellTo(const HexGrid::HexCellPtr& cell, float targetY)
 
 void PlayerMovement::updateCellLerps(double deltaTime) {
     for (auto it = _cellLerps.begin(); it != _cellLerps.end();) {
-        it->progress += 0.2;
+        it->progress += _lerpSpeed;
         float t = std::min(it->progress, 1.0f);
         dzemikk::Transform* cellTransform = _world->getHexTransformByCell(*it->cell);
         if (cellTransform) {
