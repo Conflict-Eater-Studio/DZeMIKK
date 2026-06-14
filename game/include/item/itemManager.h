@@ -29,8 +29,6 @@ class ItemManager : public dzemikk::MonoBehaviour {
     void addItem(const boost::uuids::uuid& chunkId, ItemSpawnConfig config);
     void addItem(const boost::uuids::uuid& chunkId, ItemSpawnConfig config, const HexCoord& coord);
 
-    void spawnItemsPerChunk();
-
     void update(double dt) override;
 
     [[nodiscard]] std::string typeName() const override {

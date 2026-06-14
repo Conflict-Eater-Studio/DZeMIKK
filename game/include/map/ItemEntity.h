@@ -16,7 +16,7 @@ namespace game {
 enum class ItemType : uint8_t { Heal, RevealPattern, RevealHex, BonusHex };
 
 struct ItemSpawnConfig {
-    boost::uuids::uuid persitantId = boost::uuids::random_generator()();
+    boost::uuids::uuid persistantId = boost::uuids::random_generator()();
     boost::uuids::uuid chunkId;
     ItemType type = ItemType::Heal;
     std::optional<float> healAmount = std::nullopt;
@@ -28,7 +28,7 @@ struct ItemSpawnConfig {
 #pragma region JSON Serialization
 // NOLINTBEGIN(readability-identifier-naming)
 inline void to_json(nlohmann::json& j, const ItemSpawnConfig& config) {
-    j = nlohmann::json{{"persistantId", boost::uuids::to_string(config.persitantId)},
+    j = nlohmann::json{{"persistantId", boost::uuids::to_string(config.persistantId)},
                        {"chunkId", boost::uuids::to_string(config.chunkId)},
                        {"type", static_cast<uint8_t>(config.type)},
                        {"healAmount", config.healAmount},
@@ -40,7 +40,7 @@ inline void from_json(const nlohmann::json& j, ItemSpawnConfig& config) {
         throw std::runtime_error("Missing required fields in ItemSpawnConfig JSON");
     }
 
-    config.persitantId = boost::uuids::string_generator()(j.at("persistantId").get<std::string>());
+    config.persistantId = boost::uuids::string_generator()(j.at("persistantId").get<std::string>());
     config.chunkId = boost::uuids::string_generator()(j.at("chunkId").get<std::string>());
     config.type = static_cast<ItemType>(j.at("type").get<uint8_t>());
     if (j.contains("healAmount") && !j.at("healAmount").is_null()) {

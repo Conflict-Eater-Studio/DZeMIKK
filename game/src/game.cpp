@@ -16,6 +16,7 @@
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
 #include "ecs/serialize/prefabSerializer.h"
+#include "enemySystem/enemyTypes.h"
 #include "imgui_internal.h"
 #include "input/input.h"
 #include "map/HexCoord.h"
@@ -111,10 +112,16 @@ void Game::start() {
     setupWorld();
     setupPlayer();
     registerDefaultTerritories();
-    // setupEnemies();
+    setupEnemies();
     // Setup Items and Totems ALWAYS after Enemies
     setupItems();
     // setupTotems();
+
+    if (_worldGO) {
+        if (auto* world = _worldGO->getComponent<game::World>(); world) {
+            world->saveToFile("./world.json");
+        }
+    }
 
     auto* root = _mainScene.get()->findGameObjectByName("Root");
     _stateMachine = root->addComponent<game::GameStateMachine>();
@@ -244,7 +251,7 @@ void Game::setupWorld() {
     if (std::filesystem::exists("./world.json")) {
         std::ifstream in("./world.json");
         nlohmann::json worldData = nlohmann::json::parse(in);
-        spdlog::info("Loading from file");
+        in.close();
         world->load(worldData);
     } else {
         auto chunkMain1 = world->addChunk({.name = "chunkMain1", .steps = 7});
@@ -334,8 +341,6 @@ void Game::setupWorld() {
 
         // Removes all hexes with gen state Blocked
         world->getGrid()->clean();
-
-        world->saveToFile("./world.json");
     }
 }
 
@@ -480,203 +485,216 @@ void Game::setupPlayer() {
 }
 
 void Game::setupEnemies() {
+    if (_worldGO == nullptr || _worldGO->getComponent<game::World>() == nullptr) {
+        return;
+    }
+
     auto* enemyManagerGO = _mainScene.get()->findGameObjectByName("EnemyManager");
+    enemyManagerGO->addTag("EnemyManager");
 
-    auto* enemyManager = enemyManagerGO->addComponent<game::EnemyManager>();
+    auto* manager = enemyManagerGO->addComponent<game::EnemyManager>();
+    manager->setWorld(_worldGO->getComponent<game::World>());
+    manager->setAssetManager(_engine->getAssetManager());
 
-    enemyManager->setWorld(_worldGO->getComponent<game::World>());
-    enemyManager->setAssetManager(_engine->getAssetManager());
+    auto* world = _worldGO->getComponent<game::World>();
 
-    std::vector<game::EnemySpawnConfig> chunkMain1Config = {{
-        .personality = game::EnemyPersonality::Aggressive,
-        .type = game::EnemyType::Normal,
-        .count = 1,
-        .hp = 15,
-        .territoryPattern = "1",
-        .blocksChunks = {_hexGrid->getChunkByName("chunkMain2")->getPersistantId()},
-    }};
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain1")->getPersistantId(),
-                                 chunkMain1Config);
+    if (!world) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[Game] World is not set up. Enemies will not be initialized.");
+#endif
+        return;
+    }
 
-    std::vector<game::EnemySpawnConfig> chunkMain2Config = {{
-        .personality = game::EnemyPersonality::Balanced,
-        .type = game::EnemyType::Normal,
-        .count = 1,
-        .hp = 20,
-        .territoryPattern = "2",
-        .blocksChunks = {_hexGrid->getChunkByName("chunkMain3")->getPersistantId()},
-    }};
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain2")->getPersistantId(),
-                                 chunkMain2Config);
+    nlohmann::json worldData;
+    if (std::filesystem::exists("./world.json")) {
+        std::ifstream in("./world.json");
+        worldData = nlohmann::json::parse(in);
+        in.close();
+    }
 
-    std::vector<game::EnemySpawnConfig> chunkMain2Sub1Config = {
-        {.personality = game::EnemyPersonality::Aggressive,
-         .type = game::EnemyType::Special,
-         .count = 1,
-         .hp = 30,
-         .territoryPattern = "3",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain2Sub2")->getPersistantId()}},
-    };
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain2Sub1")->getPersistantId(),
-                                 chunkMain2Sub1Config);
+    if (!worldData.empty() && worldData.contains("enemies")) {
+        manager->loadState(worldData["enemies"]);
+    } else {
+        game::EnemySpawnConfig chunkMain1Config = {
+            .personality = game::EnemyPersonality::Aggressive,
+            .type = game::EnemyType::Normal,
+            .hp = 15,
+            .territoryPattern = "1",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain2")->getPersistantId()},
+        };
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain1")->getPersistantId(),
+                          chunkMain1Config);
 
-    std::vector<game::EnemySpawnConfig> chunkMain2Sub2Config = {
-        {.personality = game::EnemyPersonality::Aggressive,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 20,
-         .territoryPattern = "2",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain2Sub3")->getPersistantId()}},
-    };
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain2Sub2")->getPersistantId(),
-                                 chunkMain2Sub2Config);
+        game::EnemySpawnConfig chunkMain2Config = {
+            .personality = game::EnemyPersonality::Balanced,
+            .type = game::EnemyType::Normal,
+            .hp = 20,
+            .territoryPattern = "2",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain3")->getPersistantId()},
+        };
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain2")->getPersistantId(),
+                          chunkMain2Config);
 
-    std::vector<game::EnemySpawnConfig> chunkMain3Config = {
-        {.personality = game::EnemyPersonality::Aggressive,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 20,
-         .territoryPattern = "2",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain4")->getPersistantId()}},
-        {.personality = game::EnemyPersonality::Defensive,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 25,
-         .territoryPattern = "3",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain4")->getPersistantId()}},
-    };
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain3")->getPersistantId(),
-                                 chunkMain3Config);
+        game::EnemySpawnConfig chunkMain2Sub1Config = {
+            .personality = game::EnemyPersonality::Aggressive,
+            .type = game::EnemyType::Special,
+            .hp = 30,
+            .territoryPattern = "3",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain2Sub2")->getPersistantId()}};
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain2Sub1")->getPersistantId(),
+                          chunkMain2Sub1Config);
 
-    std::vector<game::EnemySpawnConfig> chunkMain4Config = {
-        {.personality = game::EnemyPersonality::Defensive,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 25,
-         .territoryPattern = "3",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain5")->getPersistantId()}},
-        {.personality = game::EnemyPersonality::Balanced,
-         .type = game::EnemyType::Special,
-         .count = 1,
-         .hp = 35,
-         .territoryPattern = "4",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain4Sub1")->getPersistantId()}},
-    };
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain4")->getPersistantId(),
-                                 chunkMain4Config);
+        game::EnemySpawnConfig chunkMain2Sub2Config = {
+            .personality = game::EnemyPersonality::Aggressive,
+            .type = game::EnemyType::Normal,
+            .hp = 20,
+            .territoryPattern = "2",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain2Sub3")->getPersistantId()}};
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain2Sub2")->getPersistantId(),
+                          chunkMain2Sub2Config);
 
-    std::vector<game::EnemySpawnConfig> chunkMain5Config = {
-        {.personality = game::EnemyPersonality::Balanced,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 30,
-         .territoryPattern = "3",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain6")->getPersistantId()}},
-        {.personality = game::EnemyPersonality::Aggressive,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 25,
-         .territoryPattern = "3",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain6")->getPersistantId()}},
-    };
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain5")->getPersistantId(),
-                                 chunkMain5Config);
+        game::EnemySpawnConfig chunkMain3Config1 = {
+            .personality = game::EnemyPersonality::Aggressive,
+            .type = game::EnemyType::Normal,
+            .hp = 20,
+            .territoryPattern = "2",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain4")->getPersistantId()}};
+        game::EnemySpawnConfig chunkMain3Config2 = {
+            .personality = game::EnemyPersonality::Defensive,
+            .type = game::EnemyType::Normal,
+            .hp = 25,
+            .territoryPattern = "3",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain4")->getPersistantId()}};
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain3")->getPersistantId(),
+                          chunkMain3Config1);
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain3")->getPersistantId(),
+                          chunkMain3Config2);
 
-    std::vector<game::EnemySpawnConfig> chunkMain6Config = {
-        {.personality = game::EnemyPersonality::Balanced,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 35,
-         .territoryPattern = "4",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain7")->getPersistantId()}},
-    };
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain6")->getPersistantId(),
-                                 chunkMain6Config);
+        game::EnemySpawnConfig chunkMain4Config1 = {
+            .personality = game::EnemyPersonality::Defensive,
+            .type = game::EnemyType::Normal,
+            .hp = 25,
+            .territoryPattern = "3",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain5")->getPersistantId()}};
+        game::EnemySpawnConfig chunkMain4Config2 = {
+            .personality = game::EnemyPersonality::Balanced,
+            .type = game::EnemyType::Special,
+            .hp = 35,
+            .territoryPattern = "4",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain4Sub1")->getPersistantId()}};
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain4")->getPersistantId(),
+                          chunkMain4Config1);
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain4")->getPersistantId(),
+                          chunkMain4Config2);
 
-    std::vector<game::EnemySpawnConfig> chunkMain7Config = {
-        {.personality = game::EnemyPersonality::Defensive,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 25,
-         .territoryPattern = "3",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain8")->getPersistantId()}},
-        {.personality = game::EnemyPersonality::Defensive,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 30,
-         .territoryPattern = "3",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain8")->getPersistantId()}},
-    };
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain7")->getPersistantId(),
-                                 chunkMain7Config);
+        game::EnemySpawnConfig chunkMain5Config1 = {
+            .personality = game::EnemyPersonality::Balanced,
+            .type = game::EnemyType::Normal,
+            .hp = 30,
+            .territoryPattern = "3",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain6")->getPersistantId()}};
+        game::EnemySpawnConfig chunkMain5Config2 = {
+            .personality = game::EnemyPersonality::Aggressive,
+            .type = game::EnemyType::Normal,
+            .hp = 25,
+            .territoryPattern = "3",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain6")->getPersistantId()}};
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain5")->getPersistantId(),
+                          chunkMain5Config1);
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain5")->getPersistantId(),
+                          chunkMain5Config2);
 
-    std::vector<game::EnemySpawnConfig> chunkMain7Sub1Config = {
-        {.personality = game::EnemyPersonality::Defensive,
-         .type = game::EnemyType::Special,
-         .count = 1,
-         .hp = 40,
-         .territoryPattern = "5",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain7Sub2")->getPersistantId()}},
-    };
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain7Sub1")->getPersistantId(),
-                                 chunkMain7Sub1Config);
+        game::EnemySpawnConfig chunkMain6Config = {
+            .personality = game::EnemyPersonality::Balanced,
+            .type = game::EnemyType::Normal,
+            .hp = 35,
+            .territoryPattern = "4",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain7")->getPersistantId()}};
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain6")->getPersistantId(),
+                          chunkMain6Config);
 
-    std::vector<game::EnemySpawnConfig> chunkMain7Sub2Config = {{
-        .personality = game::EnemyPersonality::Defensive,
-        .type = game::EnemyType::Normal,
-        .count = 1,
-        .hp = 35,
-        .territoryPattern = "4",
-        .blocksChunks = {_hexGrid->getChunkByName("chunkMain7Sub3")->getPersistantId()},
-    }};
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain7Sub2")->getPersistantId(),
-                                 chunkMain7Sub2Config);
+        game::EnemySpawnConfig chunkMain7Config1 = {
+            .personality = game::EnemyPersonality::Defensive,
+            .type = game::EnemyType::Normal,
+            .hp = 25,
+            .territoryPattern = "3",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain8")->getPersistantId()}};
+        game::EnemySpawnConfig chunkMain7Config2 = {
+            .personality = game::EnemyPersonality::Defensive,
+            .type = game::EnemyType::Normal,
+            .hp = 30,
+            .territoryPattern = "3",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain8")->getPersistantId()}};
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain7")->getPersistantId(),
+                          chunkMain7Config1);
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain7")->getPersistantId(),
+                          chunkMain7Config2);
 
-    std::vector<game::EnemySpawnConfig> chunkMain8Config = {
-        {.personality = game::EnemyPersonality::Aggressive,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 35,
-         .territoryPattern = "4",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain9")->getPersistantId()}},
-        {.personality = game::EnemyPersonality::Balanced,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 40,
-         .territoryPattern = "5",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain9")->getPersistantId()}},
-    };
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain8")->getPersistantId(),
-                                 chunkMain8Config);
+        game::EnemySpawnConfig chunkMain7Sub1Config = {
+            .personality = game::EnemyPersonality::Defensive,
+            .type = game::EnemyType::Special,
+            .hp = 40,
+            .territoryPattern = "5",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain7Sub2")->getPersistantId()}};
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain7Sub1")->getPersistantId(),
+                          chunkMain7Sub1Config);
 
-    std::vector<game::EnemySpawnConfig> chunkMain9Config = {
-        {.personality = game::EnemyPersonality::Balanced,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 35,
-         .territoryPattern = "4",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain10")->getPersistantId()}},
-        {.personality = game::EnemyPersonality::Aggressive,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 30,
-         .territoryPattern = "1",
-         .blocksChunks = {_hexGrid->getChunkByName("chunkMain10")->getPersistantId()}},
-    };
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain9")->getPersistantId(),
-                                 chunkMain9Config);
+        game::EnemySpawnConfig chunkMain7Sub2Config = {
+            .personality = game::EnemyPersonality::Defensive,
+            .type = game::EnemyType::Normal,
+            .hp = 35,
+            .territoryPattern = "4",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain7Sub3")->getPersistantId()},
+        };
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain7Sub2")->getPersistantId(),
+                          chunkMain7Sub2Config);
 
-    std::vector<game::EnemySpawnConfig> chunkMain10Config = {
-        {.personality = game::EnemyPersonality::Aggressive,
-         .type = game::EnemyType::Normal,
-         .count = 1,
-         .hp = 50,
-         .territoryPattern = "6"},
-    };
-    enemyManager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain10")->getPersistantId(),
-                                 chunkMain10Config);
+        game::EnemySpawnConfig chunkMain8Config1 = {
+            .personality = game::EnemyPersonality::Aggressive,
+            .type = game::EnemyType::Normal,
+            .hp = 35,
+            .territoryPattern = "4",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain9")->getPersistantId()}};
+        game::EnemySpawnConfig chunkMain8Config2 = {
+            .personality = game::EnemyPersonality::Balanced,
+            .count = 1,
+            .hp = 40,
+            .territoryPattern = "5",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain9")->getPersistantId()}};
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain8")->getPersistantId(),
+                          chunkMain8Config1);
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain8")->getPersistantId(),
+                          chunkMain8Config2);
 
-    enemyManager->spawnEnemiesPerChunk();
+        game::EnemySpawnConfig chunkMain9Config1 = {
+            .personality = game::EnemyPersonality::Balanced,
+            .type = game::EnemyType::Normal,
+            .count = 1,
+            .hp = 35,
+            .territoryPattern = "4",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain10")->getPersistantId()}};
+        game::EnemySpawnConfig chunkMain9Config2 = {
+            .personality = game::EnemyPersonality::Aggressive,
+            .type = game::EnemyType::Normal,
+            .count = 1,
+            .hp = 30,
+            .territoryPattern = "1",
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain10")->getPersistantId()}};
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain9")->getPersistantId(),
+                          chunkMain9Config1);
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain9")->getPersistantId(),
+                          chunkMain9Config2);
+
+        game::EnemySpawnConfig chunkMain10Config = {
+            .personality = game::EnemyPersonality::Aggressive,
+            .type = game::EnemyType::Normal,
+            .count = 1,
+            .hp = 50,
+            .territoryPattern = "6",
+        };
+        manager->addEnemy(_hexGrid->getChunkByName("chunkMain10")->getPersistantId(),
+                          chunkMain10Config);
+    }
 
     auto* enemyPatternComponent = enemyManagerGO->addComponent<game::EnemyPatternComponent>();
     auto* enemyPanel = _mainScene.get()->findGameObjectByName("Enemy_Panel");
@@ -686,11 +704,11 @@ void Game::setupEnemies() {
     combatEnamyPanel->setAssetManager(_engine->getAssetManager());
     combatEnamyPanel->setCanvas(enemyPanel);
 
-    auto enemyHealthGO = _mainScene.get()
-                             ->findGameObjectByName("Enemy_Avatar_Panel")
-                             ->findDescendantByName("Health_Holder");
+    auto* enemyHealthGO = _mainScene.get()
+                              ->findGameObjectByName("Enemy_Avatar_Panel")
+                              ->findDescendantByName("Health_Holder");
 
-    auto enemyHealthSystem = enemyHealthGO->addComponent<game::HealthSystem>();
+    auto* enemyHealthSystem = enemyHealthGO->addComponent<game::HealthSystem>();
     enemyHealthSystem->setOwner(enemyHealthGO);
     enemyHealthSystem->setTextRenderer(
         enemyHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
@@ -759,9 +777,6 @@ void Game::setupItems() {
             manager->addItem(world->getGrid()->getChunkByName(name)->getPersistantId(),
                              {.type = game::ItemEntity::ItemType::BonusHex, .bonusPattern = pat});
         }
-
-        std::ofstream out("./items.json");
-        out << manager->saveState().dump(4);
     }
 }
 

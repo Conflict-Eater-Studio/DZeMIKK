@@ -1,6 +1,7 @@
 #include "enemySystem/enemyManager.h"
 
 #include "enemySystem/enemyEntity.h"
+#include "enemySystem/enemyTypes.h"
 #include "enemySystem/territoryPatternRegistry.h"
 #include "scripts/world/world.h"
 
@@ -11,7 +12,6 @@
 #include <ecs/gameobject.h>
 #include <ecs/scene.h>
 #include <ecs/serialize/prefabSerializer.h>
-#include <iostream>
 
 game::EnemyManager::EnemyManager(unsigned int seed) : _rng(seed) {}
 
@@ -23,40 +23,66 @@ void game::EnemyManager::setAssetManager(dzemikk::AssetManager* assetManager) {
     _assetManager = assetManager;
 }
 
-void game::EnemyManager::setSpawnConfig(const boost::uuids::uuid& chunkId,
-                                        const std::vector<EnemySpawnConfig>& config) {
-    _spawnRules[chunkId] = config;
-}
-
-void game::EnemyManager::spawnEnemiesPerChunk() {
+void game::EnemyManager::addEnemy(const boost::uuids::uuid& chunkId, EnemySpawnConfig config) {
     if (!_world || !_assetManager) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[ItemManager] World/AssetManager is/are not set. Cannot add enemy");
+        return;
+#endif
+    }
+
+    config.chunkId = chunkId;
+    _spawnRules[chunkId].emplace_back(config);
+
+    auto cells = collectAvailableCells(_world->getGrid()->getChunkById(chunkId));
+
+    if (cells.empty()) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[EnemyManager] No available cells in chunk. Enemy won't be spawned");
+#endif
         return;
     }
 
-    const auto& chunks = _world->getGrid()->getChunks();
+    std::shuffle(cells.begin(), cells.end(), _rng);
 
-    for (const auto& [chunkId, chunkPtr] : chunks) {
-
-        auto ruleIt = _spawnRules.find(chunkId);
-
-        if (ruleIt == _spawnRules.end()) {
+    for (auto& cell : cells) {
+        auto* pattern = TerritoryPatternRegistry::instance().get(config.territoryPattern);
+        if (pattern && !canPlacePattern(cell->getCoord(), *pattern)) {
             continue;
         }
-
-        auto availableCells = collectAvailableCells(chunkPtr.get());
-
-        if (availableCells.empty()) {
-            continue;
-        }
-
-        std::shuffle(availableCells.begin(), availableCells.end(), _rng);
-
-        size_t cursor = 0;
-
-        for (const auto& cfg : ruleIt->second) {
-            spawnFromConfig(cfg, availableCells, cursor, chunkId);
-        }
+        spawnEnemy(chunkId, cell, config);
+        return;
     }
+
+#if DZEMIKK_DEV_TOOLS
+    spdlog::warn(
+        "[EnemyManager] Can't place territory pattern on any cell. Enemy won't be spawned");
+#endif
+}
+
+void game::EnemyManager::addEnemy(const boost::uuids::uuid& chunkId, EnemySpawnConfig config,
+                                  const HexCoord& coord) {
+    if (!_world || !_assetManager) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[ItemManager] World/AssetManager is/are not set. Cannot add enemy");
+        return;
+#endif
+    }
+
+    config.chunkId = chunkId;
+    _spawnRules[chunkId].emplace_back(std::move(config));
+
+    auto chunk = _world->getGrid()->getChunks().find(chunkId);
+    if (chunk == _world->getGrid()->getChunks().end()) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[EnemyManager] Chunk with id {} not found. Cannot add enemy",
+                     boost::uuids::to_string(chunkId));
+#endif
+        return;
+    }
+
+    auto cellPtr = chunk->second->getCell(coord);
+    spawnEnemy(chunkId, cellPtr, config);
 }
 
 std::vector<game::HexChunk::HexCellPtr> game::EnemyManager::collectAvailableCells(HexChunk* chunk) {
@@ -73,41 +99,36 @@ std::vector<game::HexChunk::HexCellPtr> game::EnemyManager::collectAvailableCell
     return result;
 }
 
-void game::EnemyManager::spawnFromConfig(const EnemySpawnConfig& cfg,
-                                         std::vector<HexChunk::HexCellPtr>& availableCells,
-                                         size_t& cursor, const boost::uuids::uuid& spawnChunkId) {
-
-    const auto* pattern = TerritoryPatternRegistry::instance().get(cfg.territoryPattern);
-
-    if (!pattern) {
+void game::EnemyManager::spawnEnemy(const boost::uuids::uuid& chunkId,
+                                    const HexChunk::HexCellPtr& cell,
+                                    const EnemySpawnConfig& config, bool skipValidation) {
+    if (!_assetManager || !cell) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[EnemyManager] Asset Manager not set. Enemy won't be spawned");
+#endif
         return;
     }
 
-    for (int i = 0; i < cfg.count; ++i) {
+    const auto* pattern = TerritoryPatternRegistry::instance().get(config.territoryPattern);
 
-        while (cursor < availableCells.size()) {
-
-            const game::HexGrid::HexCellPtr cell = availableCells[cursor++];
-
-            if (!canPlacePattern(cell->getCoord(), *pattern)) {
-                continue;
-            }
-
-            spawnEnemy(cell, cfg, spawnChunkId);
-            break;
-        }
+    if (!pattern) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[EnemyManager] Territory pattern not found: {}. Enemy won't be spawned",
+                     config.territoryPattern);
+#endif
+        return;
     }
-}
 
-void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnConfig& cfg,
-                                    const boost::uuids::uuid& spawnChunkId) {
-    if (!_assetManager || !cell) {
+    if (!skipValidation && !canPlacePattern(cell->getCoord(), *pattern)) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[EnemyManager] Can't place territory pattern. Enemy won't be spawned");
+#endif
         return;
     }
 
     std::string prefabPath;
 
-    switch (cfg.personality) {
+    switch (config.personality) {
     case EnemyPersonality::Aggressive:
         prefabPath = "prefabs/aggressive_enemy.prefab";
         break;
@@ -144,24 +165,25 @@ void game::EnemyManager::spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnC
 
     auto* enemy = enemyGO->addComponent<EnemyEntity>();
 
-    enemy->setHp(cfg.hp);
-    enemy->setEnemyType(cfg.type);
-    enemy->setEnemyPersonality(cfg.personality);
-    enemy->setConfig(cfg);
+    enemy->setId(config.persistantId);
+    enemy->setHp(config.hp);
+    enemy->setEnemyType(config.type);
+    enemy->setEnemyPersonality(config.personality);
+    enemy->setConfig(config);
 
     enemy->onEnter(cell);
 
     cell->setEntity(enemy);
     cell->setState(HexCell::State::Enemy);
 
-    const auto* pattern = TerritoryPatternRegistry::instance().get(cfg.territoryPattern);
+    _spawnedEnemies[chunkId].emplace_back(enemy);
 
     if (pattern) {
         assignTerritory(enemy, cell, *pattern);
     }
 
-    for (const auto& blockedChunkId : cfg.blocksChunks) {
-        _world->getGrid()->lockBridge({spawnChunkId, blockedChunkId}, enemy->getId());
+    for (const auto& blockedChunkId : config.blocksChunks) {
+        _world->getGrid()->lockBridge({chunkId, blockedChunkId}, enemy->getId());
     }
 }
 
@@ -227,20 +249,18 @@ bool game::EnemyManager::canPlacePattern(HexCoord center, const game::TerritoryP
 
         auto cell = grid->getCell(c);
 
-        if (!cell) {
-            return false;
-        }
+        if (cell) {
+            if (cell->getState() != HexCell::State::Empty) {
+                return false;
+            }
 
-        if (cell->getState() != HexCell::State::Empty) {
-            return false;
-        }
+            if (cell->getGenState() != HexCell::GenState::Normal) {
+                return false;
+            }
 
-        if (cell->getGenState() != HexCell::GenState::Normal) {
-            return false;
-        }
-
-        if (cell->getType() != HexCell::Type::Normal) {
-            return false;
+            if (cell->getType() != HexCell::Type::Normal) {
+                return false;
+            }
         }
     }
 
@@ -258,4 +278,58 @@ game::EnemyEntity* game::EnemyManager::getEnemyByCell(game::HexCell* cell) const
     }
 
     return nullptr;
+}
+
+nlohmann::json game::EnemyManager::saveState() const {
+    nlohmann::json j;
+    for (const auto& [chunkId, enemies] : _spawnedEnemies) {
+        for (const auto* enemy : enemies) {
+            auto key = boost::uuids::to_string(enemy->getConfig().persistantId);
+            j["enemies"][key] = enemy->getConfig();
+            j["enemies"][key]["gridPos"] = enemy->getCell()->getCoord();
+            j["enemies"][key]["chunkId"] = boost::uuids::to_string(chunkId);
+        }
+    };
+
+    return j;
+}
+
+void game::EnemyManager::loadState(const nlohmann::json& j) {
+    for (const auto& [idStr, itemData] : j.items()) {
+        game::EnemySpawnConfig cfg = itemData.get<game::EnemySpawnConfig>();
+        HexCoord coord = itemData["gridPos"].get<HexCoord>();
+        auto chunkId = boost::uuids::string_generator()(itemData.at("chunkId").get<std::string>());
+
+        cfg.chunkId = chunkId;
+        _spawnRules[chunkId].emplace_back(cfg);
+
+        auto cellPtr = _world->getGrid()->getChunkById(chunkId)->getCell(coord);
+        spawnEnemy(chunkId, cellPtr, cfg, true);
+    }
+}
+
+void game::EnemyManager::removeEnemy(game::EnemyEntity* enemy) {
+    if (!enemy) {
+        return;
+    }
+
+    auto chunkId = enemy->getConfig().chunkId;
+
+    _spawnRules[chunkId].erase(
+        std::remove_if(_spawnRules[chunkId].begin(), _spawnRules[chunkId].end(),
+                       [&](const EnemySpawnConfig& cfg) {
+                           return cfg.persistantId == enemy->getConfig().persistantId;
+                       }),
+        _spawnRules[chunkId].end());
+    if (_spawnRules[chunkId].empty()) {
+        _spawnRules.erase(chunkId);
+    }
+
+    _spawnedEnemies[chunkId].erase(
+        std::remove_if(_spawnedEnemies[chunkId].begin(), _spawnedEnemies[chunkId].end(),
+                       [&](const EnemyEntity* e) { return e->getId() == enemy->getId(); }),
+        _spawnedEnemies[chunkId].end());
+    if (_spawnedEnemies[chunkId].empty()) {
+        _spawnedEnemies.erase(chunkId);
+    }
 }

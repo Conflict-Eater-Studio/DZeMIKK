@@ -1,6 +1,7 @@
 #ifndef GAME_ENEMY_TYPES_H
 #define GAME_ENEMY_TYPES_H
 
+#include "boost/uuid/random_generator.hpp"
 #include "boost/uuid/string_generator.hpp"
 #include "boost/uuid/uuid.hpp"
 #include "boost/uuid/uuid_io.hpp"
@@ -23,6 +24,8 @@ enum class EnemyPersonality : std::uint8_t { Aggressive, Defensive, Balanced };
 enum class EnemyType : std::uint8_t { Normal, Special };
 
 struct EnemySpawnConfig {
+    boost::uuids::uuid persistantId = boost::uuids::random_generator()();
+    boost::uuids::uuid chunkId;
     EnemyPersonality personality;
     EnemyType type;
     int count;

@@ -378,6 +378,14 @@ void game::CombatState::resolveConflict() {
         for (const auto& childChunk : enemyConfig.blocksChunks) {
             grid->unlockBridge({enemyChunkId, childChunk}, _currentEnemy->getId());
         }
+
+        auto* enemyManagerGO = _game->getCurrentScene().get()->findGameObjectByName("EnemyManager");
+        if (enemyManagerGO) {
+            auto* enemyManager = enemyManagerGO->getComponent<EnemyManager>();
+            if (enemyManager) {
+                enemyManager->removeEnemy(_currentEnemy);
+            }
+        }
     }
 
     if (playerHealth->isDead()) {

@@ -155,7 +155,7 @@ void ItemManager::spawnItem(const boost::uuids::uuid& chunkId, const HexChunk::H
     item->setConfig(cfg);
     // NOTE: Kind of experimental. Theoretically possible and *should not* break anything here. But
     // if smth breaks call the ambulance.
-    item->setId(cfg.persitantId);
+    item->setId(cfg.persistantId);
 
     if (item != nullptr && go != nullptr) {
         cell->setState(HexCell::State::Item);
@@ -198,8 +198,8 @@ nlohmann::json ItemManager::saveState() const {
     nlohmann::json j;
     for (const auto& [chunkId, items] : _spawnedItems) {
         for (const auto* item : items) {
-            j["items"][boost::uuids::to_string(item->getConfig().persitantId)] = item->getConfig();
-            j["items"][boost::uuids::to_string(item->getConfig().persitantId)]["gridPos"] =
+            j["items"][boost::uuids::to_string(item->getConfig().persistantId)] = item->getConfig();
+            j["items"][boost::uuids::to_string(item->getConfig().persistantId)]["gridPos"] =
                 item->getCell()->getCoord();
         }
     };
@@ -208,11 +208,7 @@ nlohmann::json ItemManager::saveState() const {
 }
 
 void ItemManager::loadState(const nlohmann::json& j) {
-    if (!j.contains("items")) {
-        spdlog::info("No items found in save data");
-        return;
-    }
-    for (const auto& [idStr, itemData] : j["items"].items()) {
+    for (const auto& [idStr, itemData] : j.items()) {
         auto id = boost::uuids::string_generator()(idStr);
         ItemSpawnConfig cfg = itemData.get<ItemSpawnConfig>();
         HexCoord coord = itemData["gridPos"].get<HexCoord>();

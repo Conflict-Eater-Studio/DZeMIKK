@@ -7,6 +7,7 @@
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/serialize/prefabSerializer.h"
+#include "enemySystem/enemyManager.h"
 #include "game.h"
 #include "item/itemManager.h"
 #include "map/PlayerEntity.h"
@@ -214,10 +215,20 @@ nlohmann::json World::save() {
     auto* itemManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("ItemManager");
     if (itemManagerGo) {
         auto* im = itemManagerGo->getComponent<ItemManager>();
-        j["items"] = im->saveState();
+        j["items"] = im->saveState()["items"];
     } else {
 #if DZEMIKK_DEV_TOOLS
         spdlog::warn("[World] No ItemManager GameObject found during save");
+#endif
+    }
+
+    auto* enemyManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("EnemyManager");
+    if (enemyManagerGo) {
+        auto* em = enemyManagerGo->getComponent<EnemyManager>();
+        j["enemies"] = em->saveState()["enemies"];
+    } else {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[World] No EnemyManager GameObject found during save");
 #endif
     }
 

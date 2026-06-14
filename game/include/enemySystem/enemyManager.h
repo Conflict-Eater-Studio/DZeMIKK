@@ -2,6 +2,7 @@
 #define GAME_ENEMY_MANAGER_H
 
 #include "ecs/components/monobehaviour.h"
+#include "enemySystem/enemyEntity.h"
 #include "enemyTypes.h"
 #include "map/HexGrid.h"
 
@@ -50,22 +51,28 @@ class EnemyManager : public dzemikk::MonoBehaviour {
     void setAssetManager(dzemikk::AssetManager* assetManager);
 
     /**
-     * @brief Sets enemy spawn rules for a chunk.
+     * @brief Spawns an enemy on a random cell on a given chunk
      *
-     * @param chunkId Chunk identifier.
-     * @param config Spawn configuration list.
+     * @param chunkId Chunk ID on which the enemy will be spawned
+     * @param config Config for a given enemy
      */
-    void setSpawnConfig(const boost::uuids::uuid& chunkId,
-                        const std::vector<EnemySpawnConfig>& config);
+    void addEnemy(const boost::uuids::uuid& chunkId, EnemySpawnConfig config);
+
+    /**
+     * @brief Spawns as enemy on a given cell from a given chunk
+     *
+     * @param chunkId Chunk ID on which the enemy will be spawned
+     * @param config Config for a given enemy
+     * @param coord Coord of a cell to place the enenmy
+     */
+    void addEnemy(const boost::uuids::uuid& chunkId, EnemySpawnConfig config,
+                  const HexCoord& coord);
+
+    void removeEnemy(EnemyEntity* enemy);
 
 #pragma endregion
 
 #pragma region Enemy management
-
-    /**
-     * @brief Spawns enemies according to configured chunk rules.
-     */
-    void spawnEnemiesPerChunk();
 
     /**
      * @brief Returns the enemy occupying a given cell.
@@ -77,6 +84,13 @@ class EnemyManager : public dzemikk::MonoBehaviour {
 
 #pragma endregion
 
+#pragma region Save Load
+
+    [[nodiscard]] nlohmann::json saveState() const;
+    void loadState(const nlohmann::json& j);
+
+#pragma endregion
+
     [[nodiscard]] std::string typeName() const override {
         return "EnemyManager";
     }
@@ -84,15 +98,13 @@ class EnemyManager : public dzemikk::MonoBehaviour {
   private:
 #pragma region Spawning
 
-    void spawnEnemy(HexChunk::HexCellPtr cell, const EnemySpawnConfig& cfg,
-                    const boost::uuids::uuid& spawnChunkId);
     void assignTerritory(EnemyEntity* enemy, HexChunk::HexCellPtr centerCell,
                          const TerritoryPattern& pattern);
 
     static std::vector<HexChunk::HexCellPtr> collectAvailableCells(HexChunk* chunk);
-    void spawnFromConfig(const EnemySpawnConfig& cfg,
-                         std::vector<HexChunk::HexCellPtr>& availableCells, size_t& cursor,
-                         const boost::uuids::uuid& spawnChunkId);
+    void spawnEnemy(const boost::uuids::uuid& chunkId, const HexChunk::HexCellPtr& cell,
+                    const EnemySpawnConfig& config, bool skipValidation = false);
+
 #pragma endregion
 
 #pragma region Helpers
@@ -125,6 +137,7 @@ class EnemyManager : public dzemikk::MonoBehaviour {
 #pragma region Lookup
 
     std::unordered_map<HexCoord, EnemyEntity*> _cellToEnemy;
+    std::unordered_map<boost::uuids::uuid, std::vector<EnemyEntity*>> _spawnedEnemies;
 
 #pragma endregion
 };
