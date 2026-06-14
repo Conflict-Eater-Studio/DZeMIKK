@@ -177,6 +177,7 @@ void Engine::start() {
         if (_mode == EngineMode::Game) {
             Profiler::Get().DrawImGui();
 
+            /*
             std::vector<ColorGradingEffect*> gradingEffects;
             ComponentRegistry::get().getEnabledComponents<ColorGradingEffect>(gradingEffects);
 
@@ -266,7 +267,9 @@ void Engine::start() {
                 }
 
                 ImGui::End();
+
             }
+            */
         }
         glDisable(GL_DEPTH_TEST);
         ImGui::Render();

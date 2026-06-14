@@ -128,6 +128,7 @@ namespace dzemikk {
          * Ownership is maintained via unique_ptr.
          */
         std::vector<std::unique_ptr<IRenderPass>> _passes;
+        std::vector<std::unique_ptr<IRenderPass>> _uiPasses;
         PostProcessRenderPass _postProcessingPass;
 
         /**
@@ -199,6 +200,7 @@ namespace dzemikk {
          * @warning Adding multiple passes of the same type will overwrite lookup map entry.
          */
         template <typename T, typename... Args> T* addPass(Args&&... args);
+        template <typename T, typename... Args> T* addUIPass(Args&&... args);
 
 #pragma endregion
     };
@@ -225,6 +227,13 @@ template <typename T, typename... Args> T* Renderer::addPass(Args&&... args) {
     _passMap[typeid(T)] = ptr;
     _passes.push_back(std::move(pass));
 
+    return ptr;
+}
+
+template <typename T, typename... Args> T* Renderer::addUIPass(Args&&... args) {
+    auto pass = std::make_unique<T>(std::forward<Args>(args)...);
+    T* ptr = pass.get();
+    _uiPasses.push_back(std::move(pass));
     return ptr;
 }
 
