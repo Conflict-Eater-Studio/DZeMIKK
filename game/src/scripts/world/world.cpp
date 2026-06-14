@@ -8,6 +8,7 @@
 #include "ecs/scene.h"
 #include "ecs/serialize/prefabSerializer.h"
 #include "game.h"
+#include "item/itemManager.h"
 #include "map/PlayerEntity.h"
 #include "renderer/shader.h"
 #include "scripts/world/worldHex.h"
@@ -210,7 +211,23 @@ nlohmann::json World::save() {
             d);
     }
 
+    auto* itemManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("ItemManager");
+    if (itemManagerGo) {
+        auto* im = itemManagerGo->getComponent<ItemManager>();
+        j["items"] = im->saveState();
+    } else {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[World] No ItemManager GameObject found during save");
+#endif
+    }
+
     return j;
+}
+
+void World::saveToFile(const std::string& filename) {
+    std::ofstream out(filename);
+    out << save().dump(4);
+    out.close();
 }
 
 void World::update(double dt) {

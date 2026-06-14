@@ -11,21 +11,22 @@
 #include "player/inventory.h"
 #include "player/playerPatternComponent.h"
 #include "stateMachine/combatState.h"
-#include <ui/combatUIPanel.h>
-#include <audio/sound.h>
+
 #include <audio/audioManager.h>
+#include <audio/sound.h>
 #include <totem/totemEntity.h>
+#include <ui/combatUIPanel.h>
 
 namespace playerEntitySound {
-    struct SoundInitContext {
-        dzemikk::AudioManager* audioManager;
-    };
+struct SoundInitContext {
+    dzemikk::AudioManager* audioManager;
+};
 
-    void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
-        ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
-        ctx.audioManager->getSFXGroup()->setVolume(0.5F);
-    }
+void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
+    ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
+    ctx.audioManager->getSFXGroup()->setVolume(0.5F);
 }
+} // namespace playerEntitySound
 
 namespace game {
 void PlayerEntity::onEnter(HexCellPtr cell) {
@@ -60,8 +61,8 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                     taskS;
                 taskS.context = sCtx;
                 taskS.onLoad = playerEntitySound::onSFXLoad;
-                _game->getEngine()->getAssetManager()->getAsync(
-                    "audio/prime_uzycie_itemu-Fmin.wav", taskS);
+                _game->getEngine()->getAssetManager()->getAsync("audio/prime_uzycie_itemu-Fmin.wav",
+                                                                taskS);
                 break;
             }
             case ItemEntity::ItemType::RevealHex: {
@@ -84,11 +85,11 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                     ppc->addPattern(toAdd);
                     ent->consume();
 
-                    auto pattern = ppc->getPattern(ppc->getPatternCount() - 1);
+                    auto* pattern = ppc->getPattern(ppc->getPatternCount() - 1);
 
-                    auto playerPanel =
+                    auto* playerPanel =
                         this->getOwner()->getScene()->findGameObjectByName("Player_Panel");
-                    auto combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
+                    auto* combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
                     combatPlayerPanel->addPatternSlot(*pattern);
 
                     playerEntitySound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
@@ -102,6 +103,29 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                 }
                 break;
             }
+        }
+    }
+
+    if (cell->isCheckpoint()) {
+        auto* worldGo = _game->getCurrentScene().get()->findGameObjectByTag("World");
+        if (worldGo) {
+            auto* world = worldGo->getComponent<World>();
+            if (world) {
+                world->saveToFile("./world.json");
+#if DZEMIKK_DEV_TOOLS
+                spdlog::info("[PlayerEntity] Checkpoint reached. Saved world data");
+#endif
+            } else {
+#if DZEMIKK_DEV_TOOLS
+                spdlog::warn("[PlayerEntity] World GameObject found, but World component is not. "
+                             "Cannot save");
+#endif
+            }
+        } else {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::warn("[PlayerEntity] Checkpoint reached but World GameObject is not found. "
+                         "Cannot save.");
+#endif
         }
     }
 
@@ -119,7 +143,7 @@ void PlayerEntity::tryMove(const HexCellPtr& targetCell) {
     if (!targetCell) {
         return;
     }
-    
+
     if (auto* totem = dynamic_cast<TotemEntity*>(targetCell->getEntity())) {
         totem->use();
         return;

@@ -113,7 +113,7 @@ void Game::start() {
     registerDefaultTerritories();
     // setupEnemies();
     // Setup Items and Totems ALWAYS after Enemies
-    // setupItems();
+    setupItems();
     // setupTotems();
 
     auto* root = _mainScene.get()->findGameObjectByName("Root");
@@ -335,9 +335,7 @@ void Game::setupWorld() {
         // Removes all hexes with gen state Blocked
         world->getGrid()->clean();
 
-        std::ofstream out("./world.json");
-        out << world->save().dump(4);
-        out.close();
+        world->saveToFile("./world.json");
     }
 }
 
@@ -704,6 +702,7 @@ void Game::setupItems() {
     }
 
     auto* go = _mainScene.get()->createGameObject("ItemManager");
+    go->addTag("ItemManager");
     auto* manager = go->addComponent<game::ItemManager>(1);
     manager->setWorld(_worldGO->getComponent<game::World>());
     manager->setAssetManager(_engine->getAssetManager());
@@ -718,11 +717,14 @@ void Game::setupItems() {
         return;
     }
 
-    if (std::filesystem::exists("./items.json")) {
-        spdlog::info("Loading items from file");
-        std::ifstream in("./items.json");
-        nlohmann::json itemsData = nlohmann::json::parse(in);
-        manager->loadState(itemsData);
+    nlohmann::json worldData;
+    if (std::filesystem::exists("./world.json")) {
+        std::ifstream in("./world.json");
+        worldData = nlohmann::json::parse(in);
+    }
+
+    if (!worldData.empty() && worldData.contains("items")) {
+        manager->loadState(worldData["items"]);
     } else {
         // Heal Item setup
         auto healChunks = {"chunkMain2Sub2", "chunkMain3",     "chunkMain4Sub1",

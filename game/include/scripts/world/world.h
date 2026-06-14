@@ -74,6 +74,7 @@ class World : public dzemikk::MonoBehaviour {
     void renderChunk(boost::uuids::uuid id);
 
     nlohmann::json save();
+    void saveToFile(const std::string& filename);
     void load(const nlohmann::json& def);
 
     void registerGenerator(const std::string& id,
