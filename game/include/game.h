@@ -70,8 +70,6 @@ class Game {
     game::PlayerMovement* _playerMovement = nullptr;
     game::CameraController* _cameraController = nullptr;
     game::GameStateMachine* _stateMachine = nullptr;
-
-    std::unordered_map<std::string, boost::uuids::uuid> _chunkIds;
 };
 
 #endif

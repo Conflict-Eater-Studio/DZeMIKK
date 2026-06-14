@@ -13,11 +13,11 @@
 
 namespace game {
 HexChunk::HexChunk(HexChunk::Config config, HexChunk* parent, unsigned int seed)
-    : _parent(parent), _config(std::move(config)), _rng(seed) {
+    : _parent(parent), _config(std::move(config)), _rng(seed), _name(config.name) {
     if (config.chunkId != boost::uuids::nil_uuid()) {
-        _id = config.chunkId;
+        _persitantId = config.chunkId;
     } else {
-        _id = boost::uuids::random_generator()();
+        _persitantId = boost::uuids::random_generator()();
     }
 
     auto dist = ((parent->getConfig().steps + _config.steps) / 2) + 2;
@@ -36,11 +36,11 @@ HexChunk::HexChunk(HexChunk::Config config, HexChunk* parent, unsigned int seed)
 }
 
 HexChunk::HexChunk(HexChunk::Config config, unsigned int seed)
-    : _config(std::move(config)), _rng(seed) {
+    : _config(std::move(config)), _rng(seed), _name(config.name) {
     if (config.chunkId != boost::uuids::nil_uuid()) {
-        _id = config.chunkId;
+        _persitantId = config.chunkId;
     } else {
-        _id = boost::uuids::random_generator()();
+        _persitantId = boost::uuids::random_generator()();
     }
 
     if (!_config.generator) {
@@ -53,6 +53,19 @@ HexChunk::HexChunk(HexChunk::Config config, unsigned int seed)
         };
     }
     generateHexes();
+}
+
+HexChunk::HexChunk(HexChunk::Config config, std::vector<HexCellPtr> cells, HexCoord origin)
+    : _config(std::move(config)), _origin(origin), _name(config.name) {
+    if (config.chunkId != boost::uuids::nil_uuid()) {
+        _persitantId = config.chunkId;
+    } else {
+        _persitantId = boost::uuids::random_generator()();
+    }
+
+    for (auto& cell : cells) {
+        _hexes[cell->getCoord()] = std::move(cell);
+    }
 }
 
 HexChunk::~HexChunk() {
@@ -380,8 +393,8 @@ bool HexChunk::setEntity(const HexCoord& coord, HexCell::Type entityType, Entity
     return true;
 }
 
-const boost::uuids::uuid& HexChunk::getId() const {
-    return _id;
+const boost::uuids::uuid& HexChunk::getPersistantId() const {
+    return _persitantId;
 }
 
 HexCoord HexChunk::getOrigin() const {

@@ -36,6 +36,7 @@ set(GAME_SOURCES
     ${SRC_DIR}/totem/totemSpawnConfig.cpp
     ${SRC_DIR}/totem/totemEntity.cpp
     ${SRC_DIR}/totem/totemManager.cpp
+    ${SRC_DIR}/item/itemManager.cpp
 )
 
 set(GAME_HEADERS
@@ -45,6 +46,11 @@ set(GAME_HEADERS
     ${INC_DIR}/map/HexCoord.h
     ${INC_DIR}/map/HexGrid.h
     ${INC_DIR}/map/HexPattern.h
+    ${INC_DIR}/map/ItemEntity.h
+    ${INC_DIR}/map/ItemEntityHealth.h
+    ${INC_DIR}/map/ItemEntityBonusHex.h
+    ${INC_DIR}/map/ItemEntityRevealHex.h
+    ${INC_DIR}/map/ItemEntityRevealPatter.h
     ${INC_DIR}/map/PlayerEntity.h
     ${INC_DIR}/scripts/world/world.h
     ${INC_DIR}/scripts/world/worldHex.h
@@ -81,6 +87,7 @@ set(GAME_HEADERS
     ${INC_DIR}/totem/totemSpawnConfig.h
     ${INC_DIR}/totem/totemEntity.h
     ${INC_DIR}/totem/totemManager.h
+    ${INC_DIR}/item/itemManager.h
 )
 
 add_executable(game

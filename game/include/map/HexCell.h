@@ -32,7 +32,7 @@ class HexCell {
     HexCell() : _coord(0, 0) {}
     HexCell(HexCoord coord, State state, Type type, GenState genState = GenState::Normal,
             Entity* entity = nullptr)
-        : _coord(coord), _state(state), _type(type), _genState(genState), _entity(entity) {}
+        : _coord(coord), _flags(pack(state, type, genState, false, false)), _entity(entity) {}
 
     [[nodiscard]] const HexCoord& getCoord() const {
         return _coord;
@@ -41,13 +41,13 @@ class HexCell {
         return _coord;
     }
     [[nodiscard]] State getState() const {
-        return _state;
+        return static_cast<State>(_flags & 0xFF);
     }
     [[nodiscard]] Type getType() const {
-        return _type;
+        return static_cast<Type>((_flags >> 8) & 0xFF);
     }
     [[nodiscard]] GenState getGenState() const {
-        return _genState;
+        return static_cast<GenState>((_flags >> 16) & 0xFF);
     }
     [[nodiscard]] Entity* getEntity() const {
         return _entity;
@@ -58,38 +58,56 @@ class HexCell {
     }
 
     [[nodiscard]] bool isDirty() const {
-        return _dirty;
+        return (_flags >> 24) & 1;
     }
     [[nodiscard]] bool isCheckpoint() const {
-        return _isChekpoint;
+        return (_flags >> 25) & 1;
     }
 
     void setState(State state) {
-        _state = state;
-        _dirty = true;
+        _flags = (_flags & ~static_cast<uint32_t>(0xFF)) | static_cast<uint8_t>(state);
+        _flags |= kDirty;
     }
     void setType(Type type) {
-        _type = type;
-        _dirty = true;
+        _flags = (_flags & ~static_cast<uint32_t>(0xFF00)) |
+                 (static_cast<uint32_t>(static_cast<uint8_t>(type)) << 8);
+        _flags |= kDirty;
     }
     void setGenState(GenState genState) {
-        _genState = genState;
-        _dirty = true;
+        _flags = (_flags & ~static_cast<uint32_t>(0xFF0000)) |
+                 (static_cast<uint32_t>(static_cast<uint8_t>(genState)) << 16);
+        _flags |= kDirty;
     }
     void setEntity(Entity* entity) {
         _entity = entity;
-        _dirty = true;
+        _flags |= kDirty;
     }
     void setHeight(float height) {
         _height = height;
-        _dirty = true;
+        _flags |= kDirty;
     }
     void setDirty(bool dirty) {
-        _dirty = dirty;
+        if (dirty) {
+            _flags |= kDirty;
+        } else {
+            _flags &= ~kDirty;
+        }
     }
     void setCheckpoint(bool checkpoint) {
-        _isChekpoint = checkpoint;
-        _dirty = true;
+        if (checkpoint) {
+            _flags |= kCheckpoint;
+        } else {
+            _flags &= ~kCheckpoint;
+        }
+        _flags |= kDirty;
+    }
+
+    void resetGenState() {
+        _flags &= ~static_cast<uint32_t>(0xFF0000);
+    }
+
+    [[nodiscard]] uint32_t getFlags() const {
+        return _flags;
     }
 
     bool operator<(const HexCell& other) const {
@@ -98,25 +116,55 @@ class HexCell {
     }
 
     bool operator==(const HexCell& other) const {
-        return _coord == other._coord && _state == other._state;
+        return _coord == other._coord && getState() == other.getState();
     }
 
   private:
+    static constexpr uint32_t kDirty = 1U << 24;
+    static constexpr uint32_t kCheckpoint = 1U << 25;
+
+    static constexpr uint32_t pack(State s, Type t, GenState g, bool dirty, bool checkpoint) {
+        return static_cast<uint32_t>(static_cast<uint8_t>(s)) |
+               (static_cast<uint32_t>(static_cast<uint8_t>(t)) << 8) |
+               (static_cast<uint32_t>(static_cast<uint8_t>(g)) << 16) | (dirty ? kDirty : 0) |
+               (checkpoint ? kCheckpoint : 0);
+    }
+
     void setCoord(const HexCoord& coord) {
         _coord = coord;
     }
 
     HexCoord _coord{0, 0};
-    State _state{State::Empty};
-    Type _type{Type::Normal};
-    GenState _genState{GenState::Normal};
+    // 0-7: State, 8-15: Type, 16-23: GenState, 24: Dirty, 25: Checkpoint
+    uint32_t _flags{0};
     Entity* _entity = nullptr;
 
     float _height{0.0F};
-    bool _dirty = false;
-
-    bool _isChekpoint = false;
 };
+
+// NOLINTBEGIN(readability-identifier-naming)
+inline void to_json(nlohmann::json& j, const game::HexCell& cell) {
+    j = nlohmann::json{{"coord", cell.getCoord()},
+                       {"state", static_cast<uint8_t>(cell.getState())},
+                       {"type", static_cast<uint8_t>(cell.getType())},
+                       {"height", cell.getHeight()},
+                       {"checkpoint", cell.isCheckpoint()}};
+}
+
+inline void from_json(const nlohmann::json& j, game::HexCell& cell) {
+    cell = game::HexCell(j.at("coord").get<game::HexCoord>(),
+                         static_cast<game::HexCell::State>(j.at("state").get<uint8_t>()),
+                         static_cast<game::HexCell::Type>(j.at("type").get<uint8_t>()),
+                         game::HexCell::GenState::Normal);
+    if (j.contains("height")) {
+        cell.setHeight(j.at("height").get<float>());
+    }
+    if (j.contains("checkpoint")) {
+        cell.setCheckpoint(j.at("checkpoint").get<bool>());
+    }
+}
+// NOLINTEND(readability-identifier-naming)
+
 } // namespace game
 namespace std {
 template <> struct hash<game::HexCell> {

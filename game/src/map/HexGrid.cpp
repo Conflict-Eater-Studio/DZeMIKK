@@ -14,6 +14,10 @@
 #include <utility>
 #include <vector>
 
+#if DZEMIKK_DEV_TOOLS
+#include <spdlog/spdlog.h>
+#endif
+
 namespace game {
 HexGrid::HexGrid(unsigned int seed) : _rng(seed), _seed(seed) {}
 
@@ -347,7 +351,7 @@ boost::uuids::uuid HexGrid::makeChunk(const HexChunk::Config& config) {
         return boost::uuids::nil_uuid();
     }
 
-    auto chunkId = chunk->getId();
+    auto chunkId = chunk->getPersistantId();
     _chunks.insert({chunkId, std::move(chunk)});
 
     if (!hasParent) {
@@ -365,6 +369,19 @@ boost::uuids::uuid HexGrid::makeChunk(const HexChunk::Config& config) {
     }
 
     removeUnreachableHexes();
+
+    auto exists =
+        std::ranges::find_if(_chunkByName.begin(), _chunkByName.end(),
+                             [&config](const auto& pair) { return pair.first == config.name; });
+    if (exists != _chunkByName.end()) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error("[HexGrid] Chunk with name '{}' already exists. This breaks the chunks!",
+                      config.name);
+#endif
+    }
+
+    _chunkByName[config.name] = _chunks[chunkId].get();
+
     return chunkId;
 }
 
@@ -441,6 +458,26 @@ HexGrid::HexCellPtr HexGrid::findCellByEntity(Entity* entity) const {
     return nullptr;
 }
 
+std::vector<HexGrid::HexCellPtr> HexGrid::findCells(uint32_t mask, uint32_t value) const {
+    std::vector<HexCellPtr> result;
+    for (const auto& [chunkId, chunk] : _chunks) {
+        for (const auto& [coord, cell] : chunk->getHexes()) {
+            if (cell && (cell->getFlags() & mask) == value) {
+                result.push_back(cell);
+            }
+        }
+    }
+    return result;
+}
+
+std::vector<HexGrid::HexCellPtr> HexGrid::findCellsByState(HexCell::State state) const {
+    return findCells(0xFF, static_cast<uint32_t>(state));
+}
+
+std::vector<HexGrid::HexCellPtr> HexGrid::findCellsByType(HexCell::Type type) const {
+    return findCells(0xFF00, static_cast<uint32_t>(type) << 8);
+}
+
 bool HexGrid::isChunkBlocked(const boost::uuids::uuid& chunkId) const {
     auto it = _blockingPatterns.find(chunkId);
     return it != _blockingPatterns.end() && !it->second.unlocked;
@@ -487,15 +524,13 @@ bool HexGrid::unlockChunk(const boost::uuids::uuid& chunkId) {
     return true;
 }
 
-const std::unordered_map<std::pair<boost::uuids::uuid, boost::uuids::uuid>, HexGrid::BridgeInfo>&
-HexGrid::getBridges() const {
+const std::unordered_map<HexGrid::BridgeId, HexGrid::BridgeInfo>& HexGrid::getBridges() const {
     return _bridges;
 }
 
-void HexGrid::lockBridge(std::pair<boost::uuids::uuid, boost::uuids::uuid> bridgeId,
-                         const boost::uuids::uuid& enemyId) {
+void HexGrid::lockBridge(const BridgeId& bridgeId, const boost::uuids::uuid& enemyId) {
     // If bridge between two chunks exists, add the enemy to the set of blocking enemies
-    // Bridge is only valid of it's vetween two chunks that are next to each other
+    // Bridge is only valid of it's between two chunks that are next to each other
     if (_bridges.contains(bridgeId)) {
         if (_bridges[bridgeId].blockingEnemies.empty()) {
             for (const auto& cell : _bridges[bridgeId].hexes) {
@@ -509,8 +544,7 @@ void HexGrid::lockBridge(std::pair<boost::uuids::uuid, boost::uuids::uuid> bridg
     }
 }
 
-void HexGrid::unlockBridge(std::pair<boost::uuids::uuid, boost::uuids::uuid> bridgeId,
-                           const boost::uuids::uuid& enemyId) {
+void HexGrid::unlockBridge(const BridgeId& bridgeId, const boost::uuids::uuid& enemyId) {
     if (_bridges.contains(bridgeId) && _bridges[bridgeId].blockingEnemies.contains(enemyId)) {
         _bridges[bridgeId].blockingEnemies.erase(enemyId);
 
@@ -531,6 +565,63 @@ HexChunk* HexGrid::findChunkForCoord(const game::HexCoord& coord) {
         }
     }
     return nullptr;
+}
+
+HexChunk* HexGrid::getChunkByName(const std::string& name) const {
+    auto it = _chunkByName.find(name);
+    if (it != _chunkByName.end()) {
+        return it->second;
+    }
+    return nullptr;
+}
+
+HexChunk* HexGrid::getChunkByName(const std::string& name) {
+    auto it = _chunkByName.find(name);
+    if (it != _chunkByName.end()) {
+        return it->second;
+    }
+    return nullptr;
+}
+
+HexChunk* HexGrid::getChunkById(const boost::uuids::uuid& id) const {
+    auto it = _chunks.find(id);
+    if (it != _chunks.end()) {
+        return it->second.get();
+    }
+    return nullptr;
+}
+
+HexChunk* HexGrid::getChunkById(const boost::uuids::uuid& id) {
+    auto it = _chunks.find(id);
+    if (it != _chunks.end()) {
+        return it->second.get();
+    }
+    return nullptr;
+}
+
+std::unordered_map<boost::uuids::uuid, HexGrid::BlockingPatternInfo>
+HexGrid::getBlockingPatterns() const {
+    return _blockingPatterns;
+}
+
+void HexGrid::loadChunk(std::unique_ptr<HexChunk> chunk) {
+    auto id = chunk->getPersistantId();
+    auto name = chunk->getConfig().name;
+
+    if (_chunks.empty()) {
+        _rootChunkId = id;
+    }
+
+    _chunkByName[name] = chunk.get();
+    _chunks[id] = std::move(chunk);
+}
+
+void HexGrid::loadBridge(const BridgeId& bridgeId, BridgeInfo info) {
+    _bridges[bridgeId] = std::move(info);
+}
+
+void HexGrid::loadBlockingPattern(const boost::uuids::uuid& chunkId, BlockingPatternInfo info) {
+    _blockingPatterns[chunkId] = std::move(info);
 }
 
 } // namespace game
