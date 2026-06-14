@@ -11,6 +11,7 @@
 #include "game.h"
 #include "item/itemManager.h"
 #include "map/PlayerEntity.h"
+#include "totem/totemManager.h"
 #include "renderer/shader.h"
 #include "scripts/world/worldHex.h"
 
@@ -67,6 +68,9 @@ void World::load(const nlohmann::json& def) {
                 }
                 if (cellJson.contains("checkpoint")) {
                     cell->setCheckpoint(cellJson.at("checkpoint").get<bool>());
+                }
+                if (cellJson.contains("checkpointUsed")) {
+                    cell->setCheckpointUsed(cellJson.at("checkpointUsed").get<bool>());
                 }
 
                 cells.push_back(cell);
@@ -183,6 +187,7 @@ nlohmann::json World::save() {
                 {"genState", static_cast<uint8_t>(cell->getGenState())},
                 {"height", cell->getHeight()},
                 {"checkpoint", cell->isCheckpoint()},
+                {"checkpointUsed", cell->isCheckpointUsed()},
             };
             j["chunkData"][chunkKey]["cells"].emplace_back(data);
         }
@@ -230,6 +235,12 @@ nlohmann::json World::save() {
 #if DZEMIKK_DEV_TOOLS
         spdlog::warn("[World] No EnemyManager GameObject found during save");
 #endif
+    }
+
+    auto* totemManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("TotemManager");
+    if (totemManagerGo) {
+        auto* tm = totemManagerGo->getComponent<TotemManager>();
+        j["totems"] = tm->saveState()["totems"];
     }
 
     return j;

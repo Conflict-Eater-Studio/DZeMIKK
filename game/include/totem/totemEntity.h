@@ -2,7 +2,6 @@
 #define GAME_TOTEM_ENTITY_H
 
 #include "map/Entity.h"
-
 #include "totem/totemSpawnConfig.h"
 
 class Game;
@@ -72,16 +71,20 @@ class TotemEntity : public Entity {
      */
     void use();
 
+    /**
+     * @brief Turns off the totem's light effect.
+     *
+     * This is called after the totem is used to visually indicate
+     * that it has been activated.
+     * Used as helper for loading a totem that has already been used.
+     */
+    void lightOff();
+
   private:
     /**
      * @brief Totem configuration data.
      */
     TotemSpawnConfig _config;
-
-    /**
-     * @brief Indicates whether the totem has already been used.
-     */
-    bool _isUsed = false;
 
     /**
      * @brief Owning game instance.

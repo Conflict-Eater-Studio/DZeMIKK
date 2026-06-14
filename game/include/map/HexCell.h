@@ -32,7 +32,9 @@ class HexCell {
     HexCell() : _coord(0, 0) {}
     HexCell(HexCoord coord, State state, Type type, GenState genState = GenState::Normal,
             Entity* entity = nullptr)
-        : _coord(coord), _flags(pack(state, type, genState, false, false)), _entity(entity) {}
+        : _coord(coord),
+          _flags(pack(state, type, genState, false, false, false)),
+          _entity(entity) {}
 
     [[nodiscard]] const HexCoord& getCoord() const {
         return _coord;
@@ -62,6 +64,9 @@ class HexCell {
     }
     [[nodiscard]] bool isCheckpoint() const {
         return (_flags >> 25) & 1;
+    }
+    [[nodiscard]] bool isCheckpointUsed() const {
+        return (_flags >> 26) & 1;
     }
 
     void setState(State state) {
@@ -101,6 +106,14 @@ class HexCell {
         }
         _flags |= kDirty;
     }
+    void setCheckpointUsed(bool used) {
+        if (used) {
+            _flags |= kCheckpointUsed;
+        } else {
+            _flags &= ~kCheckpointUsed;
+        }
+        _flags |= kDirty;
+    }
 
     void resetGenState() {
         _flags &= ~static_cast<uint32_t>(0xFF0000);
@@ -122,12 +135,14 @@ class HexCell {
   private:
     static constexpr uint32_t kDirty = 1U << 24;
     static constexpr uint32_t kCheckpoint = 1U << 25;
+    static constexpr uint32_t kCheckpointUsed = 1U << 26;
 
-    static constexpr uint32_t pack(State s, Type t, GenState g, bool dirty, bool checkpoint) {
+    static constexpr uint32_t pack(State s, Type t, GenState g, bool dirty, bool checkpoint,
+                                   bool checkpointUsed) {
         return static_cast<uint32_t>(static_cast<uint8_t>(s)) |
                (static_cast<uint32_t>(static_cast<uint8_t>(t)) << 8) |
                (static_cast<uint32_t>(static_cast<uint8_t>(g)) << 16) | (dirty ? kDirty : 0) |
-               (checkpoint ? kCheckpoint : 0);
+               (checkpoint ? kCheckpoint : 0) | (checkpointUsed ? kCheckpointUsed : 0);
     }
 
     void setCoord(const HexCoord& coord) {
@@ -135,7 +150,7 @@ class HexCell {
     }
 
     HexCoord _coord{0, 0};
-    // 0-7: State, 8-15: Type, 16-23: GenState, 24: Dirty, 25: Checkpoint
+    // 0-7: State, 8-15: Type, 16-23: GenState, 24: Dirty, 25: Checkpoint, 26: CheckpointUsed
     uint32_t _flags{0};
     Entity* _entity = nullptr;
 
@@ -148,7 +163,8 @@ inline void to_json(nlohmann::json& j, const game::HexCell& cell) {
                        {"state", static_cast<uint8_t>(cell.getState())},
                        {"type", static_cast<uint8_t>(cell.getType())},
                        {"height", cell.getHeight()},
-                       {"checkpoint", cell.isCheckpoint()}};
+                       {"checkpoint", cell.isCheckpoint()},
+                       {"checkpointUsed", cell.isCheckpointUsed()}};
 }
 
 inline void from_json(const nlohmann::json& j, game::HexCell& cell) {
@@ -161,6 +177,9 @@ inline void from_json(const nlohmann::json& j, game::HexCell& cell) {
     }
     if (j.contains("checkpoint")) {
         cell.setCheckpoint(j.at("checkpoint").get<bool>());
+    }
+    if (j.contains("checkpointUsed")) {
+        cell.setCheckpointUsed(j.at("checkpointUsed").get<bool>());
     }
 }
 // NOLINTEND(readability-identifier-naming)

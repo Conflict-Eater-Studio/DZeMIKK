@@ -115,7 +115,7 @@ void Game::start() {
     setupEnemies();
     // Setup Items and Totems ALWAYS after Enemies
     setupItems();
-    // setupTotems();
+    setupTotems();
 
     if (_worldGO) {
         if (auto* world = _worldGO->getComponent<game::World>(); world) {
@@ -881,21 +881,36 @@ void Game::setExplorationState() {
 }
 
 void Game::setupTotems() {
-    auto* go = _mainScene.get()->findGameObjectByName("TotemManager");
+    if (_worldGO == nullptr || _worldGO->getComponent<game::World>() == nullptr) {
+        return;
+    }
+
+    auto* go = _mainScene.get()->createGameObject("TotemManager");
+    go->addTag("TotemManager");
 
     auto* manager = go->addComponent<game::TotemManager>(2);
-
     manager->setWorld(_worldGO->getComponent<game::World>());
-
     manager->setAssetManager(_engine->getAssetManager());
-
     manager->setGame(this);
 
-    manager->setSpawnConfig(_hexGrid->getChunkByName("chunkMain2")->getPersistantId(),
-                            {{.count = 1,
-                              .pattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
-                                                          game::HexPattern::Type::ATK, 1.2F),
-                              .prefabPath = "prefabs/totem/totem_container.prefab"}});
+    auto* world = _worldGO->getComponent<game::World>();
 
-    manager->spawnTotemsPerChunk();
+    if (!world) {
+        return;
+    }
+
+    nlohmann::json worldData;
+    if (std::filesystem::exists("./world.json")) {
+        std::ifstream in("./world.json");
+        worldData = nlohmann::json::parse(in);
+        in.close();
+    }
+
+    if (!worldData.empty() && worldData.contains("totems")) {
+        manager->loadState(worldData["totems"]);
+    } else {
+        manager->addTotem(_hexGrid->getChunkByName("chunkMain2")->getPersistantId(),
+                          {.pattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
+                                                       game::HexPattern::Type::ATK, 1.2F)});
+    }
 }

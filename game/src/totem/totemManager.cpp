@@ -1,12 +1,13 @@
 #include "totem/totemManager.h"
+
+#include "game.h"
 #include "scripts/world/world.h"
 #include "totem/totemEntity.h"
-#include "game.h"
 
 #include <assetManager/assetmanager.h>
+#include <ecs/components/meshRenderer.h>
 #include <ecs/gameobject.h>
 #include <ecs/serialize/prefabSerializer.h>
-#include <ecs/components/meshRenderer.h>
 #include <renderer/texture.h>
 
 game::TotemManager::TotemManager(unsigned int seed) : _rng(seed) {}
@@ -23,9 +24,40 @@ void game::TotemManager::setGame(Game* game) {
     _game = game;
 }
 
-void game::TotemManager::setSpawnConfig(const boost::uuids::uuid& chunkId,
-                                  const std::vector<TotemSpawnConfig>& config) {
-    _spawnRules[chunkId] = config;
+void game::TotemManager::addTotem(const boost::uuids::uuid& chunkId, TotemSpawnConfig config) {
+    if (!_world || !_game || !_assetManager) {
+        return;
+    }
+
+    config.chunkId = chunkId;
+    _spawnRules[chunkId].emplace_back(config);
+
+    auto cells = collectAvailableCells(_world->getGrid()->getChunkById(chunkId));
+
+    if (cells.empty()) {
+        return;
+    }
+
+    std::shuffle(cells.begin(), cells.end(), _rng);
+    spawnTotem(chunkId, cells.front(), config);
+}
+
+void game::TotemManager::addTotem(const boost::uuids::uuid& chunkId, TotemSpawnConfig config,
+                                  const HexCoord& coord) {
+    if (!_world || !_game || !_assetManager) {
+        return;
+    }
+
+    config.chunkId = chunkId;
+    _spawnRules[chunkId].emplace_back(config);
+
+    auto chunk = _world->getGrid()->getChunks().find(chunkId);
+    if (chunk == _world->getGrid()->getChunks().end()) {
+        return;
+    }
+
+    auto cellPtr = chunk->second->getCell(coord);
+    spawnTotem(chunkId, cellPtr, config);
 }
 
 std::vector<game::HexChunk::HexCellPtr> game::TotemManager::collectAvailableCells(HexChunk* chunk) {
@@ -55,35 +87,8 @@ std::vector<game::HexChunk::HexCellPtr> game::TotemManager::collectAvailableCell
     return result;
 }
 
-void game::TotemManager::spawnTotemsPerChunk() {
-    if (!_world || !_assetManager) {
-        return;
-    }
-
-    const auto& chunks = _world->getGrid()->getChunks();
-
-    for (const auto& [chunkId, chunk] : chunks) {
-        auto it = _spawnRules.find(chunkId);
-
-        if (it == _spawnRules.end()) {
-            continue;
-        }
-
-        auto available = collectAvailableCells(chunk.get());
-
-        std::shuffle(available.begin(), available.end(), _rng);
-
-        size_t cursor = 0;
-
-        for (const auto& cfg : it->second) {
-            for (int i = 0; i < cfg.count && cursor < available.size(); i++) {
-                spawnTotem(available[cursor++], cfg);
-            }
-        }
-    }
-}
-
-void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnConfig& cfg) {
+void game::TotemManager::spawnTotem(const boost::uuids::uuid& chunkId,
+                                    const HexChunk::HexCellPtr& cell, const TotemSpawnConfig& cfg) {
     if (!cell) {
         return;
     }
@@ -92,7 +97,8 @@ void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnC
 
     auto* scene = getOwner()->getScene();
 
-    auto* totemGO = dzemikk::PrefabSerializer::instantiate(*scene, *prefab.get(), _assetManager, this->getOwner());
+    auto* totemGO = dzemikk::PrefabSerializer::instantiate(*scene, *prefab.get(), _assetManager,
+                                                           this->getOwner());
 
     totemGO->addTag("Totem");
 
@@ -104,7 +110,8 @@ void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnC
 
     totemGO->transform()->setScale({0.8, 0.8, 0.8});
 
-    auto* rendererTotemGO = totemGO->findChildByName("platform")->getComponent<dzemikk::MeshRenderer>();
+    auto* rendererTotemGO =
+        totemGO->findChildByName("platform")->getComponent<dzemikk::MeshRenderer>();
     rendererTotemGO->setCullingRadius(60.0F);
 
     rendererTotemGO = totemGO->findDescendantByName("Left")->getComponent<dzemikk::MeshRenderer>();
@@ -120,6 +127,8 @@ void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnC
 
     totem->onEnter(cell);
 
+    _spawnedTotems[chunkId].push_back(totem);
+
     std::uniform_int_distribution<size_t> dist(0, cfg.segmentPool.size() - 1);
 
     for (int i = 0; i < 3; i++) {
@@ -129,7 +138,8 @@ void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnC
         auto segmentPrefab = _assetManager->get<nlohmann::json>(prefabPath);
 
         auto* segmentGO =
-            dzemikk::PrefabSerializer::instantiate(*scene, *segmentPrefab.get(), _assetManager, this->getOwner()->findDescendantByName("Totem"));
+            dzemikk::PrefabSerializer::instantiate(*scene, *segmentPrefab.get(), _assetManager,
+                                                   this->getOwner()->findDescendantByName("Totem"));
 
         segmentGO->setParent(totemGO);
 
@@ -141,5 +151,31 @@ void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnC
         auto texture = _assetManager->get<dzemikk::Texture>("textures/totems/a.png");
 
         rendererSegmentGO->getMaterial(0)->setTexture(texture);
+    }
+
+    if (cfg.used) {
+        totem->lightOff();
+    }
+}
+
+nlohmann::json game::TotemManager::saveState() const {
+    nlohmann::json j;
+    for (const auto& [chunkId, totems] : _spawnedTotems) {
+        for (const auto* totem : totems) {
+            j["totems"][boost::uuids::to_string(totem->getConfig().persistantId)] =
+                totem->getConfig();
+            j["totems"][boost::uuids::to_string(totem->getConfig().persistantId)]["gridPos"] =
+                totem->getCell()->getCoord();
+        }
+    };
+
+    return j;
+}
+
+void game::TotemManager::loadState(const nlohmann::json& j) {
+    for (const auto& [idStr, totemData] : j.items()) {
+        TotemSpawnConfig cfg = totemData.get<TotemSpawnConfig>();
+        HexCoord coord = totemData["gridPos"].get<HexCoord>();
+        addTotem(cfg.chunkId, cfg, coord);
     }
 }

@@ -106,12 +106,13 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
         }
     }
 
-    if (cell->isCheckpoint()) {
+    if (cell->isCheckpoint() && !cell->isCheckpointUsed()) {
         auto* worldGo = _game->getCurrentScene().get()->findGameObjectByTag("World");
         if (worldGo) {
             auto* world = worldGo->getComponent<World>();
             if (world) {
                 world->saveToFile("./world.json");
+                cell->setCheckpointUsed(true);
 #if DZEMIKK_DEV_TOOLS
                 spdlog::info("[PlayerEntity] Checkpoint reached. Saved world data");
 #endif
