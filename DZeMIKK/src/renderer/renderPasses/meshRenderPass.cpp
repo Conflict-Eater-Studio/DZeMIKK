@@ -115,14 +115,14 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
 
             shader->bind();
 
-            if (material->getTexture()) {
+            if (material->getAlbedoTexture()) {
                 glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, material->getTexture()->getId());
+                glBindTexture(GL_TEXTURE_2D, material->getAlbedoTexture()->getId());
                 shader->setSampler("diffuseTexture", 0);
                 //shader->setInt("diffuseTexture", 0);
             }
 
-            shader->setInt("useTexture", material->getTexture() ? 1 : 0);
+            shader->setInt("useTexture", material->getAlbedoTexture() ? 1 : 0);
 
             shader->setFloat("shininess", 6.0f);
             shader->setFloat("specularStrength", .5f);

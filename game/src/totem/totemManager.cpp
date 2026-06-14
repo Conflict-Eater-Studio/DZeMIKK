@@ -140,6 +140,6 @@ void game::TotemManager::spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnC
 
         auto texture = _assetManager->get<dzemikk::Texture>("textures/totems/a.png");
 
-        rendererSegmentGO->getMaterial(0)->setTexture(texture);
+        rendererSegmentGO->getMaterial(0)->setAlbedoTexture(texture);
     }
 }

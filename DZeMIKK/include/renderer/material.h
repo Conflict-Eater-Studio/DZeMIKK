@@ -4,101 +4,160 @@
 #include "assetManager/assetHandle.h"
 #include "renderer/texture.h"
 
+#include <glm/vec3.hpp>
+
 namespace dzemikk {
 
-    class Shader;
+class Shader;
 
-    /**
-     * @brief Represents a material used for rendering.
-     *
-     * Material defines how an object is rendered by storing
-     * a reference to a shader and (in the future)
-     * rendering parameters like textures, colors, and uniforms.
-     */
-    class Material {
-      public:
-        /**
-         * @brief Constructs an empty material.
-         */
-        Material() = default;
-        ~Material() = default;
+/**
+ * @brief PBR material used for rendering.
+ */
+class Material {
+  public:
+    Material() = default;
+    ~Material() = default;
 
-        #pragma region Disable copy and move
+#pragma region Disable copy and move
 
-        Material(const Material& other) = delete;
-        Material(Material&& other) noexcept = delete;
-        Material& operator=(const Material& other) = delete;
-        Material& operator=(Material&& other) noexcept = delete;
+    Material(const Material&) = delete;
+    Material(Material&&) noexcept = delete;
+    Material& operator=(const Material&) = delete;
+    Material& operator=(Material&&) noexcept = delete;
 
-        #pragma endregion
+#pragma endregion
 
-        #pragma region Getters
+#pragma region Shader
 
-        /**
-         * @brief Returns the shader used by this material.
-         *
-         * @return Shader* Pointer to shader.
-         */
+    [[nodiscard]] Shader* getShader() const {
+        return _shader.get();
+    }
 
-        [[nodiscard]] Shader* getShader() const {
-            return _shader.get();
-        }
-        [[nodiscard]] const AssetHandle<Shader>& getShaderHandle() const {
-            return _shader;
-        }
-        #pragma endregion
+    [[nodiscard]] const AssetHandle<Shader>& getShaderHandle() const {
+        return _shader;
+    }
 
-        #pragma region Setters
+    void setShader(const AssetHandle<Shader>& shader) {
+        _shader = shader;
+    }
 
-        /**
-         * @brief Sets the shader used by this material.
-         *
-         * @param shader Pointer to shader.
-         */
-        void setShader(AssetHandle<Shader> shader) {
-            _shader = shader;
-        }
+#pragma endregion
 
-        #pragma endregion
+#pragma region Textures
 
-        #pragma region Validation
+    [[nodiscard]] Texture* getAlbedoTexture() const {
+        return _albedo.get();
+    }
 
-        /**
-         * @brief Checks if the material is valid for rendering.
-         *
-         * @return true If shader is set.
-         */
-        [[nodiscard]] bool isValid() const {
-            return _shader.get() != nullptr;
-        }
+    [[nodiscard]] Texture* getNormalTexture() const {
+        return _normal.get();
+    }
 
-        #pragma endregion
+    [[nodiscard]] Texture* getMetallicTexture() const {
+        return _metallicMap.get();
+    }
 
-        [[nodiscard]] const AssetHandle<Texture>& getTextureHandle() const {
-            return _texture;
-        }
+    [[nodiscard]] Texture* getRoughnessTexture() const {
+        return _roughnessMap.get();
+    }
 
-        [[nodiscard]] Texture* getTexture() const {
-            return _texture.get();
-        }
+    [[nodiscard]] Texture* getAOTexture() const {
+        return _aoMap.get();
+    }
 
-        void setTexture(AssetHandle<Texture> texture) {
-            _texture = texture;
-        }
+    [[nodiscard]] Texture* getEmissiveTexture() const {
+        return _emissive.get();
+    }
 
-    private:
-        #pragma region Data
+    void setAlbedoTexture(const AssetHandle<Texture>& texture) {
+        _albedo = texture;
+    }
 
-        /**
-         * @brief Non-owning pointer to shader resource.
-         */
-        AssetHandle<Shader> _shader;
+    void setNormalTexture(const AssetHandle<Texture>& texture) {
+        _normal = texture;
+    }
 
-        AssetHandle<Texture> _texture;
+    void setMetallicTexture(const AssetHandle<Texture>& texture) {
+        _metallicMap = texture;
+    }
 
-        #pragma endregion
-    };
+    void setRoughnessTexture(const AssetHandle<Texture>& texture) {
+        _roughnessMap = texture;
+    }
+
+    void setAOTexture(const AssetHandle<Texture>& texture) {
+        _aoMap = texture;
+    }
+
+    void setEmissiveTexture(const AssetHandle<Texture>& texture) {
+        _emissive = texture;
+    }
+
+#pragma endregion
+
+#pragma region Parameters
+
+    [[nodiscard]] const glm::vec3& getAlbedoColor() const {
+        return _albedoColor;
+    }
+
+    [[nodiscard]] float getMetallic() const {
+        return _metallic;
+    }
+
+    [[nodiscard]] float getRoughness() const {
+        return _roughness;
+    }
+
+    [[nodiscard]] float getAO() const {
+        return _ao;
+    }
+
+    void setAlbedoColor(const glm::vec3& color) {
+        _albedoColor = color;
+    }
+
+    void setMetallic(float value) {
+        _metallic = value;
+    }
+
+    void setRoughness(float value) {
+        _roughness = value;
+    }
+
+    void setAO(float value) {
+        _ao = value;
+    }
+
+#pragma endregion
+
+#pragma region Validation
+
+    [[nodiscard]] bool isValid() const {
+        return _shader.get() != nullptr;
+    }
+
+#pragma endregion
+
+  private:
+    AssetHandle<Shader> _shader;
+
+    // PBR textures
+    AssetHandle<Texture> _albedo;
+    AssetHandle<Texture> _normal;
+    AssetHandle<Texture> _metallicMap;
+    AssetHandle<Texture> _roughnessMap;
+    AssetHandle<Texture> _aoMap;
+    AssetHandle<Texture> _emissive;
+
+    // PBR factors
+    glm::vec3 _albedoColor{1.0f, 1.0f, 1.0f};
+
+    float _metallic = 0.0f;
+    float _roughness = 0.5f;
+    float _ao = 1.0f;
+};
 
 } // namespace dzemikk
 
-#endif // DZEMIKK_MATERIAL_H
+#endif

@@ -312,7 +312,7 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
 
     auto texture = _game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
         "textures/assets/hex_wypukly_BaseColor.png");
-    meshRenderer->getMaterial(0)->setTexture(texture);
+    meshRenderer->getMaterial(0)->setAlbedoTexture(texture);
 
     meshRenderer->setTransform(obj->transform());
     auto* worldHex = obj->addComponent<WorldHex>();
