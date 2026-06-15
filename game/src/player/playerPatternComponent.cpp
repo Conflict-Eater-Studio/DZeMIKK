@@ -1,74 +1,49 @@
 #include "player/playerPatternComponent.h"
-#include "player/playerPatternStatsComponent.h"
+
 #include "enemySystem/enemyEntity.h"
 #include "game.h"
-#include "scripts/world/worldHex.h"
 #include "gameStateMachine.h"
+#include "player/playerPatternStatsComponent.h"
+#include "scripts/world/worldHex.h"
 #include "stateMachine/combatState.h"
 
-#include <iostream>
-
-#include <core/engine.h>
-#include <collisions/collisions.h>
-#include <core/window.h>
-#include <renderer/renderer.h>
-#include <ecs/serialize/prefabSerializer.h>
-#include <ecs/scene.h>
 #include <assetManager/assetmanager.h>
+#include <audio/audioManager.h>
+#include <audio/sound.h>
+#include <collisions/collisions.h>
+#include <core/engine.h>
+#include <core/window.h>
 #include <ecs/components/collider.h>
 #include <ecs/components/meshRenderer.h>
-#include <audio/sound.h>
-#include <audio/audioManager.h>
+#include <ecs/scene.h>
+#include <ecs/serialize/prefabSerializer.h>
+#include <iostream>
+#include <renderer/renderer.h>
 
-namespace playerPatternComponentSound{
-    struct SoundInitContext {
-        dzemikk::AudioManager* audioManager;
-    };
+namespace playerPatternComponentSound {
+struct SoundInitContext {
+    dzemikk::AudioManager* audioManager;
+};
 
-    void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
-        ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
-        ctx.audioManager->getSFXGroup()->setVolume(0.3F);
-    }
+void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
+    ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
+    ctx.audioManager->getSFXGroup()->setVolume(0.3F);
 }
+} // namespace playerPatternComponentSound
 
 namespace {
 constexpr std::string_view BATTLE_HEX_PREFAB = "prefabs/battle_hex.prefab";
 constexpr std::string_view PREVIEW_OBJECT_NAME = "PatternPreview";
-}
+} // namespace
 
 void game::PlayerPatternComponent::start() {
-    // atk1
-    addPattern(HexPattern({{0, 0}}, HexPattern::Type::ATK, 1.0F), -1);
-    addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::ATK, 1.1F), -1);
-    //addPattern(HexPattern({{-1, 1}, {0, 0}, {1, -1}}, HexPattern::Type::ATK, 1.2F), -1);
-
-    // atk2
-    //addPattern(HexPattern({{-1, 0}, {0, 0}, {1, -1}}, HexPattern::Type::ATK, 1.2F), -1);
-
-    // atk3
-    //addPattern(HexPattern({{0, 0}, {1, -1}, {-1, 0}, {0, 1}}, HexPattern::Type::ATK, 1.3F), -1);
-
-    // def1
-    addPattern(HexPattern({{0, 0}}, HexPattern::Type::DEF), -1);
-    addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::DEF, 1.1F), -1);
-
-    // def2
-    //addPattern(HexPattern({{-1, 1}, {0, 0}, {1, -1}}, HexPattern::Type::DEF, 1.2F), -1);
-
-    // hp1
-    addPattern(HexPattern({{0, 0}}, HexPattern::Type::HEAL), -1);
-    addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::HEAL, 0.6F), -1);
-
-    // bonus
-    //addPattern(HexPattern({{0, 0}, {1, -1}}, HexPattern::Type::BONUSHEX, 1.0F), 1);
-
     _playerPatternStats = getOwner()->getComponent<PlayerPatternStatsComponent>();
 
     _onMousePressedListenerID = _engine->getInput()->OnMouseButtonPressed.addListener(
         [this](dzemikk::MouseButtonPressedEvent& e) { onMouseButtonPressed(e); });
 
     _rotatePatternListenerID = _engine->getInput()->OnMouseScrolled.addListener(
-            [this](dzemikk::MouseScrolledEvent& e) { onMouseScrolled(e); });
+        [this](dzemikk::MouseScrolledEvent& e) { onMouseScrolled(e); });
 }
 
 void game::PlayerPatternComponent::update(double deltaTime) {
@@ -209,7 +184,8 @@ bool game::PlayerPatternComponent::confirmPattern() {
     _previewObject = nullptr;
 
     playerPatternComponentSound::SoundInitContext sCtx(_engine->getAudioManager());
-    dzemikk::AssetManager::AssetTask<dzemikk::Sound, playerPatternComponentSound::SoundInitContext> taskS;
+    dzemikk::AssetManager::AssetTask<dzemikk::Sound, playerPatternComponentSound::SoundInitContext>
+        taskS;
     taskS.context = sCtx;
     taskS.onLoad = playerPatternComponentSound::onSFXLoad;
     _engine->getAssetManager()->getAsync("audio/prime_polozenie_patternu.wav", taskS);
@@ -252,7 +228,7 @@ void game::PlayerPatternComponent::confirmBonusHex(const HexPattern& pattern) {
         }
     }
 
-        playerPatternComponentSound::SoundInitContext sCtx(_engine->getAudioManager());
+    playerPatternComponentSound::SoundInitContext sCtx(_engine->getAudioManager());
     dzemikk::AssetManager::AssetTask<dzemikk::Sound, playerPatternComponentSound::SoundInitContext>
         taskS;
     taskS.context = sCtx;
@@ -348,7 +324,7 @@ void game::PlayerPatternComponent::removePlacedPattern(size_t index) {
     }
 
     auto& placed = _placedPatterns[index];
-    
+
     if (_playerPatternStats) {
         _playerPatternStats->registerRemoval(placed.pattern);
     }
@@ -395,7 +371,7 @@ void game::PlayerPatternComponent::handleRightClick() {
     if (!_interactionEnabled) {
         return;
     }
-    
+
     if (_activePatternIndex >= 0) {
         deactivatePattern();
     }

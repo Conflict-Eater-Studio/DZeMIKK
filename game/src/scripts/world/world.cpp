@@ -9,11 +9,14 @@
 #include "ecs/serialize/prefabSerializer.h"
 #include "enemySystem/enemyManager.h"
 #include "game.h"
+#include "healthSystem.h"
 #include "item/itemManager.h"
 #include "map/PlayerEntity.h"
-#include "totem/totemManager.h"
+#include "player/inventory.h"
+#include "player/playerPatternComponent.h"
 #include "renderer/shader.h"
 #include "scripts/world/worldHex.h"
+#include "totem/totemManager.h"
 
 #include <boost/uuid/detail/nil_uuid.hpp>
 #include <boost/uuid/string_generator.hpp>
@@ -241,6 +244,36 @@ nlohmann::json World::save() {
     if (totemManagerGo) {
         auto* tm = totemManagerGo->getComponent<TotemManager>();
         j["totems"] = tm->saveState()["totems"];
+    }
+
+    auto* playerGO = _game->getCurrentScene().get()->findGameObjectByTag("Player");
+    if (playerGO) {
+        if (auto* playerEntity = playerGO->getComponent<PlayerEntity>();
+            playerEntity && playerEntity->getCell()) {
+            j["player"]["position"] = playerEntity->getCell()->getCoord();
+        }
+
+        if (auto* healthGO =
+                _game->getCurrentScene().get()->findGameObjectByTag("PlayerHealthSystem");
+            healthGO) {
+            if (auto* health = healthGO->getComponent<HealthSystem>(); health) {
+                j["player"]["health"] = health->getCurrentHealth();
+                j["player"]["maxHealth"] = health->getMaxHealth();
+            }
+        }
+
+        if (auto* patternComp = playerGO->getComponent<PlayerPatternComponent>(); patternComp) {
+            for (const auto& entry : patternComp->getPatterns()) {
+                j["player"]["patterns"].push_back(
+                    {{"pattern", entry.pattern}, {"count", entry.count}});
+            }
+        }
+
+        if (auto* inventory = playerGO->getComponent<Inventory>(); inventory) {
+            for (const auto& [type, count] : inventory->getItems()) {
+                j["player"]["inventory"][std::to_string(static_cast<uint8_t>(type))] = count;
+            }
+        }
     }
 
     return j;

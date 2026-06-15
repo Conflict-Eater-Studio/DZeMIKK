@@ -106,13 +106,25 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
         }
     }
 
-    if (cell->isCheckpoint() && !cell->isCheckpointUsed()) {
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[PlayerEntity] Entering cell at coord ({}, {})", cell->getCoord().q(),
+                 cell->getCoord().r());
+#endif
+
+    setCell(cell);
+    getCell()->setEntity(this);
+    getCell()->setState(HexCell::State::Player);
+    getOwner()->transform()->setPosition(
+        getCell()->getCoord().toWorldPosition(1.0F, 0.1F, getCell()->getHeight()) +
+        glm::vec3(0.0F, 0.4F, 0.0F));
+
+    if (getCell()->isCheckpoint() && !getCell()->isCheckpointUsed()) {
         auto* worldGo = _game->getCurrentScene().get()->findGameObjectByTag("World");
         if (worldGo) {
             auto* world = worldGo->getComponent<World>();
             if (world) {
+                getCell()->setCheckpointUsed(true);
                 world->saveToFile("./world.json");
-                cell->setCheckpointUsed(true);
 #if DZEMIKK_DEV_TOOLS
                 spdlog::info("[PlayerEntity] Checkpoint reached. Saved world data");
 #endif
@@ -129,13 +141,6 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
 #endif
         }
     }
-
-    cell->setEntity(this);
-    cell->setState(HexCell::State::Player);
-    setCell(cell);
-    getOwner()->transform()->setPosition(
-        cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
-        glm::vec3(0.0F, 0.4F, 0.0F));
 }
 
 void PlayerEntity::onExit() {}
@@ -166,13 +171,23 @@ void PlayerEntity::tryMove(const HexCellPtr& targetCell) {
     }
 }
 void PlayerEntity::teleportTo(const HexCellPtr& targetCell) {
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[PlayerEntity] Attempting to teleport to cell at coord ({}, {})",
+                 targetCell->getCoord().q(), targetCell->getCoord().r());
+#endif
 
     if (!targetCell) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[PlayerEntity] Attempted to teleport to a null cell pointer");
+#endif
         return;
     }
 
     if (targetCell->getEntity() != nullptr) {
-        // Make the other entity perform its exit action
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[PlayerEntity] Attempted to teleport to a cell occupied by another entity. "
+                     "Calling onExit on the existing entity.");
+#endif
         targetCell->getEntity()->onExit();
     }
 
@@ -187,7 +202,7 @@ void PlayerEntity::teleportTo(const HexCellPtr& targetCell) {
     setCell(targetCell);
 
     getOwner()->transform()->setPosition(
-        targetCell->getCoord().toWorldPosition(1.0F, 0.1F, targetCell->getHeight()) +
+        getCell()->getCoord().toWorldPosition(1.0F, 0.1F, getCell()->getHeight()) +
         glm::vec3(0.0F, 0.4F, 0.0F));
 }
 } // namespace game

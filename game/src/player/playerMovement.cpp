@@ -17,8 +17,8 @@ namespace game {
 
 void PlayerMovement::start() {
     MonoBehaviour::start();
-    _playerEntity->tryMove(_hexGrid->at({0, 0}));
 }
+
 void PlayerMovement::update(double deltaTime) {
     MonoBehaviour::update(deltaTime);
     if (_path.empty() || _step >= _path.size()) {

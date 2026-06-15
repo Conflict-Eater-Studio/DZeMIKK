@@ -449,7 +449,6 @@ void Game::setupPlayer() {
     _playerMovement = playerGO->addComponent<game::PlayerMovement>();
     _playerMovement->setPlayerEntity(_playerEntity);
     _playerMovement->setSpeed(0.25F);
-
     _playerMovement->setGame(this);
 
     animator->play("Idle");
@@ -482,6 +481,62 @@ void Game::setupPlayer() {
     playerHealthSystem->setMaxHealth(30.0F);
     playerHealthSystem->setTextRenderer(
         playerHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
+
+    // Restore saved player state
+    nlohmann::json worldData;
+    if (std::filesystem::exists("./world.json")) {
+        std::ifstream in("./world.json");
+        worldData = nlohmann::json::parse(in);
+        in.close();
+    }
+
+    if (!worldData.empty() && worldData.contains("player")) {
+        const auto& playerData = worldData["player"];
+
+        if (playerData.contains("position")) {
+            game::HexCoord coord = playerData["position"].get<game::HexCoord>();
+            auto cell = _hexGrid->getCell(coord);
+            if (cell) {
+                _playerEntity->teleportTo(cell);
+            }
+        }
+
+        if (playerData.contains("health") && playerData.contains("maxHealth")) {
+            playerHealthSystem->setMaxHealth(playerData["maxHealth"].get<float>());
+            playerHealthSystem->setHealth(playerData["health"].get<float>());
+        }
+
+        if (playerData.contains("patterns")) {
+            patternComponent->clearPatterns();
+            for (const auto& pj : playerData["patterns"]) {
+                game::HexPattern pat = pj.at("pattern").get<game::HexPattern>();
+                int count = pj.at("count").get<int>();
+                patternComponent->addPattern(pat, count);
+            }
+        }
+
+        if (playerData.contains("inventory")) {
+            for (const auto& [typeStr, count] : playerData["inventory"].items()) {
+                auto type = static_cast<game::ItemEntity::ItemType>(std::stoi(typeStr));
+                inventory->addItem(type, count.get<unsigned int>());
+            }
+        }
+    } else {
+        _playerEntity->teleportTo(_hexGrid->getCell({0, 0}));
+
+        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::ATK, 1.0F),
+                                     -1);
+        patternComponent->addPattern(
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 1.1F), -1);
+
+        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::DEF), -1);
+        patternComponent->addPattern(
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::DEF, 1.1F), -1);
+
+        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL), -1);
+        patternComponent->addPattern(
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 0.6F), -1);
+    }
 }
 
 void Game::setupEnemies() {
@@ -753,9 +808,10 @@ void Game::setupItems() {
         }
 
         // Reveal Pattern Item setup
-        auto revealPatternChunks = {
-            "chunkMain2Sub1", "chunkMain2Sub3", "chunkMain4",     "chunkMain4Sub1", "chunkMain5",
-            "chunkMain6",     "chunkMain7",     "chunkMain7Sub1", "chunkMain7Sub3", "chunkMain9"};
+        auto revealPatternChunks = {"chunkMain1",     "chunkMain2Sub1", "chunkMain2Sub3",
+                                    "chunkMain4",     "chunkMain4Sub1", "chunkMain5",
+                                    "chunkMain6",     "chunkMain7",     "chunkMain7Sub1",
+                                    "chunkMain7Sub3", "chunkMain9"};
         for (const auto& name : revealPatternChunks) {
             manager->addItem(world->getGrid()->getChunkByName(name)->getPersistantId(),
                              {.type = game::ItemEntity::ItemType::RevealPattern});

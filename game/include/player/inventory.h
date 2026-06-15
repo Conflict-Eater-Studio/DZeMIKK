@@ -18,14 +18,17 @@ class Inventory : public dzemikk::MonoBehaviour {
         return "Inventory";
     }
 
-    void addItem(ItemEntity::ItemType item);
+    void addItem(ItemEntity::ItemType item, unsigned int count = 1);
     void tryUseItem(ItemEntity::ItemType item);
+    [[nodiscard]] const std::unordered_map<ItemEntity::ItemType, unsigned int>& getItems() const {
+        return _items;
+    }
     void setGame(Game* game) {
         _game = game;
     };
 
   private:
-    std::unordered_map<ItemEntity::ItemType, int> _items;
+    std::unordered_map<ItemEntity::ItemType, unsigned int> _items;
     Game* _game{nullptr};
 };
 } // namespace game

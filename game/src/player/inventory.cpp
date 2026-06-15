@@ -7,9 +7,10 @@
 #include "gameStateMachine.h"
 #include "map/ItemEntity.h"
 #include "stateMachine/combatState.h"
-#include <audio/sound.h>
-#include <audio/audioManager.h>
+
 #include <assetManager/assetmanager.h>
+#include <audio/audioManager.h>
+#include <audio/sound.h>
 
 namespace inventorySound {
 struct SoundInitContext {
@@ -20,22 +21,28 @@ void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitConte
     ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
     ctx.audioManager->getSFXGroup()->setVolume(0.5F);
 }
-} // namespace playerEntitySound
+} // namespace inventorySound
 
 namespace game {
-void Inventory::addItem(ItemEntity::ItemType item) {
-    _items[item]++;
+void Inventory::addItem(ItemEntity::ItemType item, unsigned int count) {
+    _items[item] += count;
 
     if (_game != nullptr) {
         dzemikk::GameObject* btn = nullptr;
         std::string newText;
         switch (item) {
         case ItemEntity::ItemType::RevealPattern: {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::info("[Inventory] Added RevealPattern item. Total: {}", _items[item]);
+#endif
             btn = _game->getCurrentScene().get()->findGameObjectByName("UI_RevealPatternBtn");
             newText = std::format("RP {}", _items[item]);
             break;
         }
         case ItemEntity::ItemType::RevealHex: {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::info("[Inventory] Added RevealHex item. Total: {}", _items[item]);
+#endif
             btn = _game->getCurrentScene().get()->findGameObjectByName("UI_RevealHexBtn");
             newText = std::format("RH {}", _items[item]);
             break;
