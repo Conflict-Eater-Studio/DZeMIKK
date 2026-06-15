@@ -922,4 +922,5 @@ void Game::setupTotems() {
 
     manager->spawnTotemsPerChunk();
 
+
 }

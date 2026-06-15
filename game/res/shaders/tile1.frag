@@ -27,9 +27,9 @@ uniform bool hasAOMap;
 
 // Lights
 
-#define MAX_DIR_LIGHTS 32
-#define MAX_POINT_LIGHTS 1024
-#define MAX_SPOT_LIGHTS 128
+#define MAX_DIR_LIGHTS 5000
+#define MAX_POINT_LIGHTS 5000
+#define MAX_SPOT_LIGHTS 5000
 
 struct DirectionalLight
 {
