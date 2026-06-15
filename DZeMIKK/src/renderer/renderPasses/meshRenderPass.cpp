@@ -43,8 +43,10 @@ void dzemikk::MeshRenderPass::buildMeshBatches(RenderContext& ctx) {
 
             float radius = r->getCullingRadius();
 
-            if (!ctx.frustum->isSphereVisible(r->getTransform()->getPosition(), radius))
-                continue;
+            if (Profiler::Get().enableFrustumCulling) {
+                if (!ctx.frustum->isSphereVisible(r->getTransform()->getPosition(), radius))
+                    continue;
+            }
 
             for (size_t i = 0; i < model->getSubMeshes().size(); i++) {
                 const auto* sub = model->getSubMesh(i);
@@ -180,9 +182,17 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
                 shader->setFloat(outerName.c_str(), ctx.spotLights[i].params.z);
             }
 
-            mesh->drawInstanced(batch.models, batch.instanceVBO);
-            glBindTexture(GL_TEXTURE_2D, 0);
-            Profiler::Get().stats.drawCalls++;
+            if (Profiler::Get().enableInstancing) {
+                mesh->drawInstanced(batch.models, batch.instanceVBO);
+                glBindTexture(GL_TEXTURE_2D, 0);
+                Profiler::Get().stats.drawCalls++;
+            } else {
+                for (const auto& modelMatrix : batch.models) {
+                    mesh->drawInstanced({ modelMatrix }, batch.instanceVBO);
+                    Profiler::Get().stats.drawCalls++;
+                }
+                glBindTexture(GL_TEXTURE_2D, 0);
+            }
         }
     }
 }

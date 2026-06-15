@@ -42,6 +42,9 @@ class Profiler : public IEngineModule {
     RendererStats stats;
     float currentDeltaTime = 0.0f;
 
+    bool enableFrustumCulling = true;
+    bool enableInstancing = true;
+
     static const int FRAME_HISTORY_COUNT = 150;
     float frameTimeHistory[FRAME_HISTORY_COUNT] = {0.0f};
     int frameHistoryOffset = 0;

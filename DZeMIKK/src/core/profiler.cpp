@@ -18,6 +18,8 @@ Profiler& Profiler::Get() {
 void Profiler::initialize() {
     _cpuTimes.clear();
     _gpuQueries.clear();
+    enableFrustumCulling = true;
+    enableInstancing = true;
 }
 
 void Profiler::uninitialize() {
@@ -86,6 +88,10 @@ void Profiler::DrawImGui() {
     ImGui::PlotLines("##FrameTime", frameTimeHistory, FRAME_HISTORY_COUNT, frameHistoryOffset,
                      overlayText, 0.0f, FLT_MAX, ImVec2(0, 50));
 
+    ImGui::Separator();
+    ImGui::Text("--- Optimizations ---");
+    ImGui::Checkbox("Frustum Culling", &enableFrustumCulling);
+    ImGui::Checkbox("Instanced Batching", &enableInstancing);
     ImGui::Separator();
 
     ImGui::Text("--- CPU Timers (ms) ---");
