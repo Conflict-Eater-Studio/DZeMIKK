@@ -55,8 +55,8 @@ inline void from_json(const nlohmann::json& j, HexPattern& pat) {
                  j["type"].get<uint8_t>(), j["effectStrenght"].get<float>());
 
     std::vector<HexCoord> hexes = j["hexes"].get<std::vector<HexCoord>>();
-    pat = HexPattern(hexes, static_cast<HexPattern::Type>(j["type"].get<uint8_t>(),
-                                                          j["effectStrenght"].get<float>()));
+    pat = HexPattern(hexes, static_cast<HexPattern::Type>(j["type"].get<uint8_t>()),
+                     j["effectStrenght"].get<float>());
 }
 // NOLINTEND(readability-identifier-naming)
 
