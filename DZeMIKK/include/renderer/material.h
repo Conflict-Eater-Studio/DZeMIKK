@@ -93,6 +93,30 @@ class Material {
         _emissive = texture;
     }
 
+    const AssetHandle<Texture>& getAlbedoTextureHandle() const {
+        return _albedo;
+    }
+
+    const AssetHandle<Texture>& getNormalTextureHandle() const {
+        return _normal;
+    }
+
+    const AssetHandle<Texture>& getMetallicTextureHandle() const {
+        return _metallicMap;
+    }
+
+    const AssetHandle<Texture>& getRoughnessTextureHandle() const {
+        return _roughnessMap;
+    }
+
+    const AssetHandle<Texture>& getAOTextureHandle() const {
+        return _aoMap;
+    }
+
+    const AssetHandle<Texture>& getEmissiveTextureHandle() const {
+        return _emissive;
+    }
+
 #pragma endregion
 
 #pragma region Parameters
@@ -135,6 +159,30 @@ class Material {
 
     [[nodiscard]] bool isValid() const {
         return _shader.get() != nullptr;
+    }
+
+    [[nodiscard]] bool hasAlbedoTexture() const {
+        return _albedo.get() != nullptr;
+    }
+
+    [[nodiscard]] bool hasNormalTexture() const {
+        return _normal.get() != nullptr;
+    }
+
+    [[nodiscard]] bool hasMetallicTexture() const {
+        return _metallicMap.get() != nullptr;
+    }
+
+    [[nodiscard]] bool hasRoughnessTexture() const {
+        return _roughnessMap.get() != nullptr;
+    }
+
+    [[nodiscard]] bool hasAOTexture() const {
+        return _aoMap.get() != nullptr;
+    }
+
+    [[nodiscard]] bool hasEmissiveTexture() const {
+        return _emissive.get() != nullptr;
     }
 
 #pragma endregion

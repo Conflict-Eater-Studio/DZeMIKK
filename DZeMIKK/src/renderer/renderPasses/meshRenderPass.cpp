@@ -115,21 +115,65 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
 
             shader->bind();
 
+            //shader->setInt("useTexture", material->getAlbedoTexture() ? 1 : 0);
+
+            //shader->setFloat("shininess", 6.0f);
+            //shader->setFloat("specularStrength", .5f);
+            //shader->setVec3("objectColor", batch.color);
+
+            shader->setVec3("viewPos", ctx.sceneCamera->getOwner()->transform()->getPosition());
+
+            shader->setVec3("albedoColor", material->getAlbedoColor());
+            shader->setFloat("metallic", material->getMetallic());
+            shader->setFloat("roughness", material->getRoughness());
+            shader->setFloat("ao", material->getAO());
+
             if (material->getAlbedoTexture()) {
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, material->getAlbedoTexture()->getId());
-                shader->setSampler("diffuseTexture", 0);
+
+                shader->setSampler("albedoMap", 0);
+                shader->setInt("hasAlbedoMap", 1);
+            } else {
+                shader->setInt("hasAlbedoMap", 0);
             }
 
-            shader->setInt("useTexture", material->getAlbedoTexture() ? 1 : 0);
+            if (material->getMetallicTexture()) {
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, material->getMetallicTexture()->getId());
 
-            shader->setFloat("shininess", 6.0f);
-            shader->setFloat("specularStrength", .5f);
-            shader->setVec3("objectColor", batch.color);
-            shader->setVec3("viewPos", ctx.sceneCamera->getOwner()->transform()->getPosition());
+                shader->setSampler("metallicMap", 1);
+                shader->setInt("hasMetallicMap", 1);
+            } else {
+                shader->setInt("hasMetallicMap", 0);
+            }
+
+            if (material->getRoughnessTexture()) {
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, material->getRoughnessTexture()->getId());
+
+                shader->setSampler("roughnessMap", 2);
+                shader->setInt("hasRoughnessMap", 1);
+            } else {
+                shader->setInt("hasRoughnessMap", 0);
+            }
+
+            if (material->getAOTexture()) {
+                glActiveTexture(GL_TEXTURE3);
+                glBindTexture(GL_TEXTURE_2D, material->getAOTexture()->getId());
+
+                shader->setSampler("aoMap", 3);
+                shader->setInt("hasAOMap", 1);
+            } else {
+                shader->setInt("hasAOMap", 0);
+            }
 
             mesh->drawInstanced(batch.models, batch.instanceVBO);
-            glBindTexture(GL_TEXTURE_2D, 0);
+
+            for (int i = 0; i < 4; i++) {
+                glActiveTexture(GL_TEXTURE0 + i);
+                glBindTexture(GL_TEXTURE_2D, 0);
+            }
             Profiler::Get().stats.drawCalls++;
         }
     }

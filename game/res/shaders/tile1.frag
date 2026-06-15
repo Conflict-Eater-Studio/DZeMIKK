@@ -6,30 +6,42 @@ in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoord;
 
-uniform sampler2D diffuseTexture;
-uniform bool useTexture;
-
-uniform vec3 objectColor;
 uniform vec3 viewPos;
 
-uniform float shininess;
-uniform float specularStrength;
+// Material
 
-#define MAX_DIR_LIGHTS 5000
-#define MAX_POINT_LIGHTS 5000
-#define MAX_SPOT_LIGHTS 5000
+uniform vec3 albedoColor;
+uniform float metallic;
+uniform float roughness;
+uniform float ao;
+
+uniform sampler2D albedoMap;
+uniform sampler2D metallicMap;
+uniform sampler2D roughnessMap;
+uniform sampler2D aoMap;
+
+uniform bool hasAlbedoMap;
+uniform bool hasMetallicMap;
+uniform bool hasRoughnessMap;
+uniform bool hasAOMap;
+
+// Lights
+
+#define MAX_DIR_LIGHTS 32
+#define MAX_POINT_LIGHTS 1024
+#define MAX_SPOT_LIGHTS 128
 
 struct DirectionalLight
 {
     vec4 direction;
-    vec4 color; 
+    vec4 color;
 };
 
 struct PointLight
 {
     vec4 position;
     vec4 color;
-    vec4 params; // x = range (optional)
+    vec4 params;
 };
 
 struct SpotLight
@@ -37,7 +49,7 @@ struct SpotLight
     vec4 position;
     vec4 direction;
     vec4 color;
-    vec4 params; // x = range, y = inner, z = outer
+    vec4 params;
 };
 
 layout(std430, binding = 0) buffer LightBuffer
@@ -52,104 +64,309 @@ layout(std430, binding = 0) buffer LightBuffer
     SpotLight spotLights[MAX_SPOT_LIGHTS];
 };
 
+const float PI = 3.14159265359;
+
+// ======================================================
+// PBR Helpers
+// ======================================================
+
+float DistributionGGX(vec3 N, vec3 H, float roughness)
+{
+    float a = roughness * roughness;
+    float a2 = a * a;
+
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH * NdotH;
+
+    float num = a2;
+
+    float denom =
+        (NdotH2 * (a2 - 1.0) + 1.0);
+
+    denom = PI * denom * denom;
+
+    return num / max(denom, 0.000001);
+}
+
+float GeometrySchlickGGX(float NdotV, float roughness)
+{
+    float r = roughness + 1.0;
+    float k = (r * r) / 8.0;
+
+    float num = NdotV;
+
+    float denom =
+        NdotV * (1.0 - k) + k;
+
+    return num / max(denom, 0.000001);
+}
+
+float GeometrySmith(
+    vec3 N,
+    vec3 V,
+    vec3 L,
+    float roughness)
+{
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+
+    float ggx1 =
+        GeometrySchlickGGX(NdotV, roughness);
+
+    float ggx2 =
+        GeometrySchlickGGX(NdotL, roughness);
+
+    return ggx1 * ggx2;
+}
+
+vec3 FresnelSchlick(float cosTheta, vec3 F0)
+{
+    return
+        F0 +
+        (1.0 - F0) *
+        pow(1.0 - cosTheta, 5.0);
+}
+
+// ======================================================
+
+void AccumulateLight(
+    vec3 L,
+    vec3 radiance,
+    vec3 N,
+    vec3 V,
+    vec3 albedo,
+    float metallicValue,
+    float roughnessValue,
+    vec3 F0,
+    inout vec3 Lo)
+{
+    vec3 H = normalize(V + L);
+
+    float NDF =
+        DistributionGGX(
+            N,
+            H,
+            roughnessValue);
+
+    float G =
+        GeometrySmith(
+            N,
+            V,
+            L,
+            roughnessValue);
+
+    vec3 F =
+        FresnelSchlick(
+            max(dot(H, V), 0.0),
+            F0);
+
+    vec3 numerator =
+        NDF * G * F;
+
+    float denominator =
+        4.0 *
+        max(dot(N, V), 0.0) *
+        max(dot(N, L), 0.0);
+
+    vec3 specular =
+        numerator /
+        max(denominator, 0.001);
+
+    vec3 kS = F;
+
+    vec3 kD =
+        vec3(1.0) - kS;
+
+    kD *=
+        (1.0 - metallicValue);
+
+    float NdotL =
+        max(dot(N, L), 0.0);
+
+    Lo +=
+        (
+            kD * albedo / PI +
+            specular
+        )
+        *
+        radiance
+        *
+        NdotL;
+}
+
 void main()
 {
-    vec3 norm = normalize(Normal);
-    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 N = normalize(Normal);
+    vec3 V = normalize(viewPos - FragPos);
 
-    vec3 diffuseLighting = vec3(0.0);
-    vec3 specularLighting = vec3(0.0);
+    // ======================================================
+    // Material
+    // ======================================================
+
+    vec3 albedo = albedoColor;
+
+    if (hasAlbedoMap)
+    {
+        albedo *=
+            texture(albedoMap, TexCoord).rgb;
+    }
+
+    float metallicValue =
+        hasMetallicMap
+        ? texture(metallicMap, TexCoord).r
+        : metallic;
+
+    float roughnessValue =
+        hasRoughnessMap
+        ? texture(roughnessMap, TexCoord).r
+        : roughness;
+
+    float aoValue =
+        hasAOMap
+        ? texture(aoMap, TexCoord).r
+        : ao;
+
+    roughnessValue =
+        clamp(
+            roughnessValue,
+            0.04,
+            1.0);
+
+    vec3 F0 = vec3(0.04);
+
+    F0 =
+        mix(
+            F0,
+            albedo,
+            metallicValue);
+
+    vec3 Lo = vec3(0.0);
+
+    // ======================================================
+    // Directional Lights
+    // ======================================================
 
     for (int i = 0; i < dirLightCount; i++)
     {
-        vec3 L = normalize(-dirLights[i].direction.xyz);
+        vec3 L =
+            normalize(
+                -dirLights[i].direction.xyz);
 
-        float diff = max(dot(norm, L), 0.0);
+        vec3 radiance =
+            dirLights[i].color.rgb *
+            dirLights[i].color.a;
 
-        vec3 lightColor = dirLights[i].color.rgb;
-        float intensity = dirLights[i].color.a;
-
-        diffuseLighting += diff * lightColor * intensity;
-
-        vec3 halfwayDir = normalize(L + viewDir);
-
-        float spec = pow(max(dot(norm, halfwayDir), 0.0), shininess);
-
-        specularLighting += spec * specularStrength * lightColor * intensity;
+        AccumulateLight(
+            L,
+            radiance,
+            N,
+            V,
+            albedo,
+            metallicValue,
+            roughnessValue,
+            F0,
+            Lo);
     }
+
+    // ======================================================
+    // Point Lights
+    // ======================================================
 
     for (int i = 0; i < pointLightCount; i++)
     {
-        vec3 L = pointLights[i].position.xyz - FragPos;
+        vec3 lightVec = pointLights[i].position.xyz - FragPos;
 
-        float dist = length(L);
-        L = normalize(L);
+        float distance = length(lightVec);
+        vec3 L = lightVec / max(distance, 0.0001);
 
-        float atten = 1.0 / (dist * dist);
+        float attenuation = 1.0 / max(distance * distance, 0.01);
 
-        vec3 lightColor = pointLights[i].color.rgb;
-        float intensity = pointLights[i].color.a;
+        vec3 radiance =
+            pointLights[i].color.rgb *
+            pointLights[i].color.a *
+            attenuation;
 
-        float diff = max(dot(norm, L), 0.0);
-
-        diffuseLighting += diff * lightColor * intensity * atten;
-
-        vec3 halfwayDir = normalize(L + viewDir);
-
-        float spec = pow(max(dot(norm, halfwayDir), 0.0), shininess);
-
-        specularLighting += spec * specularStrength * lightColor * intensity * atten;
+        AccumulateLight(
+            L,
+            radiance,
+            N,
+            V,
+            albedo,
+            metallicValue,
+            roughnessValue,
+            F0,
+            Lo);
     }
+
+    // ======================================================
+    // Spot Lights
+    // ======================================================
 
     for (int i = 0; i < spotLightCount; i++)
     {
-        vec3 L = normalize(spotLights[i].position.xyz - FragPos);
+        vec3 lightVec =
+            spotLights[i].position.xyz -
+            FragPos;
 
-        float theta = dot(L, normalize(-spotLights[i].direction.xyz));
+        vec3 L =
+            normalize(lightVec);
 
-        float spot = clamp(
-            (theta - spotLights[i].params.z) /
-            (spotLights[i].params.y - spotLights[i].params.z),
-            0.0,
-            1.0
-        );
+        float theta =
+            dot(
+                L,
+                normalize(
+                    -spotLights[i].direction.xyz));
 
-        vec3 lightColor = spotLights[i].color.rgb;
-        float intensity = spotLights[i].color.a;
+        float spot =
+            clamp(
+                (theta - spotLights[i].params.z) /
+                (spotLights[i].params.y - spotLights[i].params.z),
+                0.0,
+                1.0);
 
-        float diff = max(dot(norm, L), 0.0);
+        vec3 radiance =
+            spotLights[i].color.rgb *
+            spotLights[i].color.a *
+            spot;
 
-        diffuseLighting += diff * lightColor * intensity * spot;
-
-        vec3 halfwayDir = normalize(L + viewDir);
-
-        float spec = pow(max(dot(norm, halfwayDir), 0.0), shininess);
-
-        specularLighting += spec * specularStrength * lightColor * intensity * spot;
+        AccumulateLight(
+            L,
+            radiance,
+            N,
+            V,
+            albedo,
+            metallicValue,
+            roughnessValue,
+            F0,
+            Lo);
     }
 
-    vec3 baseColor;
+    // ======================================================
+    // Ambient
+    // ======================================================
 
-    if (useTexture)
-    {
-        vec3 texColor = texture(diffuseTexture, TexCoord).rgb;
+    vec3 ambient =
+        vec3(0.03) *
+        albedo *
+        aoValue;
 
-        if (objectColor == vec3(1.0))
-            baseColor = texColor;
-        else
-            baseColor = texColor * objectColor;
-    }
-    else
-    {
-        baseColor = objectColor;
-    }
-
-    vec3 ambient = baseColor * 0.05;
-
-    vec3 finalColor =
+    vec3 color =
         ambient +
-        diffuseLighting * baseColor +
-        specularLighting;
+        Lo;
 
-    FragColor = vec4(finalColor, 1.0);
+    // Reinhard tonemap
+
+    color =
+        color /
+        (color + vec3(1.0));
+
+    // Gamma correction
+
+    color =
+        pow(
+            color,
+            vec3(1.0 / 2.2));
+
+    FragColor =
+        vec4(color, 1.0);
 }
