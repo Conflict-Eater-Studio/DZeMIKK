@@ -353,11 +353,9 @@ void Game::setupUICamera() {
 }
 
 void Game::setupInputCallbacks() {
-    static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
-    static std::unordered_map<dzemikk::MeshRenderer*, glm::vec4> baseColors;
 
     _engine->SetUserUpdateCallback([this]() {
-        auto ensureBase = [&](dzemikk::MeshRenderer* r) { baseColors[r] = r->getColor(); };
+        auto ensureBase = [&](dzemikk::MeshRenderer* r) { _lastHitBaseColors[r] = r->getColor(); };
 
         if (!_engine || !_engine->getInput() ||
             !_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
@@ -381,21 +379,21 @@ void Game::setupInputCallbacks() {
 
         constexpr float hoverStrength = 0.5F;
 
-        if (currentRenderer != lastHitRenderer) {
+        if (currentRenderer != _lastHitRenderer) {
 
-            if (lastHitRenderer && lastHitRenderer->isValid()) {
-                auto base = baseColors[lastHitRenderer];
-                lastHitRenderer->setColor(base);
+            if (_lastHitRenderer && _lastHitRenderer->isValid()) {
+                auto base = _lastHitBaseColors[_lastHitRenderer];
+                _lastHitRenderer->setColor(base);
             }
 
             if (currentRenderer && currentRenderer->isValid()) {
                 ensureBase(currentRenderer);
 
-                auto base = baseColors[currentRenderer];
+                auto base = _lastHitBaseColors[currentRenderer];
                 currentRenderer->setColor(base * 0.5F);
             }
 
-            lastHitRenderer = currentRenderer;
+            _lastHitRenderer = currentRenderer;
         }
     });
 
@@ -969,4 +967,37 @@ void Game::setupTotems() {
                           {.pattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
                                                        game::HexPattern::Type::ATK, 1.2F)});
     }
+}
+
+void Game::restart() {
+    auto* assetManager = _engine->getAssetManager();
+    auto* sceneManager = _engine->getSceneManager();
+
+    _mainScene = assetManager->reload<dzemikk::Scene>("scenes/gameplay5.json");
+
+    _lastHitRenderer = nullptr;
+    _lastHitBaseColors.clear();
+    _engine->getCollisions()->resetHoverState();
+
+    sceneManager->unloadScene(sceneManager->getActiveScene());
+
+    std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
+    sceneManager->loadScene(sceneShared);
+    sceneManager->setActiveScene(sceneShared);
+
+    setupMainCamera();
+    setupUICamera();
+    setupWorld();
+    setupPlayer();
+    setupEnemies();
+    setupItems();
+    setupTotems();
+
+    auto* root = _mainScene.get()->findGameObjectByName("Root");
+    _stateMachine = root->addComponent<game::GameStateMachine>();
+
+    _cameraController = _mainCamera->getOwner()->addComponent<game::CameraController>();
+    _cameraController->setPlayerTransform(_playerEntity->getOwner()->transform());
+
+    _stateMachine->setState(std::make_unique<game::ExplorationState>(this));
 }

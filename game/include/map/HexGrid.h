@@ -95,6 +95,7 @@ class HexGrid {
     // --- Generation ---
     boost::uuids::uuid makeChunk(const HexChunk::Config& config);
     void clean();
+    void clear();
 
     // --- Loading ---
     void loadChunk(std::unique_ptr<HexChunk> chunk);

@@ -14,7 +14,22 @@
 
 namespace dzemikk {
 Scene::Scene() : _id(boost::uuids::random_generator()()) {};
-Scene::~Scene() = default;
+Scene::~Scene() {
+    for (const auto& object : _objects) {
+        if (object->getParent() == nullptr) {
+            object->destroy();
+        }
+    }
+
+    _objects.clear();
+    _pendingStart.clear();
+    _active.clear();
+    _activeSet.clear();
+    _pendingDestroy.clear();
+    _taggedObjects.clear();
+    _namedObjects.clear();
+    _idObjects.clear();
+};
 
 GameObject* Scene::createGameObject() {
     auto object = std::make_unique<GameObject>();

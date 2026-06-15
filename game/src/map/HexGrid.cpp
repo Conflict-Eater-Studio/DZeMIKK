@@ -323,6 +323,15 @@ void HexGrid::clean() {
     }
 }
 
+void HexGrid::clear() {
+    _chunks.clear();
+    _chunkByName.clear();
+    _bridges.clear();
+    _blockingPatterns.clear();
+    _rootChunkId = boost::uuids::nil_uuid();
+    _cleaned = false;
+}
+
 boost::uuids::uuid HexGrid::makeChunk(const HexChunk::Config& config) {
     auto parentChunkId = config.parentChunkId;
     bool hasParent = parentChunkId != boost::uuids::nil_uuid();

@@ -154,11 +154,20 @@ void game::CombatState::onUpdate(float dt) {
             _boardTransition = 0.0F;
             _exitAnimation = false;
 
-            _game->setExplorationState();
+            if (_playerDied) {
+                _game->enableCombatUI(false);
+                _game->getEngine()->getInput()->OnKeyPressed.removeListener(_endTurnListenerId);
+                dzemikk::UIActionRegistry::get().unregisterAction("Confirm_Round");
+                _game->getEngine()->getAudioManager()->stop(combatSound::combatFMODChannel);
+                _game->restart();
+            } else {
+                _game->setExplorationState();
+            }
             return;
         }
 
         updateBoardVisibility(_boardTransition, true);
+        return;
     }
 
     if (_enterAnimation) {
@@ -276,6 +285,11 @@ void game::CombatState::endPlayerTurn() {
     _phase = CombatPhase::ResolveTurn;
 
     resolveConflict();
+
+    if (_playerDied) {
+        return;
+    }
+
     showEnemyPlannedPatterns();
 
     combatSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
@@ -391,6 +405,7 @@ void game::CombatState::resolveConflict() {
     if (playerHealth->isDead()) {
         _exitAnimation = true;
         _boardTransition = 1.0F;
+        _playerDied = true;
 
         combatSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
         dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS;

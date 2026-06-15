@@ -474,4 +474,17 @@ void World::setPlayer(PlayerEntity* playerEntity) {
 
     _player = playerEntity;
 }
+
+void World::clearHexVisuals() {
+    auto* scene = _owner->getScene();
+    for (auto* transform : _hexTransforms) {
+        if (transform && transform->getOwner()) {
+            scene->destroyGameObject(transform->getOwner());
+        }
+    }
+    _hexTransforms.clear();
+    _spawnedHexes.clear();
+    _reservedTerritory.clear();
+}
+
 } // namespace game

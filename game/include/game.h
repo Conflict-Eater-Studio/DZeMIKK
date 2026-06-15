@@ -9,10 +9,13 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+#include <unordered_map>
+
 namespace dzemikk {
 class Material;
 class GameObject;
 class Camera;
+class MeshRenderer;
 } // namespace dzemikk
 namespace game {
 class PlayerMovement;
@@ -44,6 +47,7 @@ class Game {
         return _engine;
     }
     void setExplorationState();
+    void restart();
 
   private:
     void setupSkybox();
@@ -70,6 +74,9 @@ class Game {
     game::PlayerMovement* _playerMovement = nullptr;
     game::CameraController* _cameraController = nullptr;
     game::GameStateMachine* _stateMachine = nullptr;
+
+    dzemikk::MeshRenderer* _lastHitRenderer = nullptr;
+    std::unordered_map<dzemikk::MeshRenderer*, glm::vec4> _lastHitBaseColors;
 };
 
 #endif

@@ -105,6 +105,8 @@ class World : public dzemikk::MonoBehaviour {
         _assetManager = assetManager;
     }
 
+    void clearHexVisuals();
+
   private:
     void spawnHexVisual(const std::shared_ptr<HexCell>& cell);
 
