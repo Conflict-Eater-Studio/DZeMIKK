@@ -64,6 +64,10 @@ void dzemikk::MeshRenderPass::buildMeshBatches(RenderContext& ctx) {
                 if (!material)
                     continue;
 
+                if (material->getShaderHandle() && material->getShaderHandle().getAssetPath() == "shaders/fog_volume") {
+                    continue;
+                }
+
                 Batch* batch = nullptr;
 
                 for (auto& b : _batches) {

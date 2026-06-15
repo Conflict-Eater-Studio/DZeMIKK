@@ -11,6 +11,9 @@
 #endif
 
 #include "ecs/components/colorGradingEffect.h"
+#include "ecs/components/meshRenderer.h"
+#include "renderer/material.h"
+#include "renderer/shader.h"
 
 #include "animation/animationmodule.h"
 #include "assetManager/assetmanager.h"
@@ -222,6 +225,79 @@ void Engine::start() {
                         ImGui::TreePop();
                     }
                 }
+                ImGui::End();
+            }
+
+            // Volumetric Fog Settings ImGui Window
+            extern float g_FogDensity;
+            std::vector<MeshRenderer*> meshRenderers;
+            ComponentRegistry::get().getComponents<MeshRenderer>(meshRenderers);
+            
+            bool foundFog = false;
+            for (auto* r : meshRenderers) {
+                if (!r->isValid()) continue;
+                for (size_t i = 0; i < r->getMaterials().size(); ++i) {
+                    auto* mat = r->getMaterial(i);
+                    if (mat && mat->getShaderHandle() && mat->getShaderHandle().getAssetPath() == "shaders/fog_volume") {
+                        if (!foundFog) {
+                            ImGui::Begin("Fog Volume Settings");
+                            foundFog = true;
+                        }
+                        
+                        auto* transform = r->getTransform();
+                        glm::vec3 pos = transform->getPosition();
+                        glm::vec3 rot = transform->getEulerAngles();
+                        glm::vec3 scale = transform->getScale();
+                        glm::vec4 color = r->getColor();
+                        bool enabled = r->isEnabled();
+                        
+                        ImGui::Text("Fog Object: %s", r->getOwner()->getName().c_str());
+                        ImGui::Separator();
+                        
+                        if (ImGui::Checkbox("Fog Enabled", &enabled)) {
+                            r->enabled(enabled);
+                        }
+                        
+                        extern float g_FogNoiseScale;
+                        extern float g_FogWindSpeed;
+                        extern float g_FogNoiseContrast;
+                        extern float g_FogWarpStrength;
+
+                        if (ImGui::SliderFloat("Global Density", &g_FogDensity, 0.1f, 50.0f)) {
+                            // modified
+                        }
+                        if (ImGui::SliderFloat("Noise Scale (Detail)", &g_FogNoiseScale, 0.05f, 2.0f)) {
+                            // modified
+                        }
+                        if (ImGui::SliderFloat("Wind Speed (Scroll)", &g_FogWindSpeed, 0.0f, 5.0f)) {
+                            // modified
+                        }
+                        if (ImGui::SliderFloat("Smoke Contrast (Sharpness)", &g_FogNoiseContrast, 0.0f, 1.0f)) {
+                            // modified
+                        }
+                        if (ImGui::SliderFloat("Warp Strength (Turbulence)", &g_FogWarpStrength, 0.0f, 5.0f)) {
+                            // modified
+                        }
+                        
+                        if (ImGui::DragFloat3("Position", &pos.x, 0.05f)) {
+                            transform->setPosition(pos);
+                        }
+                        if (ImGui::DragFloat3("Rotation", &rot.x, 0.5f)) {
+                            transform->setEulerAngles(rot);
+                        }
+                        if (ImGui::DragFloat3("Scale", &scale.x, 0.05f)) {
+                            transform->setScale(scale);
+                        }
+                        if (ImGui::ColorEdit4("ColorMultiplier", &color.x)) {
+                            r->setColor(color);
+                        }
+                        
+                        ImGui::Spacing();
+                        break;
+                    }
+                }
+            }
+            if (foundFog) {
                 ImGui::End();
             }
         }

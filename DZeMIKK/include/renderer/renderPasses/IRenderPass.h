@@ -66,6 +66,7 @@ struct RenderContext {
     int spotCount = 0;
 
     GLuint sceneTexture = 0;
+    GLuint depthTexture = 0;
 };
 
 /**

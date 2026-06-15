@@ -9,6 +9,23 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 namespace dzemikk {
 class Material;
 class GameObject;
@@ -56,6 +73,7 @@ class Game {
     void setupItems();
     void registerDefaultTerritories();
     void setupTotems();
+    void setupFog();
 
     dzemikk::Engine* _engine;
     dzemikk::AssetHandle<dzemikk::Scene> _mainScene;

@@ -7,6 +7,7 @@
 #include "renderer/renderPasses/skyboxRenderPass.h"
 #include "renderer/renderPasses/meshRenderPass.h"
 #include "renderer/renderPasses/skinnedRenderPass.h"
+#include "renderer/renderPasses/fogRenderPass.h"
 #include "renderer/renderPasses/spriteRenderPass.h"
 #include "renderer/renderPasses/imageRenderPass.h"
 #include "renderer/renderPasses/textRenderPass.h"
@@ -36,6 +37,7 @@ void dzemikk::Renderer::initialize() {
     addPass<SkyboxRenderPass>();
     addPass<MeshRenderPass>();
     addPass<SkinnedRenderPass>();
+    addPass<FogRenderPass>();
     addPass<SpriteRenderPass>();
     addPass<ImageRenderPass>();
     addPass<TextRenderPass>();
@@ -82,6 +84,7 @@ void dzemikk::Renderer::render() {
         pass->execute(_context);
 
     _context.sceneTexture = _sceneFramebuffer->getColorAttachmentRendererID();
+    _context.depthTexture = _sceneFramebuffer->getDepthAttachmentRendererID();
 
     _sceneFramebuffer->unbind();
 

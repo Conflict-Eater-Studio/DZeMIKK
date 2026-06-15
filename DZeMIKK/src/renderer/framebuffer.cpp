@@ -17,7 +17,7 @@ Framebuffer::~Framebuffer() {
     }
 
     if (_depthAttachment) {
-        glDeleteRenderbuffers(1, &_depthAttachment);
+        glDeleteTextures(1, &_depthAttachment);
     }
 
     if (_rendererID) {
@@ -31,7 +31,7 @@ void Framebuffer::invalidate() {
 
         glDeleteFramebuffers(1, &_rendererID);
         glDeleteTextures(1, &_colorAttachment);
-        glDeleteRenderbuffers(1, &_depthAttachment);
+        glDeleteTextures(1, &_depthAttachment);
 
         _rendererID = 0;
         _colorAttachment = 0;
@@ -53,14 +53,17 @@ void Framebuffer::invalidate() {
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _colorAttachment,
                            0);
 
-    glGenRenderbuffers(1, &_depthAttachment);
-    glBindRenderbuffer(GL_RENDERBUFFER, _depthAttachment);
+    glGenTextures(1, &_depthAttachment);
+    glBindTexture(GL_TEXTURE_2D, _depthAttachment);
 
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, static_cast<int>(_width),
-                          static_cast<int>(_height));
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, static_cast<int>(_width),
+                 static_cast<int>(_height), 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
 
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
-                              _depthAttachment);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D,
+                           _depthAttachment, 0);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 
@@ -100,6 +103,11 @@ uint32_t Framebuffer::getRendererID() const {
 uint32_t Framebuffer::getColorAttachmentRendererID() const {
 
     return _colorAttachment;
+}
+
+uint32_t Framebuffer::getDepthAttachmentRendererID() const {
+
+    return _depthAttachment;
 }
 
 uint32_t Framebuffer::getWidth() const {

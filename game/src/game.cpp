@@ -114,6 +114,7 @@ void Game::start() {
     // Setup Items and Totems ALWAYS after Enemies
     setupItems();
     setupTotems();
+    setupFog();
 
     auto* root = _mainScene.get()->findGameObjectByName("Root");
     _stateMachine = root->addComponent<game::GameStateMachine>();
@@ -856,4 +857,26 @@ void Game::setupTotems() {
 
     manager->spawnTotemsPerChunk();
 
+}
+
+void Game::setupFog() {
+    auto* assetManager = _engine->getAssetManager();
+    auto* fogGO = _mainScene.get()->createGameObject("FogVolume");
+    auto* renderer = fogGO->addComponent<dzemikk::MeshRenderer>();
+    renderer->setTransform(fogGO->transform());
+
+    auto cubeModel = assetManager->getPrimitiveModel(
+        dzemikk::PrimitiveMeshLibrary::PrimitiveMesh::Cube
+    );
+    renderer->setModel(cubeModel);
+
+    auto fogMaterial = std::make_shared<dzemikk::Material>();
+    auto fogShader = assetManager->get<dzemikk::Shader>("shaders/fog_volume");
+    fogMaterial->setShader(fogShader);
+
+    renderer->setMaterial(0, fogMaterial);
+    renderer->setColor(glm::vec4(0.35f, 0.45f, 0.55f, 0.65f));
+
+    fogGO->transform()->setPosition({0.0f, 1.5f, 0.0f});
+    fogGO->transform()->setScale({25.0f, 4.5f, 25.0f});
 }
