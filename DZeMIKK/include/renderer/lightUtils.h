@@ -19,6 +19,17 @@ struct GPUSpotLight {
     glm::vec4 color;
     glm::vec4 params; // x = range, y = inner, z = outer
 };
+
+struct GPUSceneLights {
+    int dirCount;
+    int pointCount;
+    int spotCount;
+    int padding;
+
+    GPUDirectionalLight dir[5000];
+    GPUPointLight point[5000];
+    GPUSpotLight spot[5000];
+};
 }
 
 #endif // DZEMIKK_LIGHT_UTILS_H

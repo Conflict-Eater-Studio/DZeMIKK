@@ -67,6 +67,36 @@
 #include "ecs/components/colorGradingEffect.h"
 #include "ecs/components/antiAliasingEffect.h"
 
+#include <random>
+#include <ecs/components/light/pointLight.h>
+
+static std::mt19937 rng{std::random_device{}()};
+
+static float randFloat(float min, float max) {
+    std::uniform_real_distribution<float> dist(min, max);
+    return dist(rng);
+}
+
+static glm::vec3 randVec3(float min, float max) {
+    return glm::vec3(randFloat(min, max), randFloat(min, max), randFloat(min, max));
+}
+
+void Game::spawnRandomPointLight() {
+    auto& reg = dzemikk::ComponentRegistry::get();
+
+    auto go = _mainScene.get()->createGameObject();
+
+    auto* light = go->addComponent<dzemikk::PointLight>();
+    light->setColor(randVec3(0.2f, 1.0f));
+    light->setIntensity(randFloat(0.5f, 5.0f));
+    light->setRange(randFloat(5.0f, 25.0f));
+
+    auto* t = go->transform();
+    t->setPosition(randVec3(-20.0f, 20.0f));
+
+    std::cout << "Spawned random point light\n";
+}
+
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
         return;
@@ -377,6 +407,34 @@ void Game::setupInputCallbacks() {
     static std::unordered_map<dzemikk::MeshRenderer*, glm::vec4> baseColors;
 
     _engine->SetUserUpdateCallback([this]() {
+        ImGui::Begin("Light Debug Tools");
+
+        auto& reg = dzemikk::ComponentRegistry::get();
+
+        static std::vector<dzemikk::DirectionalLight*> dir;
+        static std::vector<dzemikk::PointLight*> point;
+        static std::vector<dzemikk::SpotLight*> spot;
+
+        reg.getEnabledComponents<dzemikk::DirectionalLight>(dir);
+        reg.getEnabledComponents<dzemikk::PointLight>(point);
+        reg.getEnabledComponents<dzemikk::SpotLight>(spot);
+
+        // ===== UI =====
+        ImGui::Text("Directional Lights: %d", (int)dir.size());
+        ImGui::Text("Point Lights: %d", (int)point.size());
+        ImGui::Text("Spot Lights: %d", (int)spot.size());
+
+        ImGui::Separator();
+
+        if (ImGui::Button("Spawn Random Point Light")) {
+            for (int i = 0; i < 100; i++) {
+                spawnRandomPointLight();
+            }
+        }
+
+        ImGui::End();
+
+
         auto ensureBase = [&](dzemikk::MeshRenderer* r) { baseColors[r] = r->getColor(); };
 
         if (!_engine || !_engine->getInput() ||

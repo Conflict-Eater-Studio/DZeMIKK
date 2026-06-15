@@ -27,6 +27,7 @@
 
 void dzemikk::Renderer::initialize() {
     _sceneFramebuffer = std::make_unique<Framebuffer>(_viewportWidth, _viewportHeight);
+    _lightSSBO.init();
 
     _context = RenderContext(_cameraSystem.getActiveSceneCamera(),
                              _cameraSystem.getActiveUICamera(), glm::mat4(1.0f),
@@ -66,10 +67,13 @@ void dzemikk::Renderer::uninitialize() {
         glDeleteBuffers(1, &_uboMatrices);
         _uboMatrices = 0;
     }
+
+    _lightSSBO.destroy();
 }
 
 void dzemikk::Renderer::render() {
     _lightSystem.update(_context);
+    _lightSSBO.upload(_lightSystem);
 
     _sceneFramebuffer->bind();
     glViewport(0, 0, _viewportWidth, _viewportHeight);

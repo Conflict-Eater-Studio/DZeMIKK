@@ -15,155 +15,126 @@ uniform vec3 viewPos;
 uniform float shininess;
 uniform float specularStrength;
 
-uniform int dirLightCount;
-uniform int pointLightCount;
-uniform int spotLightCount;
+#define MAX_DIR_LIGHTS 5000
+#define MAX_POINT_LIGHTS 5000
+#define MAX_SPOT_LIGHTS 5000
 
-#define MAX_DIR_LIGHTS 8
-#define MAX_POINT_LIGHTS 50
-#define MAX_SPOT_LIGHTS 8
+struct DirectionalLight
+{
+    vec4 direction;
+    vec4 color; 
+};
 
-uniform vec3 dirDirection[MAX_DIR_LIGHTS];
-uniform vec3 dirColor[MAX_DIR_LIGHTS];
-uniform float dirIntensity[MAX_DIR_LIGHTS];
+struct PointLight
+{
+    vec4 position;
+    vec4 color;
+    vec4 params; // x = range (optional)
+};
 
-uniform vec3 pointPos[MAX_POINT_LIGHTS];
-uniform vec3 pointColor[MAX_POINT_LIGHTS];
-uniform float pointIntensity[MAX_POINT_LIGHTS];
-uniform float pointRange[MAX_POINT_LIGHTS];
+struct SpotLight
+{
+    vec4 position;
+    vec4 direction;
+    vec4 color;
+    vec4 params; // x = range, y = inner, z = outer
+};
 
-uniform vec3 spotPos[MAX_SPOT_LIGHTS];
-uniform vec3 spotDir[MAX_SPOT_LIGHTS];
-uniform vec3 spotColor[MAX_SPOT_LIGHTS];
-uniform float spotIntensity[MAX_SPOT_LIGHTS];
-uniform float spotInner[MAX_SPOT_LIGHTS];
-uniform float spotOuter[MAX_SPOT_LIGHTS];
+layout(std430, binding = 0) buffer LightBuffer
+{
+    int dirLightCount;
+    int pointLightCount;
+    int spotLightCount;
+    int padding;
 
-void main() {
+    DirectionalLight dirLights[MAX_DIR_LIGHTS];
+    PointLight pointLights[MAX_POINT_LIGHTS];
+    SpotLight spotLights[MAX_SPOT_LIGHTS];
+};
 
+void main()
+{
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
 
     vec3 diffuseLighting = vec3(0.0);
     vec3 specularLighting = vec3(0.0);
 
-    // =========================================================
-    // Directional
-    // =========================================================
+    for (int i = 0; i < dirLightCount; i++)
+    {
+        vec3 L = normalize(-dirLights[i].direction.xyz);
 
-    for (int i = 0; i < dirLightCount; i++) {
-
-        vec3 L = normalize(-dirDirection[i]);
-
-        // Diffuse
         float diff = max(dot(norm, L), 0.0);
 
-        diffuseLighting +=
-            diff *
-            dirColor[i] *
-            dirIntensity[i];
+        vec3 lightColor = dirLights[i].color.rgb;
+        float intensity = dirLights[i].color.a;
 
-        // Blinn-Phong Specular
+        diffuseLighting += diff * lightColor * intensity;
+
         vec3 halfwayDir = normalize(L + viewDir);
 
-        float spec =
-            pow(max(dot(norm, halfwayDir), 0.0), shininess);
+        float spec = pow(max(dot(norm, halfwayDir), 0.0), shininess);
 
-        specularLighting +=
-            spec *
-            specularStrength *
-            dirColor[i] *
-            dirIntensity[i];
+        specularLighting += spec * specularStrength * lightColor * intensity;
     }
 
-    // =========================================================
-    // Point
-    // =========================================================
-
-    for (int i = 0; i < pointLightCount; i++) {
-
-        vec3 L = pointPos[i] - FragPos;
+    for (int i = 0; i < pointLightCount; i++)
+    {
+        vec3 L = pointLights[i].position.xyz - FragPos;
 
         float dist = length(L);
-
         L = normalize(L);
 
         float atten = 1.0 / (dist * dist);
 
-        // Diffuse
+        vec3 lightColor = pointLights[i].color.rgb;
+        float intensity = pointLights[i].color.a;
+
         float diff = max(dot(norm, L), 0.0);
 
-        diffuseLighting +=
-            diff *
-            pointColor[i] *
-            pointIntensity[i] *
-            atten;
+        diffuseLighting += diff * lightColor * intensity * atten;
 
-        // Specular
         vec3 halfwayDir = normalize(L + viewDir);
 
-        float spec =
-            pow(max(dot(norm, halfwayDir), 0.0), shininess);
+        float spec = pow(max(dot(norm, halfwayDir), 0.0), shininess);
 
-        specularLighting +=
-            spec *
-            specularStrength *
-            pointColor[i] *
-            pointIntensity[i] *
-            atten;
+        specularLighting += spec * specularStrength * lightColor * intensity * atten;
     }
 
-    // =========================================================
-    // Spot
-    // =========================================================
+    for (int i = 0; i < spotLightCount; i++)
+    {
+        vec3 L = normalize(spotLights[i].position.xyz - FragPos);
 
-    for (int i = 0; i < spotLightCount; i++) {
+        float theta = dot(L, normalize(-spotLights[i].direction.xyz));
 
-        vec3 L = normalize(spotPos[i] - FragPos);
+        float spot = clamp(
+            (theta - spotLights[i].params.z) /
+            (spotLights[i].params.y - spotLights[i].params.z),
+            0.0,
+            1.0
+        );
 
-        float theta =
-            dot(L, normalize(-spotDir[i]));
+        vec3 lightColor = spotLights[i].color.rgb;
+        float intensity = spotLights[i].color.a;
 
-        float spot =
-            clamp(
-                (theta - spotOuter[i]) /
-                (spotInner[i] - spotOuter[i]),
-                0.0,
-                1.0
-            );
+        float diff = max(dot(norm, L), 0.0);
 
-        float diff =
-            max(dot(norm, L), 0.0);
+        diffuseLighting += diff * lightColor * intensity * spot;
 
-        diffuseLighting +=
-            diff *
-            spotColor[i] *
-            spotIntensity[i] *
-            spot;
+        vec3 halfwayDir = normalize(L + viewDir);
 
-        // Specular
-        vec3 halfwayDir =
-            normalize(L + viewDir);
+        float spec = pow(max(dot(norm, halfwayDir), 0.0), shininess);
 
-        float spec =
-            pow(max(dot(norm, halfwayDir), 0.0), shininess);
-
-        specularLighting +=
-            spec *
-            specularStrength *
-            spotColor[i] *
-            spotIntensity[i] *
-            spot;
+        specularLighting += spec * specularStrength * lightColor * intensity * spot;
     }
 
     vec3 baseColor;
 
-    if(useTexture)
+    if (useTexture)
     {
         vec3 texColor = texture(diffuseTexture, TexCoord).rgb;
 
-        // bia³y = ignoruj kolor bazowy
-        if(objectColor == vec3(1.0))
+        if (objectColor == vec3(1.0))
             baseColor = texColor;
         else
             baseColor = texColor * objectColor;

@@ -9,7 +9,7 @@
 
 #include "renderer/renderPasses/IRenderPass.h"
 #include "renderer/cameraSystem.h"
-#include "renderer/lightSystem.h"
+#include "renderer/lightSSBO.h"
 
 #include "renderer/framebuffer.h"
 #include "renderer/renderPasses/postProcessRenderPass.h"
@@ -154,6 +154,7 @@ namespace dzemikk {
         CameraSystem _cameraSystem;
 
         LightSystem _lightSystem;
+        LightSSBO _lightSSBO;
 
         std::unique_ptr<Framebuffer> _sceneFramebuffer;
 
