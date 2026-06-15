@@ -68,10 +68,19 @@ class World : public dzemikk::MonoBehaviour {
     }
     void setMaterial(std::shared_ptr<dzemikk::Material> material) {
         _material = material;
+
+        _hexMaterials[HexCell::Type::Normal] = _material;
+        _hexMaterials[HexCell::Type::EnemyBattleHex] = _material.get()->clone();
+        _hexMaterials[HexCell::Type::PlayerBattleHex] = _material.get()->clone();
+        _hexMaterials[HexCell::Type::Bridge] = _material.get()->clone();
+        _hexMaterials[HexCell::Type::BlockingBridge] = _material.get()->clone();
+        _hexMaterials[HexCell::Type::BlockingPattern] = _material.get()->clone();
+
+        _hexMaterialsGenState[HexCell::GenState::Blocked] = _material.get()->clone();
+        _hexMaterialsGenState[HexCell::GenState::Protected] = _material.get()->clone();
+        _hexMaterialsGenState[HexCell::GenState::Normal] = _material.get()->clone();
     }
-    void setMaterial2(std::shared_ptr<dzemikk::Material> material) {
-        _material2 = material;
-    }
+
     void setPlayer(PlayerEntity* playerEntity);
 
     boost::uuids::uuid addChunk(const ChunkDefinition& config);
@@ -129,7 +138,8 @@ class World : public dzemikk::MonoBehaviour {
     dzemikk::AssetHandle<dzemikk::Model> _enemyModel;
     dzemikk::AssetHandle<dzemikk::Model> _resourceModel;
     std::shared_ptr<dzemikk::Material> _material;
-    std::shared_ptr<dzemikk::Material> _material2;
+    std::unordered_map<HexCell::Type, std::shared_ptr<dzemikk::Material>> _hexMaterials;
+    std::unordered_map<HexCell::GenState, std::shared_ptr<dzemikk::Material>> _hexMaterialsGenState;
     std::unordered_set<dzemikk::Transform*> _hexTransforms;
     std::unordered_set<HexCoord> _spawnedHexes;
     std::unordered_set<HexCoord> _reservedTerritory;

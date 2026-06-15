@@ -187,6 +187,34 @@ class Material {
 
 #pragma endregion
 
+    std::shared_ptr<Material> clone() const {
+        auto m = std::make_shared<Material>();
+
+        m->_shader = _shader;
+
+        m->_albedo = _albedo;
+        m->_normal = _normal;
+        m->_metallicMap = _metallicMap;
+        m->_roughnessMap = _roughnessMap;
+        m->_aoMap = _aoMap;
+        m->_emissive = _emissive;
+
+        m->_albedoColor = _albedoColor;
+        m->_metallic = _metallic;
+        m->_roughness = _roughness;
+        m->_ao = _ao;
+
+        return m;
+    }
+
+    bool operator==(const Material& other) const {
+        return _albedoColor == other._albedoColor;
+    }
+
+    bool operator!=(const Material& other) const {
+        return !(*this == other);
+    }
+
   private:
     AssetHandle<Shader> _shader;
 

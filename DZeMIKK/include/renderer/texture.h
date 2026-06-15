@@ -115,6 +115,14 @@ namespace dzemikk {
 
         void uploadToGPU() override;
 
+        bool operator==(const Texture& other) const {
+            return _id == other._id;
+        }
+
+        bool operator!=(const Texture& other) const {
+            return !(*this == other);
+        }
+
       private:
         GLuint _id = 0;
 

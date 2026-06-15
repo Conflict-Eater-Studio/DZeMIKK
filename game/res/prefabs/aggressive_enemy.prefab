@@ -5,10 +5,10 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "bb9181d1-caa8-49da-a62b-eaef8c62928b",
+                        "id": "7780bab9-1881-4e47-9451-acfa89d19914",
                         "position": [
                             0.0,
-                            68.9000015258789,
+                            17.0,
                             0.0
                         ],
                         "rotation": [
@@ -31,22 +31,23 @@
                             0.08391005545854568,
                             0.08391005545854568
                         ],
-                        "intensity": 0.6010000109672546,
-                        "range": 10.0,
+                        "intensity": 3.990999937057495,
+                        "range": 31.5,
                         "type": "PointLight"
                     }
                 ],
                 "enabled": true,
-                "id": "783ed4b2-dc97-4fd7-a1e7-9bbddc5647a4",
-                "name": "Light"
+                "id": "d8311427-183e-43e4-b94e-9099fd35c058",
+                "name": "Light",
+                "tags": []
             }
         ],
         "components": [
             {
-                "id": "3ca05ee5-2eaf-46e9-81f4-e6f345212973",
+                "id": "872a5e8c-11f4-47f3-b0cc-c03a5a91077d",
                 "position": [
                     0.0,
-                    0.0,
+                    0.4000000059604645,
                     0.0
                 ],
                 "rotation": [
@@ -63,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "7d60b952-5ac8-40d2-a89a-11be9bdc0254",
+                "id": "24397ec3-fd6a-41d8-b934-93bfda59e7cd",
                 "materials": [
                     "shaders/skinned"
                 ],
@@ -73,7 +74,7 @@
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "659a30e0-4b32-4014-b7e6-18cc82664abb",
+                "id": "335da9b5-196b-4f4e-ae07-72249f39c92c",
                 "parameters": {},
                 "stateMachine": [
                     {
@@ -85,7 +86,8 @@
             }
         ],
         "enabled": true,
-        "id": "fa9d0911-ca0a-431d-93d2-3183702748ad",
-        "name": "Aggressive"
+        "id": "77d27ac9-28c9-4147-9bf1-d9f26563ebcf",
+        "name": "Aggressive",
+        "tags": []
     }
 }

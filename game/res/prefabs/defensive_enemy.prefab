@@ -5,10 +5,10 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "95e5adc5-65e0-439a-ac20-0bda8403813a",
+                        "id": "c4ce22f3-c900-4f6a-9f3d-aa3994f39726",
                         "position": [
                             0.0,
-                            68.9000015258789,
+                            17.0,
                             0.0
                         ],
                         "rotation": [
@@ -31,22 +31,23 @@
                             0.4154370427131653,
                             0.9509803652763367
                         ],
-                        "intensity": 0.6010000109672546,
+                        "intensity": 3.7769999504089355,
                         "range": 10.0,
                         "type": "PointLight"
                     }
                 ],
                 "enabled": true,
-                "id": "353057b6-bcf5-4917-8f55-657cb8513190",
-                "name": "Light"
+                "id": "ec0e0e60-b93c-4e27-90a9-0469ae4711dc",
+                "name": "Light",
+                "tags": []
             }
         ],
         "components": [
             {
-                "id": "06ead602-de8a-4b44-9863-8ed599e291ef",
+                "id": "845f7c4c-029e-4a3e-af77-7b8ff8a979e2",
                 "position": [
                     0.0,
-                    0.0,
+                    0.4000000059604645,
                     0.0
                 ],
                 "rotation": [
@@ -63,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "f365eb2e-df4f-4a68-9770-3ee655604f2c",
+                "id": "32feb0ff-eb75-4fb9-9ee2-c8f71bb9d3e2",
                 "materials": [
                     "shaders/skinned"
                 ],
@@ -73,7 +74,7 @@
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "7c0772de-de4d-44a4-b087-59205c1e96a6",
+                "id": "e8bce1b4-8905-40da-9070-899009a523ec",
                 "parameters": {},
                 "stateMachine": [
                     {
@@ -85,7 +86,8 @@
             }
         ],
         "enabled": true,
-        "id": "1e5efc0b-5fbe-44cc-b1c5-6a437d278ea3",
-        "name": "Defensive"
+        "id": "c8b36788-6e89-496d-b11a-9b70db1fe60d",
+        "name": "Defensive",
+        "tags": []
     }
 }

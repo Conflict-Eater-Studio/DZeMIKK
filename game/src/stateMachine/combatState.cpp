@@ -26,6 +26,7 @@
 #include <iostream>
 #include <assetManager/soundHandler.h>
 #include <audio/audioManager.h>
+#include <renderer/shader.h>
 
 namespace combatSound {
     FMOD::Channel* combatFMODChannel = nullptr;
@@ -76,6 +77,31 @@ void game::CombatState::onEnter() {
     taskS2.onLoad = combatSound::onSFXLoad;
     _game->getEngine()->getAssetManager()->getAsync("audio/prime_wznoszeniePol.wav",
                                                     taskS2);
+
+    auto shader = _game->getEngine()->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
+    auto material = std::make_shared<dzemikk::Material>();
+    material->setShader(shader);
+
+    _hexMaterials[HexPattern::Type::ATK] = material;
+    _hexMaterials[HexPattern::Type::ATK]->setAlbedoColor({1.0F, 0.0F, 0.0F});
+
+    _hexMaterials[HexPattern::Type::DEF] = material->clone();
+    _hexMaterials[HexPattern::Type::DEF]->setAlbedoColor({0.0F, 0.0F, 1.0F});
+
+    _hexMaterials[HexPattern::Type::HEAL] = material->clone();
+    _hexMaterials[HexPattern::Type::HEAL]->setAlbedoColor({0.0F, 1.0F, 0.0F});
+
+    _hexMaterials[HexPattern::Type::NONE] = material->clone();
+    _hexMaterials[HexPattern::Type::NONE]->setAlbedoColor({0.3F, 0.3F, 0.3F});
+
+    _enemyBattleHexMaterial = material->clone();
+    _enemyBattleHexMaterial->setAlbedoColor({0.1F, 0.0F, 0.4F});
+
+    _emptyEnemyBattleHexMaterial = material->clone();
+    _emptyEnemyBattleHexMaterial->setAlbedoColor({1.0F, 1.0F, 1.0F});
+
+    _showedPatternMaterial = material->clone();
+    _showedPatternMaterial->setAlbedoColor({0.25F, 0.25F, 0.25F});
 
     startNewTurn();
 }
@@ -211,7 +237,7 @@ void game::CombatState::startNewTurn() {
             continue;
         }
 
-        mesh->setColor({0.0F, 0.0F, 0.5F, 1.0F});
+        mesh->setMaterial(0, _enemyBattleHexMaterial);
     }
 
     auto* enemyManagerGO = _game->getCurrentScene().get()->findGameObjectByName("EnemyManager");
@@ -238,8 +264,6 @@ void game::CombatState::startNewTurn() {
         }
     }
 
-    constexpr glm::vec4 WhiteColor = {1.F, 1.F, 1.F, 1.F};
-
     for (auto* cell : _currentEnemy->getTerritory()) {
 
         if (!cell) {
@@ -260,7 +284,7 @@ void game::CombatState::startNewTurn() {
             continue;
         }
 
-        mesh->setColor(WhiteColor);
+        mesh->setMaterial(0, _emptyEnemyBattleHexMaterial);
     }
 
     auto* enemyPanel = _game->getCurrentScene().get()->findGameObjectByName("Enemy_Panel");
@@ -288,19 +312,19 @@ void game::CombatState::endPlayerTurn() {
     _resultTimer = 2.0F;
 }
 
-glm::vec4 game::CombatState::getPatternColor(HexPattern::Type type) {
+std::shared_ptr<dzemikk::Material> game::CombatState::getPatternMaterial(HexPattern::Type type) {
     switch (type) {
     case HexPattern::Type::ATK:
-        return {1.0F, 0.0F, 0.0F, 1.0F};
+        return _hexMaterials[HexPattern::Type::ATK];
 
     case HexPattern::Type::DEF:
-        return {0.0F, 0.0F, 1.F, 1.0F};
+        return _hexMaterials[HexPattern::Type::DEF];
 
     case HexPattern::Type::HEAL:
-        return {0.0F, 1.F, 0.0F, 1.0F};
+        return _hexMaterials[HexPattern::Type::HEAL];
 
     default:
-        return {0.3F, 0.3F, 0.3F, 1.0F};
+        return _hexMaterials[HexPattern::Type::NONE];
     }
 }
 
@@ -311,8 +335,6 @@ void game::CombatState::showEnemyPlannedPatterns() {
     auto* world = worldGO->getComponent<World>();
 
     for (const auto& pattern : _plannedPatterns) {
-
-        glm::vec4 color = getPatternColor(pattern.type);
 
         for (auto* cell : pattern.cells) {
 
@@ -334,7 +356,7 @@ void game::CombatState::showEnemyPlannedPatterns() {
                 continue;
             }
 
-            mesh->setColor(color);
+            mesh->setMaterial(0, getPatternMaterial(pattern.type));
         }
     }
 }
@@ -629,8 +651,6 @@ void game::CombatState::showPattern(int index) {
     auto* world =
         _game->getCurrentScene().get()->findGameObjectByName("World")->getComponent<World>();
 
-    constexpr glm::vec4 RevealedColor{0.25F, 0.25F, 0.25F, 1.0F};
-
     const auto& pattern = _plannedPatterns[index];
 
     for (auto* cell : pattern.cells) {
@@ -648,7 +668,7 @@ void game::CombatState::showPattern(int index) {
         auto* mesh = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
 
         if (mesh) {
-            mesh->setColor(RevealedColor);
+            mesh->setMaterial(0, _showedPatternMaterial);
         }
     }
 }
@@ -706,7 +726,7 @@ void game::CombatState::showCellColor(HexCell* cell, HexPattern::Type type) {
         return;
     }
 
-    mesh->setColor(getPatternColor(type));
+    mesh->setMaterial(0, getPatternMaterial(type));
 }
 
 void game::CombatState::removeHiddenHex(HexCell* cell) {

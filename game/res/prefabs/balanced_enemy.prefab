@@ -5,10 +5,10 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "4b4b7366-b4bc-43a1-861c-c59ea486a051",
+                        "id": "47d1dea3-eaa4-4a98-a575-93b7b69112be",
                         "position": [
                             0.0,
-                            68.9000015258789,
+                            17.0,
                             0.0
                         ],
                         "rotation": [
@@ -31,22 +31,23 @@
                             0.9509803652763367,
                             0.08391005545854568
                         ],
-                        "intensity": 0.6010000109672546,
+                        "intensity": 3.7769999504089355,
                         "range": 10.0,
                         "type": "PointLight"
                     }
                 ],
                 "enabled": true,
-                "id": "1cb983df-073c-4cf6-a375-30e9e3b46c01",
-                "name": "Light"
+                "id": "256d8707-c94a-462f-9bb5-e78788b52269",
+                "name": "Light",
+                "tags": []
             }
         ],
         "components": [
             {
-                "id": "b5e36c40-7732-4288-903d-267758796bcb",
+                "id": "407a7c74-f415-452e-b1da-89cd64a736a9",
                 "position": [
                     0.0,
-                    0.0,
+                    0.4000000059604645,
                     0.0
                 ],
                 "rotation": [
@@ -63,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "73df9ad2-bf72-4030-9526-00df69c5252c",
+                "id": "7ad09678-1e8a-4d38-a7b1-fea7eb7c5a16",
                 "materials": [
                     "shaders/skinned"
                 ],
@@ -73,7 +74,7 @@
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "d954eb1e-5ebe-4dc7-bc63-7c69f6cfced5",
+                "id": "2ab3e344-e1df-4f39-8430-397104d5d19a",
                 "parameters": {},
                 "stateMachine": [
                     {
@@ -85,7 +86,8 @@
             }
         ],
         "enabled": true,
-        "id": "122c7ff0-3400-4896-a06c-d8875f24cc5d",
-        "name": "Balanced "
+        "id": "906fdd0b-fc9f-4945-91a6-96c3d829d8cb",
+        "name": "Balanced ",
+        "tags": []
     }
 }

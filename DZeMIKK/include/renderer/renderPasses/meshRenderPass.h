@@ -76,11 +76,6 @@ class MeshRenderPass : public IRenderPass {
          * @brief OpenGL buffer storing instance transformation data.
          */
         GLuint instanceVBO = 0;
-
-        /**
-         * @brief Optional per-batch color tint.
-         */
-        glm::vec3 color = glm::vec3(1.0f);
     };
 
     /**

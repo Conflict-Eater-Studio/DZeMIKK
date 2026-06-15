@@ -37,9 +37,6 @@ void to_json(nlohmann::json& json, const MeshRenderer& meshRenderer) {
             json["materials"].push_back("");
         }
     }
-
-    const auto& color = meshRenderer.getColor();
-    json["color"] = { color.r, color.g, color.b, color.a };
 }
 
 inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, AssetManager* assetManager) {
@@ -76,16 +73,6 @@ inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, As
 
             meshRenderer.setModel(assetManager->get<Model>(modelPath));
         }
-    }
-
-    if (json.contains("color") && json["color"].is_array() && json["color"].size() >= 4) {
-        const auto& c = json["color"];
-        meshRenderer.setColor(glm::vec4(
-            c[0].get<float>(),
-            c[1].get<float>(),
-            c[2].get<float>(),
-            c[3].get<float>()
-        ));
     }
 
     if (json.contains("materials") && json["materials"].is_array()) {

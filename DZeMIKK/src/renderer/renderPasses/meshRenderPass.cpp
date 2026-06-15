@@ -67,7 +67,7 @@ void dzemikk::MeshRenderPass::buildMeshBatches(RenderContext& ctx) {
                 Batch* batch = nullptr;
 
                 for (auto& b : _batches) {
-                    if (b.mesh == mesh && b.material == material && b.color == glm::vec3(r->getColor().x, r->getColor().y, r->getColor().z) ){
+                    if (b.mesh == mesh && *b.material == *material) {
                         batch = &b;
                         break;
                     }
@@ -79,7 +79,6 @@ void dzemikk::MeshRenderPass::buildMeshBatches(RenderContext& ctx) {
 
                     batch->mesh = mesh;
                     batch->material = material;
-                    batch->color = glm::vec3(r->getColor().x, r->getColor().y, r->getColor().z);
 
                     glGenBuffers(1, &batch->instanceVBO);
                 }
@@ -114,12 +113,6 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
             }
 
             shader->bind();
-
-            //shader->setInt("useTexture", material->getAlbedoTexture() ? 1 : 0);
-
-            //shader->setFloat("shininess", 6.0f);
-            //shader->setFloat("specularStrength", .5f);
-            //shader->setVec3("objectColor", batch.color);
 
             shader->setVec3("viewPos", ctx.sceneCamera->getOwner()->transform()->getPosition());
 

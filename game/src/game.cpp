@@ -275,8 +275,6 @@ void Game::setupWorld() {
     auto shader2 = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile2");
     auto material = std::make_shared<dzemikk::Material>();
     material->setShader(shader);
-    auto material2 = std::make_shared<dzemikk::Material>();
-    material2->setShader(shader2);
 
     auto model = _engine->getAssetManager()->get<dzemikk::Model>("models/hex_wypukly.fbx");
 
@@ -290,7 +288,6 @@ void Game::setupWorld() {
     world->setGame(this);
     world->setModel(model);
     world->setMaterial(material);
-    world->setMaterial2(material2);
     world->setResourceModel(resourceModel);
     world->setPlayer(_playerEntity);
     world->registerGenerator("full", [](int step, int maxSteps) { return 1.0F; });
@@ -404,7 +401,9 @@ void Game::setupUICamera() {
 
 void Game::setupInputCallbacks() {
     static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
-    static std::unordered_map<dzemikk::MeshRenderer*, glm::vec4> baseColors;
+
+    static std::unordered_map<dzemikk::MeshRenderer*, std::shared_ptr<dzemikk::Material>>
+        baseMaterials;
 
     _engine->SetUserUpdateCallback([this]() {
         ImGui::Begin("Light Debug Tools");
@@ -419,7 +418,6 @@ void Game::setupInputCallbacks() {
         reg.getEnabledComponents<dzemikk::PointLight>(point);
         reg.getEnabledComponents<dzemikk::SpotLight>(spot);
 
-        // ===== UI =====
         ImGui::Text("Directional Lights: %d", (int)dir.size());
         ImGui::Text("Point Lights: %d", (int)point.size());
         ImGui::Text("Spot Lights: %d", (int)spot.size());
@@ -433,9 +431,6 @@ void Game::setupInputCallbacks() {
         }
 
         ImGui::End();
-
-
-        auto ensureBase = [&](dzemikk::MeshRenderer* r) { baseColors[r] = r->getColor(); };
 
         if (!_engine || !_engine->getInput() ||
             !_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
@@ -462,15 +457,23 @@ void Game::setupInputCallbacks() {
         if (currentRenderer != lastHitRenderer) {
 
             if (lastHitRenderer && lastHitRenderer->isValid()) {
-                auto base = baseColors[lastHitRenderer];
-                lastHitRenderer->setColor(base);
+                auto it = baseMaterials.find(lastHitRenderer);
+                if (it != baseMaterials.end()) {
+                    lastHitRenderer->setMaterial(0, it->second);
+                }
             }
 
             if (currentRenderer && currentRenderer->isValid()) {
-                ensureBase(currentRenderer);
 
-                auto base = baseColors[currentRenderer];
-                currentRenderer->setColor(base * 0.5f);
+                if (!baseMaterials.contains(currentRenderer)) {
+                    baseMaterials[currentRenderer] = currentRenderer->getMaterial(0)->clone();
+                }
+
+                auto hovered = currentRenderer->getMaterial(0)->clone();
+                hovered->setAlbedoColor(baseMaterials[currentRenderer]->getAlbedoColor() *
+                                        hoverStrength);
+
+                currentRenderer->setMaterial(0, hovered);
             }
 
             lastHitRenderer = currentRenderer;
@@ -486,6 +489,7 @@ void Game::setupInputCallbacks() {
 
             int windowWidth = 0;
             int windowHeight = 0;
+
             glfwGetWindowSize(_engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
 
             dzemikk::Collider* collider = _engine->getCollisions()->raycast(
@@ -493,15 +497,14 @@ void Game::setupInputCallbacks() {
                 _engine->getInput()->GetMousePosition(), static_cast<float>(windowWidth),
                 static_cast<float>(windowHeight));
 
-            dzemikk::MeshRenderer* currentRenderer = nullptr;
+            if (collider && _engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
 
-            if (collider) {
-                if (_engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-                    currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
-                    auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
-                    if (wh != nullptr && wh->getHexCell() != nullptr) {
-                        _playerMovement->moveTo(wh->getHexCell());
-                    }
+                auto* currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
+
+                auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
+
+                if (wh && wh->getHexCell()) {
+                    _playerMovement->moveTo(wh->getHexCell());
                 }
             }
         });

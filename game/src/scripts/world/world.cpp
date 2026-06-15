@@ -175,26 +175,36 @@ void World::update(double dt) {
             color = glm::vec4(1.0F, 1.0F, 1.0F, 1.0F);
 
             if (cell->getHexCell()->getType() == HexCell::Type::EnemyBattleHex) {
-                color = glm::vec4(0.0F, 0.0F, 0.5F, 1.0F);
+                cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
+                    0, _hexMaterials[HexCell::Type::EnemyBattleHex]);
+                color = glm::vec4(0.1F, 0.0F, 0.4F, 1.0F);
             }
 
             if (cell->getHexCell()->getType() == HexCell::Type::PlayerBattleHex) {
+                cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
+                    0, _hexMaterials[HexCell::Type::PlayerBattleHex]);
                 color = glm::vec4(1.0F, 1.0F, 0.0F, 1.0F);
             }
 
             if (cell->getHexCell()->getType() == HexCell::Type::BlockingPattern) {
+                cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
+                    0, _hexMaterials[HexCell::Type::BlockingPattern]);
                 color = glm::vec4(0.0F, 1.0F, 0.0F, 1.0F);
             }
 
             if (cell->getHexCell()->getType() == HexCell::Type::Bridge) {
+                cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
+                    0, _hexMaterials[HexCell::Type::Bridge]);
                 color = glm::vec4(0.0F, 1.0F, 1.0F, 1.0F);
             }
 
             if (cell->getHexCell()->getType() == HexCell::Type::BlockingBridge) {
+                cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
+                    0, _hexMaterials[HexCell::Type::BlockingBridge]);
                 color = glm::vec4(1.0F, 1.0F, 0.0F, 1.0F);
             }
 
-            cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setColor(color);
+            cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->getMaterial(0)->setAlbedoColor(color);
             cell->getHexCell()->setDirty(false);
         }
     }
@@ -291,23 +301,26 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
 
     switch (cell->getGenState()) {
     case HexCell::GenState::Blocked:
-        meshRenderer->setMaterial(0, _material);
-        meshRenderer->setColor(glm::vec4(0.2F, 0.2F, 0.2F, 1.0F));
+        meshRenderer->setMaterial(0, _hexMaterialsGenState[HexCell::GenState::Blocked]);
+        meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(0.2F, 0.2F, 0.2F, 1.0F));
         break;
     case HexCell::GenState::Protected:
-        meshRenderer->setMaterial(0, _material);
-        meshRenderer->setColor(glm::vec4(0.2F, 0.5F, 1.0F, 1.0F));
+        meshRenderer->setMaterial(0, _hexMaterialsGenState[HexCell::GenState::Protected]);
+        meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(0.2F, 0.5F, 1.0F, 1.0F));
         break;
     case HexCell::GenState::Normal:
-        meshRenderer->setMaterial(0, _material);
-        meshRenderer->setColor(glm::vec4(1.0F, 1.0F, 1.0F, 1.0F));
+        meshRenderer->setMaterial(0, _hexMaterialsGenState[HexCell::GenState::Normal]);
+        meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(1.0F, 1.0F, 1.0F, 1.0F));
         break;
     }
+
     if (cell->getType() == HexCell::Type::Bridge) {
-        meshRenderer->setColor(glm::vec4(0.0F, 1.0F, 0.0F, 1.0F));
+        meshRenderer->setMaterial(0, _hexMaterials[HexCell::Type::Bridge]);
+        meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(0.0F, 1.0F, 0.0F, 1.0F));
     }
     if (cell->getType() == HexCell::Type::EnemyBattleHex) {
-        meshRenderer->setColor(glm::vec4(1.0F, 0.0F, 0.0F, 1.0F));
+        meshRenderer->setMaterial(0, _hexMaterials[HexCell::Type::EnemyBattleHex]);
+        meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(1.0F, 0.0F, 0.0F, 1.0F));
     }
 
     auto texture = _game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
