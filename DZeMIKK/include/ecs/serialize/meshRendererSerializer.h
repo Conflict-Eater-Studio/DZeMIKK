@@ -68,6 +68,11 @@ void to_json(nlohmann::json& json, const MeshRenderer& meshRenderer) {
         matJson["pbr"]["roughness"] = material->getRoughness();
         matJson["pbr"]["ao"] = material->getAO();
 
+        matJson["pbr"]["emissive"] = {material->getEmissiveColor().r,
+                                      material->getEmissiveColor().g,
+                                      material->getEmissiveColor().b};
+        matJson["pbr"]["emissiveStrength"] = material->getEmissiveStrength();
+
         json["materials"].push_back(matJson);
     }
 }
@@ -156,6 +161,13 @@ inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer,
                 material->setMetallic(pbr.value("metallic", 0.0f));
                 material->setRoughness(pbr.value("roughness", 0.5f));
                 material->setAO(pbr.value("ao", 1.0f));
+
+                col = pbr.value("emissive", std::vector<float>{1, 1, 1});
+                if (col.size() == 3) {
+                    material->setEmissiveColor(glm::vec3(col[0], col[1], col[2]));
+                }
+
+                material->setEmissiveStrength(pbr.value("emissiveStrength", 1.0f));
             }
 
             meshRenderer.setMaterial(i, material);

@@ -66,6 +66,8 @@ void dzemikk::SkinnedRenderPass::execute(RenderContext& ctx) {
                 shader->setFloat("metallic", mat->getMetallic());
                 shader->setFloat("roughness", mat->getRoughness());
                 shader->setFloat("ao", mat->getAO());
+                shader->setVec3("emissiveColor", mat->getEmissiveColor());
+                shader->setFloat("emissiveStrength", mat->getEmissiveStrength());
 
                 if (mat->getAlbedoTexture()) {
                     glActiveTexture(GL_TEXTURE0);
@@ -117,7 +119,22 @@ void dzemikk::SkinnedRenderPass::execute(RenderContext& ctx) {
                     shader->setInt("hasNormalMap", 0);
                 }
 
+                if (mat->getEmissiveTexture()) {
+                    glActiveTexture(GL_TEXTURE5);
+                    glBindTexture(GL_TEXTURE_2D, mat->getEmissiveTexture()->getId());
+
+                    shader->setSampler("emissiveMap", 5);
+                    shader->setInt("hasEmissiveMap", 1);
+                } else {
+                    shader->setInt("hasEmissiveMap", 0);
+                }
+
                 sub->mesh->draw();
+
+                for (int i = 0; i < 6; i++) {
+                    glActiveTexture(GL_TEXTURE0 + i);
+                    glBindTexture(GL_TEXTURE_2D, 0);
+                }
 
                 Profiler::Get().stats.drawCalls++;
                 Profiler::Get().stats.renderedObjects++;

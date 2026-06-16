@@ -254,6 +254,20 @@ bool editor::PropertyDrawer::drawMaterials(const std::string& label,
                     changed = true;
                 }
 
+                glm::vec3 emissiveColor = material->getEmissiveColor();
+
+                if (ImGui::ColorEdit3("Emissive Color", &emissiveColor.x)) {
+                    material->setEmissiveColor(emissiveColor);
+                    changed = true;
+                }
+
+                float em = material->getEmissiveStrength();
+
+                if (ImGui::SliderFloat("Emissive Strenght", &em, 0.0f, 100.0f)) {
+                    material->setEmissiveStrength(em);
+                    changed = true;
+                }
+
                 ImGui::TreePop();
             }
 
@@ -407,6 +421,20 @@ bool editor::PropertyDrawer::drawMaterials(const std::string& label,
 
                 if (ImGui::SliderFloat("AO", &ao, 0.0f, 1.0f)) {
                     material->setAO(ao);
+                    changed = true;
+                }
+
+                glm::vec3 emissiveColor = material->getEmissiveColor();
+
+                if (ImGui::ColorEdit3("Emissive Color", &emissiveColor.x)) {
+                    material->setEmissiveColor(emissiveColor);
+                    changed = true;
+                }
+
+                float em = material->getEmissiveStrength();
+
+                if (ImGui::SliderFloat("Emissive Strenght", &em, 0.0f, 100.0f)) {
+                    material->setEmissiveStrength(em);
                     changed = true;
                 }
 

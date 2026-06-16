@@ -185,6 +185,21 @@ class Material {
         return _emissive.get() != nullptr;
     }
 
+    [[nodiscard]] const glm::vec3& getEmissiveColor() const {
+        return _emissiveColor;
+    }
+
+    [[nodiscard]] float getEmissiveStrength() const {
+        return _emissiveStrength;
+    }
+
+    void setEmissiveColor(const glm::vec3& color) {
+        _emissiveColor = color;
+    }
+
+    void setEmissiveStrength(float value) {
+        _emissiveStrength = value;
+    }
 #pragma endregion
 
     std::shared_ptr<Material> clone() const {
@@ -204,11 +219,23 @@ class Material {
         m->_roughness = _roughness;
         m->_ao = _ao;
 
+        m->_emissiveColor = _emissiveColor;
+        m->_emissiveStrength = _emissiveStrength;
+
         return m;
     }
 
     bool operator==(const Material& other) const {
-        return _albedoColor == other._albedoColor;
+        return _shader.getAssetPath() == other._shader.getAssetPath() &&
+
+               _albedo.get() == other._albedo.get() && _normal.get() == other._normal.get() &&
+               _metallicMap.get() == other._metallicMap.get() && _roughnessMap.get() == other._roughnessMap.get() &&
+               _aoMap.get() == other._aoMap.get() && _emissive.get() == other._emissive.get() &&
+               
+               _albedoColor == other._albedoColor && _emissiveColor == other._emissiveColor &&
+
+               _metallic == other._metallic && _roughness == other._roughness && _ao == other._ao &&
+               _emissiveStrength == other._emissiveStrength;
     }
 
     bool operator!=(const Material& other) const {
@@ -232,6 +259,9 @@ class Material {
     float _metallic = 0.0f;
     float _roughness = 0.5f;
     float _ao = 1.0f;
+
+    glm::vec3 _emissiveColor{0.0f};
+    float _emissiveStrength = 1.0f;
 };
 
 } // namespace dzemikk

@@ -15,18 +15,22 @@ uniform vec3 albedoColor;
 uniform float metallic;
 uniform float roughness;
 uniform float ao;
+uniform vec3 emissiveColor;
+uniform float emissiveStrength;
 
 uniform sampler2D albedoMap;
 uniform sampler2D metallicMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D aoMap;
 uniform sampler2D normalMap;
+uniform sampler2D emissiveMap;
 
 uniform bool hasAlbedoMap;
 uniform bool hasMetallicMap;
 uniform bool hasRoughnessMap;
 uniform bool hasAOMap;
 uniform bool hasNormalMap;
+uniform bool hasEmissiveMap;
 
 // Lights (SSBO)
 #define MAX_DIR_LIGHTS 5000
@@ -180,6 +184,16 @@ void main()
         ? texture(aoMap, TexCoord).r
         : ao;
 
+    vec3 emissive = emissiveColor;
+
+    if (hasEmissiveMap)
+    {
+        emissive *=
+            texture(emissiveMap, TexCoord).rgb;
+    }
+
+    emissive *= emissiveStrength;
+
     roughnessValue = clamp(roughnessValue, 0.04, 1.0);
 
     vec3 F0 = mix(vec3(0.04), albedo, metallicValue);
@@ -256,7 +270,10 @@ void main()
 
     vec3 ambient = vec3(0.03) * albedo * aoValue;
 
-    vec3 color = ambient + Lo;
+    vec3 color =
+        ambient +
+        Lo +
+        emissive;
 
     // tonemap
     color = color / (color + vec3(1.0));

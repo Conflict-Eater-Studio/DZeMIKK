@@ -65,6 +65,10 @@ inline void to_json(nlohmann::json& json, const SkinnedMeshRenderer& renderer) {
         m["roughnessValue"] = material->getRoughness();
         m["aoValue"] = material->getAO();
 
+        const auto cE = material->getEmissiveColor();
+        m["emissiveColor"] = {cE.x, cE.y, cE.z};
+        m["emissiveValue"] = material->getEmissiveStrength();
+
         json["materials"].push_back(m);
     }
 }
@@ -155,6 +159,13 @@ inline void from_json(const nlohmann::json& json, SkinnedMeshRenderer& renderer,
             material->setMetallic(m.value("metallicValue", 0.0f));
             material->setRoughness(m.value("roughnessValue", 0.5f));
             material->setAO(m.value("aoValue", 1.0f));
+
+            if (m.contains("emissiveColor")) {
+                auto c = m["emissiveColor"];
+                material->setEmissiveColor(glm::vec3(c[0], c[1], c[2]));
+            }
+
+            material->setEmissiveStrength(m.value("emissiveValue", 1.0f));
 
             renderer.setMaterial(i, material);
         }

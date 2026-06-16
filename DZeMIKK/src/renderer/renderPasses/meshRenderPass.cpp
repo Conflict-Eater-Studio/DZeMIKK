@@ -67,7 +67,11 @@ void dzemikk::MeshRenderPass::buildMeshBatches(RenderContext& ctx) {
                 Batch* batch = nullptr;
 
                 for (auto& b : _batches) {
-                    if (b.mesh == mesh && *b.material == *material) {
+                    if (!b.material) {
+                        continue;
+                    }
+
+                    if (b.mesh == mesh && b.material == material) {
                         batch = &b;
                         break;
                     }
@@ -120,6 +124,8 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
             shader->setFloat("metallic", material->getMetallic());
             shader->setFloat("roughness", material->getRoughness());
             shader->setFloat("ao", material->getAO());
+            shader->setVec3("emissiveColor", material->getEmissiveColor());
+            shader->setFloat("emissiveStrength", material->getEmissiveStrength());
 
             if (material->getAlbedoTexture()) {
                 glActiveTexture(GL_TEXTURE0);
@@ -171,9 +177,19 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
                 shader->setInt("hasNormalMap", 0);
             }
 
+            if (material->getEmissiveTexture()) {
+                glActiveTexture(GL_TEXTURE5);
+                glBindTexture(GL_TEXTURE_2D, material->getEmissiveTexture()->getId());
+
+                shader->setSampler("emissiveMap", 5);
+                shader->setInt("hasEmissiveMap", 1);
+            } else {
+                shader->setInt("hasEmissiveMap", 0);
+            }
+
             mesh->drawInstanced(batch.models, batch.instanceVBO);
 
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 6; i++) {
                 glActiveTexture(GL_TEXTURE0 + i);
                 glBindTexture(GL_TEXTURE_2D, 0);
             }

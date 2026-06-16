@@ -15,18 +15,22 @@ uniform vec3 albedoColor;
 uniform float metallic;
 uniform float roughness;
 uniform float ao;
+uniform vec3 emissiveColor;
+uniform float emissiveStrength;
 
 uniform sampler2D albedoMap;
 uniform sampler2D metallicMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D aoMap;
 uniform sampler2D normalMap;
+uniform sampler2D emissiveMap;
 
 uniform bool hasAlbedoMap;
 uniform bool hasMetallicMap;
 uniform bool hasRoughnessMap;
 uniform bool hasAOMap;
 uniform bool hasNormalMap;
+uniform bool hasEmissiveMap;
 
 // Lights
 
@@ -248,6 +252,16 @@ void main()
         ? texture(aoMap, TexCoord).r
         : ao;
 
+    vec3 emissive = emissiveColor;
+
+    if (hasEmissiveMap)
+    {
+        emissive *=
+            texture(emissiveMap, TexCoord).rgb;
+    }
+
+    emissive *= emissiveStrength;
+
     roughnessValue =
         clamp(
             roughnessValue,
@@ -374,7 +388,8 @@ void main()
 
     vec3 color =
         ambient +
-        Lo;
+        Lo +
+        emissive;
 
     // Reinhard tonemap
 
