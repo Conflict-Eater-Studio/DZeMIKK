@@ -43,6 +43,17 @@ dzemikk::MeshBuilder::RawStaticMesh dzemikk::MeshBuilder::buildStaticMeshRaw(con
         } else {
             vertex.uv = glm::vec2(0.0f);
         }
+
+        if (mesh->HasTangentsAndBitangents()) {
+            const auto& t = mesh->mTangents[v];
+            const auto& b = mesh->mBitangents[v];
+
+            vertex.tangent = {t.x, t.y, t.z};
+            vertex.bitangent = {b.x, b.y, b.z};
+        } else {
+            vertex.tangent = glm::vec3(1.0f, 0.0f, 0.0f);
+            vertex.bitangent = glm::vec3(0.0f, 1.0f, 0.0f);
+        }
     }
 
     result.indices.reserve(mesh->mNumFaces * 3);
@@ -79,6 +90,17 @@ dzemikk::MeshBuilder::RawSkinnedMesh dzemikk::MeshBuilder::buildSkinnedMeshRaw(c
             vertex.normal = {n.x, n.y, n.z};
         } else {
             vertex.normal = glm::vec3(0.0F);
+        }
+
+        if (aiMesh->HasTangentsAndBitangents()) {
+            const auto& t = aiMesh->mTangents[v];
+            const auto& b = aiMesh->mBitangents[v];
+
+            vertex.tangent = {t.x, t.y, t.z};
+            vertex.bitangent = {b.x, b.y, b.z};
+        } else {
+            vertex.tangent = glm::vec3(1.0f, 0.0f, 0.0f);
+            vertex.bitangent = glm::vec3(0.0f, 1.0f, 0.0f);
         }
 
         vertex.boneIDs = {0, 0, 0, 0};
@@ -142,6 +164,17 @@ std::shared_ptr<dzemikk::StaticMesh> dzemikk::MeshBuilder::buildStaticMesh(const
         } else {
             vertex.uv = glm::vec2(0.0f);
         }
+
+        if (aiMesh->HasTangentsAndBitangents()) {
+            const auto& t = aiMesh->mTangents[v];
+            const auto& b = aiMesh->mBitangents[v];
+
+            vertex.tangent = {t.x, t.y, t.z};
+            vertex.bitangent = {b.x, b.y, b.z};
+        } else {
+            vertex.tangent = glm::vec3(1.0f, 0.0f, 0.0f);
+            vertex.bitangent = glm::vec3(0.0f, 1.0f, 0.0f);
+        }
     }
 
     indices.reserve(aiMesh->mNumFaces * 3);
@@ -171,6 +204,7 @@ std::shared_ptr<dzemikk::SkinnedMesh> dzemikk::MeshBuilder::buildSkinnedMesh(con
 
     const auto* positions = aiMesh->mVertices;
     const auto* normals = aiMesh->mNormals;
+    const auto* texCoords = aiMesh->mTextureCoords[0];
 
     for (unsigned int v = 0; v < aiMesh->mNumVertices; ++v) {
 
@@ -184,6 +218,25 @@ std::shared_ptr<dzemikk::SkinnedMesh> dzemikk::MeshBuilder::buildSkinnedMesh(con
             vertex.normal = {n.x, n.y, n.z};
         } else {
             vertex.normal = glm::vec3(0.0F);
+        }
+
+        if (aiMesh->HasTextureCoords(0)) {
+            const auto& uv = texCoords[v];
+            vertex.uv = {uv.x, uv.y};
+        } else {
+            vertex.uv = glm::vec2(0.0f);
+        }
+
+
+        if (aiMesh->HasTangentsAndBitangents()) {
+            const auto& t = aiMesh->mTangents[v];
+            const auto& b = aiMesh->mBitangents[v];
+
+            vertex.tangent = {t.x, t.y, t.z};
+            vertex.bitangent = {b.x, b.y, b.z};
+        } else {
+            vertex.tangent = glm::vec3(1.0f, 0.0f, 0.0f);
+            vertex.bitangent = glm::vec3(0.0f, 1.0f, 0.0f);
         }
     }
 

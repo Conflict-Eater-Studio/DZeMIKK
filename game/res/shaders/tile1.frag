@@ -5,6 +5,7 @@ out vec4 FragColor;
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoord;
+in mat3 TBN;
 
 uniform vec3 viewPos;
 
@@ -19,11 +20,13 @@ uniform sampler2D albedoMap;
 uniform sampler2D metallicMap;
 uniform sampler2D roughnessMap;
 uniform sampler2D aoMap;
+uniform sampler2D normalMap;
 
 uniform bool hasAlbedoMap;
 uniform bool hasMetallicMap;
 uniform bool hasRoughnessMap;
 uniform bool hasAOMap;
+uniform bool hasNormalMap;
 
 // Lights
 
@@ -196,7 +199,26 @@ void AccumulateLight(
 
 void main()
 {
-    vec3 N = normalize(Normal);
+    vec3 N;
+
+    if (hasNormalMap)
+    {
+        vec3 tangentNormal =
+            texture(normalMap, TexCoord).rgb;
+
+        tangentNormal =
+            tangentNormal * 2.0 - 1.0;
+
+        N =
+            normalize(
+                TBN *
+                tangentNormal);
+    }
+    else
+    {
+        N = normalize(Normal);
+    }
+
     vec3 V = normalize(viewPos - FragPos);
 
     // ======================================================

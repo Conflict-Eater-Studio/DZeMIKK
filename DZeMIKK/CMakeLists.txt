@@ -23,6 +23,7 @@ add_library(DZeMIKK STATIC
         src/ecs/components/fxaaPostProcessEffect.cpp
         include/ecs/components/outlinePostProcessEffect.h
         src/ecs/components/outlinePostProcessEffect.cpp)
+
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"

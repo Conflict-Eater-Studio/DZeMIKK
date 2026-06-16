@@ -24,8 +24,9 @@ dzemikk::MeshHandler::loadMeshFromFile(const std::string& path,
                                        LoadExecutionMode loadExecutionMode) {
     Assimp::Importer importer;
 
-    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals |
-                                                       aiProcess_JoinIdenticalVertices);
+    const aiScene* scene =
+        importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
+                                    aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
 
     if (!scene || !scene->HasMeshes()) {
         std::cerr << "ASSIMP ERROR: " << importer.GetErrorString() << "\n";
@@ -82,8 +83,9 @@ bool dzemikk::MeshHandler::reloadMesh(const std::string& path, Mesh& mesh) {
 
     Assimp::Importer importer;
 
-    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals |
-                                                       aiProcess_JoinIdenticalVertices);
+    const aiScene* scene =
+        importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
+                                    aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
 
     if (!scene || !scene->HasMeshes())
         return false;

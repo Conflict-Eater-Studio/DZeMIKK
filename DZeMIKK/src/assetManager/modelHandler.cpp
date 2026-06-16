@@ -102,8 +102,9 @@ dzemikk::ModelHandler::loadModelFromFile(const std::string& path,
 
     Assimp::Importer importer;
 
-    const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenNormals |
-                                                       aiProcess_JoinIdenticalVertices);
+    const aiScene* scene =
+        importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
+                                    aiProcess_CalcTangentSpace | aiProcess_JoinIdenticalVertices);
 
     if (!scene || !scene->HasMeshes()) {
         std::cerr << "ASSIMP ERROR: " << importer.GetErrorString() << "\n";

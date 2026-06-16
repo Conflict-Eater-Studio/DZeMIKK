@@ -161,6 +161,16 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
                 shader->setInt("hasAOMap", 0);
             }
 
+            if (material->getNormalTexture()) {
+                glActiveTexture(GL_TEXTURE4);
+                glBindTexture(GL_TEXTURE_2D, material->getNormalTexture()->getId());
+
+                shader->setSampler("normalMap", 4);
+                shader->setInt("hasNormalMap", 1);
+            } else {
+                shader->setInt("hasNormalMap", 0);
+            }
+
             mesh->drawInstanced(batch.models, batch.instanceVBO);
 
             for (int i = 0; i < 4; i++) {
