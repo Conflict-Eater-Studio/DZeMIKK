@@ -109,7 +109,7 @@ void game::CombatState::onExit() {
 
     for (auto* cell : enemyTerritory) {
 
-        if (!cell) {
+        if (!cell || _playerDied) {
             continue;
         }
 
@@ -117,23 +117,21 @@ void game::CombatState::onExit() {
         cell->setDirty(true);
     }
 
-    auto enemyCell = grid->findCellByEntity(_currentEnemy);
-
-    if (enemyCell) {
-
+    if (auto enemyCell = grid->findCellByEntity(_currentEnemy); enemyCell) {
         auto* playerMovement = _player->getOwner()->getComponent<PlayerMovement>();
 
         if (playerMovement) {
             playerMovement->stopMovement();
         }
 
-        _player->teleportTo(enemyCell);
+        if (!_playerDied) {
+            _player->teleportTo(enemyCell);
+        }
     }
 
-    auto* enemyGO = _currentEnemy->getOwner();
-
-    if (enemyGO) {
-        _game->getCurrentScene().get()->destroyGameObject(enemyGO);
+    if (auto* em = scene.get()->findGameObjectByTag("EnemyManager")->getComponent<EnemyManager>();
+        em) {
+        em->removeEnemy(_currentEnemy);
     }
 
     _currentEnemy = nullptr;
@@ -142,6 +140,14 @@ void game::CombatState::onExit() {
     dzemikk::UIActionRegistry::get().unregisterAction("Confirm_Round");
 
     _game->getEngine()->getAudioManager()->stop(combatSound::combatFMODChannel);
+
+    if (_playerDied) {
+        _currentEnemy = nullptr;
+        _game->getEngine()->getInput()->OnKeyPressed.removeListener(_endTurnListenerId);
+        dzemikk::UIActionRegistry::get().unregisterAction("Confirm_Round");
+        _game->getEngine()->getAudioManager()->stop(combatSound::combatFMODChannel);
+        return;
+    }
 }
 
 void game::CombatState::onUpdate(float dt) {
@@ -155,10 +161,9 @@ void game::CombatState::onUpdate(float dt) {
             _exitAnimation = false;
 
             if (_playerDied) {
-                _game->enableCombatUI(false);
-                _game->getEngine()->getInput()->OnKeyPressed.removeListener(_endTurnListenerId);
-                dzemikk::UIActionRegistry::get().unregisterAction("Confirm_Round");
-                _game->getEngine()->getAudioManager()->stop(combatSound::combatFMODChannel);
+#if DZEMIKK_DEV_TOOLS
+                spdlog::info("[CombatState] Player died. Calling Game::restart");
+#endif
                 _game->restart();
             } else {
                 _game->setExplorationState();
@@ -285,10 +290,6 @@ void game::CombatState::endPlayerTurn() {
     _phase = CombatPhase::ResolveTurn;
 
     resolveConflict();
-
-    if (_playerDied) {
-        return;
-    }
 
     showEnemyPlannedPatterns();
 

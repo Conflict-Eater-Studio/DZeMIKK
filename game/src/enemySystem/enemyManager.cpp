@@ -70,7 +70,7 @@ void game::EnemyManager::addEnemy(const boost::uuids::uuid& chunkId, EnemySpawnC
     }
 
     config.chunkId = chunkId;
-    _spawnRules[chunkId].emplace_back(std::move(config));
+    _spawnRules[chunkId].emplace_back(config);
 
     auto chunk = _world->getGrid()->getChunks().find(chunkId);
     if (chunk == _world->getGrid()->getChunks().end()) {
@@ -306,6 +306,23 @@ void game::EnemyManager::loadState(const nlohmann::json& j) {
         auto cellPtr = _world->getGrid()->getChunkById(chunkId)->getCell(coord);
         spawnEnemy(chunkId, cellPtr, cfg, true);
     }
+}
+
+void game::EnemyManager::clear() {
+    for (auto& [chunkId, enemies] : _spawnedEnemies) {
+        for (auto* enemy : enemies) {
+            if (auto cell = enemy->getCell(); cell) {
+                cell->setEntity(nullptr);
+                cell->setState(HexCell::State::Empty);
+            }
+            if (auto* owner = enemy->getOwner(); owner) {
+                owner->destroy();
+            }
+        }
+    }
+    _spawnedEnemies.clear();
+    _spawnRules.clear();
+    _cellToEnemy.clear();
 }
 
 void game::EnemyManager::removeEnemy(game::EnemyEntity* enemy) {

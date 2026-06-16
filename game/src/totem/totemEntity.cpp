@@ -59,3 +59,9 @@ void game::TotemEntity::lightOff() {
     auto* lightComp = lightGO->getComponent<dzemikk::PointLight>();
     lightComp->enabled(false);
 }
+
+void game::TotemEntity::lightOn() {
+    auto* lightGO = this->getOwner()->findChildByName("Light");
+    auto* lightComp = lightGO->getComponent<dzemikk::PointLight>();
+    lightComp->enabled(true);
+}

@@ -39,6 +39,7 @@ void World::load(const nlohmann::json& def) {
     _worldData.chunks.clear();
     _spawnedHexes.clear();
     _hexTransforms.clear();
+    _reservedTerritory.clear();
 
     if (!def.contains("chunkData")) {
         return;

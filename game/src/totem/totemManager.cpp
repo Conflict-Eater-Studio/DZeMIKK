@@ -123,6 +123,7 @@ void game::TotemManager::spawnTotem(const boost::uuids::uuid& chunkId,
     auto* totem = totemGO->addComponent<TotemEntity>();
 
     totem->setConfig(cfg);
+    totem->setId(cfg.persistantId);
     totem->setGame(_game);
 
     totem->onEnter(cell);
@@ -177,5 +178,47 @@ void game::TotemManager::loadState(const nlohmann::json& j) {
         TotemSpawnConfig cfg = totemData.get<TotemSpawnConfig>();
         HexCoord coord = totemData["gridPos"].get<HexCoord>();
         addTotem(cfg.chunkId, cfg, coord);
+    }
+}
+
+void game::TotemManager::clear() {
+    for (auto& [chunkId, totems] : _spawnedTotems) {
+        for (auto* totem : totems) {
+            if (auto cell = totem->getCell(); cell) {
+                cell->setEntity(nullptr);
+                cell->setState(HexCell::State::Empty);
+            }
+            if (auto* owner = totem->getOwner(); owner) {
+                owner->destroy();
+            }
+        }
+    }
+    _spawnedTotems.clear();
+    _spawnRules.clear();
+}
+
+void game::TotemManager::markTotemUsed(const boost::uuids::uuid& persistantId) {
+    for (auto& [chunkId, totems] : _spawnedTotems) {
+        for (auto* totem : totems) {
+            if (totem->getConfig().persistantId == persistantId) {
+                if (!totem->getConfig().used) {
+                    totem->lightOff();
+                }
+                return;
+            }
+        }
+    }
+}
+
+void game::TotemManager::markTotemUnused(const boost::uuids::uuid& persistantId) {
+    for (auto& [chunkId, totems] : _spawnedTotems) {
+        for (auto* totem : totems) {
+            if (totem->getConfig().persistantId == persistantId) {
+                if (totem->getConfig().used) {
+                    totem->lightOn();
+                }
+                return;
+            }
+        }
     }
 }

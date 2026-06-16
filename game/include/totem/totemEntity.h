@@ -80,6 +80,13 @@ class TotemEntity : public Entity {
      */
     void lightOff();
 
+    /**
+     * @brief Turns on the totem's light effect.
+     *
+     * This is called when loading a totem that has not been used yet.
+     */
+    void lightOn();
+
   private:
     /**
      * @brief Totem configuration data.

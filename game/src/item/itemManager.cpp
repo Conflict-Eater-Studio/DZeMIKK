@@ -216,4 +216,20 @@ void ItemManager::loadState(const nlohmann::json& j) {
     }
 }
 
+void ItemManager::clear() {
+    for (auto& [chunkId, items] : _spawnedItems) {
+        for (auto* item : items) {
+            if (auto cell = item->getCell(); cell) {
+                cell->setEntity(nullptr);
+                cell->setState(HexCell::State::Empty);
+            }
+            if (auto* owner = item->getOwner(); owner) {
+                owner->destroy();
+            }
+        }
+    }
+    _spawnedItems.clear();
+    _spawnRules.clear();
+}
+
 } // namespace game

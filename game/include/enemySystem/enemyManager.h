@@ -88,6 +88,7 @@ class EnemyManager : public dzemikk::MonoBehaviour {
 
     [[nodiscard]] nlohmann::json saveState() const;
     void loadState(const nlohmann::json& j);
+    void clear();
 
 #pragma endregion
 

@@ -20,6 +20,7 @@ class Inventory : public dzemikk::MonoBehaviour {
 
     void addItem(ItemEntity::ItemType item, unsigned int count = 1);
     void tryUseItem(ItemEntity::ItemType item);
+    void clear();
     [[nodiscard]] const std::unordered_map<ItemEntity::ItemType, unsigned int>& getItems() const {
         return _items;
     }

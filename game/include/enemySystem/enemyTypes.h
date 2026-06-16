@@ -36,7 +36,8 @@ struct EnemySpawnConfig {
 
 // NOLINTBEGIN(readability-identifier-naming)
 inline void to_json(nlohmann::json& j, const EnemySpawnConfig& config) {
-    j = nlohmann::json{{"personality", static_cast<int>(config.personality)},
+    j = nlohmann::json{{"persistantId", boost::uuids::to_string(config.persistantId)},
+                       {"personality", static_cast<int>(config.personality)},
                        {"type", static_cast<int>(config.type)},
                        {"count", config.count},
                        {"hp", config.hp},
@@ -52,6 +53,10 @@ inline void from_json(const nlohmann::json& j, EnemySpawnConfig& config) {
     if (!j.contains("personality") || !j.contains("type") || !j.contains("count") ||
         !j.contains("hp") || !j.contains("territoryPattern") || !j.contains("blocksChunks")) {
         throw std::runtime_error("Invalid JSON for EnemySpawnConfig");
+    }
+    if (j.contains("persistantId")) {
+        config.persistantId =
+            boost::uuids::string_generator()(j.at("persistantId").get<std::string>());
     }
     config.personality = static_cast<EnemyPersonality>(j["personality"].get<int>());
     config.type = static_cast<EnemyType>(j["type"].get<int>());

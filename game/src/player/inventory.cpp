@@ -98,4 +98,25 @@ void Inventory::tryUseItem(ItemEntity::ItemType item) {
         }
     }
 }
+
+void Inventory::clear() {
+    _items.clear();
+    if (_game != nullptr) {
+        auto* scene = _game->getCurrentScene().get();
+        if (scene) {
+            auto* revealPatternBtn = scene->findGameObjectByName("UI_RevealPatternBtn");
+            if (revealPatternBtn) {
+                revealPatternBtn->getChildren()
+                    .at(0)
+                    ->getComponent<dzemikk::UITextRenderer>()
+                    ->text = "RP 0";
+            }
+            auto* revealHexBtn = scene->findGameObjectByName("UI_RevealHexBtn");
+            if (revealHexBtn) {
+                revealHexBtn->getChildren().at(0)->getComponent<dzemikk::UITextRenderer>()->text =
+                    "RH 0";
+            }
+        }
+    }
+}
 } // namespace game

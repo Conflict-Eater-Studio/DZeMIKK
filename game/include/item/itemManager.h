@@ -37,6 +37,7 @@ class ItemManager : public dzemikk::MonoBehaviour {
 
     [[nodiscard]] nlohmann::json saveState() const;
     void loadState(const nlohmann::json& j);
+    void clear();
 
   private:
     void spawnItem(const boost::uuids::uuid& chunkId, const HexChunk::HexCellPtr& cell,

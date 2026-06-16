@@ -37,6 +37,7 @@
 #include <GLFW/glfw3.h>
 #include <filesystem>
 #include <memory>
+#include <unordered_set>
 #include <utility>
 
 #if DZEMIKK_DEV_TOOLS
@@ -54,6 +55,7 @@
 #include "player/playerPatternStatsComponent.h"
 #include "stateMachine/combatState.h"
 #include "stateMachine/explorationState.h"
+#include "totem/totemEntity.h"
 #include "totem/totemManager.h"
 #include "ui/combatUIPanel.h"
 
@@ -970,34 +972,129 @@ void Game::setupTotems() {
 }
 
 void Game::restart() {
-    auto* assetManager = _engine->getAssetManager();
-    auto* sceneManager = _engine->getSceneManager();
+    if (!std::filesystem::exists("./world.json")) {
+        spdlog::warn("[Game] No world.json file found. Cannot restart.");
+        throw std::runtime_error("No world.json file found. Cannot restart.");
+    }
 
-    _mainScene = assetManager->reload<dzemikk::Scene>("scenes/gameplay5.json");
+    auto in = std::ifstream("./world.json");
+    auto checkpoint = nlohmann::json::parse(in);
+    in.close();
+    auto* scene = _mainScene.get();
+    auto* world = _worldGO->getComponent<game::World>();
 
-    _lastHitRenderer = nullptr;
-    _lastHitBaseColors.clear();
-    _engine->getCollisions()->resetHoverState();
+    auto* enemyManagerGO = scene->findGameObjectByTag("EnemyManager");
+    auto* enemyManager = enemyManagerGO->getComponent<game::EnemyManager>();
 
-    sceneManager->unloadScene(sceneManager->getActiveScene());
+    auto* itemManagerGO = scene->findGameObjectByTag("ItemManager");
+    auto* itemManager = itemManagerGO->getComponent<game::ItemManager>();
 
-    std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
-    sceneManager->loadScene(sceneShared);
-    sceneManager->setActiveScene(sceneShared);
+    auto* totemManagerGO = scene->findGameObjectByTag("TotemManager");
+    auto* totemManager = totemManagerGO->getComponent<game::TotemManager>();
 
-    setupMainCamera();
-    setupUICamera();
-    setupWorld();
-    setupPlayer();
-    setupEnemies();
-    setupItems();
-    setupTotems();
+    auto currentState = world->save();
 
-    auto* root = _mainScene.get()->findGameObjectByName("Root");
-    _stateMachine = root->addComponent<game::GameStateMachine>();
+    if (checkpoint.contains("player")) {
+        const auto& playerData = checkpoint["player"];
 
-    _cameraController = _mainCamera->getOwner()->addComponent<game::CameraController>();
-    _cameraController->setPlayerTransform(_playerEntity->getOwner()->transform());
+        auto* playerHealthGO = scene->findGameObjectByName("Player_Avatar_Panel")
+                                   ->findDescendantByName("Health_Holder");
+        auto* playerHealthSystem = playerHealthGO->getComponent<game::HealthSystem>();
+        if (playerData.contains("health") && playerData.contains("maxHealth")) {
+            playerHealthSystem->setMaxHealth(playerData["maxHealth"].get<float>());
+            playerHealthSystem->setHealth(playerData["health"].get<float>());
+        }
+
+        auto* patternComponent = _playerGO->getComponent<game::PlayerPatternComponent>();
+        if (playerData.contains("patterns")) {
+            patternComponent->clearPatterns();
+            for (const auto& pj : playerData["patterns"]) {
+                game::HexPattern pat = pj.at("pattern").get<game::HexPattern>();
+                int count = pj.at("count").get<int>();
+                patternComponent->addPattern(pat, count);
+                // NOTE: Rebuild the player pattern UI after restoring patterns
+            }
+        }
+
+        auto* inventory = _playerGO->getComponent<game::Inventory>();
+        inventory->clear();
+        if (playerData.contains("inventory")) {
+            for (const auto& [typeStr, count] : playerData["inventory"].items()) {
+                auto type = static_cast<game::ItemEntity::ItemType>(std::stoi(typeStr));
+                inventory->addItem(type, count.get<unsigned int>());
+            }
+        }
+
+        if (playerData.contains("position")) {
+            auto coord = playerData["position"].get<game::HexCoord>();
+            auto cell = _hexGrid->getCell(coord);
+            if (cell) {
+                _playerEntity->teleportTo(cell);
+            }
+        }
+    }
+
+    std::unordered_set<std::string> currentItemIds;
+    if (currentState.contains("items")) {
+        for (const auto& [idStr, _] : currentState["items"].items()) {
+            currentItemIds.insert(idStr);
+        }
+    }
+
+    if (checkpoint.contains("items")) {
+        for (const auto& [idStr, itemData] : checkpoint["items"].items()) {
+            if (!currentItemIds.contains(idStr)) {
+                auto cfg = itemData.get<game::ItemSpawnConfig>();
+                game::HexCoord coord = itemData["gridPos"].get<game::HexCoord>();
+                itemManager->addItem(cfg.chunkId, cfg, coord);
+            }
+        }
+    }
+
+    std::unordered_set<std::string> currentEnemyIds;
+    if (currentState.contains("enemies")) {
+        for (const auto& [idStr, _] : currentState["enemies"].items()) {
+            currentEnemyIds.insert(idStr);
+        }
+    }
+
+    if (checkpoint.contains("enemies")) {
+        for (const auto& [idStr, enemyData] : checkpoint["enemies"].items()) {
+            if (!currentEnemyIds.contains(idStr)) {
+                auto cfg = enemyData.get<game::EnemySpawnConfig>();
+                game::HexCoord coord = enemyData["gridPos"].get<game::HexCoord>();
+                auto chunkId =
+                    boost::uuids::string_generator()(enemyData.at("chunkId").get<std::string>());
+                cfg.chunkId = chunkId;
+                enemyManager->addEnemy(chunkId, cfg, coord);
+            }
+        }
+    }
+
+    std::unordered_set<std::string> currentTotemIds;
+    if (currentState.contains("totems")) {
+        for (const auto& [idStr, _] : currentState["totems"].items()) {
+            currentTotemIds.insert(idStr);
+        }
+    }
+
+    if (checkpoint.contains("totems")) {
+        for (const auto& [idStr, totemData] : checkpoint["totems"].items()) {
+            if (!currentTotemIds.contains(idStr)) {
+                auto cfg = totemData.get<game::TotemSpawnConfig>();
+                game::HexCoord coord = totemData["gridPos"].get<game::HexCoord>();
+                totemManager->addTotem(cfg.chunkId, cfg, coord);
+            } else if (totemData.contains("used") && totemData["used"].get<bool>()) {
+                auto totemId = boost::uuids::string_generator()(idStr);
+                totemManager->markTotemUsed(totemId);
+            } else if (totemData.contains("used") && !totemData["used"].get<bool>() &&
+                       currentTotemIds.contains(idStr) &&
+                       currentState["totems"][idStr].contains("used") &&
+                       currentState["totems"][idStr]["used"].get<bool>()) {
+                totemManager->markTotemUnused(boost::uuids::string_generator()(idStr));
+            }
+        }
+    }
 
     _stateMachine->setState(std::make_unique<game::ExplorationState>(this));
 }

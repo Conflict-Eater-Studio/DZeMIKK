@@ -74,6 +74,9 @@ class TotemManager : public dzemikk::MonoBehaviour {
 
     [[nodiscard]] nlohmann::json saveState() const;
     void loadState(const nlohmann::json& j);
+    void clear();
+    void markTotemUsed(const boost::uuids::uuid& persistantId);
+    void markTotemUnused(const boost::uuids::uuid& persistantId);
 
     [[nodiscard]]
     std::string typeName() const override {
