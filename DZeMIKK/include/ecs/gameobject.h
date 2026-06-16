@@ -123,6 +123,7 @@ class GameObject {
         }
         result->setOwner(this);
         ComponentRegistry::get().registerComponent<T>(result);
+        ComponentRegistry::get().setComponentScene(result, _scene);
         component->enabled(_isEnabled);
         _components.push_back(std::move(component));
         return result;

@@ -12,6 +12,8 @@
 
 namespace dzemikk {
 
+class Scene;
+
 class ComponentRegistry {
   public:
     ComponentRegistry(const ComponentRegistry&) = delete;
@@ -22,6 +24,14 @@ class ComponentRegistry {
     static ComponentRegistry& get() {
         static ComponentRegistry instance;
         return instance;
+    }
+
+    void setActiveScene(Scene* scene) {
+        _activeScene = scene;
+    }
+
+    void setComponentScene(Component* component, Scene* scene) {
+        _componentScenes[component] = scene;
     }
 
     template <typename T>
@@ -76,12 +86,14 @@ class ComponentRegistry {
         }
 
         _componentToTypes.erase(typeIter);
+        _componentScenes.erase(component);
     }
 
     void clear() {
         _components.clear();
         _componentIndices.clear();
         _componentToTypes.clear();
+        _componentScenes.clear();
     }
 
     template <typename T>
@@ -93,7 +105,14 @@ class ComponentRegistry {
             return;
         }
         for (Component* component : iter->second) {
-            out.push_back(static_cast<T*>(component));
+            if (!_activeScene) {
+                out.push_back(static_cast<T*>(component));
+                continue;
+            }
+            auto sceneIt = _componentScenes.find(component);
+            if (sceneIt != _componentScenes.end() && sceneIt->second == _activeScene) {
+                out.push_back(static_cast<T*>(component));
+            }
         }
     }
 
@@ -106,10 +125,15 @@ class ComponentRegistry {
             return;
         }
 
-        auto enabled =
-            iter->second | std::views::filter([](Component* c) { return c->isEnabled(); });
-        for (Component* component : enabled) {
-            out.push_back(static_cast<T*>(component));
+        for (Component* component : iter->second) {
+            bool sceneMatch = !_activeScene;
+            if (!sceneMatch) {
+                auto sceneIt = _componentScenes.find(component);
+                sceneMatch = sceneIt != _componentScenes.end() && sceneIt->second == _activeScene;
+            }
+            if (sceneMatch && component->isEnabled()) {
+                out.push_back(static_cast<T*>(component));
+            }
         }
     }
 
@@ -139,6 +163,10 @@ class ComponentRegistry {
         _componentIndices;
     // Component -> list of types it was registered under
     std::unordered_map<Component*, std::vector<std::type_index>> _componentToTypes;
+    // Component -> scene it was registered in
+    std::unordered_map<Component*, Scene*> _componentScenes;
+    // Currently active scene for filtering queries
+    Scene* _activeScene = nullptr;
 };
 
 } // namespace dzemikk

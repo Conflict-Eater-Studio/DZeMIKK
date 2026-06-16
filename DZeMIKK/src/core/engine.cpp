@@ -10,8 +10,6 @@
 #include FT_FREETYPE_H
 #endif
 
-#include "ecs/components/colorGradingEffect.h"
-
 #include "animation/animationmodule.h"
 #include "assetManager/assetmanager.h"
 #include "audio/audioManager.h"
@@ -23,6 +21,7 @@
 #include "core/window.h"
 #include "core/windowContext.h"
 #include "ecs/components/camera.h"
+#include "ecs/components/colorGradingEffect.h"
 #include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
 #include "ecs/scenemanager.h"
@@ -31,6 +30,7 @@
 #include "renderer/font.h"
 #include "renderer/renderer.h"
 #include "renderer/texture.h"
+#include "spriteAnimation/spriteAnimationModule.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -55,6 +55,7 @@ void Engine::init() {
     _input = std::make_unique<Input>();
     _collisions = std::make_unique<Collisions>();
     _audioManager = std::make_unique<AudioManager>();
+    _spriteAnimationModule = std::make_unique<SpriteAnimationModule>();
 
     _mainWindow->initialize();
     _assetManager->initialize();
@@ -68,6 +69,7 @@ void Engine::init() {
     _input->initialize();
     _collisions->initialize();
     _audioManager->initialize();
+    _spriteAnimationModule->initialize();
 
     _assetManager->setFMODSystem(_audioManager->getSystem());
 
@@ -93,6 +95,7 @@ void Engine::shutdown() {
     if (!_mainWindow)
         return;
 
+    _spriteAnimationModule->uninitialize();
     _input->uninitialize();
     _animationModule->uninitialize();
     _time->uninitialize();
@@ -135,6 +138,7 @@ void Engine::start() {
             DZ_PROFILE_CPU("Game Logic & Update");
             _sceneManager->update(deltaTime);
             _animationModule->update(deltaTime);
+            _spriteAnimationModule->update(deltaTime);
 
             if (_accumulator >= fixedDeltaTime) {
                 _sceneManager->fixedUpdate(fixedDeltaTime);
@@ -182,7 +186,8 @@ void Engine::start() {
                 ImGui::Begin("Color Grading Settings");
                 for (size_t i = 0; i < gradingEffects.size(); ++i) {
                     auto* effect = gradingEffects[i];
-                    std::string label = "Effect " + std::to_string(i) + " (" + effect->getOwner()->getName() + ")";
+                    std::string label =
+                        "Effect " + std::to_string(i) + " (" + effect->getOwner()->getName() + ")";
                     if (ImGui::TreeNode(label.c_str())) {
                         bool enabled = effect->isEnabled();
                         if (ImGui::Checkbox("Enabled", &enabled)) {

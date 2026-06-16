@@ -116,6 +116,8 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/components/light/pointLight.cpp"
         "${SRC_DIR}/ecs/components/light/spotLight.cpp"
         "${SRC_DIR}/audio/audioManager.cpp"
+        "${SRC_DIR}/ecs/components/ui/spriteAnimation.cpp"
+        "${SRC_DIR}/spriteAnimation/spriteAnimationModule.cpp"
 )
 
 set(ENGINE_HEADERS
@@ -255,6 +257,8 @@ set(ENGINE_HEADERS
         "${INC_DIR}/ecs/components/light/pointLight.h"
         "${INC_DIR}/ecs/components/light/spotLight.h"
         "${INC_DIR}/audio/audioManager.h"
+        "${INC_DIR}/ecs/components/ui/spriteAnimation.h"
+        "${INC_DIR}/spriteAnimation/spriteAnimationModule.h"
 )
 
 target_sources(DZeMIKK

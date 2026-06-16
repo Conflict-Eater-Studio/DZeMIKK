@@ -1,5 +1,6 @@
 #include "ecs/scenemanager.h"
 
+#include "ecs/componentRegistry.h"
 #include "ecs/gameobject.h"
 
 namespace dzemikk {
@@ -17,6 +18,7 @@ void SceneManager::unloadScene(const std::shared_ptr<Scene>& scene) {
 }
 void SceneManager::setActiveScene(const std::shared_ptr<Scene>& scene) {
     _activeScene = scene;
+    ComponentRegistry::get().setActiveScene(scene.get());
 }
 
 std::shared_ptr<Scene> SceneManager::getActiveScene() const {

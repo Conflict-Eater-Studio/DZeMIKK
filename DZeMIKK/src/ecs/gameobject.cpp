@@ -172,6 +172,12 @@ void GameObject::setScene(Scene* scene) {
 
     _scene = scene;
 
+    for (auto& comp : _components) {
+        if (comp) {
+            ComponentRegistry::get().setComponentScene(comp.get(), _scene);
+        }
+    }
+
     _scene->registerIdObject(_id, this);
     _scene->registerNamedObject(_name, this);
     for (const auto& tag : _tags) {
