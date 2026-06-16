@@ -261,7 +261,7 @@ class Material {
     float _ao = 1.0f;
 
     glm::vec3 _emissiveColor{0.0f};
-    float _emissiveStrength = 1.0f;
+    float _emissiveStrength = 0.0f;
 };
 
 } // namespace dzemikk

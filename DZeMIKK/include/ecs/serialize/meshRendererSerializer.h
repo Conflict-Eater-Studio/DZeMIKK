@@ -165,6 +165,8 @@ inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer,
                 col = pbr.value("emissive", std::vector<float>{1, 1, 1});
                 if (col.size() == 3) {
                     material->setEmissiveColor(glm::vec3(col[0], col[1], col[2]));
+                } else {
+                    material->setEmissiveColor({0.0F, 0.0F, 0.0F});
                 }
 
                 material->setEmissiveStrength(pbr.value("emissiveStrength", 1.0f));

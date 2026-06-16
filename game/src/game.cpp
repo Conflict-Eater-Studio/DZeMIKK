@@ -132,7 +132,7 @@ void Game::start() {
 
     setupSkybox();
 
-    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay6.json");
+    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay7.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
