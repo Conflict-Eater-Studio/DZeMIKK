@@ -108,12 +108,13 @@ void game::CombatState::onExit() {
     const auto& enemyTerritory = _currentEnemy->getTerritory();
 
     for (auto* cell : enemyTerritory) {
-
-        if (!cell || _playerDied) {
+        if (!cell) {
             continue;
         }
 
-        cell->setType(HexCell::Type::Normal);
+        if (!_playerDied) {
+            cell->setType(HexCell::Type::Normal);
+        }
         cell->setDirty(true);
     }
 
@@ -130,8 +131,10 @@ void game::CombatState::onExit() {
     }
 
     if (auto* em = scene.get()->findGameObjectByTag("EnemyManager")->getComponent<EnemyManager>();
-        em) {
+        em && !_playerDied) {
         em->removeEnemy(_currentEnemy);
+        auto* enemyGO = _currentEnemy->getOwner();
+        _game->getCurrentScene().get()->destroyGameObject(enemyGO);
     }
 
     _currentEnemy = nullptr;
@@ -161,9 +164,6 @@ void game::CombatState::onUpdate(float dt) {
             _exitAnimation = false;
 
             if (_playerDied) {
-#if DZEMIKK_DEV_TOOLS
-                spdlog::info("[CombatState] Player died. Calling Game::restart");
-#endif
                 _game->restart();
             } else {
                 _game->setExplorationState();

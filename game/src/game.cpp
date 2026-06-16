@@ -11,6 +11,7 @@
 #include "ecs/components/camera.h"
 #include "ecs/components/collider.h"
 #include "ecs/components/meshRenderer.h"
+#include "ecs/components/ui/gridLayout.h"
 #include "ecs/components/ui/uiActionRegistry.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
@@ -1012,7 +1013,11 @@ void Game::restart() {
                 game::HexPattern pat = pj.at("pattern").get<game::HexPattern>();
                 int count = pj.at("count").get<int>();
                 patternComponent->addPattern(pat, count);
-                // NOTE: Rebuild the player pattern UI after restoring patterns
+            }
+            auto* playerPanel = _mainScene.get()->findGameObjectByName("Player_Panel");
+            if (auto* combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
+                combatPlayerPanel) {
+                combatPlayerPanel->refresh();
             }
         }
 

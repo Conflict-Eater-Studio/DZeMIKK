@@ -215,7 +215,7 @@ void game::TotemManager::markTotemUnused(const boost::uuids::uuid& persistantId)
         for (auto* totem : totems) {
             if (totem->getConfig().persistantId == persistantId) {
                 if (totem->getConfig().used) {
-                    totem->lightOn();
+                    totem->unuse();
                 }
                 return;
             }

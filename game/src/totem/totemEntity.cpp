@@ -54,6 +54,14 @@ void game::TotemEntity::use() {
     lightOff();
 }
 
+void game::TotemEntity::unuse() {
+    if (!_config.used) {
+        return;
+    }
+    _config.used = false;
+    lightOn();
+}
+
 void game::TotemEntity::lightOff() {
     auto* lightGO = this->getOwner()->findChildByName("Light");
     auto* lightComp = lightGO->getComponent<dzemikk::PointLight>();

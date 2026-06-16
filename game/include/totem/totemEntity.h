@@ -72,6 +72,14 @@ class TotemEntity : public Entity {
     void use();
 
     /**
+     * @brief Reverts the totem state. Does not revert the player pattern addition
+     *
+     * This is called when loading a totem that has already been used
+     * to visually indicate that it has been activated.
+     */
+    void unuse();
+
+    /**
      * @brief Turns off the totem's light effect.
      *
      * This is called after the totem is used to visually indicate

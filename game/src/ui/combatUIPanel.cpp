@@ -1,16 +1,16 @@
 #include "ui/combatUIPanel.h"
+
 #include "enemySystem/enemyPatternComponent.h"
 #include "player/playerPatternComponent.h"
 
+#include <ecs/components/ui/gridLayout.h>
+#include <ecs/components/ui/imageRenderer.h>
+#include <ecs/components/ui/uiActionRegistry.h>
 #include <ecs/gameobject.h>
 #include <ecs/scene.h>
-#include <ecs/components/ui/gridLayout.h>
 #include <ecs/serialize/prefabSerializer.h>
-#include <ecs/components/ui/uiActionRegistry.h>
-#include <ecs/components/ui/imageRenderer.h>
-#include <renderer/texture.h>
-
 #include <iostream>
+#include <renderer/texture.h>
 
 void game::CombatUIPanel::start() {
     _patternSlotPrefab = _assetManager->get<nlohmann::json>("prefabs/pattern_ui.prefab");
@@ -36,6 +36,10 @@ void game::CombatUIPanel::refresh() {
 }
 
 void game::CombatUIPanel::clear() {
+    if (_uiEntries.empty()) {
+        return;
+    }
+    _uiEntries.at(0).root->getParent()->detachChildren();
     for (auto& entry : _uiEntries) {
         if (entry.root) {
             entry.root->getScene()->destroyGameObject(entry.root);
@@ -135,7 +139,7 @@ void game::CombatUIPanel::createPatternPreview(dzemikk::GameObject* parent,
         auto* renderer = hexGO->getComponent<dzemikk::ImageRenderer>();
         glm::vec4 color = getPatternBaseColor(pattern.getType());
         renderer->setColor({color.r, color.g, color.b, 1.0F});
-        
+
         auto* hexChild = hexGO->findChildByName("Empty");
         auto* hexChildRenderer = hexChild->getComponent<dzemikk::ImageRenderer>();
 
@@ -196,11 +200,11 @@ glm::vec4 game::CombatUIPanel::getPatternBaseColor(HexPattern::Type type) {
 }
 
 glm::vec4 game::CombatUIPanel::applyUsageTint(glm::vec4 base, uint32_t count) {
-    //float intensity = std::min(1.0F, (float)count * 0.2F);
+    // float intensity = std::min(1.0F, (float)count * 0.2F);
 
-    //base.r += intensity * 0.3F;
-    //base.g += intensity * 0.3F;
-    //base.b += intensity * 0.3F;
+    // base.r += intensity * 0.3F;
+    // base.g += intensity * 0.3F;
+    // base.b += intensity * 0.3F;
 
     return base;
 }
@@ -232,7 +236,7 @@ int32_t game::CombatUIPanel::getPatternCount(const PatternComponent::PatternEntr
     }
 
     if (_mode == Mode::AvailablePatterns) {
-        return entry.count; 
+        return entry.count;
     }
 
     const auto* enemyPatterns = dynamic_cast<const EnemyPatternComponent*>(_patterns);
