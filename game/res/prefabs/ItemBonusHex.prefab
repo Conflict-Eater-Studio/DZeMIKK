@@ -3,42 +3,56 @@
         "children": [],
         "components": [
             {
-                "id": "61c2daf4-95a9-4a88-a482-9d6c2cd6c420",
+                "id": "aca8413a-dc7a-41df-a918-d7caea636eb9",
                 "position": [
                     0.0,
                     0.0,
                     0.0
                 ],
                 "rotation": [
-                    0.4999999701976776,
-                    -0.4999999701976776,
-                    -0.4999999701976776,
-                    -0.4999999701976776
+                    -3.0908619663705394e-08,
+                    -3.0908619663705394e-08,
+                    -0.7071067690849304,
+                    -0.7071067690849304
                 ],
                 "scale": [
-                    10.0,
-                    10.0,
-                    10.0
+                    5.0,
+                    5.0,
+                    5.0
                 ],
                 "type": "Transform"
             },
             {
-                "color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "id": "0578494f-2611-4571-a88f-a3f92d5818df",
+                "id": "e66fbe63-a271-4b1c-99a4-5f8373ae3845",
                 "materials": [
-                    "shaders/tile1"
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "metallic": 0.013000000268220901,
+                            "roughness": 0.48100000619888306
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "textures/assets/czaszka_BaseColor.png",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "",
+                            "normal": "",
+                            "roughness": ""
+                        }
+                    }
                 ],
                 "model": "models/czaszka.fbx",
                 "type": "MeshRenderer"
             }
         ],
         "enabled": true,
-        "id": "0439fd63-9b54-468d-b20c-4a8154d8559c",
+        "id": "4de9c4f4-eed7-435c-b32e-46dfd113285a",
         "name": "ItemBonusHex",
         "tags": []
     }

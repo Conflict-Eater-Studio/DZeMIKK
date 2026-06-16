@@ -36,7 +36,7 @@ class SkinnedMeshRenderer : public Component {
      *
      * @return const std::vector<Material*>& Reference to material array.
      */
-    [[nodiscard]] const std::vector<Material*>& getMaterials() const {
+    [[nodiscard]] const std::vector<std::shared_ptr<Material>> getMaterials() const {
         return _materials;
     }
 
@@ -48,7 +48,7 @@ class SkinnedMeshRenderer : public Component {
      * @param index Material slot index.
      * @return Material* Pointer to material or nullptr if invalid index.
      */
-    [[nodiscard]] Material* getMaterial(size_t index) const {
+    [[nodiscard]] std::shared_ptr<Material> getMaterial(size_t index) const {
         if (index >= _materials.size()) {
             return nullptr;
         }
@@ -88,7 +88,7 @@ class SkinnedMeshRenderer : public Component {
      *
      * @param materials Vector of material pointers.
      */
-    void setMaterials(const std::vector<Material*>& materials) {
+    void setMaterials(const std::vector<std::shared_ptr<Material>> materials) {
         _materials = materials;
     }
 
@@ -100,7 +100,7 @@ class SkinnedMeshRenderer : public Component {
      * @param index Material slot index.
      * @param material Pointer to material instance.
      */
-    void setMaterial(size_t index, Material* material) {
+    void setMaterial(size_t index, std::shared_ptr<Material> material) {
         if (index >= _materials.size()) {
             _materials.resize(index + 1, nullptr);
         }
@@ -159,7 +159,7 @@ class SkinnedMeshRenderer : public Component {
 
   private:
     AssetHandle<Model> _model;                   
-    std::vector<Material*> _materials;         
+    std::vector<std::shared_ptr<Material>> _materials;         
     Transform* _transform = nullptr;           
     std::vector<glm::mat4> _finalBoneMatrices;
 };

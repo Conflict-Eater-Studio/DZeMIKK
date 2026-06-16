@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "c4ce22f3-c900-4f6a-9f3d-aa3994f39726",
+                        "id": "6d94c8b2-aafa-4912-85cb-1236930f0ab1",
                         "position": [
                             0.0,
                             17.0,
@@ -37,17 +37,17 @@
                     }
                 ],
                 "enabled": true,
-                "id": "ec0e0e60-b93c-4e27-90a9-0469ae4711dc",
+                "id": "25f58fd5-bfb8-487f-83bd-9d0f22429cd4",
                 "name": "Light",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "845f7c4c-029e-4a3e-af77-7b8ff8a979e2",
+                "id": "73743083-d85b-417a-b7da-ae14b370e75a",
                 "position": [
                     0.0,
-                    0.4000000059604645,
+                    0.0,
                     0.0
                 ],
                 "rotation": [
@@ -57,16 +57,118 @@
                     0.0
                 ],
                 "scale": [
-                    0.009999999776482582,
-                    0.009999999776482582,
-                    0.009999999776482582
+                    0.012000000104308128,
+                    0.012000000104308128,
+                    0.012000000104308128
                 ],
                 "type": "Transform"
             },
             {
-                "id": "32feb0ff-eb75-4fb9-9ee2-c8f71bb9d3e2",
+                "id": "db66008a-8c72-4877-91d2-292246b56204",
                 "materials": [
-                    "shaders/skinned"
+                    {
+                        "albedoColor": [
+                            0.42352941632270813,
+                            0.33725491166114807,
+                            0.13333334028720856
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.49803921580314636,
+                            0.0,
+                            0.01568627543747425
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.1764705926179886,
+                            0.3607843220233917,
+                            0.04313725605607033
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.5529412031173706,
+                            0.4156862795352936,
+                            0.2980392277240753
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    null
                 ],
                 "model": "models/Orc Idle.fbx",
                 "type": "SkinnedMeshRenderer"
@@ -74,7 +176,7 @@
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "e8bce1b4-8905-40da-9070-899009a523ec",
+                "id": "0723f6d6-85cb-46dc-9893-e1c9a1cd092a",
                 "parameters": {},
                 "stateMachine": [
                     {
@@ -86,7 +188,7 @@
             }
         ],
         "enabled": true,
-        "id": "c8b36788-6e89-496d-b11a-9b70db1fe60d",
+        "id": "1c4482d9-7dcc-482e-b0d7-ff32058ba4f5",
         "name": "Defensive",
         "tags": []
     }

@@ -82,6 +82,7 @@ void World::spawnItem(const boost::uuids::uuid& chunkId, ItemEntity::ItemType ty
             _game->getEngine()->getAssetManager()->get<nlohmann::json>("prefabs/ItemHeal.prefab");
         go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
                                                     _game->getEngine()->getAssetManager(), _owner);
+
         item = go->addComponent<game::ItemEntityHealth>(healAmount);
         break;
     }
@@ -97,6 +98,7 @@ void World::spawnItem(const boost::uuids::uuid& chunkId, ItemEntity::ItemType ty
             "prefabs/ItemRevealPattern.prefab");
         go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
                                                     _game->getEngine()->getAssetManager(), _owner);
+
         item = go->addComponent<ItemEntityRevealPattern>();
         break;
     }
@@ -112,6 +114,7 @@ void World::spawnItem(const boost::uuids::uuid& chunkId, ItemEntity::ItemType ty
             "prefabs/ItemRevealHex.prefab");
         go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
                                                     _game->getEngine()->getAssetManager(), _owner);
+
         item = go->addComponent<ItemEntityRevealHex>();
         break;
     }
@@ -125,10 +128,12 @@ void World::spawnItem(const boost::uuids::uuid& chunkId, ItemEntity::ItemType ty
 
         HexPattern pattern = std::any_cast<HexPattern>(args[0]);
 
+
         auto prefab = _game->getEngine()->getAssetManager()->get<nlohmann::json>(
             "prefabs/ItemBonusHex.prefab");
         go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
                                                     _game->getEngine()->getAssetManager(), _owner);
+
         item = go->addComponent<ItemEntityBonusHex>(pattern);
         break;
     }
@@ -136,9 +141,6 @@ void World::spawnItem(const boost::uuids::uuid& chunkId, ItemEntity::ItemType ty
 
     if (item != nullptr && go != nullptr) {
         _grid.addItem(chunkId, item);
-        auto worldPos =
-            item->getCell()->getCoord().toWorldPosition(1.0F, 0.1F, item->getCell()->getHeight());
-        go->transform()->setPosition(worldPos + glm::vec3(0.0F, 0.5F, 0.0F));
     }
 }
 

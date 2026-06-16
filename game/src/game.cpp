@@ -132,7 +132,7 @@ void Game::start() {
 
     setupSkybox();
 
-    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay5.json");
+    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay6.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
@@ -465,9 +465,7 @@ void Game::setupInputCallbacks() {
 
             if (currentRenderer && currentRenderer->isValid()) {
 
-                if (!baseMaterials.contains(currentRenderer)) {
-                    baseMaterials[currentRenderer] = currentRenderer->getMaterial(0)->clone();
-                }
+                baseMaterials[currentRenderer] = currentRenderer->getMaterial(0)->clone();
 
                 auto hovered = currentRenderer->getMaterial(0)->clone();
                 hovered->setAlbedoColor(baseMaterials[currentRenderer]->getAlbedoColor() *
@@ -478,6 +476,7 @@ void Game::setupInputCallbacks() {
 
             lastHitRenderer = currentRenderer;
         }
+        
     });
 
     _engine->getInput()->OnMouseButtonPressed.addListener(
@@ -777,7 +776,9 @@ void Game::setupItems() {
 
     // Heal Item steup
     auto healChunks = {"chunkMain2Sub2", "chunkMain3",     "chunkMain4Sub1",
-                       "chunkMain7",     "chunkMain7Sub2", "chunkMain9"};
+                       "chunkMain7",
+                       "chunkMain7Sub2",
+                       "chunkMain9"};
     for (const auto& id : healChunks) {
         world->addItem<game::ItemEntity::ItemType::Heal>(_chunkIds[id], 10.0F);
     }
@@ -799,8 +800,8 @@ void Game::setupItems() {
 
     // Bonus Hex Item Setup
     game::HexPattern pat = game::HexPattern({{0, 0}}, game::HexPattern::Type::BONUSHEX);
-    auto bonusHex = {"chunkMain2Sub1", "chunkMain2Sub3", "chunkMain2Sub3", "chunkMain4Sub1",
-                     "chunkMain7",     "chunkMain7Sub1", "chunkMain7Sub3", "chunkMain7Sub3"};
+    auto bonusHex = {"chunkMain2Sub1", "chunkMain2Sub3", "chunkMain2Sub3", "chunkMain4Sub1", "chunkMain7",     "chunkMain7Sub1",
+                     "chunkMain7Sub3", "chunkMain7Sub3"};
     for (const auto& id : bonusHex) {
         world->addItem<game::ItemEntity::ItemType::BonusHex>(_chunkIds[id], pat);
     }

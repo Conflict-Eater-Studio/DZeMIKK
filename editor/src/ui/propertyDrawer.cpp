@@ -428,7 +428,7 @@ bool editor::PropertyDrawer::drawMaterials(const std::string& label,
     }
 
     if (ImGui::Button("Add Material")) {
-        renderer->setMaterial(materials.size(), new dzemikk::Material());
+        renderer->setMaterial(materials.size(), std::make_shared<dzemikk::Material>());
         changed = true;
     }
 

@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "83165139-0e3c-46a4-805b-7529f64aa914",
+                        "id": "eca3e791-32af-40a2-91e8-41b15d3083d6",
                         "position": [
                             0.0,
                             0.0,
@@ -26,7 +26,7 @@
                     }
                 ],
                 "enabled": true,
-                "id": "d6f3d189-806e-44d0-86b7-c0037e5fa5b3",
+                "id": "039313c6-3c0e-4942-b48f-54066c42ea31",
                 "name": "Totem",
                 "tags": []
             },
@@ -34,7 +34,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "8bafb0b4-6e90-4f6e-b5dd-9727862963d2",
+                        "id": "4a4f834f-b7a6-4593-a182-011f4a575bdb",
                         "position": [
                             0.0,
                             -0.699999988079071,
@@ -54,22 +54,36 @@
                         "type": "Transform"
                     },
                     {
-                        "color": [
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0
-                        ],
-                        "id": "cb0345c7-7763-4846-af10-08f55468bfca",
+                        "id": "3bbe8031-1f08-4b99-acbd-87d7d2a57227",
                         "materials": [
-                            "shaders/tile1"
+                            {
+                                "pbr": {
+                                    "albedo": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "ao": 1.0,
+                                    "metallic": 0.0,
+                                    "roughness": 0.5
+                                },
+                                "shader": "shaders/tile1",
+                                "textures": {
+                                    "albedo": "",
+                                    "ao": "",
+                                    "emissive": "",
+                                    "metallic": "",
+                                    "normal": "",
+                                    "roughness": ""
+                                }
+                            }
                         ],
                         "model": "primitive/0",
                         "type": "MeshRenderer"
                     }
                 ],
                 "enabled": true,
-                "id": "d95ed3e2-260c-4894-845c-9474632610cb",
+                "id": "090b44e6-9c19-4058-ae41-c9cd96ae3660",
                 "name": "platform",
                 "tags": []
             },
@@ -79,7 +93,7 @@
                         "children": [],
                         "components": [
                             {
-                                "id": "86717796-42fc-45f4-a0c3-6f4e52b71461",
+                                "id": "d08743b7-b3c5-4023-8049-2713feff170a",
                                 "position": [
                                     -0.6000000238418579,
                                     2.0,
@@ -99,22 +113,36 @@
                                 "type": "Transform"
                             },
                             {
-                                "color": [
-                                    1.0,
-                                    1.0,
-                                    1.0,
-                                    1.0
-                                ],
-                                "id": "03ee2e7e-60f0-4dd6-a3bb-740ab29903ad",
+                                "id": "83a147a6-930a-44fc-919f-85f10d9cbf8b",
                                 "materials": [
-                                    "shaders/tile1"
+                                    {
+                                        "pbr": {
+                                            "albedo": [
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "ao": 1.0,
+                                            "metallic": 0.0,
+                                            "roughness": 0.5
+                                        },
+                                        "shader": "shaders/tile1",
+                                        "textures": {
+                                            "albedo": "",
+                                            "ao": "",
+                                            "emissive": "",
+                                            "metallic": "",
+                                            "normal": "",
+                                            "roughness": ""
+                                        }
+                                    }
                                 ],
                                 "model": "models/totem/skrzydlo.fbx",
                                 "type": "MeshRenderer"
                             }
                         ],
                         "enabled": true,
-                        "id": "09385ec8-bf67-4bb9-81bf-1a4475902a8d",
+                        "id": "1b757893-4cce-4645-9752-319b8abf9f18",
                         "name": "Left",
                         "tags": []
                     },
@@ -122,7 +150,7 @@
                         "children": [],
                         "components": [
                             {
-                                "id": "f02c3b85-9c4f-41a1-811e-5f919d803e41",
+                                "id": "c5514f4e-cb04-4517-bbe4-2012219e3663",
                                 "position": [
                                     0.6000000238418579,
                                     2.0,
@@ -142,29 +170,43 @@
                                 "type": "Transform"
                             },
                             {
-                                "color": [
-                                    1.0,
-                                    1.0,
-                                    1.0,
-                                    1.0
-                                ],
-                                "id": "1d64d618-b740-4f96-88c1-081d331322f8",
+                                "id": "670fde1c-91f0-4465-8243-cb4b878d31b6",
                                 "materials": [
-                                    "shaders/tile1"
+                                    {
+                                        "pbr": {
+                                            "albedo": [
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "ao": 1.0,
+                                            "metallic": 0.0,
+                                            "roughness": 0.5
+                                        },
+                                        "shader": "shaders/tile1",
+                                        "textures": {
+                                            "albedo": "",
+                                            "ao": "",
+                                            "emissive": "",
+                                            "metallic": "",
+                                            "normal": "",
+                                            "roughness": ""
+                                        }
+                                    }
                                 ],
                                 "model": "models/totem/skrzydlo.fbx",
                                 "type": "MeshRenderer"
                             }
                         ],
                         "enabled": true,
-                        "id": "9adecccf-b9cd-456e-bbee-f54f23545ca7",
+                        "id": "850c0ce3-92b0-48b1-8505-aebcb22b21f8",
                         "name": "Right",
                         "tags": []
                     }
                 ],
                 "components": [
                     {
-                        "id": "9b2bab3e-0143-49c9-a3b2-4abdf32e86e0",
+                        "id": "8b30f095-6c62-48f4-8a91-e351967eea35",
                         "position": [
                             0.0,
                             0.0,
@@ -185,7 +227,7 @@
                     }
                 ],
                 "enabled": true,
-                "id": "51e8b412-3382-45b0-99fe-9a7e510ed834",
+                "id": "41c37e26-7861-4dc0-afaf-a763722e32eb",
                 "name": "Wings",
                 "tags": []
             },
@@ -193,7 +235,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "664617b7-9f58-417b-b665-e9572bff4157",
+                        "id": "d5ba80e3-62e6-4de8-a472-a3f3dca5f4e4",
                         "position": [
                             0.0,
                             1.2000000476837158,
@@ -225,14 +267,14 @@
                     }
                 ],
                 "enabled": true,
-                "id": "2bc80de8-05d8-4326-8dac-e10dbb331005",
+                "id": "cea7cd83-c0f8-4e94-8a4d-c063485e62df",
                 "name": "Light",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "cdf5fd9e-3ae7-4a9f-868d-675e2a66e722",
+                "id": "be7cc2e4-65ae-4ae1-a248-1945cfc4bcc4",
                 "position": [
                     0.0,
                     0.0,
@@ -253,7 +295,7 @@
             }
         ],
         "enabled": true,
-        "id": "20a60596-843e-4184-80b9-9cc714aec3e5",
+        "id": "a07c22ea-1666-4fee-82ee-bc1e9b1e1004",
         "name": "TotemContainer",
         "tags": []
     }

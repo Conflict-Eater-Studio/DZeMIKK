@@ -81,7 +81,7 @@ inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer,
         throw std::runtime_error("Invalid component type for MeshRenderer deserialization");
     }
 
-    if (!json.contains("id") || !json.contains("model") || !json.contains("color") ||
+    if (!json.contains("id") || !json.contains("model") ||
         !json.contains("materials") || !json["materials"].is_array()) {
         throw std::runtime_error("Missing fields for MeshRenderer deserialization");
     }

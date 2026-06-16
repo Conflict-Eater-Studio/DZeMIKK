@@ -3,7 +3,7 @@
         "children": [],
         "components": [
             {
-                "id": "fbd9067c-be72-4bbe-b8e8-88601992259e",
+                "id": "ea461b8b-9725-4e6a-a043-ac87beef02cc",
                 "position": [
                     0.0,
                     0.0,
@@ -23,23 +23,36 @@
                 "type": "Transform"
             },
             {
-                "color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "id": "b3b753b1-03c1-43cb-b93d-c23b766aa84d",
+                "id": "e24977d7-44f0-4ef4-85ae-0f72372d5874",
                 "materials": [
-                    "shaders/tile1",
-                    ""
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5040000081062317
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "textures/assets/lisc_BaseColor.png",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "",
+                            "normal": "",
+                            "roughness": ""
+                        }
+                    }
                 ],
                 "model": "models/lisc.fbx",
                 "type": "MeshRenderer"
             }
         ],
         "enabled": true,
-        "id": "75c81b2f-c1f6-4366-9147-677c910fb1ed",
+        "id": "99eea75d-72c7-4a96-832e-67069541fa7c",
         "name": "ItemHeal",
         "tags": []
     }

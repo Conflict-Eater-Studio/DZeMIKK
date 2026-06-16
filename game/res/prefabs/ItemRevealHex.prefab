@@ -3,17 +3,17 @@
         "children": [],
         "components": [
             {
-                "id": "61c2daf4-95a9-4a88-a482-9d6c2cd6c420",
+                "id": "8a993c12-52ca-4034-815d-45a10bdd2e64",
                 "position": [
                     0.0,
                     0.0,
                     0.0
                 ],
                 "rotation": [
-                    1.0,
-                    0.0,
-                    0.0,
-                    0.0
+                    0.8807569146156311,
+                    0.32755061984062195,
+                    -0.32056930661201477,
+                    0.11921866238117218
                 ],
                 "scale": [
                     10.0,
@@ -23,22 +23,36 @@
                 "type": "Transform"
             },
             {
-                "color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "id": "0578494f-2611-4571-a88f-a3f92d5818df",
+                "id": "a4e87368-ebf2-4409-9b6b-49b6bdf019d8",
                 "materials": [
-                    "shaders/tile1"
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "textures/assets/muszla_BaseColor.png",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "",
+                            "normal": "",
+                            "roughness": ""
+                        }
+                    }
                 ],
                 "model": "models/muszla.fbx",
                 "type": "MeshRenderer"
             }
         ],
         "enabled": true,
-        "id": "0439fd63-9b54-468d-b20c-4a8154d8559c",
+        "id": "815a23d8-1d9b-4294-b073-1e0a90fcb5e2",
         "name": "ItemRevealHex",
         "tags": []
     }

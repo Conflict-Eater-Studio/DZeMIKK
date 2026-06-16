@@ -42,9 +42,9 @@ void dzemikk::SkinnedRenderPass::execute(RenderContext& ctx) {
                 if (!sub)
                     continue;
 
-                Material* mat = r->getMaterial(i);
+                Material* mat = r->getMaterial(i).get();
                 if (!mat)
-                    mat = r->getMaterial(0);
+                    mat = r->getMaterial(0).get();
 
                 if (!mat)
                     continue;
