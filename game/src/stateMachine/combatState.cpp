@@ -307,6 +307,12 @@ void game::CombatState::startNewTurn() {
     auto* enemyPanel = _game->getCurrentScene().get()->findGameObjectByName("Enemy_Panel");
     auto* enemyPanelUI = enemyPanel->getComponent<CombatUIPanel>();
     enemyPanelUI->refreshVisuals();
+    
+    _playerPatternComponent->refillAllPatterns();
+
+    auto* playerPanel = _game->getCurrentScene().get()->findGameObjectByName("Player_Panel");
+    auto* combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
+    combatPlayerPanel->refreshCounts();
 
     _phase = CombatPhase::PlayerTurn;
     _playerPatternComponent->setInteractionEnabled(true);

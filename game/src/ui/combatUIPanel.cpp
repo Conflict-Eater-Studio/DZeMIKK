@@ -160,6 +160,11 @@ void game::CombatUIPanel::refreshCounts() {
         const auto& patternEntry = _patterns->getPatterns()[entry.patternIndex];
         int32_t count = getPatternCount(patternEntry);
         entry.countText->text = std::to_string(count);
+
+        if (_mode == Mode::AvailablePatterns) {
+            int32_t maxCount = patternEntry.maxCount;
+            entry.countText->text = std::to_string(count) + "/" + std::to_string(maxCount);
+        }
     }
 }
 

@@ -550,6 +550,7 @@ void Game::setupPlayer() {
     patternComponent->setEngine(_engine);
     patternComponent->setGrid(_hexGrid);
     patternComponent->setPlayerEntity(_playerEntity);
+    patternComponent->setGame(this);
 
     auto* playerPanel = _mainScene.get()->findGameObjectByName("Player_Panel");
     auto* combatPlayerPanel = playerPanel->addComponent<game::CombatUIPanel>(
@@ -599,7 +600,8 @@ void Game::setupPlayer() {
             for (const auto& pj : playerData["patterns"]) {
                 game::HexPattern pat = pj.at("pattern").get<game::HexPattern>();
                 int count = pj.at("count").get<int>();
-                patternComponent->addPattern(pat, count);
+                int maxCount = pj.at("maxCount").get<int>();
+                patternComponent->addPattern(pat, count, maxCount);
             }
         }
 
@@ -613,17 +615,17 @@ void Game::setupPlayer() {
         _playerEntity->teleportTo(_hexGrid->getCell({0, 0}));
 
         patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::ATK, 1.0F),
-                                     -1);
+                                     5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 1.1F), -1);
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 1.1F), 5, 5);
 
-        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::DEF), -1);
+        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::DEF), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::DEF, 1.1F), -1);
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::DEF, 1.1F), 5, 5);
 
-        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL), -1);
+        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 0.6F), -1);
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 0.6F), 5, 5);
     }
 }
 

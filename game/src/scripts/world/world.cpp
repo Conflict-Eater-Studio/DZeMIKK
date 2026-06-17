@@ -266,7 +266,7 @@ nlohmann::json World::save() {
         if (auto* patternComp = playerGO->getComponent<PlayerPatternComponent>(); patternComp) {
             for (const auto& entry : patternComp->getPatterns()) {
                 j["player"]["patterns"].push_back(
-                    {{"pattern", entry.pattern}, {"count", entry.count}});
+                    {{"pattern", entry.pattern}, {"count", entry.count}, {"maxCount", entry.maxCount}});
             }
         }
 

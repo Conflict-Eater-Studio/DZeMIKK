@@ -8,6 +8,8 @@
 #include <optional>
 #include <vector>
 
+class Game;
+
 namespace dzemikk {
 class Engine;
 class Collider;
@@ -132,6 +134,7 @@ class PlayerPatternComponent : public PatternComponent {
     void setPlayerEntity(game::PlayerEntity* playerEntity);
     void setEnemyEntity(game::EnemyEntity* enemyEntity);
     void setCombatBoardOffset(float offset);
+    void setGame(Game* game);
 
   private:
 #pragma region Pattern data
@@ -142,7 +145,7 @@ class PlayerPatternComponent : public PatternComponent {
 #pragma endregion
 
 #pragma region References
-
+    Game* _game = nullptr;
     dzemikk::Engine* _engine = nullptr;
     game::HexGrid* _grid = nullptr;
     PlayerPatternStatsComponent* _playerPatternStats = nullptr;

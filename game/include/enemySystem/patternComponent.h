@@ -25,6 +25,8 @@ class PatternComponent : public dzemikk::MonoBehaviour {
     struct PatternEntry {
         HexPattern pattern;
         int count = 0;
+
+        int maxCount = 0;
     };
 
 #pragma region Lifecycle
@@ -43,7 +45,7 @@ class PatternComponent : public dzemikk::MonoBehaviour {
      * @param pattern Pattern to add.
      * @param count Initial pattern count.
      */
-    void addPattern(const HexPattern& pattern, int count = 1);
+    void addPattern(const HexPattern& pattern, int count = 1, int maxCount = 1);
 
     /**
      * @brief Inserts a pattern at a specific position.
@@ -52,7 +54,7 @@ class PatternComponent : public dzemikk::MonoBehaviour {
      * @param pattern Pattern to insert.
      * @param count Initial pattern count.
      */
-    void insertPattern(size_t index, const HexPattern& pattern, int count = 1);
+    void insertPattern(size_t index, const HexPattern& pattern, int count = 1, int maxCount = 1);
 
     /**
      * @brief Removes a pattern by index.
@@ -106,6 +108,16 @@ class PatternComponent : public dzemikk::MonoBehaviour {
      * @return false Otherwise.
      */
     bool setCount(size_t index, int count);
+
+    bool setMaxCount(size_t index, int maxCount);
+    int getMaxCount(size_t index) const;
+
+    bool refillPattern(size_t index);
+
+    /**
+     * @brief Refills all patterns to their maximum count.
+     */
+    void refillAllPatterns();
 
 #pragma endregion
 

@@ -7,6 +7,7 @@
 #include "scripts/world/worldHex.h"
 #include "stateMachine/combatState.h"
 
+#include "ui/combatUIPanel.h"
 #include <assetManager/assetmanager.h>
 #include <audio/audioManager.h>
 #include <audio/sound.h>
@@ -79,10 +80,6 @@ bool game::PlayerPatternComponent::usePattern(size_t index) {
 
     auto& entry = _patterns[index];
 
-    if (entry.count > 0) {
-        entry.count--;
-    }
-
     _activePatternIndex = static_cast<int>(index);
     destroyPreview();
     createPreviewFromPattern(entry.pattern);
@@ -147,12 +144,28 @@ glm::vec3 game::PlayerPatternComponent::axialToWorld(const HexCoord& coord, floa
     return {x, 0.0F, z};
 }
 
+void game::PlayerPatternComponent::setGame(Game* game) {
+    _game = game;
+}
+
 bool game::PlayerPatternComponent::confirmPattern() {
     if (_activePatternIndex < 0 || !_currentPreviewValid) {
         return false;
     }
 
     const auto& pattern = _patterns[_activePatternIndex].pattern;
+
+    if (_patterns[_activePatternIndex].count == 0) {
+        return false;
+    }
+
+    if (_patterns[_activePatternIndex].count > 0) {
+        _patterns[_activePatternIndex].count--;
+
+        auto* playerPanel = _game->getCurrentScene().get()->findGameObjectByName("Player_Panel");
+        auto* combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
+        combatPlayerPanel->refreshCounts();
+    }
 
     if (pattern.getType() == HexPattern::Type::BONUSHEX) {
         confirmBonusHex(pattern);
@@ -325,6 +338,16 @@ void game::PlayerPatternComponent::removePlacedPattern(size_t index) {
 
     auto& placed = _placedPatterns[index];
 
+    int patternIndex = findPattern(placed.pattern);
+
+    if (patternIndex >= 0) {
+        _patterns[patternIndex].count++;
+    }
+
+    auto* playerPanel = _game->getCurrentScene().get()->findGameObjectByName("Player_Panel");
+    auto* combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
+    combatPlayerPanel->refreshCounts();
+
     if (_playerPatternStats) {
         _playerPatternStats->registerRemoval(placed.pattern);
     }
@@ -361,6 +384,10 @@ void game::PlayerPatternComponent::onMouseButtonPressed(dzemikk::MouseButtonPres
 
 void game::PlayerPatternComponent::handleLeftClick() {
     if (!_interactionEnabled) {
+        return;
+    }
+
+    if (_activePatternIndex < 0 || _patterns[_activePatternIndex].count == 0) {
         return;
     }
 
@@ -489,36 +516,28 @@ void game::PlayerPatternComponent::validateBonusHexPattern(const HexPattern& pat
 }
 
 glm::vec4 game::PlayerPatternComponent::getPatternPreviewColor() const {
-    glm::vec4 color;
+    const bool canPlace = _currentPreviewValid && _activePatternIndex >= 0 &&
+                          _patterns[_activePatternIndex].count > 0;
+
     auto pattern = _patterns[_activePatternIndex].pattern;
 
     switch (pattern.getType()) {
 
     case HexPattern::Type::ATK:
-        color = _currentPreviewValid ? glm::vec4(1.0F, 0.0F, 0.0F, 1.0F)
-                                     : glm::vec4(1.0F, 0.7F, 0.7F, 1.0F);
-        break;
+        return canPlace ? glm::vec4(1.0F, 0.0F, 0.0F, 1.0F) : glm::vec4(1.0F, 0.7F, 0.7F, 1.0F);
 
     case HexPattern::Type::DEF:
-        color = _currentPreviewValid ? glm::vec4(0.0F, 0.0F, 1.0F, 1.0F)
-                                     : glm::vec4(0.7F, 0.7F, 1.0F, 1.0F);
-        break;
+        return canPlace ? glm::vec4(0.0F, 0.0F, 1.0F, 1.0F) : glm::vec4(0.7F, 0.7F, 1.0F, 1.0F);
 
     case HexPattern::Type::HEAL:
-        color = _currentPreviewValid ? glm::vec4(0.0F, 1.0F, 0.0F, 1.0F)
-                                     : glm::vec4(0.7F, 1.0F, 0.7F, 1.0F);
-        break;
+        return canPlace ? glm::vec4(0.0F, 1.0F, 0.0F, 1.0F) : glm::vec4(0.7F, 1.0F, 0.7F, 1.0F);
 
     case HexPattern::Type::BONUSHEX:
-        color = _currentPreviewValid ? glm::vec4(1.0F, 0.84F, 0.0F, 1.0F)
-                                     : glm::vec4(1.0F, 0.84F, 0.7F, 1.0F);
-        break;
-    default:
-        color = glm::vec4(1.0F);
-        break;
-    }
+        return canPlace ? glm::vec4(1.0F, 0.84F, 0.0F, 1.0F) : glm::vec4(1.0F, 0.84F, 0.7F, 1.0F);
 
-    return color;
+    default:
+        return glm::vec4(1.0F);
+    }
 }
 
 void game::PlayerPatternComponent::updatePreviewVisuals(dzemikk::Collider* collider,

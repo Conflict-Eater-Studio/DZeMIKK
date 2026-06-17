@@ -3,16 +3,17 @@
 #include <algorithm>
 #include <ranges>
 
-void game::PatternComponent::addPattern(const HexPattern& pattern, int count) {
-    _patterns.push_back(PatternEntry{.pattern = pattern, .count = count});
+void game::PatternComponent::addPattern(const HexPattern& pattern, int count, int maxCount) {
+    _patterns.push_back(PatternEntry{.pattern = pattern, .count = count, .maxCount = maxCount});
 }
 
-void game::PatternComponent::insertPattern(size_t index, const HexPattern& pattern, int count) {
+void game::PatternComponent::insertPattern(size_t index, const HexPattern& pattern, int count,
+                                           int maxCount) {
     index = std::min(index, _patterns.size());
 
     _patterns.insert(_patterns.begin() +
                          static_cast<std::vector<PatternEntry>::difference_type>(index),
-                     PatternEntry{.pattern = pattern, .count = count});
+                     PatternEntry{.pattern = pattern, .count = count, .maxCount = maxCount});
 }
 
 bool game::PatternComponent::removePattern(size_t index) {
@@ -122,6 +123,39 @@ bool game::PatternComponent::setCount(size_t index, int count) {
     _patterns[index].count = count;
 
     return true;
+}
+
+bool game::PatternComponent::setMaxCount(size_t index, int maxCount) {
+    if (index >= _patterns.size()) {
+        return false;
+    }
+
+    _patterns[index].maxCount = maxCount;
+
+    return true;
+}
+
+int game::PatternComponent::getMaxCount(size_t index) const {
+    if (index >= _patterns.size()) {
+        return 0;
+    }
+
+    return _patterns[index].maxCount;
+}
+
+bool game::PatternComponent::refillPattern(size_t index) {
+    if (index >= _patterns.size()) {
+        return false;
+    }
+
+    _patterns[index].count = _patterns[index].maxCount;
+    return true;
+}
+
+void game::PatternComponent::refillAllPatterns() {
+    for (auto& entry : _patterns) {
+        entry.count = entry.maxCount;
+    }
 }
 
 bool game::PatternComponent::hasPattern(const HexPattern& pattern) const {

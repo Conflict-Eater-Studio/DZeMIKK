@@ -89,6 +89,11 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
 
     void addPatternSlot(const PatternComponent::PatternEntry& entry);
 
+    /**
+     * @brief Refreshes displayed counts.
+     */
+    void refreshCounts();
+
   private:
     /**
      * @brief Creates a UI slot for a pattern.
@@ -99,11 +104,6 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
      * @brief Creates a visual preview of a hex pattern.
      */
     void createPatternPreview(dzemikk::GameObject* parent, const HexPattern& pattern);
-
-    /**
-     * @brief Refreshes displayed counts.
-     */
-    void refreshCounts();
 
     /**
      * @brief Builds a user-friendly pattern name.
