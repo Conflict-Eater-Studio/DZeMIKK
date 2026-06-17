@@ -25,6 +25,7 @@
 #include <ecs/gameobject.h>
 #include <ecs/scene.h>
 #include <enemySystem/enemyPatternComponent.h>
+#include <ecs/components/ui/imageRenderer.h>
 #include <iostream>
 
 #include <assetManager/soundHandler.h>
@@ -105,6 +106,36 @@ void game::CombatState::onEnter() {
 
     _showedPatternMaterial = material->clone();
     _showedPatternMaterial->setAlbedoColor({0.25F, 0.25F, 0.25F});
+
+    auto* enemyAvatarGO = _game->getCurrentScene()
+                              .get()
+                              ->findGameObjectByName("Enemy_Avatar_Panel")
+                              ->findDescendantByName("Avatar");
+    auto enemyAvatarRenderer = enemyAvatarGO->getComponent<dzemikk::ImageRenderer>();
+
+    switch (_currentEnemy->getEnemyPersonality()) { 
+    case EnemyPersonality::Aggressive:
+        enemyAvatarRenderer->setTexture(
+            _game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
+                "textures/ui grafiki/avatary/avatar4.png"));
+        break;
+    case EnemyPersonality::Defensive:
+        enemyAvatarRenderer->setTexture(
+            _game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
+                "textures/ui grafiki/avatary/avatar2.png"));
+        break;
+    case EnemyPersonality::Balanced:
+        enemyAvatarRenderer->setTexture(
+            _game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
+                "textures/ui grafiki/avatary/avatar3.png"));
+        break;
+    default:
+        enemyAvatarRenderer->setTexture(
+            _game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
+                "textures/ui grafiki/avatary/avatar4.png"));
+        break;
+
+    }
 
     startNewTurn();
 }
