@@ -73,9 +73,7 @@ layout(std430, binding = 0) buffer LightBuffer
 
 const float PI = 3.14159265359;
 
-// ======================================================
 // PBR Helpers
-// ======================================================
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -118,10 +116,10 @@ float GeometrySmith(
     float NdotL = max(dot(N, L), 0.0);
 
     float ggx1 =
-        GeometrySchlickGGX(NdotV, roughness);
+        GeometrySchlickGGX(NdotV, roughness); //Visibility for the view direction
 
     float ggx2 =
-        GeometrySchlickGGX(NdotL, roughness);
+        GeometrySchlickGGX(NdotL, roughness); //Visibility for the light direction
 
     return ggx1 * ggx2;
 }
@@ -133,8 +131,6 @@ vec3 FresnelSchlick(float cosTheta, vec3 F0)
         (1.0 - F0) *
         pow(1.0 - cosTheta, 5.0);
 }
-
-// ======================================================
 
 void AccumulateLight(
     vec3 L,
@@ -149,6 +145,7 @@ void AccumulateLight(
 {
     vec3 H = normalize(V + L);
 
+    //Normal Distribution Function
     float NDF =
         DistributionGGX(
             N,
@@ -162,11 +159,13 @@ void AccumulateLight(
             L,
             roughnessValue);
 
+    //Schlick Approximation
     vec3 F =
         FresnelSchlick(
             max(dot(H, V), 0.0),
             F0);
 
+    //Cook-Torrance BRDF
     vec3 numerator =
         NDF * G * F;
 
@@ -268,6 +267,7 @@ void main()
             0.04,
             1.0);
 
+    //Fresnel: What percentage of light will be reflected from the surface at an angle θ?
     vec3 F0 = vec3(0.04);
 
     F0 =
@@ -276,11 +276,8 @@ void main()
             albedo,
             metallicValue);
 
-    vec3 Lo = vec3(0.0);
-
-    // ======================================================
-    // Directional Lights
-    // ======================================================
+    //Light Output
+    vec3 Lo = vec3(0.0); 
 
     for (int i = 0; i < dirLightCount; i++)
     {
@@ -303,10 +300,6 @@ void main()
             F0,
             Lo);
     }
-
-    // ======================================================
-    // Point Lights
-    // ======================================================
 
     for (int i = 0; i < pointLightCount; i++)
     {
@@ -333,10 +326,6 @@ void main()
             F0,
             Lo);
     }
-
-    // ======================================================
-    // Spot Lights
-    // ======================================================
 
     for (int i = 0; i < spotLightCount; i++)
     {
@@ -377,9 +366,8 @@ void main()
             Lo);
     }
 
-    // ======================================================
+
     // Ambient
-    // ======================================================
 
     vec3 ambient =
         vec3(0.03) *
