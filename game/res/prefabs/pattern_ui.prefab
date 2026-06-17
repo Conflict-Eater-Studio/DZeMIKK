@@ -13,7 +13,7 @@
                             0.5,
                             0.5
                         ],
-                        "id": "b3a573e2-d6fc-4dee-adf4-1a5df6ba01bb",
+                        "id": "2c6c4395-76fb-4b4f-8b1d-fed4b3a73d04",
                         "pivot": [
                             0.5,
                             0.5
@@ -42,7 +42,7 @@
                         ],
                         "font": "fonts/Lato-Regular.ttf",
                         "horizontalAlign": 1,
-                        "id": "4c8efa2f-2f11-446c-9e8a-7dfb602821e0",
+                        "id": "2f7a52de-56e6-4519-b9d4-4c429151ba56",
                         "scale": 0.30000001192092896,
                         "text": "atk1",
                         "type": "UITextRenderer",
@@ -50,8 +50,9 @@
                     }
                 ],
                 "enabled": true,
-                "id": "498a4b34-eb7e-4308-8209-c0a8e95c5c8e",
-                "name": "Button_Text"
+                "id": "1b6bcc05-1ee2-4125-bf71-8bbe032f6659",
+                "name": "Button_Text",
+                "tags": []
             },
             {
                 "children": [
@@ -67,7 +68,7 @@
                                     0.5,
                                     0.5
                                 ],
-                                "id": "26acced7-8dba-4489-879e-6fb1543b86a1",
+                                "id": "4c950022-f4a0-4ddb-972c-663b16eb1e90",
                                 "pivot": [
                                     0.5,
                                     0.5
@@ -96,7 +97,7 @@
                                 ],
                                 "font": "fonts/Lato-Regular.ttf",
                                 "horizontalAlign": 1,
-                                "id": "4cbaae98-b17b-45cb-93bf-77d9cc550f74",
+                                "id": "1e003f81-138c-4d78-be83-4d2a3445aed2",
                                 "scale": 0.30000001192092896,
                                 "text": "x-1",
                                 "type": "UITextRenderer",
@@ -104,8 +105,9 @@
                             }
                         ],
                         "enabled": true,
-                        "id": "1a485bc4-3b27-44d1-8914-175f488760c5",
-                        "name": "Text_Count"
+                        "id": "f51d6992-3fff-4cf0-a184-819c075b6680",
+                        "name": "Text_Count",
+                        "tags": []
                     }
                 ],
                 "components": [
@@ -118,7 +120,7 @@
                             0.5,
                             0.5
                         ],
-                        "id": "2ffc92ab-163c-4f0c-887c-32ebccfa480d",
+                        "id": "1815b209-1ea7-43d3-a2a5-2270fb9d0109",
                         "pivot": [
                             0.5,
                             0.5
@@ -146,15 +148,16 @@
                             0.0,
                             0.3137255012989044
                         ],
-                        "id": "76651b76-5399-4510-9aca-db3f0caa756d",
+                        "id": "fc9e9f60-b209-48b6-877a-8e606b65c53f",
                         "materialPath": "shaders/quad",
                         "texture": "",
                         "type": "ImageRenderer"
                     }
                 ],
                 "enabled": true,
-                "id": "9d9455d7-495d-4f8f-8211-aa76dd80ad4f",
-                "name": "Count"
+                "id": "4594421d-8cf3-405f-93cd-c88a7500e9f6",
+                "name": "Count",
+                "tags": []
             },
             {
                 "children": [],
@@ -168,7 +171,7 @@
                             0.5,
                             0.5
                         ],
-                        "id": "7261f0ca-654e-4127-98e1-0c205ad1398d",
+                        "id": "d77c51c1-9ec1-4d9c-b641-f268645f7d6a",
                         "pivot": [
                             0.5,
                             0.5
@@ -187,12 +190,13 @@
                             0.0
                         ],
                         "type": "RectTransform",
-                        "zIndex": 0
+                        "zIndex": 3
                     }
                 ],
                 "enabled": true,
-                "id": "3d3a42ee-f7a9-4da3-874f-dc70de50d079",
-                "name": "HexHolder"
+                "id": "c2864bef-5e7a-4edc-bb7f-de455e00f83c",
+                "name": "HexHolder",
+                "tags": []
             },
             {
                 "children": [],
@@ -206,7 +210,7 @@
                             0.5,
                             0.5
                         ],
-                        "id": "1fb1d7a8-6084-4466-bd7a-38493b9fcad0",
+                        "id": "a41aa612-7401-469a-8dad-953e2052dcf4",
                         "pivot": [
                             0.5,
                             0.5
@@ -225,7 +229,7 @@
                             120.0
                         ],
                         "type": "RectTransform",
-                        "zIndex": 0
+                        "zIndex": 2
                     },
                     {
                         "color": [
@@ -234,15 +238,16 @@
                             0.0,
                             1.0
                         ],
-                        "id": "f595675b-ed6c-4d9c-bf3c-fb731fbea558",
+                        "id": "1f8498d1-f0f0-40c9-a3e5-8ad5446b793e",
                         "materialPath": "shaders/quad",
                         "texture": "textures/ui grafiki/ui patterns/ramka_podpattern.png",
                         "type": "ImageRenderer"
                     }
                 ],
                 "enabled": true,
-                "id": "1fa59bc0-fd1c-47da-9177-dadd35d4d173",
-                "name": "Empty"
+                "id": "02625633-a7cf-4550-a353-eff3c57bfc87",
+                "name": "Empty",
+                "tags": []
             }
         ],
         "components": [
@@ -255,7 +260,7 @@
                     0.5,
                     0.5
                 ],
-                "id": "b7d24cb2-2605-4109-aee0-dddfed88c8c7",
+                "id": "f7f800b1-4bd1-49f5-b356-7e3066ae947f",
                 "pivot": [
                     0.5,
                     0.5
@@ -283,7 +288,7 @@
                     0.0,
                     0.5490196347236633
                 ],
-                "id": "ae834846-e17e-4e56-b583-1343d2c8d0af",
+                "id": "05786696-340e-4e37-a3b5-4a7192b0e767",
                 "normalColor": [
                     1.0,
                     0.0,
@@ -305,14 +310,15 @@
                     0.0,
                     0.5490196347236633
                 ],
-                "id": "e28edcbf-c09c-4ee2-9a94-f919498c7a67",
+                "id": "a1107377-2d01-4249-8bf2-19d8b8a3a87a",
                 "materialPath": "shaders/quad",
                 "texture": "textures/ui grafiki/ui patterns/tlo_podpattern.png",
                 "type": "ImageRenderer"
             }
         ],
         "enabled": true,
-        "id": "2d142965-34af-4d6d-bd0c-bd6371ad32fb",
-        "name": "Pattern_UI"
+        "id": "5b010d67-d7a8-4315-91c8-e4ba3b6f8924",
+        "name": "Pattern_UI",
+        "tags": []
     }
 }

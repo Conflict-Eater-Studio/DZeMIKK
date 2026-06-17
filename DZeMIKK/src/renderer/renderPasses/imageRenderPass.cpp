@@ -27,7 +27,7 @@ void dzemikk::ImageRenderPass::execute(RenderContext& ctx) {
         DZ_PROFILE_GPU("Image Rendering");
         std::ranges::sort(uiSprites, [](ImageRenderer* a, ImageRenderer* b) {
             unsigned int az = a->getOwner()->rectTransform()->getZIndex();
-            unsigned int bz = a->getOwner()->rectTransform()->getZIndex();
+            unsigned int bz = b->getOwner()->rectTransform()->getZIndex();
             return az < bz;
         });
         for (auto* r : uiSprites) {

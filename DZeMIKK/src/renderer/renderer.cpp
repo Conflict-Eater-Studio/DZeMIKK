@@ -87,6 +87,15 @@ void dzemikk::Renderer::render() {
         pass->execute(_context);
     }
 
+    if (_engineMode == EngineMode::Editor) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        for (auto& pass : _uiPasses) {
+            pass->execute(_context);
+        }
+    }
+
     _context.sceneTexture = _sceneFramebuffer->getColorAttachmentRendererID();
 
     _sceneFramebuffer->unbind();
@@ -111,11 +120,13 @@ void dzemikk::Renderer::render() {
 
     glBindVertexArray(0);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    if (_engineMode == EngineMode::Game) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    for (auto& pass : _uiPasses) {
-        pass->execute(_context);
+        for (auto& pass : _uiPasses) {
+            pass->execute(_context);
+        }
     }
 }
 

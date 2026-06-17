@@ -1084,7 +1084,7 @@
                                                 660.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 1
                                         },
                                         {
                                             "color": [
@@ -1135,7 +1135,7 @@
                                                 32.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 2
                                         },
                                         {
                                             "color": [
@@ -1391,7 +1391,7 @@
                                                 660.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 1
                                         },
                                         {
                                             "color": [
@@ -1442,7 +1442,7 @@
                                                 32.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 2
                                         },
                                         {
                                             "color": [
@@ -1549,7 +1549,7 @@
                                                                 80.0
                                                             ],
                                                             "type": "RectTransform",
-                                                            "zIndex": 0
+                                                            "zIndex": 3
                                                         },
                                                         {
                                                             "color": [
@@ -1753,7 +1753,7 @@
                                                                 80.0
                                                             ],
                                                             "type": "RectTransform",
-                                                            "zIndex": 0
+                                                            "zIndex": 3
                                                         },
                                                         {
                                                             "color": [
@@ -1904,7 +1904,7 @@
                                                                 80.0
                                                             ],
                                                             "type": "RectTransform",
-                                                            "zIndex": 0
+                                                            "zIndex": 3
                                                         },
                                                         {
                                                             "color": [
@@ -2109,7 +2109,7 @@
                                                                 35.0
                                                             ],
                                                             "type": "RectTransform",
-                                                            "zIndex": 0
+                                                            "zIndex": 3
                                                         },
                                                         {
                                                             "color": [
@@ -2296,7 +2296,7 @@
                                                 150.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 1
                                         },
                                         {
                                             "color": [
@@ -2508,7 +2508,7 @@
                                                                 30.0
                                                             ],
                                                             "type": "RectTransform",
-                                                            "zIndex": 0
+                                                            "zIndex": 2
                                                         },
                                                         {
                                                             "color": [
@@ -2702,7 +2702,7 @@
                                                 170.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 1
                                         },
                                         {
                                             "color": [
@@ -2755,7 +2755,7 @@
                                                         160.0
                                                     ],
                                                     "type": "RectTransform",
-                                                    "zIndex": 0
+                                                    "zIndex": 3
                                                 },
                                                 {
                                                     "color": [
@@ -2806,7 +2806,7 @@
                                                         180.0
                                                     ],
                                                     "type": "RectTransform",
-                                                    "zIndex": 0
+                                                    "zIndex": 4
                                                 },
                                                 {
                                                     "color": [
@@ -2856,7 +2856,7 @@
                                                 160.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 2
                                         },
                                         {
                                             "color": [
@@ -2907,7 +2907,7 @@
                                                 32.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 1
                                         },
                                         {
                                             "color": [
@@ -3010,7 +3010,7 @@
                                                 110.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 1
                                         },
                                         {
                                             "color": [
@@ -3061,7 +3061,7 @@
                                                 32.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 2
                                         },
                                         {
                                             "color": [
@@ -3217,7 +3217,7 @@
                                                 55.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 1
                                         },
                                         {
                                             "color": [
@@ -3373,7 +3373,7 @@
                                                 55.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 2
                                         },
                                         {
                                             "color": [
@@ -3650,7 +3650,7 @@
                                                         30.0
                                                     ],
                                                     "type": "RectTransform",
-                                                    "zIndex": 0
+                                                    "zIndex": 2
                                                 },
                                                 {
                                                     "color": [
@@ -4208,7 +4208,7 @@
                                         170.0
                                     ],
                                     "type": "RectTransform",
-                                    "zIndex": 0
+                                    "zIndex": 1
                                 },
                                 {
                                     "color": [
@@ -4261,7 +4261,7 @@
                                                 160.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 3
                                         },
                                         {
                                             "color": [
@@ -4312,7 +4312,7 @@
                                                 180.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 0
+                                            "zIndex": 4
                                         },
                                         {
                                             "color": [
@@ -4362,7 +4362,7 @@
                                         160.0
                                     ],
                                     "type": "RectTransform",
-                                    "zIndex": 0
+                                    "zIndex": 2
                                 },
                                 {
                                     "color": [
@@ -4413,7 +4413,7 @@
                                         32.0
                                     ],
                                     "type": "RectTransform",
-                                    "zIndex": 0
+                                    "zIndex": 1
                                 },
                                 {
                                     "color": [

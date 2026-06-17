@@ -13,7 +13,7 @@
                             0.5,
                             0.5
                         ],
-                        "id": "fdc5b12e-9979-4f20-83f9-bdf686af38f3",
+                        "id": "d11b41bb-51e1-4ba7-9768-8d167d933ee9",
                         "pivot": [
                             0.5,
                             0.5
@@ -32,7 +32,7 @@
                             40.0
                         ],
                         "type": "RectTransform",
-                        "zIndex": 0
+                        "zIndex": 4
                     },
                     {
                         "color": [
@@ -41,15 +41,16 @@
                             1.0,
                             1.0
                         ],
-                        "id": "66cf3bd7-51ea-43d4-8583-f278b8f683f5",
+                        "id": "24f8d9da-6fe7-4dc3-835b-037be2ba11db",
                         "materialPath": "shaders/quad",
                         "texture": "textures/ui grafiki/ui patterns/leczenie.png",
                         "type": "ImageRenderer"
                     }
                 ],
                 "enabled": true,
-                "id": "abccc3bd-871d-46af-9975-3dcf706433cd",
-                "name": "Empty"
+                "id": "4661dfc0-e096-43b6-8089-85153b7eb448",
+                "name": "Empty",
+                "tags": []
             }
         ],
         "components": [
@@ -62,7 +63,7 @@
                     0.5,
                     0.5
                 ],
-                "id": "b425db2e-9e33-441c-8da4-981066006616",
+                "id": "3e839faf-1ecf-4cce-8cbc-fdcfba53014d",
                 "pivot": [
                     0.5,
                     0.5
@@ -81,7 +82,7 @@
                     30.0
                 ],
                 "type": "RectTransform",
-                "zIndex": 0
+                "zIndex": 3
             },
             {
                 "color": [
@@ -90,14 +91,15 @@
                     0.0,
                     1.0
                 ],
-                "id": "83c1971a-e9dd-461a-8a39-afb44aae22aa",
+                "id": "4fa1e638-a1ef-4fdf-be32-937e074419ab",
                 "materialPath": "shaders/quad",
                 "texture": "textures/hex.png",
                 "type": "ImageRenderer"
             }
         ],
         "enabled": true,
-        "id": "a81807eb-f1aa-4d3d-9804-fd3bf40f40a1",
-        "name": "Hex_UI"
+        "id": "26c02120-e142-4da7-8f6b-999836c8e774",
+        "name": "Hex_UI",
+        "tags": []
     }
 }
