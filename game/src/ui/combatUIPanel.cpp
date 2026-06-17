@@ -24,7 +24,7 @@ void game::CombatUIPanel::start() {
 
 void game::CombatUIPanel::update(double deltaTime) {}
 
-void game::CombatUIPanel::refresh() {
+void game::CombatUIPanel::refresh(bool enableChildren) {
     clear();
 
     if (!_patterns) {
@@ -33,6 +33,12 @@ void game::CombatUIPanel::refresh() {
 
     buildUI();
     refreshCounts();
+
+    for (auto* child : getOwner()->getChildren()) {
+        if (enableChildren) {
+            child->enabled(true);
+        }
+    }
 }
 
 void game::CombatUIPanel::clear() {
@@ -54,10 +60,21 @@ void game::CombatUIPanel::buildUI() {
         return;
     }
 
-    const auto& patterns = _patterns->getPatterns();
+    if (_hideEmptyPatterns) {
 
-    for (size_t i = 0; i < patterns.size(); ++i) {
-        createPatternSlot(patterns[i], i);
+        const auto indices = getAvailablePatternIndices();
+
+        for (size_t patternIndex : indices) {
+            createPatternSlot(_patterns->getPatterns()[patternIndex], patternIndex);
+        }
+
+    } else {
+
+        const auto& patterns = _patterns->getPatterns();
+
+        for (size_t i = 0; i < patterns.size(); ++i) {
+            createPatternSlot(patterns[i], i);
+        }
     }
 
     auto* grid = _patternsContainer->getComponent<dzemikk::GridLayout>();
@@ -159,13 +176,17 @@ void game::CombatUIPanel::refreshCounts() {
 
         const auto& patternEntry = _patterns->getPatterns()[entry.patternIndex];
         int32_t count = getPatternCount(patternEntry);
-        entry.countText->text = std::to_string(count);
+        entry.countText->text = "0/" + std::to_string(count);
 
         if (_mode == Mode::AvailablePatterns) {
             int32_t maxCount = patternEntry.maxCount;
             entry.countText->text = std::to_string(count) + "/" + std::to_string(maxCount);
         }
     }
+}
+
+void game::CombatUIPanel::setHideEmptyPatterns(bool value) {
+    _hideEmptyPatterns = value;
 }
 
 std::string game::CombatUIPanel::buildPatternName(const HexPattern& pattern) {
@@ -304,7 +325,7 @@ void game::CombatUIPanel::refreshVisuals() {
         }
 
         if (ui.countText) {
-            ui.countText->text = std::to_string(count);
+            ui.countText->text = "0/" + std::to_string(count);
         }
     }
 }
@@ -414,6 +435,18 @@ void game::CombatUIPanel::setupCountText(dzemikk::GameObject* countRoot, uint32_
         text->text = std::to_string(usageCount);
         uiEntry.countText = text;
     }
+}
+
+std::vector<size_t> game::CombatUIPanel::getAvailablePatternIndices() const {
+    std::vector<size_t> result;
+
+    for (size_t i = 0; i < _patterns->getPatterns().size(); ++i) {
+        if (getPatternCount(*_patterns->getPattern(i)) > 0) {
+            result.push_back(i);
+        }
+    }
+
+    return result;
 }
 
 void game::CombatUIPanel::addPatternSlot(const PatternComponent::PatternEntry& entry) {

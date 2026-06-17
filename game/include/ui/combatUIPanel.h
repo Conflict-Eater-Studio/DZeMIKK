@@ -56,7 +56,7 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
     /**
      * @brief Rebuilds the panel contents.
      */
-    void refresh();
+    void refresh(bool enableChildren = false);
 
     /**
      * @brief Removes all generated UI entries.
@@ -93,6 +93,8 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
      * @brief Refreshes displayed counts.
      */
     void refreshCounts();
+
+    void setHideEmptyPatterns(bool value);
 
   private:
     /**
@@ -192,6 +194,8 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
     static void setupCountText(dzemikk::GameObject* countRoot, uint32_t usageCount,
                                PatternUIEntry& uiEntry);
 
+    [[nodiscard]] std::vector<size_t> getAvailablePatternIndices() const;
+
     /** Source of pattern data. */
     PatternComponent* _patterns = nullptr;
 
@@ -218,6 +222,8 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
 
     /** Whether pattern buttons can be interacted with. */
     bool _isClickable = false;
+
+    bool _hideEmptyPatterns = false;
 };
 
 } // namespace game

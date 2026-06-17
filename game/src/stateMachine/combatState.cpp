@@ -271,6 +271,8 @@ void game::CombatState::startNewTurn() {
         planner.planTurn(_game, _currentEnemy, patternComponent, _game->getHexGrid(), 0.75F,
                          _playerPatternComponent->getPlayerPatternStatsComponent());
 
+    const auto& usage = patternComponent->getPatternUsage();
+
     std::unordered_set<HexCell*> usedCells;
 
     for (const auto& pattern : _plannedPatterns) {
@@ -306,7 +308,7 @@ void game::CombatState::startNewTurn() {
 
     auto* enemyPanel = _game->getCurrentScene().get()->findGameObjectByName("Enemy_Panel");
     auto* enemyPanelUI = enemyPanel->getComponent<CombatUIPanel>();
-    enemyPanelUI->refreshVisuals();
+    enemyPanelUI->refresh(true);
     
     _playerPatternComponent->refillAllPatterns();
 
