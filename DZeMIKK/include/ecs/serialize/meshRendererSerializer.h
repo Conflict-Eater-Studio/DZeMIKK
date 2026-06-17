@@ -3,13 +3,13 @@
 #define DZEMIKK_MESHRENDERERSERIALIZER_H
 
 #include "ecs/components/meshRenderer.h"
+#include "ecs/components/transform.h"
 #include "ecs/gameobject.h"
 #include "ecs/serialize/componentSerializerRegistry.h"
 #include "ecs/serialize/uuid.h"
-#include "ecs/components/transform.h"
+#include "renderer/material.h"
 #include "renderer/model.h"
 #include "renderer/shader.h"
-#include "renderer/material.h"
 
 #include <nlohmann/json.hpp>
 
@@ -26,30 +26,68 @@ void to_json(nlohmann::json& json, const MeshRenderer& meshRenderer) {
     const auto& materials = meshRenderer.getMaterials();
 
     for (const std::shared_ptr<Material> material : materials) {
-        if (material != nullptr) {
-            const auto& shader = material->getShaderHandle();
-            if (shader.get() != nullptr) {
-                json["materials"].push_back(shader.getAssetPath());
-            } else {
-                json["materials"].push_back("");
-            }
-        } else {
-            json["materials"].push_back("");
+        if (!material) {
+            json["materials"].push_back(nullptr);
+            continue;
         }
-    }
 
-    const auto& color = meshRenderer.getColor();
-    json["color"] = { color.r, color.g, color.b, color.a };
+        nlohmann::json matJson;
+
+        const auto& shader = material->getShaderHandle();
+        matJson["shader"] = shader.get() ? shader.getAssetPath() : "";
+
+        matJson["textures"]["albedo"] = material->getAlbedoTextureHandle().get()
+                                            ? material->getAlbedoTextureHandle().getAssetPath()
+                                            : "";
+
+        matJson["textures"]["normal"] = material->getNormalTextureHandle().get()
+                                            ? material->getNormalTextureHandle().getAssetPath()
+                                            : "";
+
+        matJson["textures"]["metallic"] = material->getMetallicTextureHandle().get()
+                                              ? material->getMetallicTextureHandle().getAssetPath()
+                                              : "";
+
+        matJson["textures"]["roughness"] =
+            material->getRoughnessTextureHandle().get()
+                ? material->getRoughnessTextureHandle().getAssetPath()
+                : "";
+
+        matJson["textures"]["ao"] = material->getAOTextureHandle().get()
+                                        ? material->getAOTextureHandle().getAssetPath()
+                                        : "";
+
+        matJson["textures"]["emissive"] = material->getEmissiveTextureHandle().get()
+                                              ? material->getEmissiveTextureHandle().getAssetPath()
+                                              : "";
+
+        matJson["pbr"]["albedo"] = {material->getAlbedoColor().r, material->getAlbedoColor().g,
+                                    material->getAlbedoColor().b};
+
+        matJson["pbr"]["metallic"] = material->getMetallic();
+        matJson["pbr"]["roughness"] = material->getRoughness();
+        matJson["pbr"]["ao"] = material->getAO();
+
+        matJson["pbr"]["emissive"] = {material->getEmissiveColor().r,
+                                      material->getEmissiveColor().g,
+                                      material->getEmissiveColor().b};
+        matJson["pbr"]["emissiveStrength"] = material->getEmissiveStrength();
+
+        json["materials"].push_back(matJson);
+    }
 }
 
-inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, AssetManager* assetManager) {
+inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer,
+                      AssetManager* assetManager) {
     static boost::uuids::string_generator uuidGenerator;
 
-    if (!json.contains("type") || !json["type"].is_string() || json["type"] != meshRenderer.typeName()) {
+    if (!json.contains("type") || !json["type"].is_string() ||
+        json["type"] != meshRenderer.typeName()) {
         throw std::runtime_error("Invalid component type for MeshRenderer deserialization");
     }
 
-    if (!json.contains("id") || !json.contains("model") || !json.contains("color") || !json.contains("materials") || !json["materials"].is_array()) {
+    if (!json.contains("id") || !json.contains("model") ||
+        !json.contains("materials") || !json["materials"].is_array()) {
         throw std::runtime_error("Missing fields for MeshRenderer deserialization");
     }
 
@@ -78,35 +116,63 @@ inline void from_json(const nlohmann::json& json, MeshRenderer& meshRenderer, As
         }
     }
 
-    if (json.contains("color") && json["color"].is_array() && json["color"].size() >= 4) {
-        const auto& c = json["color"];
-        meshRenderer.setColor(glm::vec4(
-            c[0].get<float>(),
-            c[1].get<float>(),
-            c[2].get<float>(),
-            c[3].get<float>()
-        ));
-    }
-
     if (json.contains("materials") && json["materials"].is_array()) {
 
-        const auto& materialsJson = json["materials"];
+        const auto& arr = json["materials"];
 
-        for (size_t i = 0; i < materialsJson.size(); i++) {
+        for (size_t i = 0; i < arr.size(); i++) {
 
-            if (materialsJson[i].is_string()) {
-
-                std::string shaderPath = materialsJson[i].get<std::string>();
-
-                if (!shaderPath.empty()) {
-
-                    auto material = std::make_shared<Material>();
-
-                    material->setShader(assetManager->get<Shader>(shaderPath));
-
-                    meshRenderer.setMaterial(i, material);
-                }
+            if (!arr[i].is_object()) {
+                continue;
             }
+
+            const auto& matJson = arr[i];
+
+            auto material = std::make_shared<Material>();
+
+            std::string shaderPath = matJson.value("shader", "");
+            if (!shaderPath.empty()) {
+                material->setShader(assetManager->get<Shader>(shaderPath));
+            }
+
+            auto loadTex = [&](const char* key) -> AssetHandle<Texture> {
+                std::string path = matJson["textures"].value(key, "");
+                if (!path.empty()) {
+                    return assetManager->get<Texture>(path);
+                }
+                return {};
+            };
+
+            material->setAlbedoTexture(loadTex("albedo"));
+            material->setNormalTexture(loadTex("normal"));
+            material->setMetallicTexture(loadTex("metallic"));
+            material->setRoughnessTexture(loadTex("roughness"));
+            material->setAOTexture(loadTex("ao"));
+            material->setEmissiveTexture(loadTex("emissive"));
+
+            if (matJson.contains("pbr")) {
+                const auto& pbr = matJson["pbr"];
+
+                auto col = pbr.value("albedo", std::vector<float>{1, 1, 1});
+                if (col.size() == 3) {
+                    material->setAlbedoColor(glm::vec3(col[0], col[1], col[2]));
+                }
+
+                material->setMetallic(pbr.value("metallic", 0.0f));
+                material->setRoughness(pbr.value("roughness", 0.5f));
+                material->setAO(pbr.value("ao", 1.0f));
+
+                col = pbr.value("emissive", std::vector<float>{1, 1, 1});
+                if (col.size() == 3) {
+                    material->setEmissiveColor(glm::vec3(col[0], col[1], col[2]));
+                } else {
+                    material->setEmissiveColor({0.0F, 0.0F, 0.0F});
+                }
+
+                material->setEmissiveStrength(pbr.value("emissiveStrength", 1.0f));
+            }
+
+            meshRenderer.setMaterial(i, material);
         }
     }
 
@@ -130,5 +196,5 @@ inline void registerMeshRendererSerializer(ComponentSerializerRegistry& registry
             from_json(context.json, *meshRenderer, context.assetManager);
         });
 }
-}
+} // namespace dzemikk
 #endif

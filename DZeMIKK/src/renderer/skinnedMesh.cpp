@@ -34,15 +34,23 @@ void dzemikk::SkinnedMesh::create(const std::vector<SkinnedVertex>& vertices,
                            ATTR_OFFSET(offsetof(SkinnedVertex, uv)));
     glEnableVertexAttribArray(2);
 
-    // bone IDs
-    glVertexAttribIPointer(3, 4, GL_INT, sizeof(SkinnedVertex),
-                            ATTR_OFFSET(offsetof(SkinnedVertex, boneIDs)));
     glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
+                          (void*)offsetof(SkinnedVertex, tangent));
+
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
+                          (void*)offsetof(SkinnedVertex, bitangent));
+
+    // bone IDs
+    glVertexAttribIPointer(5, 4, GL_INT, sizeof(SkinnedVertex),
+                            ATTR_OFFSET(offsetof(SkinnedVertex, boneIDs)));
+    glEnableVertexAttribArray(5);
 
     // weights
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
                            ATTR_OFFSET(offsetof(SkinnedVertex, weights)));
-    glEnableVertexAttribArray(4);
+    glEnableVertexAttribArray(6);
 
     glBindVertexArray(0);
 
@@ -89,15 +97,23 @@ void dzemikk::SkinnedMesh::recreate(const std::vector<SkinnedVertex>& vertices,
                           ATTR_OFFSET(offsetof(SkinnedVertex, uv)));
     glEnableVertexAttribArray(2);
 
-    // bone IDs
-    glVertexAttribIPointer(3, 4, GL_INT, sizeof(SkinnedVertex),
-                           ATTR_OFFSET(offsetof(SkinnedVertex, boneIDs)));
     glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
+                          (void*)offsetof(SkinnedVertex, tangent));
+
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
+                          (void*)offsetof(SkinnedVertex, bitangent));
+
+    // bone IDs
+    glVertexAttribIPointer(5, 4, GL_INT, sizeof(SkinnedVertex),
+                           ATTR_OFFSET(offsetof(SkinnedVertex, boneIDs)));
+    glEnableVertexAttribArray(5);
 
     // weights
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(SkinnedVertex),
                           ATTR_OFFSET(offsetof(SkinnedVertex, weights)));
-    glEnableVertexAttribArray(4);
+    glEnableVertexAttribArray(6);
 
     glBindVertexArray(0);
 

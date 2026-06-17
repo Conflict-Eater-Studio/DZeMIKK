@@ -133,25 +133,7 @@ class MeshRenderer : public Component {
         _transform = transform;
     }
 
-    /**
-     * @brief Sets the color multiplier for the mesh.
-     *
-     * @param color The RGBA color vector.
-     */
-    void setColor(const glm::vec4& color) {
-        _color = color;
-    }
-
     void setCullingRadius(float cullingRadius);
-
-    /**
-     * @brief Returns the color multiplier.
-     *
-     * @return const glm::vec4& The color.
-     */
-    [[nodiscard]] const glm::vec4& getColor() const {
-        return _color;
-    }
 
 #pragma endregion
 
@@ -198,7 +180,6 @@ class MeshRenderer : public Component {
     AssetHandle<Model> _model;
     std::vector<std::shared_ptr<Material>> _materials;
     Transform* _transform = nullptr;
-    glm::vec4 _color = glm::vec4(1.0f);
 
     float _cullingRadius = 1.0F;
 

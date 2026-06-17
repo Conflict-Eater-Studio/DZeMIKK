@@ -3,7 +3,7 @@
         "children": [],
         "components": [
             {
-                "id": "341d0d44-8f9d-493d-8c4e-b38e0b494822",
+                "id": "8f017b67-7691-46a8-b02a-06ead2ecfdeb",
                 "position": [
                     0.0,
                     0.0,
@@ -23,22 +23,43 @@
                 "type": "Transform"
             },
             {
-                "color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "id": "2944d72f-c89b-4705-8318-fdd419302e55",
+                "id": "3f2990a3-9cf4-4e3f-9421-e1a11e25477b",
                 "materials": [
-                    "shaders/tile1"
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "",
+                            "normal": "",
+                            "roughness": ""
+                        }
+                    }
                 ],
                 "model": "models/totem/totem6.fbx",
                 "type": "MeshRenderer"
             }
         ],
         "enabled": true,
-        "id": "8a320b6c-2d2f-495b-8635-76d7087b7037",
-        "name": "Totem6"
+        "id": "a8ba9166-50a1-4271-819d-049f2fb8c47f",
+        "name": "Totem6",
+        "tags": []
     }
 }

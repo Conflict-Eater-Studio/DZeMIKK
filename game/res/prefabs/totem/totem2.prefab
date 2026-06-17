@@ -3,7 +3,7 @@
         "children": [],
         "components": [
             {
-                "id": "746cbdf4-d155-452e-954b-234e0496c848",
+                "id": "d98d5765-4184-4c3c-8c78-25100783cac9",
                 "position": [
                     0.0,
                     0.0,
@@ -23,22 +23,43 @@
                 "type": "Transform"
             },
             {
-                "color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "id": "3d791c54-7bc9-4e34-844c-5c363c7394ae",
+                "id": "2e2f7c91-cbfd-4c42-b51e-5632a9f32273",
                 "materials": [
-                    "shaders/tile1"
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "",
+                            "normal": "",
+                            "roughness": ""
+                        }
+                    }
                 ],
                 "model": "models/totem/totem2.fbx",
                 "type": "MeshRenderer"
             }
         ],
         "enabled": true,
-        "id": "55914678-66ad-4b0d-ae76-0f7f87c30ad7",
-        "name": "Totem2"
+        "id": "342bb5fd-bb98-40f3-9fe4-82d7c086b36f",
+        "name": "Totem2",
+        "tags": []
     }
 }

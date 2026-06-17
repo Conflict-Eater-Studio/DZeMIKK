@@ -106,6 +106,14 @@ namespace dzemikk {
 
         void recompile(const char* vertSrc, const char* fragSrc);
 
+        bool operator==(const Shader& other) const {
+            return _program == other._program;
+        }
+
+        bool operator!=(const Shader& other) const {
+            return !(*this == other);
+        }
+
     private:
         #pragma region Internal state
 

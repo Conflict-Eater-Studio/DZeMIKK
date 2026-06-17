@@ -25,9 +25,9 @@ class LightSystem {
     std::vector<PointLight*> _pointComponents;
     std::vector<SpotLight*> _spotComponents;
 
-    static constexpr int MAX_DIR_LIGHTS = 8;
-    static constexpr int MAX_POINT_LIGHTS = 50;
-    static constexpr int MAX_SPOT_LIGHTS = 8;
+    static constexpr int MAX_DIR_LIGHTS = 200;
+    static constexpr int MAX_POINT_LIGHTS = 300;
+    static constexpr int MAX_SPOT_LIGHTS = 200;
 
     const GPUDirectionalLight* dirData() const {
         return _dir.data();

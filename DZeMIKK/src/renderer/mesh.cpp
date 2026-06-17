@@ -59,10 +59,10 @@ void dzemikk::Mesh::drawInstanced(const std::vector<glm::mat4>& models, GLuint i
                  models.data(), GL_DYNAMIC_DRAW);
 
     for (int i = 0; i < 4; i++) {
-        glVertexAttribPointer(3 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
+        glVertexAttribPointer(5 + i, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4),
                               BUFFER_OFFSET(sizeof(glm::vec4) * i));
-        glEnableVertexAttribArray(3 + i);
-        glVertexAttribDivisor(3 + i, 1);
+        glEnableVertexAttribArray(5 + i);
+        glVertexAttribDivisor(5 + i, 1);
     }
 
     if (_useIndices) {

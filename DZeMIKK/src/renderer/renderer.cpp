@@ -27,6 +27,7 @@
 
 void dzemikk::Renderer::initialize() {
     _sceneFramebuffer = std::make_unique<Framebuffer>(_viewportWidth, _viewportHeight);
+    _lightSSBO.init();
 
     _context = RenderContext(_cameraSystem.getActiveSceneCamera(),
                              _cameraSystem.getActiveUICamera(), glm::mat4(1.0f),
@@ -37,9 +38,10 @@ void dzemikk::Renderer::initialize() {
     addPass<MeshRenderPass>();
     addPass<SkinnedRenderPass>();
     addPass<SpriteRenderPass>();
-    addPass<ImageRenderPass>();
-    addPass<TextRenderPass>();
-    addPass<UITextRenderPass>();
+
+    addUIPass<ImageRenderPass>();
+    addUIPass<TextRenderPass>();
+    addUIPass<UITextRenderPass>();
 
     glGenBuffers(1, &_uboMatrices);
 
@@ -65,10 +67,13 @@ void dzemikk::Renderer::uninitialize() {
         glDeleteBuffers(1, &_uboMatrices);
         _uboMatrices = 0;
     }
+
+    _lightSSBO.destroy();
 }
 
 void dzemikk::Renderer::render() {
     _lightSystem.update(_context);
+    _lightSSBO.upload(_lightSystem);
 
     _sceneFramebuffer->bind();
     glViewport(0, 0, _viewportWidth, _viewportHeight);
@@ -78,8 +83,9 @@ void dzemikk::Renderer::render() {
     _context.sceneCamera = _cameraSystem.getActiveSceneCamera();
     _context.uiCamera = _cameraSystem.getActiveUICamera();
 
-    for (auto& pass : _passes)
+    for (auto& pass : _passes) {
         pass->execute(_context);
+    }
 
     _context.sceneTexture = _sceneFramebuffer->getColorAttachmentRendererID();
 
@@ -87,9 +93,11 @@ void dzemikk::Renderer::render() {
 
     _postProcessingPass.execute(_context);
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glViewport(0, 0, _viewportWidth, _viewportHeight);
+
+    glDisable(GL_DEPTH_TEST);
 
     _presentShader.get()->bind();
 
@@ -102,6 +110,13 @@ void dzemikk::Renderer::render() {
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     glBindVertexArray(0);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    for (auto& pass : _uiPasses) {
+        pass->execute(_context);
+    }
 }
 
 void dzemikk::Renderer::setSkybox(AssetHandle<Skybox> skybox) {

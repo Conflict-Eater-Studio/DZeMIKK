@@ -23,6 +23,7 @@ add_library(DZeMIKK STATIC
         src/ecs/components/fxaaPostProcessEffect.cpp
         include/ecs/components/outlinePostProcessEffect.h
         src/ecs/components/outlinePostProcessEffect.cpp)
+
 set(ENGINE_SOURCES
         "${SRC_DIR}/core/engine.cpp"
         "${SRC_DIR}/core/window.cpp"
@@ -44,6 +45,8 @@ set(ENGINE_SOURCES
      "${SRC_DIR}/renderer/model.cpp"
         "${SRC_DIR}/renderer/cameraSystem.cpp"
         "${SRC_DIR}/renderer/framebuffer.cpp"
+        "${SRC_DIR}/renderer/lightSystem.cpp"
+        "${SRC_DIR}/renderer/lightSSBO.cpp"
         "${SRC_DIR}/renderer/renderPasses/imageRenderPass.cpp"
         "${SRC_DIR}/renderer/renderPasses/IRenderPass.cpp"
         "${SRC_DIR}/renderer/renderPasses/meshRenderPass.cpp"
@@ -63,6 +66,7 @@ set(ENGINE_SOURCES
         "${SRC_DIR}/ecs/components/textRenderer.cpp"
         "${SRC_DIR}/ecs/components/postProcessEffect.cpp"
         "${SRC_DIR}/ecs/components/colorGradingEffect.cpp"
+        "${SRC_DIR}/ecs/components/antiAliasingEffect.cpp"
         "${SRC_DIR}/ecs/gameobject.cpp"
         "${SRC_DIR}/ecs/scene.cpp"
         "${SRC_DIR}/scene/octree.cpp"
@@ -154,6 +158,8 @@ set(ENGINE_HEADERS
         "${INC_DIR}/renderer/renderPasses/uITextRenderPass.h"
         "${INC_DIR}/renderer/renderPasses/postProcessRenderPass.h"
         "${INC_DIR}/renderer/lightUtils.h"
+        "${INC_DIR}/renderer/lightSystem.h"
+        "${INC_DIR}/renderer/.h"
         "${INC_DIR}/ecs/components/monobehaviour.h"
         "${INC_DIR}/ecs/components/transform.h"
      "${INC_DIR}/ecs/components/meshRenderer.h"
@@ -161,8 +167,9 @@ set(ENGINE_HEADERS
      "${INC_DIR}/ecs/components/skinnedMeshRenderer.h"
      "${INC_DIR}/ecs/components/spriteRenderer.h"
      "${INC_DIR}/ecs/components/textRenderer.h"
-     "${INC_DIR}/ecs/components/postProcessEffect.h"
-     "${INC_DIR}/ecs/components/colorGradingEffect.h"
+      "${INC_DIR}/ecs/components/postProcessEffect.h"
+      "${INC_DIR}/ecs/components/colorGradingEffect.h"
+      "${INC_DIR}/ecs/components/antiAliasingEffect.h"
         "${INC_DIR}/ecs/components/camera.h"
         "${INC_DIR}/ecs/component.h"
         "${INC_DIR}/ecs/gameobject.h"

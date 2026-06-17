@@ -5,6 +5,7 @@
 #include "stateMachine/combatTypes.h"
 #include "stateMachine/iGameState.h"
 
+#include <renderer/material.h>
 #include <vector>
 
 class Game;
@@ -158,6 +159,11 @@ class CombatState : public IGameState {
 
     std::vector<AnimatedHex> _hiddenHexes;
 
+    std::unordered_map<HexPattern::Type, std::shared_ptr<dzemikk::Material>> _hexMaterials;
+    std::shared_ptr<dzemikk::Material> _enemyBattleHexMaterial;
+    std::shared_ptr<dzemikk::Material> _emptyEnemyBattleHexMaterial;
+    std::shared_ptr<dzemikk::Material> _showedPatternMaterial;
+
     /**
      * @brief Starts a new combat turn.
      */
@@ -168,14 +174,7 @@ class CombatState : public IGameState {
      */
     void endPlayerTurn();
 
-    /**
-     * @brief Returns the display color associated with a pattern type.
-     *
-     * @param type Pattern type.
-     *
-     * @return glm::vec4 Color used for visualization.
-     */
-    static glm::vec4 getPatternColor(HexPattern::Type type);
+    std::shared_ptr<dzemikk::Material> getPatternMaterial(HexPattern::Type type);
 
     /**
      * @brief Displays the enemy's planned pattern placements.

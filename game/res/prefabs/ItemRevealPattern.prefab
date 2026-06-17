@@ -3,42 +3,62 @@
         "children": [],
         "components": [
             {
-                "id": "61c2daf4-95a9-4a88-a482-9d6c2cd6c420",
+                "id": "e54d52f5-d04c-444b-8190-aee7dbca4401",
                 "position": [
                     0.0,
                     0.0,
                     0.0
                 ],
                 "rotation": [
-                    0.7071067690849304,
-                    -0.7071067690849304,
-                    0.0,
-                    0.0
+                    0.7048690915107727,
+                    -0.06168850511312485,
+                    0.7039591073989868,
+                    0.06160891801118851
                 ],
                 "scale": [
-                    10.0,
-                    10.0,
-                    10.0
+                    4.0,
+                    4.0,
+                    4.0
                 ],
                 "type": "Transform"
             },
             {
-                "color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "id": "0578494f-2611-4571-a88f-a3f92d5818df",
+                "id": "77013e18-e163-448d-83bc-69feedccdd6b",
                 "materials": [
-                    "shaders/tile1"
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "textures/assets/obsydian_BaseColor.png",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "",
+                            "normal": "",
+                            "roughness": ""
+                        }
+                    }
                 ],
                 "model": "models/krysztal_v1.fbx",
                 "type": "MeshRenderer"
             }
         ],
         "enabled": true,
-        "id": "0439fd63-9b54-468d-b20c-4a8154d8559c",
+        "id": "bd9d9779-1cd1-4769-bd94-93115048141e",
         "name": "ItemRevealPattern",
         "tags": []
     }

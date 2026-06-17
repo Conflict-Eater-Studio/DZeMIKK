@@ -7,63 +7,83 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCube() {
     std::vector<StaticVertex> vertices;
     vertices.reserve(36);
 
-    auto add = [&](glm::vec3 pos, glm::vec3 normal, glm::vec2 uv) {
-        vertices.push_back(StaticVertex(pos, normal, uv));
-    };
+    auto add = [&](glm::vec3 pos, glm::vec3 normal, glm::vec2 uv, glm::vec3 tangent,
+                       glm::vec3 bitangent) {
+            StaticVertex v(pos, normal, uv, tangent, bitangent);
+            vertices.push_back(v);
+        };
 
     // --- Front (+Z)
-    add({-0.5F, -0.5F, 0.5F}, {0, 0, 1}, {0, 0});
-    add({0.5F, -0.5F, 0.5F}, {0, 0, 1}, {1, 0});
-    add({0.5F, 0.5F, 0.5F}, {0, 0, 1}, {1, 1});
+    glm::vec3 T(1, 0, 0);
+    glm::vec3 B(0, 1, 0);
 
-    add({0.5F, 0.5F, 0.5F}, {0, 0, 1}, {1, 1});
-    add({-0.5F, 0.5F, 0.5F}, {0, 0, 1}, {0, 1});
-    add({-0.5F, -0.5F, 0.5F}, {0, 0, 1}, {0, 0});
+    add({-0.5F, -0.5F, 0.5F}, {0, 0, 1}, {0, 0}, T, B);
+    add({0.5F, -0.5F, 0.5F}, {0, 0, 1}, {1, 0}, T, B);
+    add({0.5F, 0.5F, 0.5F}, {0, 0, 1}, {1, 1}, T, B);
+
+    add({0.5F, 0.5F, 0.5F}, {0, 0, 1}, {1, 1}, T, B);
+    add({-0.5F, 0.5F, 0.5F}, {0, 0, 1}, {0, 1}, T, B);
+    add({-0.5F, -0.5F, 0.5F}, {0, 0, 1}, {0, 0}, T, B);
 
     // --- Back (-Z)
-    add({-0.5F, -0.5F, -0.5F}, {0, 0, -1}, {1, 0});
-    add({0.5F, 0.5F, -0.5F}, {0, 0, -1}, {0, 1});
-    add({0.5F, -0.5F, -0.5F}, {0, 0, -1}, {0, 0});
+    T = glm::vec3(-1, 0, 0);
+    B = glm::vec3(0, 1, 0);
 
-    add({0.5F, 0.5F, -0.5F}, {0, 0, -1}, {0, 1});
-    add({-0.5F, -0.5F, -0.5F}, {0, 0, -1}, {1, 0});
-    add({-0.5F, 0.5F, -0.5F}, {0, 0, -1}, {1, 1});
+    add({-0.5F, -0.5F, -0.5F}, {0, 0, -1}, {1, 0}, T, B);
+    add({0.5F, 0.5F, -0.5F}, {0, 0, -1}, {0, 1}, T, B);
+    add({0.5F, -0.5F, -0.5F}, {0, 0, -1}, {0, 0}, T, B);
+
+    add({0.5F, 0.5F, -0.5F}, {0, 0, -1}, {0, 1}, T, B);
+    add({-0.5F, -0.5F, -0.5F}, {0, 0, -1}, {1, 0}, T, B);
+    add({-0.5F, 0.5F, -0.5F}, {0, 0, -1}, {1, 1}, T, B);
 
     // --- Left (-X)
-    add({-0.5F, -0.5F, -0.5F}, {-1, 0, 0}, {0, 0});
-    add({-0.5F, -0.5F, 0.5F}, {-1, 0, 0}, {1, 0});
-    add({-0.5F, 0.5F, 0.5F}, {-1, 0, 0}, {1, 1});
+    T = glm::vec3(0, 0, 1);
+    B = glm::vec3(0, 1, 0);
 
-    add({-0.5F, 0.5F, 0.5F}, {-1, 0, 0}, {1, 1});
-    add({-0.5F, 0.5F, -0.5F}, {-1, 0, 0}, {0, 1});
-    add({-0.5F, -0.5F, -0.5F}, {-1, 0, 0}, {0, 0});
+    add({-0.5F, -0.5F, -0.5F}, {-1, 0, 0}, {0, 0}, T, B);
+    add({-0.5F, -0.5F, 0.5F}, {-1, 0, 0}, {1, 0}, T, B);
+    add({-0.5F, 0.5F, 0.5F}, {-1, 0, 0}, {1, 1}, T, B);
+
+    add({-0.5F, 0.5F, 0.5F}, {-1, 0, 0}, {1, 1}, T, B);
+    add({-0.5F, 0.5F, -0.5F}, {-1, 0, 0}, {0, 1}, T, B);
+    add({-0.5F, -0.5F, -0.5F}, {-1, 0, 0}, {0, 0}, T, B);
 
     // --- Right (+X)
-    add({0.5F, -0.5F, -0.5F}, {1, 0, 0}, {1, 0});
-    add({0.5F, 0.5F, 0.5F}, {1, 0, 0}, {0, 1});
-    add({0.5F, -0.5F, 0.5F}, {1, 0, 0}, {0, 0});
+    T = glm::vec3(0, 0, -1);
+    B = glm::vec3(0, 1, 0);
 
-    add({0.5F, 0.5F, 0.5F}, {1, 0, 0}, {0, 1});
-    add({0.5F, -0.5F, -0.5F}, {1, 0, 0}, {1, 0});
-    add({0.5F, 0.5F, -0.5F}, {1, 0, 0}, {1, 1});
+    add({0.5F, -0.5F, -0.5F}, {1, 0, 0}, {1, 0}, T, B);
+    add({0.5F, 0.5F, 0.5F}, {1, 0, 0}, {0, 1}, T, B);
+    add({0.5F, -0.5F, 0.5F}, {1, 0, 0}, {0, 0}, T, B);
+
+    add({0.5F, 0.5F, 0.5F}, {1, 0, 0}, {0, 1}, T, B);
+    add({0.5F, -0.5F, -0.5F}, {1, 0, 0}, {1, 0}, T, B);
+    add({0.5F, 0.5F, -0.5F}, {1, 0, 0}, {1, 1}, T, B);
 
     // --- Top (+Y)
-    add({-0.5F, 0.5F, -0.5F}, {0, 1, 0}, {0, 0});
-    add({-0.5F, 0.5F, 0.5F}, {0, 1, 0}, {0, 1});
-    add({0.5F, 0.5F, 0.5F}, {0, 1, 0}, {1, 1});
+    T = glm::vec3(1, 0, 0);
+    B = glm::vec3(0, 0, -1);
 
-    add({0.5F, 0.5F, 0.5F}, {0, 1, 0}, {1, 1});
-    add({0.5F, 0.5F, -0.5F}, {0, 1, 0}, {1, 0});
-    add({-0.5F, 0.5F, -0.5F}, {0, 1, 0}, {0, 0});
+    add({-0.5F, 0.5F, -0.5F}, {0, 1, 0}, {0, 0}, T, B);
+    add({-0.5F, 0.5F, 0.5F}, {0, 1, 0}, {0, 1}, T, B);
+    add({0.5F, 0.5F, 0.5F}, {0, 1, 0}, {1, 1}, T, B);
+
+    add({0.5F, 0.5F, 0.5F}, {0, 1, 0}, {1, 1}, T, B);
+    add({0.5F, 0.5F, -0.5F}, {0, 1, 0}, {1, 0}, T, B);
+    add({-0.5F, 0.5F, -0.5F}, {0, 1, 0}, {0, 0}, T, B);
 
     // --- Bottom (-Y)
-    add({-0.5F, -0.5F, -0.5F}, {0, -1, 0}, {0, 1});
-    add({0.5F, -0.5F, 0.5F}, {0, -1, 0}, {1, 0});
-    add({-0.5F, -0.5F, 0.5F}, {0, -1, 0}, {0, 0});
+    T = glm::vec3(1, 0, 0);
+    B = glm::vec3(0, 0, 1);
 
-    add({0.5F, -0.5F, 0.5F}, {0, -1, 0}, {1, 0});
-    add({-0.5F, -0.5F, -0.5F}, {0, -1, 0}, {0, 1});
-    add({0.5F, -0.5F, -0.5F}, {0, -1, 0}, {1, 1});
+    add({-0.5F, -0.5F, -0.5F}, {0, -1, 0}, {0, 1}, T, B);
+    add({0.5F, -0.5F, 0.5F}, {0, -1, 0}, {1, 0}, T, B);
+    add({-0.5F, -0.5F, 0.5F}, {0, -1, 0}, {0, 0}, T, B);
+
+    add({0.5F, -0.5F, 0.5F}, {0, -1, 0}, {1, 0}, T, B);
+    add({-0.5F, -0.5F, -0.5F}, {0, -1, 0}, {0, 1}, T, B);
+    add({0.5F, -0.5F, -0.5F}, {0, -1, 0}, {1, 1}, T, B);
 
     auto mesh = std::make_unique<StaticMesh>();
     mesh->create(vertices, {});
@@ -72,15 +92,39 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCube() {
 }
 
 std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createQuad() {
-    std::vector<StaticVertex> vertices = {
-        StaticVertex({0, 0, 0}, {0, 0, 1}, {0, 0}),
-        StaticVertex({1, 0, 0}, {0, 0, 1}, {1, 0}),
-        StaticVertex({1, 1, 0}, {0, 0, 1}, {1, 1}),
+    StaticVertex v0;
+    v0.position = {0, 0, 0};
+    v0.normal = {0, 0, 1};
+    v0.uv = {0, 0};
+    v0.tangent = {1, 0, 0};
+    v0.bitangent = {0, 1, 0};
 
-        StaticVertex({1, 1, 0}, {0, 0, 1}, {1, 1}), 
-        StaticVertex({0, 1, 0}, {0, 0, 1}, {0, 1}),
-        StaticVertex({0, 0, 0}, {0, 0, 1}, {0, 0}),
-    };
+    StaticVertex v1;
+    v1.position = {1, 0, 0};
+    v1.normal = {0, 0, 1};
+    v1.uv = {1, 0};
+    v1.tangent = {1, 0, 0};
+    v1.bitangent = {0, 1, 0};
+
+    StaticVertex v2;
+    v2.position = {1, 1, 0};
+    v2.normal = {0, 0, 1};
+    v2.uv = {1, 1};
+    v2.tangent = {1, 0, 0};
+    v2.bitangent = {0, 1, 0};
+
+    StaticVertex v3 = v2;
+
+    StaticVertex v4;
+    v4.position = {0, 1, 0};
+    v4.normal = {0, 0, 1};
+    v4.uv = {0, 1};
+    v4.tangent = {1, 0, 0};
+    v4.bitangent = {0, 1, 0};
+
+    StaticVertex v5 = v0;
+
+    std::vector<StaticVertex> vertices = {v0, v1, v2, v3, v4, v5};
 
     auto mesh = std::make_unique<StaticMesh>();
     mesh->create(vertices, {});
@@ -114,10 +158,22 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createSphere() {
             glm::vec3 pos(x, y, z);
             glm::vec3 normal = glm::normalize(pos);
 
-            // UV mapping (equirectangular)
+            glm::vec3 tangent(-sinf(theta), 0.0f, cosf(theta));
+
+            tangent = glm::normalize(tangent);
+
+            glm::vec3 bitangent = glm::normalize(glm::cross(normal, tangent));
+
             glm::vec2 uv(u, v);
 
-            vertices.push_back(StaticVertex(pos, normal, uv));
+            StaticVertex vertex;
+            vertex.position = pos;
+            vertex.normal = normal;
+            vertex.uv = uv;
+            vertex.tangent = tangent;
+            vertex.bitangent = bitangent;
+
+            vertices.push_back(vertex);
         }
     }
 
@@ -155,9 +211,21 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
     std::vector<StaticVertex> vertices;
     std::vector<unsigned int> indices;
 
-    auto addVertex = [&](glm::vec3 pos, glm::vec2 uv) {
-        glm::vec3 normal = glm::normalize(pos);
-        vertices.push_back(StaticVertex(pos, normal, uv));
+    auto addVertex = [&](glm::vec3 pos, glm::vec3 normal, float theta, glm::vec2 uv) {
+        glm::vec3 tangent(-sinf(theta), 0.0f, cosf(theta));
+
+        tangent = glm::normalize(tangent);
+
+        glm::vec3 bitangent = glm::normalize(glm::cross(normal, tangent));
+
+        StaticVertex v;
+        v.position = pos;
+        v.normal = normal;
+        v.uv = uv;
+        v.tangent = tangent;
+        v.bitangent = bitangent;
+
+        vertices.push_back(v);
     };
 
     for (int i = 0; i <= 1; i++) {
@@ -170,7 +238,9 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
 
             glm::vec3 pos(cos(a) * radius, y, sin(a) * radius);
 
-            addVertex(pos, {u, v});
+            glm::vec3 normal = glm::normalize(glm::vec3(cos(a), 0.0f, sin(a)));
+
+            addVertex(pos, normal, a, {u, v});
         }
     }
 
@@ -199,7 +269,10 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
 
             glm::vec2 uv(u, 1.0F - v);
 
-            addVertex(pos, uv);
+            glm::vec3 normal =
+                glm::normalize(glm::vec3(cos(theta) * cos(phi), sin(phi), sin(theta) * cos(phi)));
+
+            addVertex(pos, normal, theta, uv);
         }
     }
 
@@ -228,7 +301,10 @@ std::unique_ptr<dzemikk::Mesh> dzemikk::PrimitiveFactory::createCapsule() {
 
             glm::vec2 uv(u, v);
 
-            addVertex(pos, uv);
+            glm::vec3 normal =
+                glm::normalize(glm::vec3(cos(theta) * cos(phi), -sin(phi), sin(theta) * cos(phi)));
+
+            addVertex(pos, normal, theta, uv);
         }
     }
 

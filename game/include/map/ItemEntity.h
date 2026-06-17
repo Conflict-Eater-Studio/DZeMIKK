@@ -11,6 +11,8 @@
 #include <boost/uuid/uuid.hpp>
 #include <optional>
 
+#include <ecs/gameobject.h>
+
 namespace game {
 
 enum class ItemType : uint8_t { Heal, RevealPattern, RevealHex, BonusHex };
@@ -67,12 +69,32 @@ class ItemEntity : public Entity {
 
     void onEnter(HexCellPtr cell) override {
         setCell(cell);
+
+        if (_itemType == ItemType::Heal) {
+            getOwner()->transform()->setPosition(
+                cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
+                glm::vec3(0.0F, 0.5F, 0.0F));
+        } else if (_itemType == ItemType::BonusHex) {
+            getOwner()->transform()->setPosition(
+                cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
+                glm::vec3(0.0F, 0.6F, 0.0F));
+        } else if (_itemType == ItemType::RevealHex) {
+            getOwner()->transform()->setPosition(
+                cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
+                glm::vec3(0.0F, 0.7F, 0.0F));
+        } else if (_itemType == ItemType::RevealPattern) {
+            getOwner()->transform()->setPosition(
+                cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
+                glm::vec3(0.0F, 0.5F, 0.0F));
+        }
+
     };
     void onExit() override {};
 
     void setItemType(ItemType type) {
         _itemType = type;
     }
+    
     [[nodiscard]] ItemType getItemType() const {
         return _itemType;
     }

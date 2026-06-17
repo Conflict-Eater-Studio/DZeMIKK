@@ -5,6 +5,7 @@
 
 #include <assetManager/assetHandle.h>
 #include <ecs/components/meshRenderer.h>
+#include <ecs/components/skinnedMeshRenderer.h>
 #include <ecs/components/ui/iUIInteractable.h>
 #include <renderer/font.h>
 #include <renderer/model.h>
@@ -183,6 +184,9 @@ class PropertyDrawer {
      * @return True if materials were modified.
      */
     static bool drawMaterials(const std::string& label, dzemikk::MeshRenderer* renderer,
+                              const InspectorContext& ctx);
+
+    static bool drawMaterials(const std::string& label, dzemikk::SkinnedMeshRenderer* renderer,
                               const InspectorContext& ctx);
 
     /**

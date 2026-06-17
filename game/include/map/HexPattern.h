@@ -11,7 +11,7 @@
 namespace game {
 class HexPattern {
   public:
-    enum class Type : uint8_t { ATK, DEF, HEAL, BONUSHEX };
+    enum class Type : uint8_t { NONE, ATK, DEF, HEAL, BONUSHEX };
     enum class Rotation : uint8_t { Clockwise, CounterClockwise };
 
     HexPattern() : _hexes({{0, 0}}) {}

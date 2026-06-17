@@ -10,6 +10,9 @@
 #include FT_FREETYPE_H
 #endif
 
+#include "ecs/components/colorGradingEffect.h"
+#include "ecs/components/antiAliasingEffect.h"
+
 #include "animation/animationmodule.h"
 #include "assetManager/assetmanager.h"
 #include "audio/audioManager.h"
@@ -180,6 +183,7 @@ void Engine::start() {
         if (_mode == EngineMode::Game) {
             Profiler::Get().DrawImGui();
 
+            /*
             std::vector<ColorGradingEffect*> gradingEffects;
             ComponentRegistry::get().getEnabledComponents<ColorGradingEffect>(gradingEffects);
             if (!gradingEffects.empty()) {
@@ -194,41 +198,95 @@ void Engine::start() {
                             effect->setEnabled(enabled);
                         }
 
-                        float exp = effect->getExposure();
-                        if (ImGui::SliderFloat("Exposure", &exp, -4.0f, 4.0f)) {
-                            effect->setExposure(exp);
-                        }
+            std::vector<AntiAliasingEffect*> aaEffects;
+            ComponentRegistry::get().getEnabledComponents<AntiAliasingEffect>(aaEffects);
 
-                        float contrast = effect->getContrast();
-                        if (ImGui::SliderFloat("Contrast", &contrast, 0.0f, 3.0f)) {
-                            effect->setContrast(contrast);
-                        }
+            if (!gradingEffects.empty() || !aaEffects.empty()) {
+                ImGui::Begin("Post-Processing Settings");
 
-                        float saturation = effect->getSaturation();
-                        if (ImGui::SliderFloat("Saturation", &saturation, 0.0f, 3.0f)) {
-                            effect->setSaturation(saturation);
-                        }
+                if (!gradingEffects.empty()) {
+                    if (ImGui::CollapsingHeader("Color Grading", ImGuiTreeNodeFlags_DefaultOpen)) {
+                        for (size_t i = 0; i < gradingEffects.size(); ++i) {
+                            auto* effect = gradingEffects[i];
+                            std::string label = "Color Grading " + std::to_string(i) + " (" + effect->getOwner()->getName() + ")";
+                            if (ImGui::TreeNode(label.c_str())) {
+                                bool enabled = effect->isEnabled();
+                                if (ImGui::Checkbox("Enabled", &enabled)) {
+                                    effect->setEnabled(enabled);
+                                }
 
-                        float temp = effect->getTemperature();
-                        if (ImGui::SliderFloat("Temperature", &temp, -2.0f, 2.0f)) {
-                            effect->setTemperature(temp);
-                        }
+                                float exp = effect->getExposure();
+                                if (ImGui::SliderFloat("Exposure", &exp, -4.0f, 4.0f)) {
+                                    effect->setExposure(exp);
+                                }
 
-                        float tint = effect->getTint();
-                        if (ImGui::SliderFloat("Tint", &tint, -2.0f, 2.0f)) {
-                            effect->setTint(tint);
-                        }
+                                float contrast = effect->getContrast();
+                                if (ImGui::SliderFloat("Contrast", &contrast, 0.0f, 3.0f)) {
+                                    effect->setContrast(contrast);
+                                }
 
-                        glm::vec3 filter = effect->getColorFilter();
-                        if (ImGui::ColorEdit3("Color Filter", &filter.x)) {
-                            effect->setColorFilter(filter);
-                        }
+                                float saturation = effect->getSaturation();
+                                if (ImGui::SliderFloat("Saturation", &saturation, 0.0f, 3.0f)) {
+                                    effect->setSaturation(saturation);
+                                }
 
-                        ImGui::TreePop();
+                                float temp = effect->getTemperature();
+                                if (ImGui::SliderFloat("Temperature", &temp, -2.0f, 2.0f)) {
+                                    effect->setTemperature(temp);
+                                }
+
+                                float tint = effect->getTint();
+                                if (ImGui::SliderFloat("Tint", &tint, -2.0f, 2.0f)) {
+                                    effect->setTint(tint);
+                                }
+
+                                glm::vec3 filter = effect->getColorFilter();
+                                if (ImGui::ColorEdit3("Color Filter", &filter.x)) {
+                                    effect->setColorFilter(filter);
+                                }
+
+                                ImGui::TreePop();
+                            }
+                        }
                     }
                 }
+
+                if (!aaEffects.empty()) {
+                    if (ImGui::CollapsingHeader("Anti-Aliasing (FXAA)", ImGuiTreeNodeFlags_DefaultOpen)) {
+                        for (size_t i = 0; i < aaEffects.size(); ++i) {
+                            auto* effect = aaEffects[i];
+                            std::string label = "FXAA " + std::to_string(i) + " (" + effect->getOwner()->getName() + ")";
+                            if (ImGui::TreeNode(label.c_str())) {
+                                bool enabled = effect->isEnabled();
+                                if (ImGui::Checkbox("Enabled##FXAA", &enabled)) {
+                                    effect->setEnabled(enabled);
+                                }
+
+                                float spanMax = effect->getSpanMax();
+                                if (ImGui::SliderFloat("Span Max", &spanMax, 1.0f, 16.0f)) {
+                                    effect->setSpanMax(spanMax);
+                                }
+
+                                float reduceMul = effect->getReduceMul();
+                                if (ImGui::SliderFloat("Reduce Mul", &reduceMul, 0.0f, 0.5f)) {
+                                    effect->setReduceMul(reduceMul);
+                                }
+
+                                float reduceMin = effect->getReduceMin();
+                                if (ImGui::SliderFloat("Reduce Min", &reduceMin, 0.0f, 0.1f, "%.5f")) {
+                                    effect->setReduceMin(reduceMin);
+                                }
+
+                                ImGui::TreePop();
+                            }
+                        }
+                    }
+                }
+
                 ImGui::End();
+
             }
+            */
         }
         glDisable(GL_DEPTH_TEST);
         ImGui::Render();

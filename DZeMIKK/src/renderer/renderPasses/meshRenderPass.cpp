@@ -67,7 +67,11 @@ void dzemikk::MeshRenderPass::buildMeshBatches(RenderContext& ctx) {
                 Batch* batch = nullptr;
 
                 for (auto& b : _batches) {
-                    if (b.mesh == mesh && b.material == material && b.color == glm::vec3(r->getColor().x, r->getColor().y, r->getColor().z) ){
+                    if (!b.material) {
+                        continue;
+                    }
+
+                    if (b.mesh == mesh && b.material == material) {
                         batch = &b;
                         break;
                     }
@@ -79,7 +83,6 @@ void dzemikk::MeshRenderPass::buildMeshBatches(RenderContext& ctx) {
 
                     batch->mesh = mesh;
                     batch->material = material;
-                    batch->color = glm::vec3(r->getColor().x, r->getColor().y, r->getColor().z);
 
                     glGenBuffers(1, &batch->instanceVBO);
                 }
@@ -115,73 +118,81 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
 
             shader->bind();
 
-            if (material->getTexture()) {
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, material->getTexture()->getId());
-                shader->setSampler("diffuseTexture", 0);
-                //shader->setInt("diffuseTexture", 0);
-            }
-
-            shader->setInt("useTexture", material->getTexture() ? 1 : 0);
-
-            shader->setFloat("shininess", 6.0f);
-            shader->setFloat("specularStrength", .5f);
-            shader->setInt("dirLightCount", ctx.directionalCount);
-            shader->setInt("pointLightCount", ctx.pointCount);
-            shader->setInt("spotLightCount", ctx.spotCount);
-            shader->setVec3("objectColor", batch.color);
             shader->setVec3("viewPos", ctx.sceneCamera->getOwner()->transform()->getPosition());
 
-            for (int i = 0; i < ctx.directionalCount; i++) {
-                std::string dirName = "dirDirection[" + std::to_string(i) + "]";
-                std::string colName = "dirColor[" + std::to_string(i) + "]";
-                std::string intName = "dirIntensity[" + std::to_string(i) + "]";
+            shader->setVec3("albedoColor", material->getAlbedoColor());
+            shader->setFloat("metallic", material->getMetallic());
+            shader->setFloat("roughness", material->getRoughness());
+            shader->setFloat("ao", material->getAO());
+            shader->setVec3("emissiveColor", material->getEmissiveColor());
+            shader->setFloat("emissiveStrength", material->getEmissiveStrength());
 
-                shader->setVec3(dirName.c_str(), ctx.directionalLights[i].direction);
+            if (material->getAlbedoTexture()) {
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, material->getAlbedoTexture()->getId());
 
-                shader->setVec3(colName.c_str(), ctx.directionalLights[i].color);
-
-                shader->setFloat(intName.c_str(), ctx.directionalLights[i].color.a);
+                shader->setSampler("albedoMap", 0);
+                shader->setInt("hasAlbedoMap", 1);
+            } else {
+                shader->setInt("hasAlbedoMap", 0);
             }
 
-            for (int i = 0; i < ctx.pointCount; i++) {
-                std::string posName = "pointPos[" + std::to_string(i) + "]";
-                std::string colName = "pointColor[" + std::to_string(i) + "]";
-                std::string intName = "pointIntensity[" + std::to_string(i) + "]";
-                std::string rangeName = "pointRange[" + std::to_string(i) + "]";
+            if (material->getMetallicTexture()) {
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, material->getMetallicTexture()->getId());
 
-                shader->setVec3(posName.c_str(), glm::vec3(ctx.pointLights[i].position));
-
-                shader->setVec3(colName.c_str(), glm::vec3(ctx.pointLights[i].color));
-
-                shader->setFloat(intName.c_str(), ctx.pointLights[i].color.a);
-
-                shader->setFloat(rangeName.c_str(), ctx.pointLights[i].params.x);
+                shader->setSampler("metallicMap", 1);
+                shader->setInt("hasMetallicMap", 1);
+            } else {
+                shader->setInt("hasMetallicMap", 0);
             }
 
-            for (int i = 0; i < ctx.spotCount; i++) {
-                std::string posName = "spotPos[" + std::to_string(i) + "]";
-                std::string dirName = "spotDir[" + std::to_string(i) + "]";
-                std::string colName = "spotColor[" + std::to_string(i) + "]";
-                std::string intName = "spotIntensity[" + std::to_string(i) + "]";
-                std::string innerName = "spotInner[" + std::to_string(i) + "]";
-                std::string outerName = "spotOuter[" + std::to_string(i) + "]";
+            if (material->getRoughnessTexture()) {
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, material->getRoughnessTexture()->getId());
 
-                shader->setVec3(posName.c_str(), glm::vec3(ctx.spotLights[i].position));
+                shader->setSampler("roughnessMap", 2);
+                shader->setInt("hasRoughnessMap", 1);
+            } else {
+                shader->setInt("hasRoughnessMap", 0);
+            }
 
-                shader->setVec3(dirName.c_str(), glm::vec3(ctx.spotLights[i].direction));
+            if (material->getAOTexture()) {
+                glActiveTexture(GL_TEXTURE3);
+                glBindTexture(GL_TEXTURE_2D, material->getAOTexture()->getId());
 
-                shader->setVec3(colName.c_str(), glm::vec3(ctx.spotLights[i].color));
+                shader->setSampler("aoMap", 3);
+                shader->setInt("hasAOMap", 1);
+            } else {
+                shader->setInt("hasAOMap", 0);
+            }
 
-                shader->setFloat(intName.c_str(), ctx.spotLights[i].color.a);
+            if (material->getNormalTexture()) {
+                glActiveTexture(GL_TEXTURE4);
+                glBindTexture(GL_TEXTURE_2D, material->getNormalTexture()->getId());
 
-                shader->setFloat(innerName.c_str(), ctx.spotLights[i].params.y);
+                shader->setSampler("normalMap", 4);
+                shader->setInt("hasNormalMap", 1);
+            } else {
+                shader->setInt("hasNormalMap", 0);
+            }
 
-                shader->setFloat(outerName.c_str(), ctx.spotLights[i].params.z);
+            if (material->getEmissiveTexture()) {
+                glActiveTexture(GL_TEXTURE5);
+                glBindTexture(GL_TEXTURE_2D, material->getEmissiveTexture()->getId());
+
+                shader->setSampler("emissiveMap", 5);
+                shader->setInt("hasEmissiveMap", 1);
+            } else {
+                shader->setInt("hasEmissiveMap", 0);
             }
 
             mesh->drawInstanced(batch.models, batch.instanceVBO);
-            glBindTexture(GL_TEXTURE_2D, 0);
+
+            for (int i = 0; i < 6; i++) {
+                glActiveTexture(GL_TEXTURE0 + i);
+                glBindTexture(GL_TEXTURE_2D, 0);
+            }
             Profiler::Get().stats.drawCalls++;
         }
     }

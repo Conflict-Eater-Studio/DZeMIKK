@@ -1,84 +1,65 @@
 #version 330 core
 
-uniform vec2 resolution;
-uniform bool showDifference;
-uniform sampler2D screenTexture;
-
 in vec2 vUV;
-
 out vec4 FragColor;
 
-uniform float FXAA_EDGE_THRESHOLD_MIN = 0.0;
-uniform float FXAA_EDGE_THRESHOLD = 1.0 / 16.0;
-uniform float FXAA_SUBPIX_TRIM = 0.0;
-uniform float FXAA_SUBPIX_TRIM_SCALE = 1.0;
-uniform float FXAA_SUBPIX_CAP = 1.0;
+uniform sampler2D screenTexture;
+uniform vec2 uInverseScreenSize;
 
-float luma(vec3 c)
-{
-    return dot(c, vec3(0.299, 0.587, 0.114));
-}
+// FXAA parameters
+uniform float uSpanMax;       // Default: 8.0
+uniform float uReduceMul;     // Default: 1.0 / 8.0
+uniform float uReduceMin;     // Default: 1.0 / 128.0
 
 void main()
 {
-    vec2 texel = 1.0 / resolution;
+    vec2 texelSize = uInverseScreenSize;
 
-    vec3 rgbM = texture(screenTexture, vUV).rgb;
-    vec3 rgbN = texture(screenTexture, vUV + vec2(0.0, texel.y)).rgb;
-    vec3 rgbS = texture(screenTexture, vUV - vec2(0.0, texel.y)).rgb;
-    vec3 rgbE = texture(screenTexture, vUV + vec2(texel.x, 0.0)).rgb;
-    vec3 rgbW = texture(screenTexture, vUV - vec2(texel.x, 0.0)).rgb;
+    // Sample center and neighbors
+    vec3 rgbNW = texture(screenTexture, vUV + vec2(-1.0, -1.0) * texelSize).rgb;
+    vec3 rgbNE = texture(screenTexture, vUV + vec2(1.0, -1.0) * texelSize).rgb;
+    vec3 rgbSW = texture(screenTexture, vUV + vec2(-1.0, 1.0) * texelSize).rgb;
+    vec3 rgbSE = texture(screenTexture, vUV + vec2(1.0, 1.0) * texelSize).rgb;
+    vec3 rgbM  = texture(screenTexture, vUV).rgb;
 
-    float lumaM = luma(rgbM);
-    float lumaN = luma(rgbN);
-    float lumaS = luma(rgbS);
-    float lumaE = luma(rgbE);
-    float lumaW = luma(rgbW);
+    // Luma coefficients (standard Rec. 709)
+    vec3 luma = vec3(0.299, 0.587, 0.114);
+    float lumaNW = dot(rgbNW, luma);
+    float lumaNE = dot(rgbNE, luma);
+    float lumaSW = dot(rgbSW, luma);
+    float lumaSE = dot(rgbSE, luma);
+    float lumaM  = dot(rgbM,  luma);
 
-    float lumaMin = min(lumaM, min(min(lumaN, lumaS), min(lumaE, lumaW)));
+    // Find min and max luma in the local neighborhood
+    float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));
+    float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));
 
-    float lumaMax = max(lumaM,  max(max(lumaN, lumaS), max(lumaE, lumaW)));
-
-    float range = lumaMax - lumaMin;
-
-    if(range < max(FXAA_EDGE_THRESHOLD_MIN, FXAA_EDGE_THRESHOLD * lumaMax)){
-        FragColor = vec4(rgbM, 1.0);
-        return;
-    }
-
+    // Edge direction calculation
     vec2 dir;
-    dir.x = -((lumaN + lumaS) - (lumaE + lumaW));
-    dir.y =  ((lumaE + lumaW) - (lumaN + lumaS));
+    dir.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));
+    dir.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));
 
-    float dirReduce = max((lumaN + lumaS + lumaE + lumaW) * 0.25 * 0.5, 1.0/128.0);
-
+    float dirReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) * (0.25 * uReduceMul), uReduceMin);
     float rcpDirMin = 1.0 / (min(abs(dir.x), abs(dir.y)) + dirReduce);
 
-    dir = clamp(dir * rcpDirMin, -8.0, 8.0) * texel;
+    dir = min(vec2(uSpanMax, uSpanMax),
+          max(vec2(-uSpanMax, -uSpanMax),
+          dir * rcpDirMin)) * texelSize;
 
+    // Sample along the edge direction
     vec3 rgbA = 0.5 * (
-        texture(screenTexture, vUV + dir * (1.0/6.0)).rgb +
-        texture(screenTexture, vUV - dir * (1.0/6.0)).rgb
-    );
+        texture(screenTexture, vUV + dir * (1.0/3.0 - 0.5)).rgb +
+        texture(screenTexture, vUV + dir * (2.0/3.0 - 0.5)).rgb);
+    vec3 rgbB = rgbA * 0.5 + 0.25 * (
+        texture(screenTexture, vUV + dir * (0.0/3.0 - 0.5)).rgb +
+        texture(screenTexture, vUV + dir * (3.0/3.0 - 0.5)).rgb);
 
-    vec3 rgbB = rgbA * 0.5 +
-        0.25 * (
-        texture(screenTexture, vUV + dir * 0.5).rgb +
-        texture(screenTexture, vUV - dir * 0.5).rgb
-    );
+    float lumaB = dot(rgbB, luma);
 
-    float lumaL = (lumaN + lumaS + lumaE + lumaW) * 0.25;
-    float rangeL = abs(lumaL - lumaM);
-    float blendL = max(0.0, (rangeL / max(range, 1e-5)) - FXAA_SUBPIX_TRIM) * FXAA_SUBPIX_TRIM_SCALE;
-    blendL = min(FXAA_SUBPIX_CAP, blendL);
-
-    vec3 finalColor = mix(rgbB, rgbA, blendL);
-
-    if(showDifference){
-        vec3 diff = abs(finalColor - rgbM) * 8.0;
-        FragColor = vec4(clamp(diff, 0.0, 1.0), 1.0);
-        return;
+    // Fallback to rgbA if contrast is too high to prevent artifacts
+    if ((lumaB < lumaMin) || (lumaB > lumaMax)) {
+        FragColor = vec4(rgbA, 1.0);
+    } else {
+        FragColor = vec4(rgbB, 1.0);
     }
-
-    FragColor = vec4(finalColor, 1.0);
 }

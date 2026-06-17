@@ -533,7 +533,7 @@ void game::PlayerPatternComponent::updatePreviewVisuals(dzemikk::Collider* colli
         auto* renderer = hex->getComponent<dzemikk::MeshRenderer>();
 
         if (renderer) {
-            renderer->setColor(color);
+            renderer->getMaterial(0)->setAlbedoColor(color);
             renderer->setCullingRadius(50.0F);
         }
     }

@@ -40,6 +40,14 @@ void dzemikk::StaticMesh::recreate(const std::vector<StaticVertex>& vertices,
                           ATTR_OFFSET(offsetof(StaticVertex, uv)));
     glEnableVertexAttribArray(2);
 
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(StaticVertex),
+                          (void*)offsetof(StaticVertex, tangent));
+
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(StaticVertex),
+                          (void*)offsetof(StaticVertex, bitangent));
+
     glBindVertexArray(0);
 
     std::vector<glm::vec3> positions;
@@ -81,6 +89,14 @@ void dzemikk::StaticMesh::uploadToGPU() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(StaticVertex),
                           ATTR_OFFSET(offsetof(StaticVertex, uv)));
     glEnableVertexAttribArray(2);
+
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(StaticVertex),
+                          (void*)offsetof(StaticVertex, tangent));
+
+    glEnableVertexAttribArray(4);
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(StaticVertex),
+                          (void*)offsetof(StaticVertex, bitangent));
 
     glBindVertexArray(0);
 

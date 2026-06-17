@@ -3,7 +3,7 @@
         "children": [],
         "components": [
             {
-                "id": "1bd6bea5-4f97-444e-bef8-0e37783c6f67",
+                "id": "78657e87-a236-478e-bd29-bcde68a8ba88",
                 "position": [
                     0.0,
                     2.0,
@@ -23,22 +23,43 @@
                 "type": "Transform"
             },
             {
-                "color": [
-                    1.0,
-                    1.0,
-                    1.0,
-                    1.0
-                ],
-                "id": "71f26568-b003-4db6-971b-94eac97d0e60",
+                "id": "781129e6-d973-404a-96a4-b28651318762",
                 "materials": [
-                    "shaders/tile1"
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "",
+                            "normal": "",
+                            "roughness": ""
+                        }
+                    }
                 ],
                 "model": "models/hex_plaski.fbx",
                 "type": "MeshRenderer"
             }
         ],
         "enabled": true,
-        "id": "945c71ac-633e-468a-8047-b1a0876ea3c1",
-        "name": "BattleHex"
+        "id": "2d9e968c-74a9-4293-ad2a-422f15275cc8",
+        "name": "BattleHex",
+        "tags": []
     }
 }

@@ -69,6 +69,43 @@
 #include <healthSystem.h>
 #include <iostream>
 
+#include "totem/totemManager.h"
+#include <audio/sound.h>
+#include <audio/audioManager.h>
+#include "ecs/components/postProcessEffect.h"
+#include "ecs/components/colorGradingEffect.h"
+#include "ecs/components/antiAliasingEffect.h"
+
+#include <random>
+#include <ecs/components/light/pointLight.h>
+
+static std::mt19937 rng{std::random_device{}()};
+
+static float randFloat(float min, float max) {
+    std::uniform_real_distribution<float> dist(min, max);
+    return dist(rng);
+}
+
+static glm::vec3 randVec3(float min, float max) {
+    return glm::vec3(randFloat(min, max), randFloat(min, max), randFloat(min, max));
+}
+
+void Game::spawnRandomPointLight() {
+    auto& reg = dzemikk::ComponentRegistry::get();
+
+    auto go = _mainScene.get()->createGameObject();
+
+    auto* light = go->addComponent<dzemikk::PointLight>();
+    light->setColor(randVec3(0.2f, 1.0f));
+    light->setIntensity(randFloat(0.5f, 5.0f));
+    light->setRange(randFloat(5.0f, 25.0f));
+
+    auto* t = go->transform();
+    t->setPosition(randVec3(-20.0f, 20.0f));
+
+    std::cout << "Spawned random point light\n";
+}
+
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
     if (!obj)
         return;
@@ -104,7 +141,7 @@ void Game::start() {
 
     setupSkybox();
 
-    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay5.json");
+    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay7.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
@@ -233,6 +270,11 @@ void Game::setupMainCamera() {
     colorGrading->setTemperature(0.1f);
     colorGrading->setTint(-0.05f);
 
+    auto antiAliasing = cameraGO->addComponent<dzemikk::AntiAliasingEffect>();
+    antiAliasing->setEnabled(true);
+    antiAliasing->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/fxaa"));
+    antiAliasing->setPriority(10);
+
     _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
     auto postProccessEffect = cameraGO->addComponent<dzemikk::PostProcessEffect>();
     postProccessEffect->setEnabled(false);
@@ -244,11 +286,19 @@ void Game::setupMainCamera() {
 }
 
 void Game::setupWorld() {
+    auto shader = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
+    auto material = std::make_shared<dzemikk::Material>();
+    material->setShader(shader);
+
+    auto model = _engine->getAssetManager()->get<dzemikk::Model>("models/hex_wypukly.fbx");
+
     _worldGO = _mainScene.get()->findGameObjectByName("World");
     _worldGO->addTag("World");
     auto* world = _worldGO->addComponent<game::World>(1);
     world->setGame(this);
+
     world->setAssetManager(_engine->getAssetManager());
+    world->setMaterial(material);
     world->setPlayer(_playerEntity);
 
     if (std::filesystem::exists("./world.json")) {
@@ -356,9 +406,37 @@ void Game::setupUICamera() {
 }
 
 void Game::setupInputCallbacks() {
+    static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
+
+    static std::unordered_map<dzemikk::MeshRenderer*, std::shared_ptr<dzemikk::Material>>
+        baseMaterials;
 
     _engine->SetUserUpdateCallback([this]() {
-        auto ensureBase = [&](dzemikk::MeshRenderer* r) { _lastHitBaseColors[r] = r->getColor(); };
+        ImGui::Begin("Light Debug Tools");
+
+        auto& reg = dzemikk::ComponentRegistry::get();
+
+        static std::vector<dzemikk::DirectionalLight*> dir;
+        static std::vector<dzemikk::PointLight*> point;
+        static std::vector<dzemikk::SpotLight*> spot;
+
+        reg.getEnabledComponents<dzemikk::DirectionalLight>(dir);
+        reg.getEnabledComponents<dzemikk::PointLight>(point);
+        reg.getEnabledComponents<dzemikk::SpotLight>(spot);
+
+        ImGui::Text("Directional Lights: %d", (int)dir.size());
+        ImGui::Text("Point Lights: %d", (int)point.size());
+        ImGui::Text("Spot Lights: %d", (int)spot.size());
+
+        ImGui::Separator();
+
+        if (ImGui::Button("Spawn Random Point Light")) {
+            for (int i = 0; i < 100; i++) {
+                spawnRandomPointLight();
+            }
+        }
+
+        ImGui::End();
 
         if (!_engine || !_engine->getInput() ||
             !_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
@@ -380,24 +458,31 @@ void Game::setupInputCallbacks() {
             currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
         }
 
-        constexpr float hoverStrength = 0.5F;
+        constexpr float hoverStrength = 0.5f;
 
-        if (currentRenderer != _lastHitRenderer) {
+        if (currentRenderer != lastHitRenderer) {
 
-            if (_lastHitRenderer && _lastHitRenderer->isValid()) {
-                auto base = _lastHitBaseColors[_lastHitRenderer];
-                _lastHitRenderer->setColor(base);
+            if (lastHitRenderer && lastHitRenderer->isValid()) {
+                auto it = baseMaterials.find(lastHitRenderer);
+                if (it != baseMaterials.end()) {
+                    lastHitRenderer->setMaterial(0, it->second);
+                }
             }
 
             if (currentRenderer && currentRenderer->isValid()) {
-                ensureBase(currentRenderer);
 
-                auto base = _lastHitBaseColors[currentRenderer];
-                currentRenderer->setColor(base * 0.5F);
+                baseMaterials[currentRenderer] = currentRenderer->getMaterial(0)->clone();
+
+                auto hovered = currentRenderer->getMaterial(0)->clone();
+                hovered->setAlbedoColor(baseMaterials[currentRenderer]->getAlbedoColor() *
+                                        hoverStrength);
+
+                currentRenderer->setMaterial(0, hovered);
             }
 
-            _lastHitRenderer = currentRenderer;
+            lastHitRenderer = currentRenderer;
         }
+        
     });
 
     _engine->getInput()->OnMouseButtonPressed.addListener(
@@ -409,6 +494,7 @@ void Game::setupInputCallbacks() {
 
             int windowWidth = 0;
             int windowHeight = 0;
+
             glfwGetWindowSize(_engine->getWindow()->nativeHandle(), &windowWidth, &windowHeight);
 
             dzemikk::Collider* collider = _engine->getCollisions()->raycast(
@@ -416,15 +502,14 @@ void Game::setupInputCallbacks() {
                 _engine->getInput()->GetMousePosition(), static_cast<float>(windowWidth),
                 static_cast<float>(windowHeight));
 
-            dzemikk::MeshRenderer* currentRenderer = nullptr;
+            if (collider && _engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
 
-            if (collider) {
-                if (_engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-                    currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
-                    auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
-                    if (wh != nullptr && wh->getHexCell() != nullptr) {
-                        _playerMovement->moveTo(wh->getHexCell());
-                    }
+                auto* currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
+
+                auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
+
+                if (wh && wh->getHexCell()) {
+                    _playerMovement->moveTo(wh->getHexCell());
                 }
             }
         });

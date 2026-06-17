@@ -14,6 +14,8 @@ struct StaticVertex {
     glm::vec3 position; ///< Vertex position in model space.
     glm::vec3 normal;   ///< Vertex normal vector for lighting.
     glm::vec2 uv;       ///< Texture coordinates.
+    glm::vec3 tangent;
+    glm::vec3 bitangent;
 };
 
 /**

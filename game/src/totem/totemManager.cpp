@@ -151,7 +151,7 @@ void game::TotemManager::spawnTotem(const boost::uuids::uuid& chunkId,
 
         auto texture = _assetManager->get<dzemikk::Texture>("textures/totems/a.png");
 
-        rendererSegmentGO->getMaterial(0)->setTexture(texture);
+        rendererSegmentGO->getMaterial(0)->setAlbedoTexture(texture);
     }
 
     if (cfg.used) {

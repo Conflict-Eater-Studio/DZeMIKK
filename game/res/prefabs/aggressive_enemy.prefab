@@ -5,10 +5,10 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "bb9181d1-caa8-49da-a62b-eaef8c62928b",
+                        "id": "eea6090b-5112-4cd6-8a3a-5034121dc611",
                         "position": [
                             0.0,
-                            68.9000015258789,
+                            17.0,
                             0.0
                         ],
                         "rotation": [
@@ -31,41 +31,195 @@
                             0.08391005545854568,
                             0.08391005545854568
                         ],
-                        "intensity": 0.6010000109672546,
-                        "range": 10.0,
+                        "intensity": 3.990999937057495,
+                        "range": 31.5,
                         "type": "PointLight"
                     }
                 ],
                 "enabled": true,
-                "id": "783ed4b2-dc97-4fd7-a1e7-9bbddc5647a4",
-                "name": "Light"
+                "id": "bb614c3c-590b-4bfc-aecf-c478ed5c85f4",
+                "name": "Light",
+                "tags": []
             }
         ],
         "components": [
             {
-                "id": "3ca05ee5-2eaf-46e9-81f4-e6f345212973",
+                "id": "58e111ef-3eba-4658-94ff-ae78ad318c5d",
                 "position": [
                     0.0,
-                    0.0,
+                    0.4000000059604645,
                     0.0
                 ],
                 "rotation": [
                     1.0,
-                    -1.150718716921319e-15,
-                    -0.0,
-                    0.0
+                    4.3711633423981766e-08,
+                    -1.910706852746623e-15,
+                    -4.3711633423981766e-08
                 ],
                 "scale": [
-                    0.008999999612569809,
-                    0.008999999612569809,
-                    0.008999999612569809
+                    0.012000000104308128,
+                    0.012000000104308128,
+                    0.012000000104308128
                 ],
                 "type": "Transform"
             },
             {
-                "id": "7d60b952-5ac8-40d2-a89a-11be9bdc0254",
+                "id": "9d69035f-fa5d-4b13-bfdb-015da5ba25ff",
                 "materials": [
-                    "shaders/skinned"
+                    {
+                        "albedoColor": [
+                            0.42352941632270813,
+                            0.33725491166114807,
+                            0.13333334028720856
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.49803921580314636,
+                            0.0,
+                            0.0
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.1764705926179886,
+                            0.3607843220233917,
+                            0.04313725605607033
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.1764705926179886,
+                            0.3607843220233917,
+                            0.04313725605607033
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.1764705926179886,
+                            0.3607843220233917,
+                            0.04313725605607033
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.5529412031173706,
+                            0.4156862795352936,
+                            0.2980392277240753
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveTexture": "",
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    null
                 ],
                 "model": "models/Pivot.fbx",
                 "type": "SkinnedMeshRenderer"
@@ -73,7 +227,7 @@
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "659a30e0-4b32-4014-b7e6-18cc82664abb",
+                "id": "72071875-dabc-4e44-9541-f8068029558c",
                 "parameters": {},
                 "stateMachine": [
                     {
@@ -85,7 +239,8 @@
             }
         ],
         "enabled": true,
-        "id": "fa9d0911-ca0a-431d-93d2-3183702748ad",
-        "name": "Aggressive"
+        "id": "c59cca90-2613-4b52-821e-becce94134d4",
+        "name": "Aggressive",
+        "tags": []
     }
 }

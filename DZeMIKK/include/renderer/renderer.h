@@ -9,7 +9,7 @@
 
 #include "renderer/renderPasses/IRenderPass.h"
 #include "renderer/cameraSystem.h"
-#include "renderer/lightSystem.h"
+#include "renderer/lightSSBO.h"
 
 #include "renderer/framebuffer.h"
 #include "renderer/renderPasses/postProcessRenderPass.h"
@@ -128,6 +128,7 @@ namespace dzemikk {
          * Ownership is maintained via unique_ptr.
          */
         std::vector<std::unique_ptr<IRenderPass>> _passes;
+        std::vector<std::unique_ptr<IRenderPass>> _uiPasses;
         PostProcessRenderPass _postProcessingPass;
 
         /**
@@ -153,6 +154,7 @@ namespace dzemikk {
         CameraSystem _cameraSystem;
 
         LightSystem _lightSystem;
+        LightSSBO _lightSSBO;
 
         std::unique_ptr<Framebuffer> _sceneFramebuffer;
 
@@ -199,6 +201,7 @@ namespace dzemikk {
          * @warning Adding multiple passes of the same type will overwrite lookup map entry.
          */
         template <typename T, typename... Args> T* addPass(Args&&... args);
+        template <typename T, typename... Args> T* addUIPass(Args&&... args);
 
 #pragma endregion
     };
@@ -225,6 +228,13 @@ template <typename T, typename... Args> T* Renderer::addPass(Args&&... args) {
     _passMap[typeid(T)] = ptr;
     _passes.push_back(std::move(pass));
 
+    return ptr;
+}
+
+template <typename T, typename... Args> T* Renderer::addUIPass(Args&&... args) {
+    auto pass = std::make_unique<T>(std::forward<Args>(args)...);
+    T* ptr = pass.get();
+    _uiPasses.push_back(std::move(pass));
     return ptr;
 }
 

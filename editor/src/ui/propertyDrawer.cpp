@@ -122,36 +122,31 @@ bool editor::PropertyDrawer::drawColor(const std::string& label, glm::vec4& colo
     return ImGui::ColorEdit4(label.c_str(), &color.x);
 }
 
-bool editor::PropertyDrawer::drawMaterials(const std::string& label, dzemikk::MeshRenderer* renderer,
+bool editor::PropertyDrawer::drawMaterials(const std::string& label,
+                                           dzemikk::MeshRenderer* renderer,
                                            const InspectorContext& ctx) {
+
     if (!renderer) {
         return false;
     }
 
-    const auto &materials = renderer->getMaterials();
+    const auto& materials = renderer->getMaterials();
 
     bool changed = false;
 
-    ImGui::TextUnformatted(("Materials: " + std::to_string(materials.size())).c_str());
+    ImGui::Text("Materials: %d", (int)materials.size());
 
     for (size_t i = 0; i < materials.size(); i++) {
-        ImGui::PushID(static_cast<int>(i));
+        ImGui::PushID((int)i);
 
         auto material = materials[i];
 
-        std::string header = "Material " + std::to_string(i);
-
         if (!material) {
-            ImGui::TextUnformatted(("Material " + std::to_string(i) + ": null").c_str());
-
+            ImGui::Text("Material %d: null", (int)i);
             ImGui::SameLine();
 
-            std::string createButton = "Create##" + std::to_string(i);
-
-            if (ImGui::Button(createButton.c_str())) {
-                auto newMaterial = std::make_shared<dzemikk::Material>();
-                renderer->setMaterial(i, newMaterial);
-
+            if (ImGui::Button("Create")) {
+                renderer->setMaterial(i, std::make_shared<dzemikk::Material>());
                 changed = true;
             }
 
@@ -159,22 +154,129 @@ bool editor::PropertyDrawer::drawMaterials(const std::string& label, dzemikk::Me
             continue;
         }
 
-        if (ImGui::TreeNode(header.c_str())) {
-            auto shaderHandle = material->getShaderHandle();
+        std::string header = "Material " + std::to_string(i);
 
-            if (PropertyDrawer::drawShader("Shader", shaderHandle, ctx)) {
-                material->setShader(shaderHandle);
+        if (ImGui::TreeNode(header.c_str())) {
+
+            auto shader = material->getShaderHandle();
+
+            if (drawShader("Shader", shader, ctx)) {
+                material->setShader(shader);
                 changed = true;
             }
 
-            std::string removeButton = "Remove##" + std::to_string(i);
 
-            if (ImGui::Button(removeButton.c_str())) {
+            if (ImGui::TreeNode("Textures")) {
+
+                auto albedo = material->getAlbedoTexture()
+                                  ? material->getAlbedoTextureHandle()
+                                  : dzemikk::AssetHandle<dzemikk::Texture>();
+
+                auto normal = material->getNormalTexture()
+                                  ? material->getNormalTextureHandle()
+                                  : dzemikk::AssetHandle<dzemikk::Texture>();
+
+                auto metallic = material->getMetallicTexture()
+                                    ? material->getMetallicTextureHandle()
+                                    : dzemikk::AssetHandle<dzemikk::Texture>();
+
+                auto roughness = material->getRoughnessTexture()
+                                     ? material->getRoughnessTextureHandle()
+                                     : dzemikk::AssetHandle<dzemikk::Texture>();
+
+                auto ao = material->getAOTexture() ? material->getAOTextureHandle()
+                                                   : dzemikk::AssetHandle<dzemikk::Texture>();
+
+                auto emissive = material->getEmissiveTexture()
+                                    ? material->getEmissiveTextureHandle()
+                                    : dzemikk::AssetHandle<dzemikk::Texture>();
+
+                if (drawTexture("Albedo", albedo, ctx)) {
+                    material->setAlbedoTexture(albedo);
+                    changed = true;
+                }
+
+                if (drawTexture("Normal", normal, ctx)) {
+                    material->setNormalTexture(normal);
+                    changed = true;
+                }
+
+                if (drawTexture("Metallic", metallic, ctx)) {
+                    material->setMetallicTexture(metallic);
+                    changed = true;
+                }
+
+                if (drawTexture("Roughness", roughness, ctx)) {
+                    material->setRoughnessTexture(roughness);
+                    changed = true;
+                }
+
+                if (drawTexture("AO", ao, ctx)) {
+                    material->setAOTexture(ao);
+                    changed = true;
+                }
+
+                if (drawTexture("Emissive", emissive, ctx)) {
+                    material->setEmissiveTexture(emissive);
+                    changed = true;
+                }
+
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("PBR")) {
+
+                glm::vec3 albedoColor = material->getAlbedoColor();
+
+                if (ImGui::ColorEdit3("Albedo Color", &albedoColor.x)) {
+                    material->setAlbedoColor(albedoColor);
+                    changed = true;
+                }
+
+                float metallic = material->getMetallic();
+
+                if (ImGui::SliderFloat("Metallic", &metallic, 0.0f, 1.0f)) {
+                    material->setMetallic(metallic);
+                    changed = true;
+                }
+
+                float roughness = material->getRoughness();
+
+                if (ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f)) {
+                    material->setRoughness(roughness);
+                    changed = true;
+                }
+
+                float ao = material->getAO();
+
+                if (ImGui::SliderFloat("AO", &ao, 0.0f, 1.0f)) {
+                    material->setAO(ao);
+                    changed = true;
+                }
+
+                glm::vec3 emissiveColor = material->getEmissiveColor();
+
+                if (ImGui::ColorEdit3("Emissive Color", &emissiveColor.x)) {
+                    material->setEmissiveColor(emissiveColor);
+                    changed = true;
+                }
+
+                float em = material->getEmissiveStrength();
+
+                if (ImGui::SliderFloat("Emissive Strenght", &em, 0.0f, 100.0f)) {
+                    material->setEmissiveStrength(em);
+                    changed = true;
+                }
+
+                ImGui::TreePop();
+            }
+
+
+            if (ImGui::Button("Remove Material")) {
                 renderer->setMaterial(i, nullptr);
 
                 ImGui::TreePop();
                 ImGui::PopID();
-
                 return true;
             }
 
@@ -185,9 +287,176 @@ bool editor::PropertyDrawer::drawMaterials(const std::string& label, dzemikk::Me
     }
 
     if (ImGui::Button("Add Material")) {
-        auto material = std::make_shared<dzemikk::Material>();
-        renderer->setMaterial(materials.size(), material);
+        renderer->setMaterial(materials.size(), std::make_shared<dzemikk::Material>());
+        changed = true;
+    }
 
+    return changed;
+}
+
+bool editor::PropertyDrawer::drawMaterials(const std::string& label,
+                                           dzemikk::SkinnedMeshRenderer* renderer,
+                                           const InspectorContext& ctx) {
+    if (!renderer) {
+        return false;
+    }
+
+    const auto& materials = renderer->getMaterials();
+
+    bool changed = false;
+
+    ImGui::Text("Materials: %d", (int)materials.size());
+
+    for (size_t i = 0; i < materials.size(); i++) {
+        ImGui::PushID((int)i);
+
+        auto material = materials[i];
+
+        if (!material) {
+            ImGui::Text("Material %d: null", (int)i);
+            ImGui::SameLine();
+
+            if (ImGui::Button("Create")) {
+                renderer->setMaterial(i, material);
+                changed = true;
+            }
+
+            ImGui::PopID();
+            continue;
+        }
+
+        std::string header = "Material " + std::to_string(i);
+
+        if (ImGui::TreeNode(header.c_str())) {
+
+            auto shader = material->getShaderHandle();
+
+            if (drawShader("Shader", shader, ctx)) {
+                material->setShader(shader);
+                changed = true;
+            }
+
+            if (ImGui::TreeNode("Textures")) {
+
+                auto albedo = material->getAlbedoTexture()
+                                  ? material->getAlbedoTextureHandle()
+                                  : dzemikk::AssetHandle<dzemikk::Texture>();
+
+                auto normal = material->getNormalTexture()
+                                  ? material->getNormalTextureHandle()
+                                  : dzemikk::AssetHandle<dzemikk::Texture>();
+
+                auto metallic = material->getMetallicTexture()
+                                    ? material->getMetallicTextureHandle()
+                                    : dzemikk::AssetHandle<dzemikk::Texture>();
+
+                auto roughness = material->getRoughnessTexture()
+                                     ? material->getRoughnessTextureHandle()
+                                     : dzemikk::AssetHandle<dzemikk::Texture>();
+
+                auto ao = material->getAOTexture() ? material->getAOTextureHandle()
+                                                   : dzemikk::AssetHandle<dzemikk::Texture>();
+
+                auto emissive = material->getEmissiveTexture()
+                                    ? material->getEmissiveTextureHandle()
+                                    : dzemikk::AssetHandle<dzemikk::Texture>();
+
+                if (drawTexture("Albedo", albedo, ctx)) {
+                    material->setAlbedoTexture(albedo);
+                    changed = true;
+                }
+
+                if (drawTexture("Normal", normal, ctx)) {
+                    material->setNormalTexture(normal);
+                    changed = true;
+                }
+
+                if (drawTexture("Metallic", metallic, ctx)) {
+                    material->setMetallicTexture(metallic);
+                    changed = true;
+                }
+
+                if (drawTexture("Roughness", roughness, ctx)) {
+                    material->setRoughnessTexture(roughness);
+                    changed = true;
+                }
+
+                if (drawTexture("AO", ao, ctx)) {
+                    material->setAOTexture(ao);
+                    changed = true;
+                }
+
+                if (drawTexture("Emissive", emissive, ctx)) {
+                    material->setEmissiveTexture(emissive);
+                    changed = true;
+                }
+
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("PBR")) {
+
+                glm::vec3 albedoColor = material->getAlbedoColor();
+
+                if (ImGui::ColorEdit3("Albedo Color", &albedoColor.x)) {
+                    material->setAlbedoColor(albedoColor);
+                    changed = true;
+                }
+
+                float metallic = material->getMetallic();
+
+                if (ImGui::SliderFloat("Metallic", &metallic, 0.0f, 1.0f)) {
+                    material->setMetallic(metallic);
+                    changed = true;
+                }
+
+                float roughness = material->getRoughness();
+
+                if (ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f)) {
+                    material->setRoughness(roughness);
+                    changed = true;
+                }
+
+                float ao = material->getAO();
+
+                if (ImGui::SliderFloat("AO", &ao, 0.0f, 1.0f)) {
+                    material->setAO(ao);
+                    changed = true;
+                }
+
+                glm::vec3 emissiveColor = material->getEmissiveColor();
+
+                if (ImGui::ColorEdit3("Emissive Color", &emissiveColor.x)) {
+                    material->setEmissiveColor(emissiveColor);
+                    changed = true;
+                }
+
+                float em = material->getEmissiveStrength();
+
+                if (ImGui::SliderFloat("Emissive Strenght", &em, 0.0f, 100.0f)) {
+                    material->setEmissiveStrength(em);
+                    changed = true;
+                }
+
+                ImGui::TreePop();
+            }
+
+            if (ImGui::Button("Remove Material")) {
+                renderer->setMaterial(i, nullptr);
+
+                ImGui::TreePop();
+                ImGui::PopID();
+                return true;
+            }
+
+            ImGui::TreePop();
+        }
+
+        ImGui::PopID();
+    }
+
+    if (ImGui::Button("Add Material")) {
+        renderer->setMaterial(materials.size(), std::make_shared<dzemikk::Material>());
         changed = true;
     }
 

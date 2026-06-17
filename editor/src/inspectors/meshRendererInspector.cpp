@@ -25,11 +25,5 @@ void editor::MeshRendererInspector::draw(dzemikk::MeshRenderer* renderer, const 
         renderer->setModel(modelHandle);
     }
 
-    glm::vec4 color = renderer->getColor();
-
-    if (PropertyDrawer::drawColor(renderer->getOwner()->getName(), color)) {
-        renderer->setColor(color);
-    }
-
     PropertyDrawer::drawMaterials(renderer->getOwner()->getName(), renderer, ctx);
 }
