@@ -849,7 +849,7 @@ void Game::setupEnemies() {
     combatEnamyPanel->setAssetManager(_engine->getAssetManager());
     combatEnamyPanel->setCanvas(enemyPanel);
     combatEnamyPanel->setHideEmptyPatterns(true);
-
+    
     auto* enemyHealthGO = _mainScene.get()
                               ->findGameObjectByName("Enemy_Avatar_Panel")
                               ->findDescendantByName("Health_Holder");
