@@ -105,6 +105,8 @@ class CombatState : public IGameState {
 
     bool _shouldLeaveCombat = false;
 
+    bool _playerDied = false;
+
     /**
      * @brief Current progress of the board visibility animation.
      */

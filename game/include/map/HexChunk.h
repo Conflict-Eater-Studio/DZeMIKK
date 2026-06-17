@@ -2,6 +2,7 @@
 #define GAME_HEXCHUNK_H
 
 #include "boost/uuid/detail/nil_uuid.hpp"
+#include "boost/uuid/string_generator.hpp"
 #include "map/HexCell.h"
 #include "map/HexPattern.h"
 #include "map/ItemEntity.h"
@@ -24,7 +25,9 @@ class HexChunk {
     struct Config {
         boost::uuids::uuid parentChunkId{boost::uuids::nil_uuid()};
         boost::uuids::uuid chunkId{boost::uuids::nil_uuid()};
+        std::string name;
         int steps{0};
+        std::string generatorId;
         std::function<float(int, int)> generator;
         HexCoord::Direction dirFromParent{HexCoord::Direction::R180};
         std::optional<HexPattern> unlockPattern = std::nullopt;
@@ -32,6 +35,7 @@ class HexChunk {
 
     HexChunk(Config config, HexChunk* parent, unsigned int seed = 42);
     HexChunk(Config config, unsigned int seed = 42);
+    HexChunk(Config config, std::vector<HexCellPtr> cells, HexCoord origin);
     HexChunk(const HexChunk&) = delete;
     HexChunk(HexChunk&&) = delete;
     HexChunk& operator=(const HexChunk&) = delete;
@@ -45,7 +49,7 @@ class HexChunk {
     HexCellPtr extractCell(const HexCoord& coord);
     bool insertCell(const HexCoord& coord, HexCellPtr cell);
     [[nodiscard]] const Config& getConfig() const;
-    [[nodiscard]] const boost::uuids::uuid& getId() const;
+    [[nodiscard]] const boost::uuids::uuid& getPersistantId() const;
     [[nodiscard]] HexCoord getOrigin() const;
     void protectPathToOrigin(const HexCoord& start);
 
@@ -87,7 +91,8 @@ class HexChunk {
     }
 
   private:
-    boost::uuids::uuid _id{boost::uuids::nil_uuid()};
+    boost::uuids::uuid _persitantId{boost::uuids::nil_uuid()};
+    std::string _name;
     HexChunk* _parent{nullptr};
     std::unordered_map<HexCoord, HexCellPtr> _hexes;
     HexCoord _origin{0, 0};
@@ -102,6 +107,7 @@ class HexChunk {
     void blockHexesWithOneNeighbour();
     void unblockIsolatedHexes();
 };
+
 } // namespace game
 
 #endif // GAME_HEXCHUNK_H

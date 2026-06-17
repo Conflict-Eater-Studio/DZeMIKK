@@ -2,12 +2,12 @@
 #ifndef DZEMIKK_ENGINE_H
 #define DZEMIKK_ENGINE_H
 
-#include <memory>
-#include <vector>
-#include <concepts>
-
 #include "events/event.h"
 #include "input/input.h"
+
+#include <concepts>
+#include <memory>
+#include <vector>
 
 namespace dzemikk {
 
@@ -22,6 +22,7 @@ class AnimationModule;
 class Input;
 class Collisions;
 class AudioManager;
+class SpriteAnimationModule;
 
 enum class EngineMode { Game, Editor };
 
@@ -29,7 +30,7 @@ enum class EngineMode { Game, Editor };
  * @brief The core application class managing the game loop and all subsystems.
  */
 class Engine {
-public:
+  public:
     Engine(EngineMode mode = EngineMode::Game);
     ~Engine();
 
@@ -49,15 +50,14 @@ public:
     [[nodiscard]] Input* getInput() const;
     [[nodiscard]] Collisions* getCollisions() const;
     [[nodiscard]] AudioManager* getAudioManager() const;
+    [[nodiscard]] SpriteAnimationModule* getSpriteAnimationModule() const;
 
-    
     [[nodiscard]] EngineMode getMode() const {
         return _mode;
     }
     [[nodiscard]] bool isEditorMode() const {
         return _mode == EngineMode::Editor;
     }
-
 
     void SetUserUpdateCallback(const std::function<void()>& callback) {
         m_UserUpdateCallback = callback;
@@ -67,9 +67,9 @@ public:
     // --- Only for test DELETE THIS ---
     void updateCameraWASD(float speed);
     void updateCameraArrows(float speed);
-	void updateMouseUI(float deltaTime);
+    void updateMouseUI(float deltaTime);
 
-private:
+  private:
     void init();
     void shutdown();
 
@@ -82,6 +82,7 @@ private:
     std::unique_ptr<Input> _input;
     std::unique_ptr<Collisions> _collisions;
     std::unique_ptr<AudioManager> _audioManager;
+    std::unique_ptr<SpriteAnimationModule> _spriteAnimationModule;
 
     std::vector<std::unique_ptr<IEngineModule>> _modules;
 

@@ -36,6 +36,8 @@ namespace dzemikk {
 
         Collider* getHoveredCollider() const { return _hoveredCollider; }
 
+        void resetHoverState() { _hoveredCollider = nullptr; }
+
         Action<Collider*> OnColliderClicked;
 
     private:

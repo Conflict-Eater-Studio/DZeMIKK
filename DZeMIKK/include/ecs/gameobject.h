@@ -123,6 +123,7 @@ class GameObject {
         }
         result->setOwner(this);
         ComponentRegistry::get().registerComponent<T>(result);
+        ComponentRegistry::get().setComponentScene(result, _scene);
         component->enabled(_isEnabled);
         _components.push_back(std::move(component));
         return result;
@@ -170,12 +171,10 @@ class GameObject {
 
     // --- Setters
     /**
-     * @brief Sets the enabled state of this GameObject. When disabled, the GameObject and all its
-     * components will not be updated, and all its children will also be disabled. Enabling a
-     * GameObject will not automatically enable its children, but they will still be inactive until
-     * they are explicitly enabled.
-     *
-     * @param isEnabled The new enabled state for this GameObject.
+     * @brief Sets the unique identifier of this GameObject. If this is called after the GameObject
+     * is created, the GO is reregistered with new ID.
+     * @param uuid The new unique identifier for this GameObject. Must be unique across the entire
+     * scene.
      */
     void setId(const boost::uuids::uuid& uuid);
     /**

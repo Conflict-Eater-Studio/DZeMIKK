@@ -18,32 +18,33 @@
 #include "ui/combatUIPanel.h"
 
 #include <assetManager/assetHandle.h>
+#include <assetManager/soundHandler.h>
+#include <audio/audioManager.h>
 #include <ecs/components/meshRenderer.h>
 #include <ecs/components/transform.h>
 #include <ecs/gameobject.h>
 #include <ecs/scene.h>
 #include <enemySystem/enemyPatternComponent.h>
 #include <iostream>
-#include <assetManager/soundHandler.h>
-#include <audio/audioManager.h>
 
 namespace combatSound {
-    FMOD::Channel* combatFMODChannel = nullptr;
+FMOD::Channel* combatFMODChannel = nullptr;
 
-    struct SoundInitContext {
-        dzemikk::AudioManager* audioManager;
-    };
+struct SoundInitContext {
+    dzemikk::AudioManager* audioManager;
+};
 
-    void onMusicLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
-        combatFMODChannel = ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::Music, true);
-        ctx.audioManager->getMusicGroup()->setVolume(0.1F);
-    }
-
-    void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
-        ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
-        ctx.audioManager->getSFXGroup()->setVolume(0.5F);
-    }
+void onMusicLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
+    combatFMODChannel =
+        ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::Music, true);
+    ctx.audioManager->getMusicGroup()->setVolume(0.1F);
 }
+
+void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
+    ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
+    ctx.audioManager->getSFXGroup()->setVolume(0.5F);
+}
+} // namespace combatSound
 
 void game::CombatState::onEnter() {
     combatSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
@@ -74,8 +75,7 @@ void game::CombatState::onEnter() {
     dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS2;
     taskS2.context = sCtx;
     taskS2.onLoad = combatSound::onSFXLoad;
-    _game->getEngine()->getAssetManager()->getAsync("audio/prime_wznoszeniePol.wav",
-                                                    taskS2);
+    _game->getEngine()->getAssetManager()->getAsync("audio/prime_wznoszeniePol.wav", taskS2);
 
     startNewTurn();
 }
@@ -108,31 +108,32 @@ void game::CombatState::onExit() {
     const auto& enemyTerritory = _currentEnemy->getTerritory();
 
     for (auto* cell : enemyTerritory) {
-
         if (!cell) {
             continue;
         }
 
-        cell->setType(HexCell::Type::Normal);
+        if (!_playerDied) {
+            cell->setType(HexCell::Type::Normal);
+        }
         cell->setDirty(true);
     }
 
-    auto enemyCell = grid->findCellByEntity(_currentEnemy);
-
-    if (enemyCell) {
-
+    if (auto enemyCell = grid->findCellByEntity(_currentEnemy); enemyCell) {
         auto* playerMovement = _player->getOwner()->getComponent<PlayerMovement>();
 
         if (playerMovement) {
             playerMovement->stopMovement();
         }
 
-        _player->teleportTo(enemyCell);
+        if (!_playerDied) {
+            _player->teleportTo(enemyCell);
+        }
     }
 
-    auto* enemyGO = _currentEnemy->getOwner();
-
-    if (enemyGO) {
+    if (auto* em = scene.get()->findGameObjectByTag("EnemyManager")->getComponent<EnemyManager>();
+        em && !_playerDied) {
+        em->removeEnemy(_currentEnemy);
+        auto* enemyGO = _currentEnemy->getOwner();
         _game->getCurrentScene().get()->destroyGameObject(enemyGO);
     }
 
@@ -142,6 +143,14 @@ void game::CombatState::onExit() {
     dzemikk::UIActionRegistry::get().unregisterAction("Confirm_Round");
 
     _game->getEngine()->getAudioManager()->stop(combatSound::combatFMODChannel);
+
+    if (_playerDied) {
+        _currentEnemy = nullptr;
+        _game->getEngine()->getInput()->OnKeyPressed.removeListener(_endTurnListenerId);
+        dzemikk::UIActionRegistry::get().unregisterAction("Confirm_Round");
+        _game->getEngine()->getAudioManager()->stop(combatSound::combatFMODChannel);
+        return;
+    }
 }
 
 void game::CombatState::onUpdate(float dt) {
@@ -154,11 +163,16 @@ void game::CombatState::onUpdate(float dt) {
             _boardTransition = 0.0F;
             _exitAnimation = false;
 
-            _game->setExplorationState();
+            if (_playerDied) {
+                _game->restart();
+            } else {
+                _game->setExplorationState();
+            }
             return;
         }
 
         updateBoardVisibility(_boardTransition, true);
+        return;
     }
 
     if (_enterAnimation) {
@@ -276,14 +290,14 @@ void game::CombatState::endPlayerTurn() {
     _phase = CombatPhase::ResolveTurn;
 
     resolveConflict();
+
     showEnemyPlannedPatterns();
 
     combatSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
     dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS;
     taskS.context = sCtx;
     taskS.onLoad = combatSound::onSFXLoad;
-    _game->getEngine()->getAssetManager()->getAsync("audio/prime_zakonczenie_tury.wav",
-                                                    taskS);
+    _game->getEngine()->getAssetManager()->getAsync("audio/prime_zakonczenie_tury.wav", taskS);
 
     _resultTimer = 2.0F;
 }
@@ -373,22 +387,33 @@ void game::CombatState::resolveConflict() {
                          ->getComponent<World>()
                          ->getGrid();
 
-        auto enemyChunkId = grid->findChunkForCoord(_currentEnemy->getCell()->getCoord())->getId();
+        auto enemyChunkId =
+            grid->findChunkForCoord(_currentEnemy->getCell()->getCoord())->getPersistantId();
         auto enemyConfig = _currentEnemy->getConfig();
         for (const auto& childChunk : enemyConfig.blocksChunks) {
             grid->unlockBridge({enemyChunkId, childChunk}, _currentEnemy->getId());
+        }
+
+        auto* enemyManagerGO = _game->getCurrentScene().get()->findGameObjectByName("EnemyManager");
+        if (enemyManagerGO) {
+            auto* enemyManager = enemyManagerGO->getComponent<EnemyManager>();
+            if (enemyManager) {
+                enemyManager->removeEnemy(_currentEnemy);
+            }
         }
     }
 
     if (playerHealth->isDead()) {
         _exitAnimation = true;
         _boardTransition = 1.0F;
+        _playerDied = true;
 
         combatSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
         dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS;
         taskS.context = sCtx;
         taskS.onLoad = combatSound::onSFXLoad;
-        _game->getEngine()->getAssetManager()->getAsync("audio/prime_przegrana_walka_enhanced.wav", taskS);
+        _game->getEngine()->getAssetManager()->getAsync("audio/prime_przegrana_walka_enhanced.wav",
+                                                        taskS);
 
         dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS2;
         taskS2.context = sCtx;

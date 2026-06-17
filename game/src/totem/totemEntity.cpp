@@ -1,11 +1,12 @@
 #include "totem/totemEntity.h"
+
 #include "game.h"
 #include "player/playerPatternComponent.h"
 #include "ui/combatUIPanel.h"
 
-#include <ecs/scene.h>
-#include <ecs/gameobject.h>
 #include <ecs/components/light/pointLight.h>
+#include <ecs/gameobject.h>
+#include <ecs/scene.h>
 
 void game::TotemEntity::onEnter(HexCellPtr cell) {
     if (!cell) {
@@ -34,11 +35,11 @@ void game::TotemEntity::onExit() {
 }
 
 void game::TotemEntity::use() {
-    if (_isUsed) {
+    if (_config.used) {
         return;
     }
 
-    _isUsed = true;
+    _config.used = true;
 
     auto* playerGO = _game->getCurrentScene().get()->findGameObjectByName("Player");
     auto* patternComponent = playerGO->getComponent<game::PlayerPatternComponent>();
@@ -50,7 +51,25 @@ void game::TotemEntity::use() {
     auto* combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
     combatPlayerPanel->addPatternSlot(*pattern);
 
+    lightOff();
+}
+
+void game::TotemEntity::unuse() {
+    if (!_config.used) {
+        return;
+    }
+    _config.used = false;
+    lightOn();
+}
+
+void game::TotemEntity::lightOff() {
     auto* lightGO = this->getOwner()->findChildByName("Light");
     auto* lightComp = lightGO->getComponent<dzemikk::PointLight>();
     lightComp->enabled(false);
+}
+
+void game::TotemEntity::lightOn() {
+    auto* lightGO = this->getOwner()->findChildByName("Light");
+    auto* lightComp = lightGO->getComponent<dzemikk::PointLight>();
+    lightComp->enabled(true);
 }

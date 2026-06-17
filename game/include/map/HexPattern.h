@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <nlohmann/json.hpp>
+#include <spdlog/spdlog.h>
 #include <vector>
 
 namespace game {
@@ -13,7 +14,7 @@ class HexPattern {
     enum class Type : uint8_t { ATK, DEF, HEAL, BONUSHEX };
     enum class Rotation : uint8_t { Clockwise, CounterClockwise };
 
-    HexPattern() : _hexes({{0, 0}}), _type(Type::ATK), _effectStrength(1.0F) {}
+    HexPattern() : _hexes({{0, 0}}) {}
 
     HexPattern(std::vector<HexCoord> hexes, Type type, float effectStrength = 1.0F);
     ~HexPattern() = default;
@@ -40,19 +41,22 @@ class HexPattern {
 inline void to_json(nlohmann::json& j, const HexPattern& pat) {
     j = nlohmann::json{{"hexes", pat.getHexes()},
                        {"effectStrenght", pat.getEffectStrength()},
-                       {"type", pat.getType()}};
+                       {"type", static_cast<uint8_t>(pat.getType())}};
 }
 
 inline void from_json(const nlohmann::json& j, HexPattern& pat) {
     if (!j.contains("hexes") || !j.contains("effectStrenght") || !j.contains("type") ||
-        !j["hexes"].is_array() || j["hexes"].empty() || !j["effectStrenght"].is_number_float() ||
-        !j["type"].is_number_integer()) {
-        throw std::runtime_error("Invalid JSON for World::ChunkDefinition");
+        !j["hexes"].is_array() || j["hexes"].empty() || !j["effectStrenght"].is_number() ||
+        !j["type"].is_number()) {
+        throw std::runtime_error("Invalid JSON");
     }
 
+    spdlog::info("[HexPatterm] Deserializing pattern with type {} and effect strength {}",
+                 j["type"].get<uint8_t>(), j["effectStrenght"].get<float>());
+
     std::vector<HexCoord> hexes = j["hexes"].get<std::vector<HexCoord>>();
-    pat = HexPattern(hexes, static_cast<HexPattern::Type>(j["type"].get<int>(),
-                                                          j["effectStrenght"].get<float>()));
+    pat = HexPattern(hexes, static_cast<HexPattern::Type>(j["type"].get<uint8_t>()),
+                     j["effectStrenght"].get<float>());
 }
 // NOLINTEND(readability-identifier-naming)
 

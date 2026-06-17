@@ -7,139 +7,283 @@
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/serialize/prefabSerializer.h"
+#include "enemySystem/enemyManager.h"
 #include "game.h"
-#include "map/ItemEntity.h"
-#include "map/ItemEntityBonusHex.h"
-#include "map/ItemEntityHealth.h"
-#include "map/ItemEntityRevealHex.h"
-#include "map/ItemEntityRevealPatter.h"
+#include "healthSystem.h"
+#include "item/itemManager.h"
 #include "map/PlayerEntity.h"
+#include "player/inventory.h"
+#include "player/playerPatternComponent.h"
+#include "renderer/shader.h"
 #include "scripts/world/worldHex.h"
+#include "totem/totemManager.h"
 
+#include <boost/uuid/detail/nil_uuid.hpp>
+#include <boost/uuid/string_generator.hpp>
 #include <format>
 #include <memory>
 #include <random>
 
 namespace game {
 World::World(unsigned int seed) : _rng(seed), _perlin(seed), _grid(seed) {
-    _worldDefinition.seed = seed;
-    _worldDefinition.chunks = {};
+    _worldData.seed = seed;
+    _worldData.chunks = {};
     _generators["default"] = [](int step, int maxSteps) {
         return 1.0F - (static_cast<float>(step) / static_cast<float>(maxSteps));
     };
 }
 
 void World::load(const nlohmann::json& def) {
-    const WorldDefinition wd = def["world"].get<WorldDefinition>();
-    _worldDefinition = wd;
+    boost::uuids::string_generator gen;
 
-    _rng = std::mt19937(_worldDefinition.seed);
-    _perlin = Perlin(_worldDefinition.seed);
-
-    for (auto* trs : _hexTransforms) {
-        _owner->destroyChild(trs->getOwner());
-    }
-    _hexTransforms.clear();
+    _worldData.chunks.clear();
     _spawnedHexes.clear();
+    _hexTransforms.clear();
+    _reservedTerritory.clear();
 
-    _grid = HexGrid(_worldDefinition.seed);
-
-    const auto chunksToBuild = _worldDefinition.chunks;
-    _worldDefinition.chunks.clear();
-    for (const auto& chunkDef : chunksToBuild) {
-        addChunk(chunkDef);
-    }
-
-    // Removes all hexes with gen state Blocked
-    _grid.clean();
-}
-
-nlohmann::json World::save() {
-    return nlohmann::json{{"world", _worldDefinition}};
-}
-
-void World::spawnItem(const boost::uuids::uuid& chunkId, ItemEntity::ItemType type,
-                      std::vector<std::any>& args) {
-    if (_game == nullptr) {
+    if (!def.contains("chunkData")) {
         return;
     }
 
-    ItemEntity* item = nullptr;
-    dzemikk::GameObject* go = nullptr;
+    for (const auto& [chunkKey, chunkJson] : def["chunkData"].items()) {
+        auto chunkId = gen(chunkKey);
 
-    switch (type) {
-    case ItemEntity::ItemType::Heal: {
-        if (args.size() != 1) {
-#if DZEMIKK_DEV_TOOLS
-            spdlog::error("[World] ItemEntityHealth received incorrect args");
-#endif
-            return;
+        ChunkData cd;
+        cd.childPersistantId = chunkId;
+
+        HexCoord origin(0, 0);
+        if (chunkJson.contains("origin")) {
+            origin = chunkJson["origin"].get<HexCoord>();
         }
 
-        float healAmount = std::any_cast<float>(args[0]);
+        std::vector<std::shared_ptr<HexCell>> cells;
+        if (chunkJson.contains("cells")) {
+            for (const auto& cellJson : chunkJson["cells"]) {
+                auto coord = cellJson.at("coord").get<HexCoord>();
+                auto state = static_cast<HexCell::State>(cellJson.at("state").get<uint8_t>());
+                auto type = static_cast<HexCell::Type>(cellJson.at("type").get<uint8_t>());
+                auto genState =
+                    static_cast<HexCell::GenState>(cellJson.at("genState").get<uint8_t>());
 
-        auto prefab =
-            _game->getEngine()->getAssetManager()->get<nlohmann::json>("prefabs/ItemHeal.prefab");
-        go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
-                                                    _game->getEngine()->getAssetManager(), _owner);
-        item = go->addComponent<game::ItemEntityHealth>(healAmount);
-        break;
-    }
-    case ItemEntity::ItemType::RevealPattern: {
-        if (args.size() != 0) {
-#if DZEMIKK_DEV_TOOLS
-            spdlog::error("[World] ItemEntityRevealPattern received incorrect args");
-#endif
-            return;
+                auto cell = std::make_shared<HexCell>(coord, state, type, genState);
+
+                if (cellJson.contains("height")) {
+                    cell->setHeight(cellJson.at("height").get<float>());
+                }
+                if (cellJson.contains("checkpoint")) {
+                    cell->setCheckpoint(cellJson.at("checkpoint").get<bool>());
+                }
+                if (cellJson.contains("checkpointUsed")) {
+                    cell->setCheckpointUsed(cellJson.at("checkpointUsed").get<bool>());
+                }
+
+                cells.push_back(cell);
+            }
         }
 
-        auto prefab = _game->getEngine()->getAssetManager()->get<nlohmann::json>(
-            "prefabs/ItemRevealPattern.prefab");
-        go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
-                                                    _game->getEngine()->getAssetManager(), _owner);
-        item = go->addComponent<ItemEntityRevealPattern>();
-        break;
-    }
-    case ItemEntity::ItemType::RevealHex: {
-        if (args.size() != 0) {
-#if DZEMIKK_DEV_TOOLS
-            spdlog::error("[World] ItemEntityRevealHex received incorrect args");
-#endif
-            return;
+        HexChunk::Config config;
+        config.chunkId = chunkId;
+
+        if (chunkJson.contains("config")) {
+            const auto& cfg = chunkJson["config"];
+            cd.parentPersistantId = gen(cfg.at("parentPersistantId").get<std::string>());
+            cd.name = cfg.at("name").get<std::string>();
+            cd.steps = cfg.at("steps").get<int>();
+            cd.generatorId = cfg.value("generatorId", std::string("default"));
+            cd.dirFromParent =
+                static_cast<HexCoord::Direction>(cfg.at("dirFromParent").get<uint8_t>());
+
+            if (cfg.contains("unlockPattern") && !cfg["unlockPattern"].is_null()) {
+                cd.unlockPattern = cfg["unlockPattern"].get<HexPattern>();
+            }
+
+            config.parentChunkId = cd.parentPersistantId;
+            config.name = cd.name;
+            config.steps = cd.steps;
+            config.generatorId = cd.generatorId;
+            config.dirFromParent = cd.dirFromParent;
+            config.unlockPattern = cd.unlockPattern;
         }
 
-        auto prefab = _game->getEngine()->getAssetManager()->get<nlohmann::json>(
-            "prefabs/ItemRevealHex.prefab");
-        go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
-                                                    _game->getEngine()->getAssetManager(), _owner);
-        item = go->addComponent<ItemEntityRevealHex>();
-        break;
+        _worldData.chunks.push_back(cd);
+
+        auto hexChunk = std::make_unique<HexChunk>(config, cells, origin);
+
+        _grid.loadChunk(std::move(hexChunk));
     }
-    case ItemEntity::ItemType::BonusHex: {
-        if (args.size() != 1) {
+
+    for (const auto& [chunkKey, chunkJson] : def["chunkData"].items()) {
+        if (!chunkJson.contains("bridges")) {
+            continue;
+        }
+        auto parentId = gen(chunkKey);
+        for (const auto& bridgeJson : chunkJson["bridges"]) {
+            auto childId = gen(bridgeJson.at("childPersistantId").get<std::string>());
+            HexGrid::BridgeId bridgeId{parentId, childId};
+
+            HexGrid::BridgeInfo info;
+            info.parentId = parentId;
+            info.childId = childId;
+
+            if (bridgeJson.contains("hexes")) {
+                for (const auto& hexJson : bridgeJson["hexes"]) {
+                    auto coord = hexJson.get<HexCell>();
+                    auto cell = _grid.getCell(coord.getCoord());
+                    if (cell) {
+                        info.hexes.insert(cell.get());
+                    } else {
+                    }
+                }
+            }
+
+            _grid.loadBridge(bridgeId, std::move(info));
+        }
+    }
+
+    for (const auto& [chunkKey, chunkJson] : def["chunkData"].items()) {
+        if (!chunkJson.contains("blockingPatterns")) {
+            continue;
+        }
+        auto chunkId = gen(chunkKey);
+        for (const auto& bpJson : chunkJson["blockingPatterns"]) {
+            HexGrid::BlockingPatternInfo bp;
+            bp.parentChunkId = gen(bpJson.at("parentPersistantId").get<std::string>());
+            bp.blockedChunkId = gen(bpJson.at("childPersistantId").get<std::string>());
+            bp.pattern = bpJson.at("pattern").get<HexPattern>();
+            bp.occupiedCoords = bpJson.at("coords").get<std::vector<HexCoord>>();
+            bp.unlocked = bpJson.at("unlocked").get<bool>();
+
+            _grid.loadBlockingPattern(chunkId, std::move(bp));
+        }
+    }
+
+    for (const auto& [id, chunk] : _grid.getChunks()) {
+        renderChunk(id);
+    }
+}
+
+nlohmann::json World::save() {
+    nlohmann::json j;
+
+    for (const auto& [chunkId, chunk] : _grid.getChunks()) {
+        auto chunkKey = boost::uuids::to_string(chunkId);
+        j["chunkData"][chunkKey]["cells"] = nlohmann::json::array();
+        // NOLINTBEGIN(modernize-type-traits)
+        auto chunkData = std::ranges::find_if(
+            _worldData.chunks, [&](const auto& data) { return data.childPersistantId == chunkId; });
+        // NOLINTEND(modernize-type-traits)
+        if (chunkData != _worldData.chunks.end()) {
+            j["chunkData"][chunkKey]["config"] = {
+                {"parentPersistantId", boost::uuids::to_string(chunkData->parentPersistantId)},
+                {"childPersistantId", boost::uuids::to_string(chunkData->childPersistantId)},
+                {"name", chunkData->name},
+                {"steps", chunkData->steps},
+                {"generatorId", chunkData->generatorId},
+                {"dirFromParent", static_cast<uint8_t>(chunkData->dirFromParent)},
+                {"unlockPattern", chunkData->unlockPattern}};
+        }
+        j["chunkData"][chunkKey]["origin"] = chunk->getOrigin();
+        for (const auto& [coord, cell] : chunk->getHexes()) {
+            nlohmann::json data{
+                {"coord", cell->getCoord()},
+                {"state", static_cast<uint8_t>(cell->getState())},
+                {"type", static_cast<uint8_t>(cell->getType())},
+                {"genState", static_cast<uint8_t>(cell->getGenState())},
+                {"height", cell->getHeight()},
+                {"checkpoint", cell->isCheckpoint()},
+                {"checkpointUsed", cell->isCheckpointUsed()},
+            };
+            j["chunkData"][chunkKey]["cells"].emplace_back(data);
+        }
+    }
+
+    for (const auto& [id, info] : _grid.getBridges()) {
+        nlohmann::json d = {
+            {"parentPersistantId", boost::uuids::to_string(info.parentId)},
+            {"childPersistantId", boost::uuids::to_string(info.childId)},
+
+        };
+        for (const auto& hex : info.hexes) {
+            d["hexes"].emplace_back(*hex);
+        }
+        j["chunkData"][boost::uuids::to_string(id.first)]["bridges"].emplace_back(d);
+    }
+
+    for (const auto& [childPersistantId, bp] : _grid.getBlockingPatterns()) {
+        nlohmann::json d = {
+            {"parentPersistantId", boost::uuids::to_string(bp.parentChunkId)},
+            {"childPersistantId", boost::uuids::to_string(bp.blockedChunkId)},
+            {"pattern", bp.pattern},
+            {"coords", bp.occupiedCoords},
+            {"unlocked", bp.unlocked},
+        };
+        j["chunkData"][boost::uuids::to_string(childPersistantId)]["blockingPatterns"].emplace_back(
+            d);
+    }
+
+    auto* itemManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("ItemManager");
+    if (itemManagerGo) {
+        auto* im = itemManagerGo->getComponent<ItemManager>();
+        j["items"] = im->saveState()["items"];
+    } else {
 #if DZEMIKK_DEV_TOOLS
-            spdlog::error("[World] ItemEntityBonusHex received incorrect args");
+        spdlog::warn("[World] No ItemManager GameObject found during save");
 #endif
-            return;
+    }
+
+    auto* enemyManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("EnemyManager");
+    if (enemyManagerGo) {
+        auto* em = enemyManagerGo->getComponent<EnemyManager>();
+        j["enemies"] = em->saveState()["enemies"];
+    } else {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[World] No EnemyManager GameObject found during save");
+#endif
+    }
+
+    auto* totemManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("TotemManager");
+    if (totemManagerGo) {
+        auto* tm = totemManagerGo->getComponent<TotemManager>();
+        j["totems"] = tm->saveState()["totems"];
+    }
+
+    auto* playerGO = _game->getCurrentScene().get()->findGameObjectByTag("Player");
+    if (playerGO) {
+        if (auto* playerEntity = playerGO->getComponent<PlayerEntity>();
+            playerEntity && playerEntity->getCell()) {
+            j["player"]["position"] = playerEntity->getCell()->getCoord();
         }
 
-        HexPattern pattern = std::any_cast<HexPattern>(args[0]);
+        if (auto* healthGO =
+                _game->getCurrentScene().get()->findGameObjectByTag("PlayerHealthSystem");
+            healthGO) {
+            if (auto* health = healthGO->getComponent<HealthSystem>(); health) {
+                j["player"]["health"] = health->getCurrentHealth();
+                j["player"]["maxHealth"] = health->getMaxHealth();
+            }
+        }
 
-        auto prefab = _game->getEngine()->getAssetManager()->get<nlohmann::json>(
-            "prefabs/ItemBonusHex.prefab");
-        go = dzemikk::PrefabSerializer::instantiate(*_game->getCurrentScene().get(), *prefab.get(),
-                                                    _game->getEngine()->getAssetManager(), _owner);
-        item = go->addComponent<ItemEntityBonusHex>(pattern);
-        break;
-    }
+        if (auto* patternComp = playerGO->getComponent<PlayerPatternComponent>(); patternComp) {
+            for (const auto& entry : patternComp->getPatterns()) {
+                j["player"]["patterns"].push_back(
+                    {{"pattern", entry.pattern}, {"count", entry.count}});
+            }
+        }
+
+        if (auto* inventory = playerGO->getComponent<Inventory>(); inventory) {
+            for (const auto& [type, count] : inventory->getItems()) {
+                j["player"]["inventory"][std::to_string(static_cast<uint8_t>(type))] = count;
+            }
+        }
     }
 
-    if (item != nullptr && go != nullptr) {
-        _grid.addItem(chunkId, item);
-        auto worldPos =
-            item->getCell()->getCoord().toWorldPosition(1.0F, 0.1F, item->getCell()->getHeight());
-        go->transform()->setPosition(worldPos + glm::vec3(0.0F, 0.5F, 0.0F));
-    }
+    return j;
+}
+
+void World::saveToFile(const std::string& filename) {
+    std::ofstream out(filename);
+    out << save().dump(4);
+    out.close();
 }
 
 void World::update(double dt) {
@@ -150,21 +294,6 @@ void World::update(double dt) {
                 continue;
             }
             spawnHexVisual(cell);
-        }
-    }
-
-    for (auto& [uuid, itemEntities] : _grid.getItemEntities()) {
-        for (auto it = itemEntities.begin(); it != itemEntities.end();) {
-            auto* item = *it;
-            if (item->isConsumed()) {
-                item->getCell()->setEntity(nullptr);
-                item->getCell()->setState(HexCell::State::Empty);
-                auto* owner = item->getOwner();
-                it = itemEntities.erase(it);
-                owner->destroy();
-            } else {
-                ++it;
-            }
         }
     }
 
@@ -200,8 +329,8 @@ void World::update(double dt) {
     }
 }
 
-boost::uuids::uuid World::addChunk(const ChunkDefinition& config) {
-    _worldDefinition.chunks.push_back(config);
+boost::uuids::uuid World::addChunk(const ChunkData& config) {
+    _worldData.chunks.push_back(config);
     auto g = _generators.at(config.generatorId);
 
     if (g == nullptr) {
@@ -209,14 +338,16 @@ boost::uuids::uuid World::addChunk(const ChunkDefinition& config) {
             std::format("Generator with id '{}' not found", config.generatorId));
     }
 
-    auto id = _grid.makeChunk({.parentChunkId = config.parentChunkId,
-                               .chunkId = config.chunkId,
+    auto id = _grid.makeChunk({.parentChunkId = config.parentPersistantId,
+                               .chunkId = config.childPersistantId,
+                               .name = config.name,
                                .steps = config.steps,
+                               .generatorId = config.generatorId,
                                .generator = g,
                                .dirFromParent = config.dirFromParent,
                                .unlockPattern = config.unlockPattern});
 
-    _worldDefinition.chunks.back().chunkId = id;
+    _worldData.chunks.back().childPersistantId = id;
     renderChunk(id);
 
     return id;
@@ -266,6 +397,20 @@ dzemikk::Transform* World::getHexTransformByCell(HexCell cell) {
 }
 
 void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
+    if (!_assetManager) {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::error("[World] Asset Manager not set for spawnVisualHex to run");
+#endif
+        return;
+    }
+
+    if (!_hexModel || !_hexMaterial) {
+        auto hexShader = _assetManager->get<dzemikk::Shader>("shaders/tile1");
+        _hexMaterial = std::make_shared<dzemikk::Material>();
+        _hexMaterial->setShader(hexShader);
+        _hexModel = _assetManager->get<dzemikk::Model>("models/hex_wypukly.fbx");
+    }
+
     if (_spawnedHexes.contains(cell->getCoord())) {
         return;
     }
@@ -287,19 +432,19 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
     obj->transform()->setRotation(
         glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
     auto* meshRenderer = obj->addComponent<dzemikk::MeshRenderer>();
-    meshRenderer->setModel(_model);
+    meshRenderer->setModel(_hexModel);
 
     switch (cell->getGenState()) {
     case HexCell::GenState::Blocked:
-        meshRenderer->setMaterial(0, _material);
+        meshRenderer->setMaterial(0, _hexMaterial);
         meshRenderer->setColor(glm::vec4(0.2F, 0.2F, 0.2F, 1.0F));
         break;
     case HexCell::GenState::Protected:
-        meshRenderer->setMaterial(0, _material);
+        meshRenderer->setMaterial(0, _hexMaterial);
         meshRenderer->setColor(glm::vec4(0.2F, 0.5F, 1.0F, 1.0F));
         break;
     case HexCell::GenState::Normal:
-        meshRenderer->setMaterial(0, _material);
+        meshRenderer->setMaterial(0, _hexMaterial);
         meshRenderer->setColor(glm::vec4(1.0F, 1.0F, 1.0F, 1.0F));
         break;
     }
@@ -319,7 +464,7 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
     worldHex->setHexCell(cell);
 
     auto* collider = obj->addComponent<dzemikk::Collider>();
-    collider->setModel(_model);
+    collider->setModel(_hexModel);
     collider->setTransform(obj->transform());
 }
 
@@ -330,4 +475,17 @@ void World::setPlayer(PlayerEntity* playerEntity) {
 
     _player = playerEntity;
 }
+
+void World::clearHexVisuals() {
+    auto* scene = _owner->getScene();
+    for (auto* transform : _hexTransforms) {
+        if (transform && transform->getOwner()) {
+            scene->destroyGameObject(transform->getOwner());
+        }
+    }
+    _hexTransforms.clear();
+    _spawnedHexes.clear();
+    _reservedTerritory.clear();
+}
+
 } // namespace game

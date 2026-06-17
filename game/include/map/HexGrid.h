@@ -26,9 +26,11 @@ template <> struct hash<std::pair<boost::uuids::uuid, boost::uuids::uuid>> {
 
 namespace game {
 class EnemyEntity;
+
 class HexGrid {
   public:
     using HexCellPtr = std::shared_ptr<HexCell>;
+    using BridgeId = std::pair<boost::uuids::uuid /*parent*/, boost::uuids::uuid /*child*/>;
 
     struct BlockingPatternInfo {
         HexPattern pattern;
@@ -52,64 +54,67 @@ class HexGrid {
     HexGrid& operator=(HexGrid&&) = default;
     ~HexGrid();
 
-    [[nodiscard]] const std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>>&
-    getChunks() const {
-        return _chunks;
-    }
-
-    boost::uuids::uuid makeChunk(const HexChunk::Config& config);
-    HexChunk* findChunkForCoord(const HexCoord& coord);
+    // --- Cell access ---
     [[nodiscard]] HexCellPtr getCell(const HexCoord& coord) const;
     [[nodiscard]] HexCellPtr at(const HexCoord& coord) const;
     [[nodiscard]] bool contains(const HexCoord& coord) const;
     bool moveCell(const HexCoord& from, const HexCoord& to);
     HexCellPtr findCellByEntity(Entity* entity) const;
-    void clean();
 
+    // --- Flag-based cell queries (uses packed _flags for fast filtering) ---
+    [[nodiscard]] std::vector<HexCellPtr> findCells(uint32_t mask, uint32_t value) const;
+    [[nodiscard]] std::vector<HexCellPtr> findCellsByState(HexCell::State state) const;
+    [[nodiscard]] std::vector<HexCellPtr> findCellsByType(HexCell::Type type) const;
+
+    // --- Chunk access ---
+    [[nodiscard]] const std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>>&
+    getChunks() const {
+        return _chunks;
+    }
+    [[nodiscard]] HexChunk* getChunkByName(const std::string& name) const;
+    HexChunk* getChunkByName(const std::string& name);
+    [[nodiscard]] HexChunk* getChunkById(const boost::uuids::uuid& id) const;
+    HexChunk* getChunkById(const boost::uuids::uuid& id);
+    HexChunk* findChunkForCoord(const HexCoord& coord);
+
+    // --- Bridge management ---
+    [[nodiscard]] const std::unordered_map<BridgeId, BridgeInfo>& getBridges() const;
+    void lockBridge(const BridgeId& bridgeId, const boost::uuids::uuid& enemyId);
+    void unlockBridge(const BridgeId& bridgeId, const boost::uuids::uuid& enemyId);
+
+    // --- Blocking pattern management ---
     [[nodiscard]] bool isChunkBlocked(const boost::uuids::uuid& chunkId) const;
     [[nodiscard]] const BlockingPatternInfo*
     getBlockingPatternInfo(const boost::uuids::uuid& chunkId) const;
     [[nodiscard]] const BlockingPatternInfo*
     findBlockingPatternByCoord(const HexCoord& coord) const;
     bool unlockChunk(const boost::uuids::uuid& chunkId);
+    [[nodiscard]] std::unordered_map<boost::uuids::uuid, BlockingPatternInfo>
+    getBlockingPatterns() const;
 
-    [[nodiscard]] const std::unordered_map<std::pair<boost::uuids::uuid, boost::uuids::uuid>,
-                                           BridgeInfo>&
-    getBridges() const;
-    void lockBridge(std::pair<boost::uuids::uuid, boost::uuids::uuid> bridgeId,
-                    const boost::uuids::uuid& enemyId);
-    void unlockBridge(std::pair<boost::uuids::uuid, boost::uuids::uuid> bridgeId,
-                      const boost::uuids::uuid& enemyId);
+    // --- Generation ---
+    boost::uuids::uuid makeChunk(const HexChunk::Config& config);
+    void clean();
+    void clear();
 
-    template <typename T> void addItem(boost::uuids::uuid chunkId, T* itemEntity) {
-        static_assert(std::is_base_of_v<ItemEntity, T>, "T must be derived from ItemEntity");
+    // --- Loading ---
+    void loadChunk(std::unique_ptr<HexChunk> chunk);
+    void loadBridge(const BridgeId& bridgeId, BridgeInfo info);
+    void loadBlockingPattern(const boost::uuids::uuid& chunkId, BlockingPatternInfo info);
 
-        if (auto* chunk = _chunks[chunkId].get(); chunk) {
-            _itemEntities[chunkId].push_back(itemEntity);
-            chunk->addItem(itemEntity);
-        }
+    // --- Seed / RNG ---
+    [[nodiscard]] unsigned int getSeed() const {
+        return _seed;
     }
-    std::unordered_map<boost::uuids::uuid, std::vector<ItemEntity*>>& getItemEntities() {
-        return _itemEntities;
+    [[nodiscard]] std::mt19937& getRng() {
+        return _rng;
     }
 
   private:
+    // --- Generation helpers ---
     static bool isBlockedCell(const HexCellPtr& cell);
     static bool isWalkableCell(const HexCellPtr& cell);
     static bool isReachableCell(const HexCellPtr& cell);
-    std::unordered_map<boost::uuids::uuid /*HexChunk ID*/, std::unique_ptr<HexChunk>> _chunks;
-    std::unordered_map<std::pair<boost::uuids::uuid /*Parent*/, boost::uuids::uuid /*Child*/>,
-                       BridgeInfo>
-        _bridges;
-    std::unordered_map<boost::uuids::uuid /*Blocked Chunk ID*/, BlockingPatternInfo>
-        _blockingPatterns;
-    unsigned int _seed;
-    std::mt19937 _rng;
-    boost::uuids::uuid _rootChunkId;
-    bool _cleaned{false};
-
-    std::unordered_map<boost::uuids::uuid /*Chunk ID*/, std::vector<ItemEntity*>> _itemEntities;
-
     static std::pair<HexCoord, HexCoord> closestPair(HexChunk* chunk1, HexChunk* chunk2);
     [[nodiscard]] bool neighboursChunk(const HexCoord& coord,
                                        const boost::uuids::uuid& chunkToSkip) const;
@@ -120,6 +125,17 @@ class HexGrid {
                               const boost::uuids::uuid& chunkId, const HexPattern& pattern);
     void cleanChunkBorders(const boost::uuids::uuid& chunkId);
     void removeUnreachableHexes();
+
+    // --- Data ---
+    unsigned int _seed;
+    std::mt19937 _rng;
+    boost::uuids::uuid _rootChunkId;
+    bool _cleaned{false};
+
+    std::unordered_map<std::string, HexChunk*> _chunkByName;
+    std::unordered_map<boost::uuids::uuid, std::unique_ptr<HexChunk>> _chunks;
+    std::unordered_map<BridgeId, BridgeInfo> _bridges;
+    std::unordered_map<boost::uuids::uuid, BlockingPatternInfo> _blockingPatterns;
 };
 } // namespace game
 

@@ -55,18 +55,28 @@ class TotemManager : public dzemikk::MonoBehaviour {
     void setGame(Game* game);
 
     /**
-     * @brief Assigns spawn rules for a specific chunk.
+     * @brief Spawns a totem on a random cell on a given chunk.
      *
-     * @param chunkId Target chunk identifier.
-     * @param config Totem spawn configurations for the chunk.
+     * @param chunkId Chunk ID on which the totem will be spawned.
+     * @param config Config for the totem.
      */
-    void setSpawnConfig(const boost::uuids::uuid& chunkId,
-                        const std::vector<TotemSpawnConfig>& config);
+    void addTotem(const boost::uuids::uuid& chunkId, TotemSpawnConfig config);
 
     /**
-     * @brief Spawns all configured totems in their respective chunks.
+     * @brief Spawns a totem on a specific cell from a given chunk.
+     *
+     * @param chunkId Chunk ID on which the totem will be spawned.
+     * @param config Config for the totem.
+     * @param coord Coord of the cell to place the totem.
      */
-    void spawnTotemsPerChunk();
+    void addTotem(const boost::uuids::uuid& chunkId, TotemSpawnConfig config,
+                  const HexCoord& coord);
+
+    [[nodiscard]] nlohmann::json saveState() const;
+    void loadState(const nlohmann::json& j);
+    void clear();
+    void markTotemUsed(const boost::uuids::uuid& persistantId);
+    void markTotemUnused(const boost::uuids::uuid& persistantId);
 
     [[nodiscard]]
     std::string typeName() const override {
@@ -77,10 +87,12 @@ class TotemManager : public dzemikk::MonoBehaviour {
     /**
      * @brief Creates a totem on the specified cell.
      *
+     * @param chunkId Chunk ID the totem belongs to.
      * @param cell Target spawn cell.
      * @param cfg Totem configuration.
      */
-    void spawnTotem(HexChunk::HexCellPtr cell, const TotemSpawnConfig& cfg);
+    void spawnTotem(const boost::uuids::uuid& chunkId, const HexChunk::HexCellPtr& cell,
+                    const TotemSpawnConfig& cfg);
 
     /**
      * @brief Collects cells that are valid candidates for totem spawning.
@@ -115,6 +127,11 @@ class TotemManager : public dzemikk::MonoBehaviour {
      * @brief Spawn configurations assigned per chunk.
      */
     std::unordered_map<boost::uuids::uuid, std::vector<TotemSpawnConfig>> _spawnRules;
+
+    /**
+     * @brief Spawned totem entities lookup by chunk.
+     */
+    std::unordered_map<boost::uuids::uuid, std::vector<TotemEntity*>> _spawnedTotems;
 };
 
 } // namespace game

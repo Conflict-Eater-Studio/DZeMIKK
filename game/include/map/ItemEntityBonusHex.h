@@ -12,7 +12,7 @@ class ItemEntityBonusHex : public ItemEntity {
     ItemEntityBonusHex() : _pattern(HexPattern({{0, 0}}, HexPattern::Type::BONUSHEX)) {
         setItemType(ItemType::BonusHex);
     };
-    ItemEntityBonusHex(HexPattern pattern) : _pattern(std::move(pattern)) {
+    ItemEntityBonusHex(const HexPattern& pattern) : _pattern(pattern) {
         setItemType(ItemType::BonusHex);
     }
 
@@ -20,11 +20,17 @@ class ItemEntityBonusHex : public ItemEntity {
         return "ItemEntityHealth";
     }
 
-    void setHexPattern(HexPattern pattern) {
-        _pattern = std::move(pattern);
+    void setHexPattern(const HexPattern& pattern) {
+        _pattern = pattern;
     }
     [[nodiscard]] HexPattern getHexPattern() const {
         return _pattern;
+    }
+
+    [[nodiscard]] nlohmann::json save() const override {
+        auto j = Base::save();
+        j["pattern"] = _pattern;
+        return j;
     }
 
   private:
