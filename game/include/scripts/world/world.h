@@ -146,7 +146,6 @@ class World : public dzemikk::MonoBehaviour {
 
     // --- Materials and Models
     dzemikk::AssetHandle<dzemikk::Model> _hexModel;
-    std::shared_ptr<dzemikk::Material> _hexMaterial;
 };
 
 } // namespace game

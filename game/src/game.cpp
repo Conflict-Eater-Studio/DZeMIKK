@@ -289,6 +289,8 @@ void Game::setupWorld() {
     auto shader = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
     auto material = std::make_shared<dzemikk::Material>();
     material->setShader(shader);
+    material->setAlbedoTexture(_engine->getAssetManager()->get<dzemikk::Texture>(
+        "textures/assets/hex_wypukly_BaseColor.png"));
 
     auto model = _engine->getAssetManager()->get<dzemikk::Model>("models/hex_wypukly.fbx");
 
