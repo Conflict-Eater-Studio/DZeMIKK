@@ -21,7 +21,7 @@ enum class EnemyPersonality : std::uint8_t { Aggressive, Defensive, Balanced };
 /**
  * @brief Defines available enemy categories.
  */
-enum class EnemyType : std::uint8_t { Normal, Special };
+enum class EnemyType : std::uint8_t { Normal, Special, Boss };
 
 struct EnemySpawnConfig {
     boost::uuids::uuid persistantId = boost::uuids::random_generator()();
