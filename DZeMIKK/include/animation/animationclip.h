@@ -5,6 +5,7 @@
 #include "IAnimationTrack.h"
 #include "floattrack.h"
 #include "nlohmann/json.hpp"
+#include "rootMotion.h"
 
 #include <memory>
 #include <vector>
@@ -76,18 +77,26 @@ public:
     void setLoop(bool loop);
     void setDuration(float duration);
     void setTickrate(float tickrate);
+    void setPlaybackSpeed(float speed);
     void setTracks(std::vector<std::unique_ptr<IAnimationTrack>> tracks);
 
     [[nodiscard]] bool isLoop() const;
     void setName(const std::string& name);
     std::string getName();
 
+    [[nodiscard]] bool isFinished() const;
+    void setFinished(bool finished);
+    void setRootMotionMode(RootMotionMode mode);
+    [[nodiscard]] RootMotionMode getRootMotionMode() const;
   private:
     std::vector<std::unique_ptr<IAnimationTrack>> _tracks;
     float _durationInTicks = 0;
     float _ticksPerSecond = 0;
+    float _playbackSpeed = 1.0f;
     bool _loop = true;
     std::string _nameInSkeleton;
+    mutable bool _isFinished = false;
+    RootMotionMode _rootMotionMode = RootMotionMode::None;
 };
 }
 

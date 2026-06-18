@@ -6,6 +6,9 @@
 #include "animation/animationclip.h"
 #include "animation/animationstate.h"
 #include "animation/animationstatemachine.h"
+#include "animation/boneTrack.h"
+#include "animation/skeleton.h"
+#include "ecs/gameobject.h"
 
 namespace dzemikk {
     void Animator::update(float deltaTime) {
@@ -30,6 +33,12 @@ namespace dzemikk {
         }
 
         clip->apply(_currentTime);
+
+        if (_applyRootMotion && _skeleton) {
+            RootMotionDelta rootDelta = extractRootMotionDelta();
+            applyRootMotionDelta(rootDelta);
+        }
+
         _currentTime += deltaTime;
 
         std::vector<Transition> transitions = _currentState->getTransitions();
@@ -52,9 +61,11 @@ namespace dzemikk {
         if (_currentState == nullptr) {
             return;
         }
-
+        if (_currentState->getClip() != nullptr) {
+            _currentState->getClip()->setFinished(false);
+        }
         _currentTime = 0.0f;
-
+        _hasPrevRootTransform = false;
     }
     void Animator::setFloat(const std::string& name, float value) {
             _floatParams[name] = value;
@@ -160,4 +171,119 @@ namespace dzemikk {
 
         return false;
     }
+
+    void Animator::setApplyRootMotion(bool apply) {
+        _applyRootMotion = apply;
     }
+
+    bool Animator::getApplyRootMotion() const {
+        return _applyRootMotion;
+    }
+
+    void Animator::setRootMotionMode(RootMotionMode mode) {
+        _rootMotionMode = mode;
+    }
+
+    RootMotionMode Animator::getRootMotionMode() const {
+        return _rootMotionMode;
+    }
+
+    void Animator::setRootMotionBoneName(const std::string& boneName) {
+        _rootMotionBoneName = boneName;
+    }
+
+    const std::string& Animator::getRootMotionBoneName() const {
+        return _rootMotionBoneName;
+    }
+
+    void Animator::setSkeleton(Skeleton* skeleton) {
+        _skeleton = skeleton;
+    }
+
+    Skeleton* Animator::getSkeleton() const {
+        return _skeleton;
+    }
+
+    RootMotionDelta Animator::extractRootMotionDelta() {
+        RootMotionDelta delta;
+
+        AnimationClip* clip = _currentState->getClip();
+
+        int boneIndex = -1;
+        if (_rootMotionBoneName.empty()) {
+            if (clip) {
+                for (const auto& track : clip->getTracks()) {
+                    auto* boneTrack = dynamic_cast<BoneTrack*>(track.get());
+                    if (boneTrack && !boneTrack->getPositionKeys().empty()) {
+                        boneIndex = boneTrack->getBone();
+                        break;
+                    }
+                }
+            }
+        } else {
+            boneIndex = _skeleton->getBoneIndex(_rootMotionBoneName);
+        }
+
+        if (boneIndex < 0) return delta;
+
+        glm::mat4 currentWorld = _skeleton->computeBoneWorldTransform(boneIndex);
+
+        if (!_hasPrevRootTransform) {
+            _prevRootWorldTransform = currentWorld;
+            _hasPrevRootTransform = true;
+            return delta;
+        }
+
+        if (clip == nullptr) return delta;
+        RootMotionMode mode = clip->getRootMotionMode();
+        if (mode == RootMotionMode::None) return delta;
+
+        if (mode == RootMotionMode::Position || mode == RootMotionMode::PositionAndRotation) {
+            glm::vec3 prevPos = glm::vec3(_prevRootWorldTransform[3]);
+            glm::vec3 currPos = glm::vec3(currentWorld[3]);
+            glm::vec3 posDelta = currPos - prevPos;
+            glm::quat currRot = getOwner()->transform()->getRotation();
+
+            glm::vec3 localPosDelta = currRot * posDelta;
+
+
+            localPosDelta *= getOwner()->transform()->getScale();
+
+            delta.deltaPosition = localPosDelta;
+        }
+
+        if (mode == RootMotionMode::Rotation || mode == RootMotionMode::PositionAndRotation) {
+            glm::quat prevRot = glm::quat_cast(_prevRootWorldTransform);
+            glm::quat currRot = glm::quat_cast(currentWorld);
+            glm::quat rotDelta = glm::inverse(prevRot) * currRot;
+
+            constexpr float kAngleThreshold = 2.094395f; // 120 degrees in radians
+            float angle = glm::angle(rotDelta);
+            if (angle < kAngleThreshold) {
+                delta.deltaRotation = rotDelta;
+            }
+        }
+
+        _prevRootWorldTransform = currentWorld;
+        return delta;
+    }
+
+    void Animator::applyRootMotionDelta(const RootMotionDelta& delta) const {
+        if (!_owner) return;
+        Transform* transform = _owner->transform();
+        if (!transform) return;
+        if (_currentState == nullptr) return;
+        AnimationClip* clip = _currentState->getClip();
+        if (clip == nullptr) return;
+        RootMotionMode mode = clip->getRootMotionMode();
+        if (mode == RootMotionMode::None) return;
+
+        if (mode == RootMotionMode::Position || mode == RootMotionMode::PositionAndRotation) {
+            transform->translate(delta.deltaPosition);
+        }
+
+        if (mode == RootMotionMode::Rotation || mode == RootMotionMode::PositionAndRotation) {
+            transform->rotate(delta.deltaRotation);
+        }
+    }
+}
