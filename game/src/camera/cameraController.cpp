@@ -35,7 +35,7 @@ void game::CameraController::setMode(Mode mode) {
 
     if (_mode == Mode::Combat) {
         getOwner()->transform()->setRotation(
-            glm::vec3(glm::radians(-90.0F), glm::radians(-90.0F), 0.0F));
+            glm::vec3(glm::radians(-90.0F), glm::radians(-120.0F), 0.0F));
     }
 }
 

@@ -114,9 +114,14 @@ class CameraController : public dzemikk::MonoBehaviour {
 
     float _followSpeed = 2.0F;
     glm::vec3 _offsetExplorationMode = glm::vec3(-25.0F, 14.0F, 10.0F);
-    glm::vec3 _offsetCombatMode = glm::vec3(0.0f, 20.0f, 5.0f);
+    glm::vec3 _offsetCombatMode = glm::vec3(-2.0f, 20.0f, 5.0f);
 
 #pragma endregion
+
+    bool _useModeRotation = true;
+
+    glm::vec3 _manualRotation = glm::vec3(0.0f);
+    float _manualRotationSpeed = 90.0f;
 };
 
 } // namespace game
