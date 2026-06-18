@@ -162,9 +162,6 @@ void ItemManager::spawnItem(const boost::uuids::uuid& chunkId, const HexChunk::H
         cell->setEntity(item);
         item->onEnter(cell);
 
-        auto worldPos = cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight());
-        go->transform()->setPosition(worldPos + glm::vec3(0.0F, 0.5F, 0.0F));
-
         _spawnedItems[chunkId].push_back(item);
     }
 }

@@ -11,6 +11,7 @@
 #include <assetManager/assetmanager.h>
 #include <audio/audioManager.h>
 #include <audio/sound.h>
+#include <iostream>
 
 namespace inventorySound {
 struct SoundInitContext {
@@ -36,7 +37,7 @@ void Inventory::addItem(ItemEntity::ItemType item, unsigned int count) {
             spdlog::info("[Inventory] Added RevealPattern item. Total: {}", _items[item]);
 #endif
             btn = _game->getCurrentScene().get()->findGameObjectByName("UI_RevealPatternBtn");
-            newText = std::format("RP {}", _items[item]);
+            newText = std::format("{}", _items[item]);
             break;
         }
         case ItemEntity::ItemType::RevealHex: {
@@ -44,7 +45,7 @@ void Inventory::addItem(ItemEntity::ItemType item, unsigned int count) {
             spdlog::info("[Inventory] Added RevealHex item. Total: {}", _items[item]);
 #endif
             btn = _game->getCurrentScene().get()->findGameObjectByName("UI_RevealHexBtn");
-            newText = std::format("RH {}", _items[item]);
+            newText = std::format("{}", _items[item]);
             break;
         }
         default: {
@@ -59,6 +60,7 @@ void Inventory::addItem(ItemEntity::ItemType item, unsigned int count) {
 }
 
 void Inventory::tryUseItem(ItemEntity::ItemType item) {
+
     if (_game == nullptr) {
         return;
     }
@@ -78,13 +80,13 @@ void Inventory::tryUseItem(ItemEntity::ItemType item) {
             case ItemEntity::ItemType::RevealPattern: {
                 btn = _game->getCurrentScene().get()->findGameObjectByName("UI_RevealPatternBtn");
                 cs->revealRandomEnemyPattern();
-                newText = std::format("RP {}", _items[item]);
+                newText = std::format("{}", _items[item]);
                 break;
             }
             case ItemEntity::ItemType::RevealHex: {
                 btn = _game->getCurrentScene().get()->findGameObjectByName("UI_RevealHexBtn");
                 cs->revealRandomEnemyCell();
-                newText = std::format("RH {}", _items[item]);
+                newText = std::format("{}", _items[item]);
                 break;
             }
             default: {

@@ -73,19 +73,19 @@ class ItemEntity : public Entity {
         if (_itemType == ItemType::Heal) {
             getOwner()->transform()->setPosition(
                 cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
-                glm::vec3(0.0F, 0.5F, 0.0F));
+                glm::vec3(0.0F, 0.1F, 0.0F));
         } else if (_itemType == ItemType::BonusHex) {
             getOwner()->transform()->setPosition(
                 cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
-                glm::vec3(0.0F, 0.6F, 0.0F));
+                glm::vec3(0.0F, 0.1F, 0.0F));
         } else if (_itemType == ItemType::RevealHex) {
             getOwner()->transform()->setPosition(
                 cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
-                glm::vec3(0.0F, 0.7F, 0.0F));
+                glm::vec3(0.0F, 0.3F, 0.0F));
         } else if (_itemType == ItemType::RevealPattern) {
             getOwner()->transform()->setPosition(
                 cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
-                glm::vec3(0.0F, 0.5F, 0.0F));
+                glm::vec3(0.0F, 0.1F, 0.0F));
         }
 
     };

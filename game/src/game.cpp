@@ -34,6 +34,7 @@
 #include "scripts/world/world.h"
 #include "scripts/world/worldHex.h"
 #include "utils/perlin.h"
+#include <ecs/components/ui/imageRenderer.h>
 
 #include <GLFW/glfw3.h>
 #include <filesystem>
@@ -198,6 +199,74 @@ void Game::start() {
         },
         "combat.reveal.randomHex");
 
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent&) {
+            if (_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
+                return;
+            }
+
+            auto tooltipsGO = _mainScene.get()->findGameObjectByName("Tooltips_Panel");
+            auto itemTooltip = tooltipsGO->findDescendantByName("Item");
+
+            auto iconGO = itemTooltip->findChildByName("Icon");
+            auto iconRenderer = iconGO->getComponent<dzemikk::ImageRenderer>();
+            iconRenderer->setTexture(_engine->getAssetManager()->get<dzemikk::Texture>(
+                "textures/ui grafiki/avatary/obsydian.png"));
+
+            auto nameGO = itemTooltip->findChildByName("Name");
+            auto nameText = nameGO->getComponent<dzemikk::UITextRenderer>();
+            nameText->text = "REVEAL PATTERN";
+
+            auto textGO = itemTooltip->findChildByName("Text");
+            auto text = textGO->getComponent<dzemikk::UITextRenderer>();
+            text->text = "Reveals enemy pattern shape";
+
+            itemTooltip->enabled(true);
+        },
+        "combat.enter.randomPattern");
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent&) {
+            if (_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
+                return;
+            }
+
+            auto tooltipsGO = _mainScene.get()->findGameObjectByName("Tooltips_Panel");
+            auto itemTooltip = tooltipsGO->findDescendantByName("Item");
+
+            auto iconGO = itemTooltip->findChildByName("Icon");
+            auto iconRenderer = iconGO->getComponent<dzemikk::ImageRenderer>();
+            iconRenderer->setTexture(_engine->getAssetManager()->get<dzemikk::Texture>(
+                "textures/ui grafiki/avatary/muszla.png"));
+
+            auto nameGO = itemTooltip->findChildByName("Name");
+            auto nameText = nameGO->getComponent<dzemikk::UITextRenderer>();
+            nameText->text = "REVEAL HEX";
+
+            auto textGO = itemTooltip->findChildByName("Text");
+            auto text = textGO->getComponent<dzemikk::UITextRenderer>();
+            text->text = "Reveals the color/type of 1 enemy hex";
+
+            itemTooltip->enabled(true);
+        },
+        "combat.enter.randomHex");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent&) {
+            auto tooltipsGO = _mainScene.get()->findGameObjectByName("Tooltips_Panel");
+
+            auto itemTooltip = tooltipsGO->findDescendantByName("Item");
+            itemTooltip->enabled(false);
+        },
+        "combat.exit.randomPattern");
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent&) {
+            auto tooltipsGO = _mainScene.get()->findGameObjectByName("Tooltips_Panel");
+
+            auto itemTooltip = tooltipsGO->findDescendantByName("Item");
+            itemTooltip->enabled(false);
+        },
+        "combat.exit.randomHex");
+
     setupInputCallbacks();
 
     _engine->start();
@@ -217,6 +286,9 @@ void Game::enableCombatUI(bool enable) {
 
     auto bonusTooltip = tooltipsGO->findDescendantByName("BonusHex");
     bonusTooltip->enabled(false);
+
+    auto itemTooltip = tooltipsGO->findDescendantByName("Item");
+    itemTooltip->enabled(false);
 }
 
 dzemikk::AssetHandle<dzemikk::Scene> Game::getCurrentScene() {
@@ -1197,4 +1269,5 @@ void Game::restart() {
     }
 
     _stateMachine->setState(std::make_unique<game::ExplorationState>(this));
+
 }
