@@ -210,6 +210,10 @@ game::CameraController* Game::getCameraController() {
 void Game::enableCombatUI(bool enable) {
     auto combatUI = _mainScene.get()->findGameObjectByName("Combat");
     combatUI->enabled(enable);
+
+    auto tooltipsGO = _mainScene.get()->findGameObjectByName("Tooltips_Panel");
+    auto patternTooltip = tooltipsGO->findDescendantByName("Pattern");
+    patternTooltip->enabled(false);
 }
 
 dzemikk::AssetHandle<dzemikk::Scene> Game::getCurrentScene() {
@@ -620,7 +624,7 @@ void Game::setupPlayer() {
         patternComponent->addPattern(
             game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::DEF, 1.1F), 5, 5);
 
-        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL), 5, 5);
+        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL, 0.5F), 5, 5);
         patternComponent->addPattern(
             game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 0.6F), 5, 5);
     }

@@ -380,7 +380,140 @@ void game::CombatUIPanel::setupButton(dzemikk::UIButton* button, size_t index,
             },
             actionId);
 
+            const std::string hoverAction = actionId + "_hover";
+        const std::string unhoverAction = actionId + "_unhover";
+
+        dzemikk::UIActionRegistry::get().registerAction(
+            [this, index](const dzemikk::UIEvent&) {
+                auto tooltipsGO =
+                    getOwner()->getScene()->findGameObjectByName("Tooltips_Panel");
+                auto patternTooltip = tooltipsGO->findDescendantByName("Pattern");
+
+                auto iconGO = patternTooltip->findChildByName("Icon");
+                auto iconRenderer = iconGO->getComponent<dzemikk::ImageRenderer>();
+
+                auto name = patternTooltip->findChildByName("Name")
+                                ->getComponent<dzemikk::UITextRenderer>();
+
+                auto leftHexGO = patternTooltip->findChildByName("Left")->findChildByName("Hex_UI");
+                auto leftHexIconGO = leftHexGO->findChildByName("Empty");
+
+                auto leftTextGo = patternTooltip->findChildByName("Left")->findChildByName("T1");
+                auto leftTextRenderer = leftTextGo->getComponent<dzemikk::UITextRenderer>();
+
+                auto rightHexGO = patternTooltip->findChildByName("Right")->findChildByName("Hex_UI");
+                auto rightHexIconGO = rightHexGO->findChildByName("Empty");
+
+                auto rightTextGo = patternTooltip->findChildByName("Right")->findChildByName("T1");
+                auto rightTextRenderer = rightTextGo->getComponent<dzemikk::UITextRenderer>();
+
+                switch (_patterns->getPattern(index)->pattern.getType()) {
+                case HexPattern::Type::ATK:
+                    iconRenderer->setTexture(_assetManager->get<dzemikk::Texture>(
+                        "textures/ui grafiki/ui patterns/atak.png"));
+
+                    name->text = "ATTACK";
+                    name->color = glm::vec3(1.0F, 0.0F, 0.0F);
+
+                    leftHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
+                        {1.0F, 0.0F, 0.0F, 1.0F});
+                    leftHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
+                        _assetManager->get<dzemikk::Texture>(
+                            "textures/ui grafiki/ui patterns/atak.png"));
+
+                    leftTextRenderer->text =
+                        std::format("Deals {:.1f} Damage",
+                                    _patterns->getPattern(index)->pattern.getEffectStrength());
+
+                    rightHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
+                        {1.0F, 0.0F, 0.0F, 1.0F});
+                    rightHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
+                        _assetManager->get<dzemikk::Texture>(
+                            "textures/ui grafiki/ui patterns/atak.png"));
+
+                    rightTextRenderer->text =
+                        std::format("{:.1f} Damage total",
+                                    _patterns->getPattern(index)->pattern.getEffectStrength() *
+                                        _patterns->getPattern(index)->pattern.getHexes().size());
+                    break;
+                case HexPattern::Type::DEF:
+                    iconRenderer->setTexture(_assetManager->get<dzemikk::Texture>(
+                        "textures/ui grafiki/ui patterns/tarcza.png"));
+
+                    name->text = "DEFENSE";
+                    name->color = glm::vec3(0.0F, 0.0F, 1.0F);
+
+                    leftHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
+                        {0.0F, 0.0F, 1.0F, 1.0F});
+                    leftHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
+                        _assetManager->get<dzemikk::Texture>(
+                            "textures/ui grafiki/ui patterns/tarcza.png"));
+
+                    leftTextRenderer->text =
+                        std::format("Grants {:.1f} Armor",
+                                    _patterns->getPattern(index)->pattern.getEffectStrength());
+
+                    rightHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
+                        {0.0F, 0.0F, 1.0F, 1.0F});
+                    rightHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
+                        _assetManager->get<dzemikk::Texture>(
+                            "textures/ui grafiki/ui patterns/tarcza.png"));
+
+                    rightTextRenderer->text =
+                        std::format("{:.1f} Armor total",
+                                    _patterns->getPattern(index)->pattern.getEffectStrength() *
+                                        _patterns->getPattern(index)->pattern.getHexes().size());
+                    break;
+                case HexPattern::Type::HEAL:
+                    iconRenderer->setTexture(_assetManager->get<dzemikk::Texture>(
+                        "textures/ui grafiki/ui patterns/leczenie.png"));
+
+                    name->text = "HEAL";
+                    name->color = glm::vec3(0.0F, 1.0F, 0.0F);
+
+                    leftHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
+                        {0.0F, 1.0F, 0.0F, 1.0F});
+                    leftHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
+                        _assetManager->get<dzemikk::Texture>(
+                            "textures/ui grafiki/ui patterns/leczenie.png"));
+                    
+                    leftTextRenderer->text =
+                        std::format("Restores {:.1f} Health",
+                                    _patterns->getPattern(index)->pattern.getEffectStrength());
+
+                    rightHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
+                        {0.0F, 1.0F, 0.0F, 1.0F});
+                    rightHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
+                        _assetManager->get<dzemikk::Texture>(
+                            "textures/ui grafiki/ui patterns/leczenie.png"));
+
+                    rightTextRenderer->text =
+                        std::format("{:.1f} Health total",
+                                    _patterns->getPattern(index)->pattern.getEffectStrength() *
+                                        _patterns->getPattern(index)->pattern.getHexes().size());
+                    break;
+                case HexPattern::Type::BONUSHEX:
+                    break;
+                default:
+                    break;
+                }
+
+
+                patternTooltip->enabled(true);
+            },
+            hoverAction);
+
+        dzemikk::UIActionRegistry::get().registerAction(
+            [this, index](const dzemikk::UIEvent&) {
+                auto tooltipsGO = getOwner()->getScene()->findGameObjectByName("Tooltips_Panel");
+                auto patternTooltip = tooltipsGO->findDescendantByName("Pattern");
+                patternTooltip->enabled(false);
+            },
+            unhoverAction);
+
         button->addEventListener(dzemikk::UIEventType::Click, actionId);
+        button->addEventListener(dzemikk::UIEventType::Enter, hoverAction);
+        button->addEventListener(dzemikk::UIEventType::Exit, unhoverAction);
 
         button->setStyle({color, color * 0.75F, color * 0.5F});
     } else {
