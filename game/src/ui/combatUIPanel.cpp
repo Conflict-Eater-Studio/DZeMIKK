@@ -141,6 +141,8 @@ void game::CombatUIPanel::createPatternPreview(dzemikk::GameObject* parent,
         texturePath = "textures/ui grafiki/ui patterns/tarcza.png";
     } else if (pattern.getType() == HexPattern::Type::HEAL) {
         texturePath = "textures/ui grafiki/ui patterns/leczenie.png";
+    } else if (pattern.getType() == HexPattern::Type::BONUSHEX) {
+        texturePath = "textures/ui grafiki/ui patterns/dodatkowy_hex.png";
     }
 
     for (size_t i = 0; i < positions.size(); ++i) {

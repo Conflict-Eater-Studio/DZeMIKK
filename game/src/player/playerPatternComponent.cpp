@@ -616,3 +616,4 @@ void game::PlayerPatternComponent::onMouseScrolled(dzemikk::MouseScrolledEvent& 
     destroyPreview();
     createPreviewFromPattern(pattern);
 }
+
