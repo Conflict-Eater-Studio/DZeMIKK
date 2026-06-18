@@ -111,12 +111,12 @@ void Inventory::clear() {
                 revealPatternBtn->getChildren()
                     .at(0)
                     ->getComponent<dzemikk::UITextRenderer>()
-                    ->text = "RP 0";
+                    ->text = "0";
             }
             auto* revealHexBtn = scene->findGameObjectByName("UI_RevealHexBtn");
             if (revealHexBtn) {
                 revealHexBtn->getChildren().at(0)->getComponent<dzemikk::UITextRenderer>()->text =
-                    "RH 0";
+                    "0";
             }
         }
     }
