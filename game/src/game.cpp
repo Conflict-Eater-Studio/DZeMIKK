@@ -3,11 +3,13 @@
 #include "game.h"
 
 #include "assetManager/assetmanager.h"
+#include "boost/uuid/string_generator.hpp"
 #include "camera/cameraController.h"
 #include "collisions/collisions.h"
 #include "core/engine.h"
 #include "core/time.h"
 #include "core/window.h"
+#include "dialog/dialogManager.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/collider.h"
 #include "ecs/components/meshRenderer.h"
@@ -171,6 +173,7 @@ void Game::startGame() {
     // Setup Items and Totems ALWAYS after Enemies
     setupItems();
     setupTotems();
+    setupDialogs();
 
     if (_worldGO) {
         if (auto* world = _worldGO->getComponent<game::World>(); world) {
@@ -1133,6 +1136,47 @@ void Game::setupTotems() {
         manager->addTotem(_hexGrid->getChunkByName("chunkMain2")->getPersistantId(),
                           {.pattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
                                                        game::HexPattern::Type::ATK, 1.2F)});
+    }
+}
+
+void Game::setupDialogs() {
+    if (_worldGO == nullptr || _worldGO->getComponent<game::World>() == nullptr) {
+        return;
+    }
+
+    auto* go = _mainScene.get()->createGameObject("DialogManager");
+    go->addTag("DialogManager");
+
+    auto* manager = go->addComponent<game::DialogManager>();
+    manager->setWorld(_worldGO->getComponent<game::World>());
+    manager->setAssetManager(_engine->getAssetManager());
+    manager->setGame(this);
+
+    auto* world = _worldGO->getComponent<game::World>();
+
+    if (!world) {
+        return;
+    }
+
+    nlohmann::json worldData;
+    if (std::filesystem::exists("./world.json")) {
+        std::ifstream in("./world.json");
+        worldData = nlohmann::json::parse(in);
+        in.close();
+    }
+
+    if (!worldData.empty() && worldData.contains("dialogs")) {
+        manager->loadState(worldData["dialogs"]);
+    } else {
+        manager->addDialog({
+            .targetEntityId =
+                boost::uuids::string_generator()("4cc18023-7826-402a-a787-0293f6e1ee2e"),
+            .entries =
+                {
+                    {.speaker = "Totem", .text = "Hello there!"},
+                    {.speaker = "Lily", .text = "Oh hi"},
+                },
+        });
     }
 }
 

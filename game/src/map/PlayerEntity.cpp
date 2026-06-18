@@ -1,10 +1,12 @@
 #include "map/PlayerEntity.h"
 
+#include "dialog/dialogManager.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "game.h"
 #include "gameStateMachine.h"
 #include "healthSystem.h"
+#include "map/HexCoord.h"
 #include "map/ItemEntity.h"
 #include "map/ItemEntityBonusHex.h"
 #include "map/ItemEntityHealth.h"
@@ -102,6 +104,33 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                         "audio/prime_uzycie_itemu-Fmin.wav", taskS);
                 }
                 break;
+            }
+        }
+    }
+
+    auto neighbors = HexCoord::getNeighbors(cell->getCoord());
+    auto* grid = _game->getHexGrid();
+    if (grid) {
+        auto* dialogManager =
+            _owner->getScene()->findGameObjectByTag("DialogManager")->getComponent<DialogManager>();
+        for (const auto& neighborCoord : neighbors) {
+            auto* neighborCell = grid->getCell(neighborCoord).get();
+            if (!neighborCell) {
+                continue;
+            }
+            auto* neighborEntity = neighborCell->getEntity();
+            if (!neighborEntity) {
+                continue;
+            }
+            if (dialogManager) {
+                if (auto* dialog = dialogManager->getDialog(neighborEntity)) {
+                    if (!dialog->isTriggered()) {
+#if DZEMIKK_DEV_TOOLS
+                        spdlog::info("[PlayerEntity]: Triggering dialog from neighbour");
+#endif
+                        dialog->start();
+                    }
+                }
             }
         }
     }
