@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "754b5df7-c55b-43bf-b289-9f9998a432e7",
+                        "id": "1bfad4a4-d9d9-4067-9ad8-607c71d94212",
                         "position": [
                             0.0,
                             17.0,
@@ -37,24 +37,24 @@
                     }
                 ],
                 "enabled": true,
-                "id": "cb4ae249-9f57-4432-8adb-46e5b4b94a14",
+                "id": "4bbc3b26-bed4-447d-aa59-96972273d91e",
                 "name": "Light",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "62df811c-1b1f-4030-918e-90deb2695cd1",
+                "id": "ad7ac862-4229-4630-b90d-98526e650b8f",
                 "position": [
                     0.0,
                     0.4000000059604645,
                     0.0
                 ],
                 "rotation": [
-                    -4.371139183945161e-08,
-                    -4.371138473402425e-08,
-                    -1.0,
-                    -4.371138473402425e-08
+                    1.910685465164705e-15,
+                    -4.371138828673793e-08,
+                    1.0,
+                    -4.371138828673793e-08
                 ],
                 "scale": [
                     0.012000000104308128,
@@ -64,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "40f80aba-b075-4742-baf8-35ee97df4fd1",
+                "id": "6eb06d9a-869d-4ee1-9b2d-baa7572eac88",
                 "materials": [
                     {
                         "albedoColor": [
@@ -75,24 +75,13 @@
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
-                        "emissiveTexture": "",
-                        "metallicTexture": "",
-                        "metallicValue": 0.0,
-                        "normalTexture": "",
-                        "roughnessTexture": "",
-                        "roughnessValue": 0.5,
-                        "shader": "shaders/skinned"
-                    },
-                    {
-                        "albedoColor": [
-                            0.8156862854957581,
-                            0.7607843279838562,
-                            0.7411764860153198
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
                         ],
-                        "albedoTexture": "",
-                        "aoTexture": "",
-                        "aoValue": 1.0,
                         "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
@@ -103,64 +92,19 @@
                     {
                         "albedoColor": [
                             1.0,
-                            1.0,
-                            1.0
+                            0.0,
+                            0.0
                         ],
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
-                        "emissiveTexture": "",
-                        "metallicTexture": "",
-                        "metallicValue": 0.0,
-                        "normalTexture": "",
-                        "roughnessTexture": "",
-                        "roughnessValue": 0.5,
-                        "shader": "shaders/skinned"
-                    },
-                    {
-                        "albedoColor": [
-                            0.1764705926179886,
-                            0.3607843220233917,
-                            0.04313725605607033
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
                         ],
-                        "albedoTexture": "",
-                        "aoTexture": "",
-                        "aoValue": 1.0,
                         "emissiveTexture": "",
-                        "metallicTexture": "",
-                        "metallicValue": 0.0,
-                        "normalTexture": "",
-                        "roughnessTexture": "",
-                        "roughnessValue": 0.5,
-                        "shader": "shaders/skinned"
-                    },
-                    {
-                        "albedoColor": [
-                            0.1764705926179886,
-                            0.3607843220233917,
-                            0.04313725605607033
-                        ],
-                        "albedoTexture": "",
-                        "aoTexture": "",
-                        "aoValue": 1.0,
-                        "emissiveTexture": "",
-                        "metallicTexture": "",
-                        "metallicValue": 0.0,
-                        "normalTexture": "",
-                        "roughnessTexture": "",
-                        "roughnessValue": 0.5,
-                        "shader": "shaders/skinned"
-                    },
-                    {
-                        "albedoColor": [
-                            0.1764705926179886,
-                            0.3607843220233917,
-                            0.04313725605607033
-                        ],
-                        "albedoTexture": "",
-                        "aoTexture": "",
-                        "aoValue": 1.0,
-                        "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
@@ -177,7 +121,105 @@
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
                         "emissiveTexture": "",
+                        "emissiveValue": 1.0,
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.1764705926179886,
+                            0.3607843220233917,
+                            0.04313725605607033
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "emissiveTexture": "",
+                        "emissiveValue": 1.0,
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.1764705926179886,
+                            0.3607843220233917,
+                            0.04313725605607033
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "emissiveTexture": "",
+                        "emissiveValue": 1.0,
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.1764705926179886,
+                            0.3607843220233917,
+                            0.04313725605607033
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "emissiveTexture": "",
+                        "emissiveValue": 1.0,
+                        "metallicTexture": "",
+                        "metallicValue": 0.0,
+                        "normalTexture": "",
+                        "roughnessTexture": "",
+                        "roughnessValue": 0.5,
+                        "shader": "shaders/skinned"
+                    },
+                    {
+                        "albedoColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "albedoTexture": "",
+                        "aoTexture": "",
+                        "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
@@ -194,7 +236,13 @@
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
                         "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
@@ -211,15 +259,20 @@
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
                         "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
                         "roughnessTexture": "",
                         "roughnessValue": 0.5,
                         "shader": "shaders/skinned"
-                    },
-                    null
+                    }
                 ],
                 "model": "models/NormalHybrid.fbx",
                 "type": "SkinnedMeshRenderer"
@@ -227,7 +280,7 @@
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "44120e0f-0dfd-4faa-844f-999102a50e50",
+                "id": "557b1da8-e4c8-4ac3-a985-177138a11e09",
                 "parameters": {},
                 "stateMachine": [
                     {
@@ -239,7 +292,7 @@
             }
         ],
         "enabled": true,
-        "id": "162377cc-6e6e-41bd-be90-a926bd5f501b",
+        "id": "47508a8c-25b2-47f8-8366-c12b3dcb96a7",
         "name": "Balanced ",
         "tags": []
     }
