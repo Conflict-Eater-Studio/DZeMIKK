@@ -29,17 +29,24 @@ void PlayerMovement::update(double deltaTime) {
         return;
     }
 
+    _moveTimer += deltaTime;
     HexGrid::HexCellPtr currentTargetCell = _path[_step % _path.size()];
-
-    lerpCellTo(currentTargetCell, _playerEntity->getCell()->getHeight());
-
     _animator->setInt("isMoving", 1);
+
+    if (isFallingFinished) {
+        lerpCellTo(currentTargetCell, _playerEntity->getCell()->getHeight(), [this](float progress) {
+            isFallingFinished = false;
+        });
+    }
 
     dzemikk::Transform* cellTransform = _world->getHexTransformByCell(*currentTargetCell);
 
     if (_animator->getCurrentState()->getClip()->isFinished()) {
         if (cellTransform) {
-            lerpCellTo(currentTargetCell, currentTargetCell->getHeight());
+            lerpCellTo(currentTargetCell, currentTargetCell->getHeight(), [this](float progress) {
+                isFallingFinished = true;
+            });
+
             if (!_cachedPath.empty()) {
                 _path = _cachedPath;
                 _cachedPath.clear();
@@ -53,7 +60,8 @@ void PlayerMovement::update(double deltaTime) {
         _step++;
     }
 
-    if (_step < _path.size()) {
+
+    if (_step < _path.size() && _moveTimer >= _moveDelay) {
         auto dir = HexCoord::dir(currentTargetCell->getCoord() - _playerEntity->getCell()->getCoord());
         if (dir.has_value()) {
             int hexDir = static_cast<int>(dir.value());
@@ -64,12 +72,10 @@ void PlayerMovement::update(double deltaTime) {
                 int offset = hexDir - _playerDir;
                 int anim = (relativeDir + offset + 12) % 12;
                 _animator->setInt("direction",  anim);
-                spdlog::info(
-                    "hexDir={}, playerDir={}, relativeDir={}, offset={}, anim={}",
-                    hexDir, _playerDir, relativeDir, offset, anim);
             }
 
             _playerDir = hexDir;
+            _moveTimer = 0.0f;
         }
     }
 
@@ -120,31 +126,33 @@ dzemikk::Animator* PlayerMovement::getAnimator() const {
 void PlayerMovement::setWorld(World* world) {
     _world = world;
 }
-
-float PlayerMovement::lerpCellTo(const HexGrid::HexCellPtr& cell, float targetY) {
+void PlayerMovement::lerpCellTo(const HexGrid::HexCellPtr& cell, float targetY, LerpCallback callback)  {
     for (auto& lerp : _cellLerps) {
         if (lerp.cell == cell) {
-            if (lerp.targetY == targetY) return std::min(lerp.progress, 1.0f);
-
+            if (lerp.targetY == targetY) {
+                return;
+            }
             float t = std::min(lerp.progress, 1.0f);
-            float currentY = lerp.startY + (lerp.targetY - lerp.startY) * t;
-            lerp.startY = currentY;
             lerp.targetY = targetY;
-            lerp.progress = 0.0f;
-            return 0.0f;
+            lerp.progress = t;
+            lerp.onComplete = callback;
+            return;
         }
     }
 
     dzemikk::Transform* cellTransform = _world->getHexTransformByCell(*cell);
-    if (!cellTransform) return 1.0f;
-    _cellLerps.push_back({cell, cellTransform->getPosition().y, targetY, 0.0f});
-    return 0.0f;
+    if (!cellTransform) {
+        return;
+    }
+    _cellLerps.push_back({cell, cellTransform->getPosition().y, targetY, 0.0f, callback});
 }
 
 void PlayerMovement::updateCellLerps(double deltaTime) {
     for (auto it = _cellLerps.begin(); it != _cellLerps.end();) {
         it->progress += _lerpSpeed;
+
         float t = std::min(it->progress, 1.0f);
+
         dzemikk::Transform* cellTransform = _world->getHexTransformByCell(*it->cell);
         if (cellTransform) {
             glm::vec3 pos = cellTransform->getPosition();
@@ -152,7 +160,9 @@ void PlayerMovement::updateCellLerps(double deltaTime) {
             cellTransform->setPosition(pos);
         }
         if (it->progress >= 1.0f) {
+            LerpCallback callback = it->onComplete;
             it = _cellLerps.erase(it);
+            callback(1.0f);
         } else {
             ++it;
         }
@@ -163,6 +173,7 @@ void PlayerMovement::rotateToDirection(int direction) {
     _playerEntity->getOwner()->transform()->setRotation(
         glm::angleAxis(glm::radians(angle), glm::vec3(0.0f, 1.0f, 0.0f)));
 }
+
 float PlayerMovement::directionToAngle(int direction) {
     float angle = -direction * 30.0f;
     return angle;

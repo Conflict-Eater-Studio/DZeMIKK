@@ -415,22 +415,16 @@ void Game::setupPlayer() {
     idleClip->setLoop(true);
 
     forward30Clip = skeleton->getClip("300");
-    forward30Clip->setPlaybackSpeed(4.0f);;
     forward30Clip->setLoop(false);
     forward90Clip = skeleton->getClip("0");
-    forward90Clip->setPlaybackSpeed(4.0f);
     forward90Clip->setLoop(false);
     forward150Clip = skeleton->getClip("60");
-    forward150Clip->setPlaybackSpeed(4.0f);
     forward150Clip->setLoop(false);
     forward210Clip = skeleton->getClip("120");
-    forward210Clip->setPlaybackSpeed(4.0f);
     forward210Clip->setLoop(false);
     forward270Clip = skeleton->getClip("180");
-    forward270Clip->setPlaybackSpeed(4.0f);
     forward270Clip->setLoop(false);
     forward330Clip = skeleton->getClip("240");
-    forward330Clip->setPlaybackSpeed(4.0f);
     forward330Clip->setLoop(false);
 
     forward90Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);

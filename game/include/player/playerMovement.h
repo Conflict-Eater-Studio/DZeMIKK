@@ -10,11 +10,13 @@ namespace dzemikk {
     class Animator;
 }
 namespace game {
+    using LerpCallback = std::function<void(float progress)>;
     struct CellLerp {
         HexGrid::HexCellPtr cell;
         float startY;
         float targetY;
         float progress;
+        LerpCallback onComplete;
     };
     class World;
     class PlayerMovement : public dzemikk::MonoBehaviour {
@@ -42,9 +44,10 @@ namespace game {
 
         void setWorld(World* world);
     private:
-        float lerpCellTo(const HexGrid::HexCellPtr& cell, float targetY);
+        void lerpCellTo(const HexGrid::HexCellPtr& cell, float targetY, LerpCallback callback);
         void updateCellLerps(double deltaTime);
         void rotateToDirection(int direction);
+        bool hasAllLerpsFinished();
         float directionToAngle(int direction);
 
         std::vector<CellLerp> _cellLerps;
@@ -54,6 +57,7 @@ namespace game {
         World* _world = nullptr;
         PlayerEntity* _playerEntity = nullptr;
         HexGrid* _hexGrid = nullptr;
+        
         Game* _game = nullptr;
         dzemikk::Animator* _animator = nullptr;
         glm::vec3 _position;
@@ -61,7 +65,9 @@ namespace game {
         float _lerpSpeed = 0.2f;
         int _playerDir = 3;
         int _step = 1;
-        bool _positionCached = false;
+        bool isFallingFinished = true;
+        float _moveTimer = 0.0f;
+        float _moveDelay = 0.5f;
     };
 }
 
