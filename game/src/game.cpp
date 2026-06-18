@@ -410,8 +410,7 @@ void Game::setupPlayer() {
     dzemikk::AnimationClip* forward330Clip = nullptr;
 
     auto skeleton = playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
-
-    idleClip = skeleton->getClip("Idle");
+    idleClip = skeleton->getClip("idle");
     idleClip->setLoop(true);
 
     forward30Clip = skeleton->getClip("300");
