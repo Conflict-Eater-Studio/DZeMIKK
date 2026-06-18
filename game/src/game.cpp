@@ -1294,11 +1294,11 @@ void Game::setupDialogs() {
         return;
     }
 
-    auto prefab = _engine->getAssetManager()->get<nlohmann::json>("prefabs/totem/totem_container.prefab");
+    auto prefab = _engine->getAssetManager()->get<nlohmann::json>("prefabs/totem/totem_dialog.prefab");
     auto totem = dzemikk::PrefabSerializer::instantiate(
         *_mainScene.get(), *prefab.get(), _engine->getAssetManager());
     auto entity = totem->addComponent<game::TotemDialogEntity>();
-    entity->onEnter(world->getGrid()->getCell({2, 0}));
+    entity->onEnter(world->getGrid()->getCell({5, -1}));
 
     nlohmann::json worldData;
     if (std::filesystem::exists("./world.json")) {
@@ -1319,7 +1319,16 @@ void Game::setupDialogs() {
                      .text = "You stand upon a land of runes, spirits, and blood offered\n"
                              "to the gods. The shamans have taken your son. They will\n"
                              "sacrifice him in the heart of the volcano."},
-                    {.speaker = "Mother", .text = "I’d rather die than let them hurt my child!"},
+                    {.speaker = "Mother", .text = "I would rather die than let them hurt my child!"},
+                    {.speaker = "Totem",
+                      .text =
+                          "The shamans rule these islands, and their servants will \nstand in your way. "
+                          "Every step will bring you closer \nto your son... or closer to death."},
+                     {.speaker = "Mother", .text = "I am not afraid. I will fight them!"},
+                     {.speaker = "Totem",
+                      .text = "Take these runes. Their power will allow you to \nattack, shield yourself "
+                              "from harm, and heal your wounds. \nLearn to wield them, and you may reach "
+                              "your son \nbefore the volcano's flames consume him."}
                 },
         });
     }

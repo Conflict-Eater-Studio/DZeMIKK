@@ -2,7 +2,197 @@
     "root": {
         "children": [
             {
-                "children": [],
+                "children": [
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "id": "27e2a42b-81f9-4a1c-ad22-d89b48a92026",
+                                "position": [
+                                    0.0,
+                                    1.0,
+                                    0.0
+                                ],
+                                "rotation": [
+                                    0.5004725456237793,
+                                    -0.5004725456237793,
+                                    -0.4995270073413849,
+                                    -0.4995270073413849
+                                ],
+                                "scale": [
+                                    0.5,
+                                    0.5,
+                                    0.5
+                                ],
+                                "type": "Transform"
+                            },
+                            {
+                                "id": "421e93b4-9379-484a-af54-a3f74dd293c6",
+                                "materials": [
+                                    {
+                                        "pbr": {
+                                            "albedo": [
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "ao": 1.0,
+                                            "emissive": [
+                                                0.0,
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "emissiveStrength": 0.0,
+                                            "metallic": 0.0,
+                                            "roughness": 0.5
+                                        },
+                                        "shader": "shaders/tile1",
+                                        "textures": {
+                                            "albedo": "textures/totems/a.png",
+                                            "ao": "",
+                                            "emissive": "",
+                                            "metallic": "",
+                                            "normal": "",
+                                            "roughness": ""
+                                        }
+                                    }
+                                ],
+                                "model": "models/totem/totem3.fbx",
+                                "type": "MeshRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "495e1019-226d-4edb-8530-0615a79d92fc",
+                        "name": "Totem3",
+                        "tags": []
+                    },
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "id": "48baa760-3397-4da6-ae71-1e1ecd3ea297",
+                                "position": [
+                                    0.0,
+                                    2.0,
+                                    0.0
+                                ],
+                                "rotation": [
+                                    0.5004725456237793,
+                                    -0.5004725456237793,
+                                    -0.4995270073413849,
+                                    -0.4995270073413849
+                                ],
+                                "scale": [
+                                    0.5,
+                                    0.5,
+                                    0.5
+                                ],
+                                "type": "Transform"
+                            },
+                            {
+                                "id": "a918c86d-61a9-4efa-a4f9-d9b865b3b0df",
+                                "materials": [
+                                    {
+                                        "pbr": {
+                                            "albedo": [
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "ao": 1.0,
+                                            "emissive": [
+                                                0.0,
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "emissiveStrength": 0.0,
+                                            "metallic": 0.0,
+                                            "roughness": 0.5
+                                        },
+                                        "shader": "shaders/tile1",
+                                        "textures": {
+                                            "albedo": "textures/totems/a.png",
+                                            "ao": "",
+                                            "emissive": "",
+                                            "metallic": "",
+                                            "normal": "",
+                                            "roughness": ""
+                                        }
+                                    }
+                                ],
+                                "model": "models/totem/totem5.fbx",
+                                "type": "MeshRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "4a27bdac-48fd-4f05-be19-f6bfdbf3f547",
+                        "name": "Totem5",
+                        "tags": []
+                    },
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "id": "669cda82-c3a4-4107-9905-a9eed4655165",
+                                "position": [
+                                    0.0,
+                                    0.0,
+                                    0.0
+                                ],
+                                "rotation": [
+                                    0.5004725456237793,
+                                    -0.5004725456237793,
+                                    -0.4995270073413849,
+                                    -0.4995270073413849
+                                ],
+                                "scale": [
+                                    0.5,
+                                    0.5,
+                                    0.5
+                                ],
+                                "type": "Transform"
+                            },
+                            {
+                                "id": "986f7476-edfa-4a6b-9ab0-a89ca67dc2a6",
+                                "materials": [
+                                    {
+                                        "pbr": {
+                                            "albedo": [
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "ao": 1.0,
+                                            "emissive": [
+                                                0.0,
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "emissiveStrength": 0.0,
+                                            "metallic": 0.0,
+                                            "roughness": 0.5
+                                        },
+                                        "shader": "shaders/tile1",
+                                        "textures": {
+                                            "albedo": "textures/totems/a.png",
+                                            "ao": "",
+                                            "emissive": "",
+                                            "metallic": "",
+                                            "normal": "",
+                                            "roughness": ""
+                                        }
+                                    }
+                                ],
+                                "model": "models/totem/totem6.fbx",
+                                "type": "MeshRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "70786329-4ffd-44e6-8ce1-ab33d8f6d468",
+                        "name": "Totem6",
+                        "tags": []
+                    }
+                ],
                 "components": [
                     {
                         "id": "8acb870f-6072-4929-8452-c7fa31969979",

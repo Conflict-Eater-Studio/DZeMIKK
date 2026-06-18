@@ -13,6 +13,7 @@
 #include "player/inventory.h"
 #include "player/playerPatternComponent.h"
 #include "stateMachine/combatState.h"
+#include <totem/totemDialogEntity.h>
 
 #include <audio/audioManager.h>
 #include <audio/sound.h>
@@ -130,6 +131,10 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                         spdlog::info("[PlayerEntity]: Triggering dialog from neighbour");
 #endif
                         dialog->start();
+
+                        if (static_cast<TotemDialogEntity*>(neighborEntity)) {
+                            static_cast<TotemDialogEntity*>(neighborEntity)->use();
+                        }
                     }
                 }
             }

@@ -72,22 +72,27 @@ namespace dzemikk {
 
             for (unsigned char c = 0; c < 128; c++) {
 
-                if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+                if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
                     continue;
+                }
 
                 auto& bmp = face->glyph->bitmap;
 
-                if (!bmp.buffer)
-                    continue;
-
                 PendingCharacter pc;
-                pc.buffer.assign(bmp.buffer, bmp.buffer + bmp.width * bmp.rows);
-
-                pc.width = bmp.width;
-                pc.height = bmp.rows;
+                pc.width = static_cast<int>(bmp.width);
+                pc.height = static_cast<int>(bmp.rows);
                 pc.bearing = {face->glyph->bitmap_left, face->glyph->bitmap_top};
+                pc.advance = face->glyph->advance.x;
 
-                pc.advance = face->glyph->advance.x; 
+                if (bmp.buffer && bmp.width > 0 && bmp.rows > 0) {
+                    pc.buffer.resize(static_cast<size_t>(bmp.width) * bmp.rows);
+
+                    for (unsigned int y = 0; y < bmp.rows; ++y) {
+                        std::copy(bmp.buffer + y * bmp.pitch,
+                                  bmp.buffer + y * bmp.pitch + bmp.width,
+                                  pc.buffer.begin() + y * bmp.width);
+                    }
+                }
 
                 pending[c] = std::move(pc);
             }

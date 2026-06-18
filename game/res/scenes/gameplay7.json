@@ -7471,7 +7471,7 @@
                                                 0.5
                                             ],
                                             "position": [
-                                                0.0,
+                                                25.0,
                                                 0.0
                                             ],
                                             "rotation": 0.0,
@@ -7495,7 +7495,7 @@
                                             "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                             "horizontalAlign": 0,
                                             "id": "a85f529c-ac0b-43c2-b3de-fa27cb0c6d54",
-                                            "scale": 0.8999999761581421,
+                                            "scale": 0.699999988079071,
                                             "text": "Speaker",
                                             "type": "UITextRenderer",
                                             "verticalAlign": 1
@@ -7531,7 +7531,7 @@
                                         1.0
                                     ],
                                     "position": [
-                                        0.0,
+                                        -230.39999389648438,
                                         0.0
                                     ],
                                     "rotation": 0.0,
@@ -7540,11 +7540,11 @@
                                         1.0
                                     ],
                                     "size": [
-                                        0.0,
+                                        -459.1000061035156,
                                         64.0
                                     ],
                                     "type": "RectTransform",
-                                    "zIndex": 0
+                                    "zIndex": 1
                                 },
                                 {
                                     "color": [
@@ -7555,7 +7555,7 @@
                                     ],
                                     "id": "b85f09d1-462e-4c1a-942a-ea46b8fd1aeb",
                                     "materialPath": "shaders/quad",
-                                    "texture": "",
+                                    "texture": "textures/ui grafiki/Confirm_round.png",
                                     "type": "ImageRenderer"
                                 }
                             ],
@@ -7590,8 +7590,8 @@
                                         0.5
                                     ],
                                     "position": [
-                                        0.0,
-                                        -32.0
+                                        25.0,
+                                        -40.0
                                     ],
                                     "rotation": 0.0,
                                     "scale": [
@@ -7614,7 +7614,7 @@
                                     "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                     "horizontalAlign": 0,
                                     "id": "663d0b15-2ab3-49fb-8cff-6f7b2bd7f51f",
-                                    "scale": 0.8999999761581421,
+                                    "scale": 0.699999988079071,
                                     "text": "TextContent",
                                     "type": "UITextRenderer",
                                     "verticalAlign": 2
@@ -7623,6 +7623,65 @@
                             "enabled": false,
                             "id": "003bf932-6191-4553-81ce-889cf70d91f7",
                             "name": "DialogText",
+                            "tags": []
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        1.0,
+                                        0.0
+                                    ],
+                                    "anchorMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "id": "c151e81e-5c42-49b7-b71e-c089fd13e434",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.0
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        0.0,
+                                        254.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        0.9372549057006836,
+                                        0.7490196228027344,
+                                        0.01568627543747425,
+                                        1.0
+                                    ],
+                                    "id": "d4a6968f-fd54-4bcd-9bbc-378e7363180b",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "textures/ui grafiki/Actions_panel_ramka.png",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "d547f4d6-80f3-45b6-be68-05e88a7e3bd6",
+                            "name": "Empty",
                             "tags": []
                         }
                     ],
@@ -7651,7 +7710,7 @@
                             ],
                             "position": [
                                 0.0,
-                                0.0
+                                25.0
                             ],
                             "rotation": 0.0,
                             "scale": [
@@ -7659,8 +7718,8 @@
                                 1.0
                             ],
                             "size": [
-                                0.0,
-                                256.0
+                                -50.0,
+                                254.0
                             ],
                             "type": "RectTransform",
                             "zIndex": 0
@@ -7674,7 +7733,7 @@
                             ],
                             "id": "70defdc3-6b33-46bf-9d80-5e7ad0330e3c",
                             "materialPath": "shaders/quad",
-                            "texture": "",
+                            "texture": "textures/ui grafiki/Actions_panel.png",
                             "type": "ImageRenderer"
                         }
                     ],

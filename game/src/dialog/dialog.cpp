@@ -94,6 +94,7 @@ void Dialog::advance() {
         _speakerTextRenderer->text = "";
 
         _game->getCurrentScene().get()->findGameObjectByName("Dialogs")->enabled(false);
+
     } else {
         if (_currentText.size() != _displayedText.size()) {
             _displayedText = _currentText;
