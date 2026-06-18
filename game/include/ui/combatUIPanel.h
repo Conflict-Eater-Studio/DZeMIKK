@@ -6,7 +6,12 @@
 #include <assetManager/assetmanager.h>
 #include <ecs/components/monobehaviour.h>
 #include <ecs/components/ui/uiButton.h>
+#include <events/mouse_event.h>
 #include <nlohmann/json.hpp>
+
+namespace dzemikk {
+class Engine;
+}
 
 namespace game {
 
@@ -52,6 +57,7 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
 
     void start() override;
     void update(double deltaTime) override;
+    void onDestroy() override;
 
     /**
      * @brief Rebuilds the panel contents.
@@ -95,6 +101,8 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
     void refreshCounts();
 
     void setHideEmptyPatterns(bool value);
+
+    void setEngine(dzemikk::Engine* engine);
 
   private:
     /**
@@ -196,6 +204,11 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
 
     [[nodiscard]] std::vector<size_t> getAvailablePatternIndices() const;
 
+    void onMouseScrolled(dzemikk::MouseScrolledEvent& e);
+    float calculateScrollHandleY() const;
+    void updateScrollHandle();
+    bool isMouseOverPanel() const;
+
     /** Source of pattern data. */
     PatternComponent* _patterns = nullptr;
 
@@ -224,6 +237,19 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
     bool _isClickable = false;
 
     bool _hideEmptyPatterns = false;
+
+    size_t _firstVisiblePatternIndex = 0;
+
+    uint64_t _scrollListenerId = 0;
+
+    static constexpr size_t PATTERNS_PER_ROW = 2;
+    static constexpr size_t MAX_VISIBLE_PATTERNS = 8;
+
+    dzemikk::Engine* _engine = nullptr;
+
+    dzemikk::GameObject* _scrollHandle = nullptr;
+    float _scrollHandleMinY = -240.0f;
+    float _scrollHandleMaxY = 240.0f;
 };
 
 } // namespace game

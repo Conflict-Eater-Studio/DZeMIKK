@@ -11,6 +11,12 @@
 #include <ecs/serialize/prefabSerializer.h>
 #include <iostream>
 #include <renderer/texture.h>
+#include <core/engine.h>
+#include <GLFW/glfw3.h>
+#include <core/window.h>
+#include <collisions/collisions.h>
+#include <renderer/renderer.h>
+#include <ecs/components/collider.h>
 
 void game::CombatUIPanel::start() {
     _patternSlotPrefab = _assetManager->get<nlohmann::json>("prefabs/pattern_ui.prefab");
@@ -19,10 +25,19 @@ void game::CombatUIPanel::start() {
 
     _patternsContainer = _canvas->findDescendantByName("Patterns");
 
+    _scrollListenerId = _engine->getInput()->OnMouseScrolled.addListener(
+        [this](dzemikk::MouseScrolledEvent& e) { onMouseScrolled(e); });
+
+    _scrollHandle = getOwner()->getScene()->findGameObjectByName("Scroll");
+
     refresh();
 }
 
 void game::CombatUIPanel::update(double deltaTime) {}
+
+void game::CombatUIPanel::onDestroy() {
+    _engine->getInput()->OnMouseScrolled.removeListener(_scrollListenerId);
+}
 
 void game::CombatUIPanel::refresh(bool enableChildren) {
     clear();
@@ -72,7 +87,10 @@ void game::CombatUIPanel::buildUI() {
 
         const auto& patterns = _patterns->getPatterns();
 
-        for (size_t i = 0; i < patterns.size(); ++i) {
+        const size_t start = _firstVisiblePatternIndex;
+        const size_t end = std::min(start + MAX_VISIBLE_PATTERNS, patterns.size());
+
+        for (size_t i = start; i < end; ++i) {
             createPatternSlot(patterns[i], i);
         }
     }
@@ -604,4 +622,79 @@ void game::CombatUIPanel::addPatternSlot(const PatternComponent::PatternEntry& e
     if (auto* grid = _patternsContainer->getComponent<dzemikk::GridLayout>()) {
         grid->rebuild();
     }
+}
+
+void game::CombatUIPanel::setEngine(dzemikk::Engine* engine) {
+    _engine = engine;
+}
+
+void game::CombatUIPanel::onMouseScrolled(dzemikk::MouseScrolledEvent& e) {
+    if (_mode != Mode::AvailablePatterns)
+        return;
+
+    if (!isMouseOverPanel())
+        return;
+
+    if (!_patterns)
+        return;
+
+    const auto visibleIndices = getAvailablePatternIndices();
+
+    if (visibleIndices.size() <= MAX_VISIBLE_PATTERNS)
+        return;
+
+    size_t maxStartIndex = visibleIndices.size() - MAX_VISIBLE_PATTERNS;
+
+    if (e.GetYOffset() < 0) {
+        _firstVisiblePatternIndex =
+            std::min(_firstVisiblePatternIndex + PATTERNS_PER_ROW, maxStartIndex);
+    } else if (e.GetYOffset() > 0) {
+        if (_firstVisiblePatternIndex >= PATTERNS_PER_ROW) {
+            _firstVisiblePatternIndex -= PATTERNS_PER_ROW;
+        } else {
+            _firstVisiblePatternIndex = 0;
+        }
+    }
+
+    refresh(true);
+    updateScrollHandle();
+}
+
+float game::CombatUIPanel::calculateScrollHandleY() const {
+    const auto visibleIndices = getAvailablePatternIndices();
+
+    const int total = static_cast<int>(visibleIndices.size());
+    const int visible = MAX_VISIBLE_PATTERNS;
+
+    if (total <= visible)
+        return _scrollHandleMaxY;
+
+    const int maxStart = total - visible;
+
+    float t = static_cast<float>(_firstVisiblePatternIndex) / static_cast<float>(maxStart);
+
+    return _scrollHandleMaxY + t * (_scrollHandleMinY - _scrollHandleMaxY);
+}
+
+void game::CombatUIPanel::updateScrollHandle() {
+    if (!_scrollHandle)
+        return;
+
+    auto* rt = _scrollHandle->rectTransform();
+    auto pos = rt->getPosition();
+
+    pos.y = calculateScrollHandleY();
+    rt->setPosition(pos);
+}
+
+bool game::CombatUIPanel::isMouseOverPanel() const {
+    const glm::vec2 mouse = _engine->getInput()->GetMousePosition();
+
+    constexpr float minX = 20.0f;
+    constexpr float maxX = 320.0f;
+
+    constexpr float minY = 250.0f;
+    constexpr float maxY = 900.0f;
+
+    return (mouse.x >= minX && mouse.x <= maxX && mouse.y >= minY && mouse.y <= maxY);
 }

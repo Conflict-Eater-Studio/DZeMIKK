@@ -720,6 +720,12 @@
                             "zIndex": 1
                         },
                         {
+                            "disabledColor": [
+                                0.5,
+                                0.5,
+                                0.5,
+                                1.0
+                            ],
                             "events": {
                                 "click": [
                                     "E"
@@ -852,6 +858,12 @@
                             "zIndex": 1
                         },
                         {
+                            "disabledColor": [
+                                0.5,
+                                0.5,
+                                0.5,
+                                1.0
+                            ],
                             "events": {
                                 "click": [
                                     "C"
@@ -1153,6 +1165,57 @@
                                     "enabled": false,
                                     "id": "bb29948c-213f-42de-976c-4295c367064c",
                                     "name": "Decor",
+                                    "tags": []
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "1111712b-e6a6-4d85-b549-b3d1034ddbfb",
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                148.0,
+                                                240.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                8.0,
+                                                60.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 2
+                                        },
+                                        {
+                                            "color": [
+                                                0.9372549057006836,
+                                                0.7490196228027344,
+                                                0.01568627543747425,
+                                                1.0
+                                            ],
+                                            "id": "2be71da4-97d1-4bb7-9c05-bb2cb7ddb98c",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "f01b56f1-91f0-4e84-870f-5d7e83c9dd01",
+                                    "name": "Scroll",
                                     "tags": []
                                 }
                             ],
@@ -2296,7 +2359,7 @@
                                                 150.0
                                             ],
                                             "type": "RectTransform",
-                                            "zIndex": 1
+                                            "zIndex": 10
                                         },
                                         {
                                             "color": [
@@ -4889,6 +4952,12 @@
                                     "zIndex": 1
                                 },
                                 {
+                                    "disabledColor": [
+                                        0.5,
+                                        0.5,
+                                        0.5,
+                                        1.0
+                                    ],
                                     "events": {
                                         "click": [
                                             "Confirm_Round"
@@ -5579,6 +5648,12 @@
                                                     "zIndex": 1
                                                 },
                                                 {
+                                                    "disabledColor": [
+                                                        0.5,
+                                                        0.5,
+                                                        0.5,
+                                                        1.0
+                                                    ],
                                                     "events": {
                                                         "click": [
                                                             "combat.reveal.randomPattern"
@@ -5922,6 +5997,12 @@
                                                     "zIndex": 1
                                                 },
                                                 {
+                                                    "disabledColor": [
+                                                        0.5,
+                                                        0.5,
+                                                        0.5,
+                                                        1.0
+                                                    ],
                                                     "events": {
                                                         "click": [
                                                             "combat.reveal.randomHex"

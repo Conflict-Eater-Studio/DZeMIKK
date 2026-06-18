@@ -707,6 +707,7 @@ void Game::setupPlayer() {
     combatPlayerPanel->setPatternsComponent(patternComponent);
     combatPlayerPanel->setAssetManager(_engine->getAssetManager());
     combatPlayerPanel->setCanvas(playerPanel);
+    combatPlayerPanel->setEngine(_engine);
 
     auto* playerHealthGO = _mainScene.get()
                                ->findGameObjectByName("Player_Avatar_Panel")
@@ -767,14 +768,29 @@ void Game::setupPlayer() {
                                      5, 5);
         patternComponent->addPattern(
             game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 1.1F), 5, 5);
+        patternComponent->addPattern(
+            game::HexPattern({{0, 0}, {1, -1}, {1, 0}}, game::HexPattern::Type::ATK, 1.2F), 5, 5);
+        patternComponent->addPattern(
+            game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {0, 1}}, game::HexPattern::Type::ATK, 1.3F),
+            5, 5);
 
         patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::DEF), 5, 5);
         patternComponent->addPattern(
             game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::DEF, 1.1F), 5, 5);
+        patternComponent->addPattern(
+            game::HexPattern({{0, 0}, {1, -1}, {2, -2}}, game::HexPattern::Type::DEF, 1.2F), 5, 5);
+        patternComponent->addPattern(
+            game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {2, -1}}, game::HexPattern::Type::DEF, 1.3F),
+            5, 5);
 
         patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL, 0.5F), 5, 5);
         patternComponent->addPattern(
             game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 0.6F), 5, 5);
+        patternComponent->addPattern(
+            game::HexPattern({{0, 0}, {1, -1}, {0, -1}}, game::HexPattern::Type::HEAL, 0.7F), 5, 5);
+        patternComponent->addPattern(game::HexPattern({{0, 0}, {1, -1}, {0, -1}, {-1, 0}},
+                                                      game::HexPattern::Type::HEAL, 0.8F),
+                                     5, 5);
     }
 }
 
@@ -998,6 +1014,7 @@ void Game::setupEnemies() {
     combatEnamyPanel->setAssetManager(_engine->getAssetManager());
     combatEnamyPanel->setCanvas(enemyPanel);
     combatEnamyPanel->setHideEmptyPatterns(true);
+    combatEnamyPanel->setEngine(_engine);
     
     auto* enemyHealthGO = _mainScene.get()
                               ->findGameObjectByName("Enemy_Avatar_Panel")
