@@ -1,15 +1,15 @@
 $ cmake -S . -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug -DFMOD_LIBS_PATH=C:\Program Files (x86)\FMOD SoundSystem\FMOD Studio API Windows\api\core\lib\x64 -G Visual Studio 17 2022
--- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
--- The C compiler identification is MSVC 19.44.35219.0
--- The CXX compiler identification is MSVC 19.44.35219.0
+-- Selecting Windows SDK version 10.0.22621.0 to target Windows 10.0.26200.
+-- The C compiler identification is MSVC 19.38.33144.0
+-- The CXX compiler identification is MSVC 19.38.33144.0
 -- Detecting C compiler ABI info
 -- Detecting C compiler ABI info - done
--- Check for working C compiler: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Check for working C compiler: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx64/x64/cl.exe - skipped
 -- Detecting C compile features
 -- Detecting C compile features - done
 -- Detecting CXX compiler ABI info
 -- Detecting CXX compiler ABI info - done
--- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/cl.exe - skipped
+-- Check for working CXX compiler: C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/bin/Hostx64/x64/cl.exe - skipped
 -- Detecting CXX compile features
 -- Detecting CXX compile features - done
 FMOD_LIBS_PATH:C:/Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows/api/core/lib/x64
@@ -55,22 +55,22 @@ FMOD_LIBS_PATH:C:/Program Files (x86)/FMOD SoundSystem/FMOD Studio API Windows/a
 -- Could NOT find BrotliDec (missing: BROTLIDEC_INCLUDE_DIRS BROTLIDEC_LIBRARIES) 
 Cloning into 'googletest-src'...
 HEAD is now at b514bdc8 Update version strings to 1.15.2 (#4583)
--- Configuring done (43.8s)
--- Generating done (0.6s)
+-- Configuring done (74.5s)
+-- Generating done (4.2s)
 -- Build files have been written to: C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug
 $ cmake --build cmake-build-debug --target game -j 10
-Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
+Wersja programu MSBuild 17.13.15+18b3035f6 dla .NET Framework
 
   1>Checking Build System
-  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/assimp-src/contrib/zlib/CMakeLists.txt
-  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/glfw-src/src/CMakeLists.txt
   Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/freetype-src/CMakeLists.txt
+  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/assimp-src/contrib/zlib/CMakeLists.txt
   Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/glm-src/glm/CMakeLists.txt
   Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/DZeMIKK/CMakeLists.txt
+  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/glfw-src/src/CMakeLists.txt
   glm.cpp
+  autofit.c
   glad.c
   context.c
-  autofit.c
   adler32.c
   compress.c
   crc32.c
@@ -87,29 +87,20 @@ Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
   uncompr.c
   zutil.c
   init.c
+  zlibstatic.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\assimp-build\contrib\zlib\Debug\zlibstaticd.lib
   ftbase.c
   input.c
-  ftbbox.c
   glad.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\Debug\glad.lib
+  ftbbox.c
+  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/assimp-src/code/CMakeLists.txt
   ftbdf.c
-  ftbitmap.c
   monitor.c
+  ftbitmap.c
   ftcid.c
   ftfstype.c
-  zlibstatic.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\assimp-build\contrib\zlib\Debug\zlibstaticd.lib
   platform.c
   ftgasp.c
   ftglyph.c
-  ftgxval.c
-  vulkan.c
-  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/_deps/assimp-src/code/CMakeLists.txt
-  ftinit.c
-  ftmm.c
-  window.c
-  ftotval.c
-  ftpatent.c
-  ftpfr.c
-  egl_context.c
   Assimp.cpp
   CInterfaceIOWrapper.cpp
   Compression.cpp
@@ -117,7 +108,6 @@ Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
   BaseProcess.cpp
   PostStepRegistry.cpp
   ImporterRegistry.cpp
-  ftstroke.c
   DefaultIOStream.cpp
   IOSystem.cpp
   DefaultIOSystem.cpp
@@ -127,144 +117,164 @@ Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
   VertexTriangleAdjacency.cpp
   SpatialSort.cpp
   SceneCombiner.cpp
+  ftgxval.c
+  vulkan.c
+  ftinit.c
+  ftmm.c
+  window.c
+  ftotval.c
   ScenePreprocessor.cpp
   SkeletonMeshBuilder.cpp
+  ftpatent.c
+  egl_context.c
   StandardShapes.cpp
+  ftpfr.c
   TargetAnimation.cpp
   RemoveComments.cpp
   Subdivision.cpp
   scene.cpp
+  ftstroke.c
+  osmesa_context.c
   Bitmap.cpp
   ftsynth.c
-  osmesa_context.c
   fttype1.c
-  ftwinfnt.c
   null_init.c
-  bdf.c
+  ftwinfnt.c
   Version.cpp
-  Generowanie kodu...
   CreateAnimMesh.cpp
   simd.cpp
   material.cpp
+  bdf.c
   AssertHandler.cpp
   Exceptional.cpp
-  null_monitor.c
   Base64.cpp
+  glm.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\glm-build\glm\Debug\glmd.lib
   GeometryUtils.cpp
   DefaultLogger.cpp
+  Generowanie kodu...
   Exporter.cpp
-  Trwa kompilowanie...
-  ftbzip2.c
+  null_monitor.c
   AssimpCExport.cpp
   CalcTangentsProcess.cpp
-  glm.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\glm-build\glm\Debug\glmd.lib
-  null_window.c
-  ftcache.c
   ComputeUVMappingProcess.cpp
   ConvertToLHProcess.cpp
+  null_window.c
+  Trwa kompilowanie...
+  ftbzip2.c
   EmbedTexturesProcess.cpp
   FindDegenerates.cpp
-  cff.c
   FindInstancesProcess.cpp
+  ftcache.c
   FindInvalidDataProcess.cpp
-  null_joystick.c
   FixNormalsStep.cpp
   DropFaceNormalsProcess.cpp
-  type1cid.c
+  cff.c
+  null_joystick.c
   GenFaceNormalsProcess.cpp
   GenVertexNormalsProcess.cpp
-  ftgzip.c
   PretransformVertices.cpp
+  type1cid.c
   ImproveCacheLocality.cpp
-  JoinVerticesProcess.cpp
   win32_module.c
-  LimitBoneWeightsProcess.cpp
-  RemoveRedundantMaterials.cpp
+  ftgzip.c
   hvf.c
-  RemoveVCProcess.cpp
-  SortByPTypeProcess.cpp
-  SplitLargeMeshes.cpp
   ftlzw.c
   win32_time.c
-  TextureTransform.cpp
   pcf.c
-  win32_thread.c
+  JoinVerticesProcess.cpp
+  LimitBoneWeightsProcess.cpp
   pfr.c
+  RemoveRedundantMaterials.cpp
+  win32_thread.c
+  RemoveVCProcess.cpp
+  psaux.c
+  SortByPTypeProcess.cpp
+  SplitLargeMeshes.cpp
+  pshinter.c
+  win32_init.c
+  TextureTransform.cpp
   TriangulateProcess.cpp
+  psnames.c
   ValidateDataStructure.cpp
   OptimizeGraph.cpp
   OptimizeMeshes.cpp
-  psaux.c
   DeboneProcess.cpp
-  win32_init.c
+  raster.c
+  win32_joystick.c
   ProcessHelper.cpp
+  sdf.c
+  sfnt.c
   MakeVerboseFormat.cpp
-  pshinter.c
   ScaleProcess.cpp
+  win32_monitor.c
+  smooth.c
+  svg.c
+  truetype.c
+  win32_window.c
   ArmaturePopulate.cpp
   GenBoundingBoxesProcess.cpp
+  type1.c
   SplitByBoneCountProcess.cpp
+  type42.c
+  Generowanie kodu...
   MaterialSystem.cpp
-  psnames.c
-  win32_joystick.c
+  Generowanie kodu...
   STEPFileReader.cpp
+  Trwa kompilowanie...
+  wgl_context.c
   STEPFileEncoding.cpp
   glTFCommon.cpp
-  raster.c
   AMFImporter.cpp
   AMFImporter_Geometry.cpp
-  sdf.c
   AMFImporter_Material.cpp
-  win32_monitor.c
+  Trwa kompilowanie...
+  winfnt.c
   AMFImporter_Postprocess.cpp
+  Generowanie kodu...
   3DSConverter.cpp
-  sfnt.c
   3DSLoader.cpp
+  ftsystem.c
   ACLoader.cpp
-  smooth.c
   ASELoader.cpp
-  win32_window.c
   ASEParser.cpp
+  ftdebug.c
+  Generowanie kodu...
   AssbinLoader.cpp
-  svg.c
+  glfw.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\glfw-build\src\Debug\glfw3d.lib
   B3DImporter.cpp
-  truetype.c
+  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/DZeMIKK/CMakeLists.txt
   BVHLoader.cpp
   ColladaHelper.cpp
-  Generowanie kodu...
   ColladaLoader.cpp
+  imgui.cpp
+  freetype.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\freetype-build\Debug\freetyped.lib
+  imgui_draw.cpp
   ColladaParser.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  imgui_impl_glfw.cpp
   DXFLoader.cpp
   CSMLoader.cpp
+  imgui_impl_opengl3.cpp
+  Generowanie kodu...
   HMPLoader.cpp
-  type1.c
   IRRMeshLoader.cpp
+  imgui.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\Debug\imguid.lib
   IRRShared.cpp
   IQMImporter.cpp
   IRRLoader.cpp
-  Trwa kompilowanie...
-  wgl_context.c
-  type42.c
   LWOAnimation.cpp
-  Generowanie kodu...
-  Generowanie kodu...
   LWOBLoader.cpp
   LWOLoader.cpp
   LWOMaterial.cpp
-  Trwa kompilowanie...
-  winfnt.c
   LWSLoader.cpp
-  ftsystem.c
   MD2Loader.cpp
   MD3Loader.cpp
   MD5Loader.cpp
-  ftdebug.c
   MD5Parser.cpp
   MDCLoader.cpp
   MDLLoader.cpp
-  Generowanie kodu...
   MDLMaterialLoader.cpp
-  glfw.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\glfw-build\src\Debug\glfw3d.lib
   HL1MDLLoader.cpp
   UniqueNameGenerator.cpp
   NFFLoader.cpp
@@ -277,7 +287,6 @@ Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
   OgreStructs.cpp
   OgreBinarySerializer.cpp
   OgreXmlSerializer.cpp
-  Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/DZeMIKK/CMakeLists.txt
   OgreMaterial.cpp
   OpenGEXImporter.cpp
   PlyLoader.cpp
@@ -286,12 +295,10 @@ Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
   COBLoader.cpp
   BlenderLoader.cpp
   BlenderDNA.cpp
-  freetype.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\_deps\freetype-build\Debug\freetyped.lib
   BlenderScene.cpp
   BlenderModifier.cpp
   BlenderBMesh.cpp
   BlenderTessellator.cpp
-  imgui.cpp
   BlenderCustomData.cpp
   IFCLoader.cpp
   IFCReaderGen1_2x3.cpp
@@ -311,21 +318,17 @@ Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
   FBXDocument.cpp
   FBXProperties.cpp
   FBXMeshGeometry.cpp
-  imgui_draw.cpp
   FBXMaterial.cpp
   FBXModel.cpp
   FBXAnimation.cpp
   FBXNodeAttribute.cpp
-  imgui_tables.cpp
   FBXDeformer.cpp
   FBXBinaryTokenizer.cpp
   FBXDocumentUtil.cpp
-  imgui_widgets.cpp
   Q3DLoader.cpp
   Q3BSPFileParser.cpp
   Q3BSPFileImporter.cpp
   RawLoader.cpp
-  imgui_impl_glfw.cpp
   SIBImporter.cpp
   SMDLoader.cpp
   STLLoader.cpp
@@ -341,14 +344,12 @@ Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
   X3DImporter_Metadata.cpp
   X3DImporter_Networking.cpp
   X3DImporter_Postprocess.cpp
-  imgui_impl_opengl3.cpp
   X3DImporter_Rendering.cpp
   X3DImporter_Shape.cpp
   X3DImporter_Texturing.cpp
   X3DGeoHelper.cpp
   X3DXmlHelper.cpp
   VrmlConverter.cpp
-  Generowanie kodu...
   glTFImporter.cpp
   glTF2Importer.cpp
   XmlSerializer.cpp
@@ -371,7 +372,6 @@ Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
   STLExporter.cpp
   XFileExporter.cpp
   X3DExporter.cpp
-  imgui.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\Debug\imguid.lib
   glTFExporter.cpp
   glTF2Exporter.cpp
   D3MFExporter.cpp
@@ -407,14 +407,14 @@ Wersja programu MSBuild 17.14.23+b0019275e dla .NET Framework
   fxaaPostProcessEffect.cpp
   outlinePostProcessEffect.cpp
   engine.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderer.h(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x2d5, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderer.h(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x2d3, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/core/engine.cpp”)
   
   window.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/core/window.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\GLFW\glfw3.h(123,11):
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\GLFW\glfw3.h(123,1):
       zobacz poprzednią definicję „APIENTRY”
   
   time.cpp
@@ -422,22 +422,22 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(1
   stb.cpp
   input.cpp
   collisions.cpp
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderer.h(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x2d5, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderer.h(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x2d3, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/collisions/collisions.cpp”)
   
   renderer.cpp
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderer.h(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x2d5, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderer.h(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x2d3, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/renderer/renderer.cpp”)
   
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/renderer/renderer.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
       zobacz poprzednią definicję „APIENTRY”
   
 C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderPasses\skyboxRenderPass.h(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x204, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/renderer/renderer.cpp”)
   
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   mesh.cpp
   staticMesh.cpp
   skinnedMesh.cpp
@@ -451,41 +451,58 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.3520
   Generowanie kodu...
   Trwa kompilowanie...
   cameraSystem.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/renderer/cameraSystem.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
       zobacz poprzednią definicję „APIENTRY”
   
   framebuffer.cpp
+  lightSystem.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+  (kompilowanie pliku źródłowego „../../DZeMIKK/src/renderer/lightSystem.cpp”)
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
+      zobacz poprzednią definicję „APIENTRY”
+  
+  lightSSBO.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+  (kompilowanie pliku źródłowego „../../DZeMIKK/src/renderer/lightSSBO.cpp”)
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
+      zobacz poprzednią definicję „APIENTRY”
+  
   imageRenderPass.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/renderer/renderPasses/imageRenderPass.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
       zobacz poprzednią definicję „APIENTRY”
   
   IRenderPass.cpp
   meshRenderPass.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/renderer/renderPasses/meshRenderPass.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
       zobacz poprzednią definicję „APIENTRY”
   
   skinnedRenderPass.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+  (kompilowanie pliku źródłowego „../../DZeMIKK/src/renderer/renderPasses/skinnedRenderPass.cpp”)
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
+      zobacz poprzednią definicję „APIENTRY”
+  
   skyboxRenderPass.cpp
 C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderPasses\skyboxRenderPass.h(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x204, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/renderer/renderPasses/skyboxRenderPass.cpp”)
   
   spriteRenderPass.cpp
   textRenderPass.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/renderer/renderPasses/textRenderPass.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
       zobacz poprzednią definicję „APIENTRY”
   
   uITextRenderPass.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/renderer/renderPasses/uITextRenderPass.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
       zobacz poprzednią definicję „APIENTRY”
   
   postProcessRenderPass.cpp
@@ -496,11 +513,12 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(1
   collider.cpp
   spriteRenderer.cpp
   camera.cpp
-  textRenderer.cpp
-  postProcessEffect.cpp
   Generowanie kodu...
   Trwa kompilowanie...
+  textRenderer.cpp
+  postProcessEffect.cpp
   colorGradingEffect.cpp
+  antiAliasingEffect.cpp
   gameobject.cpp
   scene.cpp
   octree.cpp
@@ -508,7 +526,7 @@ C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(1
   animationmodule.cpp
   animator.cpp
   animationstatemachine.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   component.cpp
   animationclip.cpp
   animationstate.cpp
@@ -516,224 +534,193 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.3520
   bone.cpp
   skeleton.cpp
   componentSerializerRegistry.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   gameobjectSerializer.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   sceneSerializer.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-  prefabSerializer.cpp
-  directionalLightSerializer.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-  assetManager.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   Generowanie kodu...
   Trwa kompilowanie...
+  prefabSerializer.cpp
+  directionalLightSerializer.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+  assetManager.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   iAssetHandler.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   fontHandler.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   meshHandler.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   shaderHandler.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   skyboxHandler.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   soundHandler.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   textureHandler.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   modelHandler.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/assetManager/modelHandler.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
       zobacz poprzednią definicję „APIENTRY”
   
   primitiveFactory.cpp
   assetDatabase.cpp
   assetLoaderRegistry.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   primitiveMeshLibrary.cpp
   resourceIndex.cpp
   skeletonBuilder.cpp
   meshBuilder.cpp
   animationLoader.cpp
   threadPool.cpp
-  iGpuUploadable.cpp
-  prefabHandler.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
-  sceneHandler.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   Generowanie kodu...
   Trwa kompilowanie...
+  iGpuUploadable.cpp
+  prefabHandler.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+  sceneHandler.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   sound.cpp
   rectTransform.cpp
   verticalLayout.cpp
   horizontalLayout.cpp
   gridLayout.cpp
   uiButton.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/ecs/components/ui/uiButton.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
       zobacz poprzednią definicję „APIENTRY”
   
   uiSlider.cpp
   uiCheckbox.cpp
   uiDropdown.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   (kompilowanie pliku źródłowego „../../DZeMIKK/src/ecs/components/ui/uiDropdown.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
       zobacz poprzednią definicję „APIENTRY”
   
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\DZeMIKK.vcxproj]
   directionalLight.cpp
   pointLight.cpp
   spotLight.cpp
   audioManager.cpp
+  spriteAnimation.cpp
+  spriteAnimationModule.cpp
   Generowanie kodu...
   DZeMIKK.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\DZeMIKK\Debug\DZeMIKK.lib
   Building Custom Rule C:/Users/Admin/Documents/GitHub/DZeMIKK/game/CMakeLists.txt
   Trwa skanowanie źródeł pod kątem zależności modułów...
-  game.cpp
-  enemyActionWeights.cpp
-  world.cpp
-  gameStateMachine.cpp
-  PlayerEntity.cpp
-  playerStyleNodes.cpp
   main.cpp
-  enemyManager.cpp
-  bTNode.cpp
-  healthNodes.cpp
-  HexChunk.cpp
-  enemyPatternComponent.cpp
-  playerMovement.cpp
-  cameraController.cpp
   HexPattern.cpp
+  HexChunk.cpp
+  world.cpp
+  PlayerEntity.cpp
+  playerMovement.cpp
+  game.cpp
+  gameStateMachine.cpp
+  cameraController.cpp
+  enemyEntity.cpp
   explorationState.cpp
   combatState.cpp
-  territoryPatternRegistry.cpp
   combatResolver.cpp
-  enemyPlanner.cpp
-  patternComponent.cpp
-  playerPatternComponent.cpp
-  enemyEntity.cpp
+  enemyManager.cpp
+  territoryPatternRegistry.cpp
   HexGrid.cpp
+  enemyPlanner.cpp
+  enemyActionWeights.cpp
+  bTNode.cpp
+  healthNodes.cpp
+  playerStyleNodes.cpp
+  patternComponent.cpp
   combatArenaBuilder.cpp
   playerPatternStatsComponent.cpp
   combatUIPanel.cpp
-  totemSpawnConfig.cpp
-  totemManager.cpp
+  playerPatternComponent.cpp
   inventory.cpp
-  healthSystem.cpp
+  enemyPatternComponent.cpp
   totemEntity.cpp
+  healthSystem.cpp
+  totemManager.cpp
+  totemSpawnConfig.cpp
+  itemManager.cpp
+  dialogManager.cpp
+  dialog.cpp
   Trwa kompilowanie…
-  HexChunk.cpp
   HexGrid.cpp
-  main.cpp
-  enemyPlanner.cpp
-  playerMovement.cpp
-  world.cpp
-  enemyPatternComponent.cpp
-  bTNode.cpp
-  territoryPatternRegistry.cpp
-  patternComponent.cpp
-  combatResolver.cpp
-  PlayerEntity.cpp
-  cameraController.cpp
-  gameStateMachine.cpp
-  playerPatternComponent.cpp
   HexPattern.cpp
-  combatState.cpp
-  enemyEntity.cpp
-  enemyActionWeights.cpp
-  playerStyleNodes.cpp
-  healthNodes.cpp
-  explorationState.cpp
   game.cpp
+  PlayerEntity.cpp
+  combatState.cpp
+  explorationState.cpp
+  world.cpp
+  cameraController.cpp
+  playerMovement.cpp
+  gameStateMachine.cpp
   enemyManager.cpp
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-  (kompilowanie pliku źródłowego „../../game/src/player/playerMovement.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
+  HexChunk.cpp
+  territoryPatternRegistry.cpp
+  enemyEntity.cpp
+  main.cpp
+  combatResolver.cpp
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+  (kompilowanie pliku źródłowego „../../game/src/game.cpp”)
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
       zobacz poprzednią definicję „APIENTRY”
   
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderer.h(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x2d5, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-  (kompilowanie pliku źródłowego „../../game/src/player/playerPatternComponent.cpp”)
-  
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-  (kompilowanie pliku źródłowego „../../game/src/scripts/world/world.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
-      zobacz poprzednią definicję „APIENTRY”
-  
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-  (kompilowanie pliku źródłowego „../../game/src/enemySystem/enemyManager.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
-      zobacz poprzednią definicję „APIENTRY”
-  
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\minwindef.h(130,1): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
   (kompilowanie pliku źródłowego „../../game/src/stateMachine/explorationState.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
+      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,1):
       zobacz poprzednią definicję „APIENTRY”
   
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-  (kompilowanie pliku źródłowego „../../game/src/game.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
-      zobacz poprzednią definicję „APIENTRY”
-  
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-  (kompilowanie pliku źródłowego „../../game/src/stateMachine/combatState.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
-      zobacz poprzednią definicję „APIENTRY”
-  
-  (kompilowanie pliku źródłowego „../../game/src/enemySystem/enemyPlanner.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
-      zobacz poprzednią definicję „APIENTRY”
-  
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-  (kompilowanie pliku źródłowego „../../game/src/player/playerPatternComponent.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
-      zobacz poprzednią definicję „APIENTRY”
-  
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Users\Admin\Documents\GitHub\DZeMIKK\game\src\enemySystem\enemyPlanner.cpp(141,36): warning C4834: odrzucenie wartości zwracanej funkcji z atrybutem [[nodiscard]] [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderer.h(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x2d5, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderer.h(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x2d3, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
   (kompilowanie pliku źródłowego „../../game/src/game.cpp”)
   
-C:\Users\Admin\Documents\GitHub\DZeMIKK\game\src\player\playerPatternComponent.cpp(619,13): warning C4834: odrzucenie wartości zwracanej funkcji z atrybutem [[nodiscard]] [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+  enemyActionWeights.cpp
+  enemyPlanner.cpp
   playerPatternStatsComponent.cpp
-  combatUIPanel.cpp
-  combatArenaBuilder.cpp
-  inventory.cpp
-  healthSystem.cpp
-  totemEntity.cpp
-  totemSpawnConfig.cpp
   totemManager.cpp
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-  (kompilowanie pliku źródłowego „../../game/src/player/inventory.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
-      zobacz poprzednią definicję „APIENTRY”
+  patternComponent.cpp
+  totemSpawnConfig.cpp
+  totemEntity.cpp
+  playerPatternComponent.cpp
+  healthNodes.cpp
+  playerStyleNodes.cpp
+  bTNode.cpp
+  inventory.cpp
+  combatArenaBuilder.cpp
+  enemyPatternComponent.cpp
+  combatUIPanel.cpp
+  healthSystem.cpp
+  itemManager.cpp
+C:\Users\Admin\Documents\GitHub\DZeMIKK\game\src\ui\combatUIPanel.cpp(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x5a2d, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Users\Admin\Documents\GitHub\DZeMIKK\game\src\enemySystem\enemyPlanner.cpp(146,35): warning C4834: odrzucenie wartości zwracanej funkcji z atrybutem [[nodiscard]] [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderer.h(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x2d3, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+  (kompilowanie pliku źródłowego „../../game/src/ui/combatUIPanel.cpp”)
   
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-  (kompilowanie pliku źródłowego „../../game/src/totem/totemEntity.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
-      zobacz poprzednią definicję „APIENTRY”
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+  dialogManager.cpp
+C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\include\renderer\renderer.h(1,1): warning C4828: Plik zawiera znak rozpoczynający się od przesunięcia 0x2d3, który jest niedozwolony w bieżącym zestawie znaków źródła (strona kodowa 65001). [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+  (kompilowanie pliku źródłowego „../../game/src/player/playerPatternComponent.cpp”)
   
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\minwindef.h(130,9): warning C4005: "APIENTRY": ponowna definicja makra [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
-  (kompilowanie pliku źródłowego „../../game/src/totem/totemManager.cpp”)
-      C:\Users\Admin\Documents\GitHub\DZeMIKK\DZeMIKK\extern\glad\include\glad\glad.h(31,9):
-      zobacz poprzednią definicję „APIENTRY”
-  
-C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Users\Admin\Documents\GitHub\DZeMIKK\game\src\player\playerPatternComponent.cpp(614,12): warning C4834: odrzucenie wartości zwracanej funkcji z atrybutem [[nodiscard]] [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\expected(11): warning STL4038: The contents of <expected> are available only with C++23 or later. [C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\game.vcxproj]
+  dialog.cpp
      Trwa tworzenie biblioteki C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/game/Debug/game.lib i obiektu C:/Users/Admin/Documents/GitHub/DZeMIKK/cmake-build-debug/game/Debug/game.exp
   game.vcxproj -> C:\Users\Admin\Documents\GitHub\DZeMIKK\cmake-build-debug\game\Debug\game.exe
 

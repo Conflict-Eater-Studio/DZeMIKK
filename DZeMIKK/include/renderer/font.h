@@ -62,12 +62,13 @@ namespace dzemikk {
             }
 
             if (FT_Set_Pixel_Sizes(face, 0, 48)) {
-                lineHeight = face->size->metrics.height >> 6;
-                baseSize = 48;
                 FT_Done_Face(face);
                 FT_Done_FreeType(ft);
                 return false;
             }
+
+            lineHeight = face->size->metrics.height >> 6;
+            baseSize = 48;
 
             for (unsigned char c = 0; c < 128; c++) {
 
