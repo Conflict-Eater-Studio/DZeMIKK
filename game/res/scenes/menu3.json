@@ -100,6 +100,14 @@
                                 0.0
                             ],
                             "id": "fcce3319-594c-4d59-96b2-83c62da1c690",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                0.0,
+                                0.0
+                            ],
                             "pivot": [
                                 0.5,
                                 0.5
@@ -155,6 +163,14 @@
                                                 0.0
                                             ],
                                             "id": "d3e8399e-5d13-44ce-85b2-bc9c556d8910",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
                                             "pivot": [
                                                 0.5,
                                                 0.5
@@ -181,16 +197,16 @@
                                                 0.0,
                                                 0.0
                                             ],
-                                            "font": "fonts/Lato-Regular.ttf",
+                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                             "horizontalAlign": 1,
                                             "id": "8ebf36f1-7416-4ee9-a9e9-7531341d0540",
-                                            "scale": 1.0,
+                                            "scale": 0.800000011920929,
                                             "text": "PLAY",
                                             "type": "UITextRenderer",
                                             "verticalAlign": 1
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "67642bbf-a149-471d-bb93-bed5e4e61381",
                                     "name": "Button_Text",
                                     "tags": []
@@ -207,6 +223,14 @@
                                         0.5
                                     ],
                                     "id": "bb549cdd-7352-457b-8e2c-619433f11293",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
                                     "pivot": [
                                         0.5,
                                         0.5
@@ -228,6 +252,12 @@
                                     "zIndex": 10
                                 },
                                 {
+                                    "disabledColor": [
+                                        0.5,
+                                        0.5,
+                                        0.5,
+                                        1.0
+                                    ],
                                     "events": {
                                         "click": [
                                             "ui.menu.play"
@@ -267,7 +297,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "6e8730fd-9f0b-4064-a183-b6287b1e204b",
                             "name": "PlayButton",
                             "tags": []
@@ -287,6 +317,14 @@
                                                 0.0
                                             ],
                                             "id": "bed63949-ed4c-4fd1-b4ec-dec33bafc542",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
                                             "pivot": [
                                                 0.5,
                                                 0.5
@@ -313,16 +351,16 @@
                                                 0.0,
                                                 0.0
                                             ],
-                                            "font": "fonts/Lato-Regular.ttf",
+                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                             "horizontalAlign": 1,
                                             "id": "89629e80-495c-406e-b5b9-809ff4dde562",
-                                            "scale": 1.0,
+                                            "scale": 0.800000011920929,
                                             "text": "RESET",
                                             "type": "UITextRenderer",
                                             "verticalAlign": 1
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "16c7f1d8-1662-4cba-96a5-d54ddcda8cf5",
                                     "name": "Button_Text",
                                     "tags": []
@@ -339,6 +377,14 @@
                                         0.5
                                     ],
                                     "id": "c50ed1cb-968b-422d-9160-43c784ffe424",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
                                     "pivot": [
                                         0.5,
                                         0.5
@@ -360,6 +406,12 @@
                                     "zIndex": 10
                                 },
                                 {
+                                    "disabledColor": [
+                                        0.5,
+                                        0.5,
+                                        0.5,
+                                        1.0
+                                    ],
                                     "events": {
                                         "click": [
                                             "ui.menu.fromcheckpoint"
@@ -399,7 +451,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "d0e2e6ec-5f70-46e9-9a57-be1ef7562253",
                             "name": "ResetButton",
                             "tags": []
@@ -419,6 +471,14 @@
                                                 0.0
                                             ],
                                             "id": "54b26d23-30f3-49fd-a6e2-740851084871",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
                                             "pivot": [
                                                 0.5,
                                                 0.5
@@ -445,16 +505,16 @@
                                                 0.0,
                                                 0.0
                                             ],
-                                            "font": "fonts/Lato-Regular.ttf",
+                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                             "horizontalAlign": 1,
                                             "id": "fb64c51b-9c1e-4053-8b50-5e1ac05019e8",
-                                            "scale": 1.0,
+                                            "scale": 0.800000011920929,
                                             "text": "CREDITS",
                                             "type": "UITextRenderer",
                                             "verticalAlign": 1
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "8ed6bfb2-5b62-49e8-bf81-b07c84282f2f",
                                     "name": "Button_Text",
                                     "tags": []
@@ -471,6 +531,14 @@
                                         0.5
                                     ],
                                     "id": "46a4efd7-ce70-4cc4-923b-585e6a222b96",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
                                     "pivot": [
                                         0.5,
                                         0.5
@@ -492,6 +560,12 @@
                                     "zIndex": 10
                                 },
                                 {
+                                    "disabledColor": [
+                                        0.5,
+                                        0.5,
+                                        0.5,
+                                        1.0
+                                    ],
                                     "events": {
                                         "click": [
                                             "ui.menu.credits"
@@ -531,7 +605,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "59e633af-5d87-47b6-9d80-18f5dab8c737",
                             "name": "CreditsButton",
                             "tags": []
@@ -551,6 +625,14 @@
                                                 0.0
                                             ],
                                             "id": "7a9a1f91-ece8-4a7d-98df-d4a1281d6aee",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
                                             "pivot": [
                                                 0.5,
                                                 0.5
@@ -577,16 +659,16 @@
                                                 0.0,
                                                 0.0
                                             ],
-                                            "font": "fonts/Lato-Regular.ttf",
+                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                             "horizontalAlign": 1,
                                             "id": "2bf07a01-f4af-4d92-bdc2-1f6f1dcc44da",
-                                            "scale": 1.0,
+                                            "scale": 0.800000011920929,
                                             "text": "EXIT",
                                             "type": "UITextRenderer",
                                             "verticalAlign": 1
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "d262e42d-3000-4681-a273-e30bca06f69f",
                                     "name": "Button_Text",
                                     "tags": []
@@ -603,6 +685,14 @@
                                         0.5
                                     ],
                                     "id": "565f1c98-36b9-4a57-bc37-3510dde6e1c3",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
                                     "pivot": [
                                         0.5,
                                         0.5
@@ -624,6 +714,12 @@
                                     "zIndex": 1
                                 },
                                 {
+                                    "disabledColor": [
+                                        0.5,
+                                        0.5,
+                                        0.5,
+                                        1.0
+                                    ],
                                     "events": {
                                         "click": [
                                             "ui.menu.exit"
@@ -663,7 +759,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "0cd6a0d9-186d-47a4-bc77-3cfe160de153",
                             "name": "ExitButton",
                             "tags": []
@@ -680,6 +776,14 @@
                                 0.0
                             ],
                             "id": "d6daa238-3402-475d-bd31-4b2254e29b55",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                0.0,
+                                0.0
+                            ],
                             "pivot": [
                                 0.0,
                                 0.5
@@ -701,9 +805,129 @@
                             "zIndex": 0
                         }
                     ],
-                    "enabled": true,
+                    "enabled": false,
                     "id": "9698b8c4-9eb8-43fd-9ebf-8cb1d8353715",
                     "name": "VerticalLayout",
+                    "tags": []
+                },
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                0.5
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                0.5
+                            ],
+                            "id": "f9c1e1d2-d4a1-48bb-8f3e-06f9a660c27f",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                0.0,
+                                0.0
+                            ],
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                -840.0,
+                                340.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                0.0,
+                                0.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 0
+                        },
+                        {
+                            "color": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                            "horizontalAlign": 0,
+                            "id": "293646e0-9b4d-493a-91fa-45037a41996e",
+                            "scale": 3.0,
+                            "text": "KAHUN",
+                            "type": "UITextRenderer",
+                            "verticalAlign": 0
+                        }
+                    ],
+                    "enabled": false,
+                    "id": "39043922-7e03-4b64-8903-6c7e86d4b239",
+                    "name": "Title",
+                    "tags": []
+                },
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                0.5
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                0.5
+                            ],
+                            "id": "38f1f666-dc9b-458b-8386-30c7afef33be",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                0.0,
+                                0.0
+                            ],
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                1920.0,
+                                1080.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 10
+                        },
+                        {
+                            "color": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "id": "f16c84fd-710f-4ab6-8bad-d56f98c6cc11",
+                            "materialPath": "shaders/quad",
+                            "texture": "textures/logo.png",
+                            "type": "ImageRenderer"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "608786c8-4c08-4273-8ef5-f403de442d06",
+                    "name": "Logo",
                     "tags": []
                 }
             ],
@@ -718,6 +942,14 @@
                         0.5
                     ],
                     "id": "08931297-b1ef-4e0f-af6e-d8540db5deb6",
+                    "offsetMax": [
+                        0.0,
+                        0.0
+                    ],
+                    "offsetMin": [
+                        0.0,
+                        0.0
+                    ],
                     "pivot": [
                         0.5,
                         0.5

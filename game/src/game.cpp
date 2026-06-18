@@ -80,6 +80,8 @@
 #include <iostream>
 #include <random>
 
+#include "ui/logoComponent.h"
+
 static std::mt19937 rng{std::random_device{}()};
 
 static float randFloat(float min, float max) {
@@ -167,6 +169,9 @@ void Game::startGame() {
     } else {
         btnResetInteractable->setInteractable(true);
     }
+
+    auto logo = _menuScene.get()->findGameObjectByName("Logo");
+    logo->addComponent<game::LogoComponent>();
 
     setupMainCamera();
     setupUICamera();
