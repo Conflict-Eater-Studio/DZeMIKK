@@ -44,9 +44,9 @@ Dialog::~Dialog() {
         _mouseButtonPressedListenerId);
 }
 
-void Dialog::update(float dt) {
+bool Dialog::update(float dt) {
     if (!_inDialog || _currentText.empty()) {
-        return;
+        return false;
     }
 
     if (_currentTime >= _textSpeed && _displayedText.size() < _currentText.size()) {
@@ -58,6 +58,8 @@ void Dialog::update(float dt) {
     } else {
         _currentTime = 0.0F;
     }
+
+    return true;
 }
 
 void Dialog::start() {

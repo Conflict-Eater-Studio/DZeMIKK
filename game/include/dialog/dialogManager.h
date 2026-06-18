@@ -32,6 +32,7 @@ class DialogManager : public dzemikk::MonoBehaviour {
 
     [[nodiscard]] Dialog* getDialog(Entity* entity);
     [[nodiscard]] const Dialog* getDialog(Entity* entity) const;
+    [[nodiscard]] bool isInDialog() const;
 
     [[nodiscard]] std::string typeName() const override {
         return "DialogManager";
@@ -40,6 +41,8 @@ class DialogManager : public dzemikk::MonoBehaviour {
     [[nodiscard]] nlohmann::json saveState() const;
     void loadState(const nlohmann::json& j);
     void clear();
+    void markDialogTriggered(const boost::uuids::uuid& targetEntityId);
+    void markDialogUntriggered(const boost::uuids::uuid& targetEntityId);
 
   private:
     void attachDialog(Entity* entity, const DialogSpawnConfig& cfg);
@@ -48,6 +51,9 @@ class DialogManager : public dzemikk::MonoBehaviour {
     dzemikk::AssetManager* _assetManager = nullptr;
     Game* _game = nullptr;
 
+    bool _inDialog = false;
+
+    std::unordered_map<boost::uuids::uuid, DialogSpawnConfig> _configs;
     std::unordered_map<boost::uuids::uuid, Dialog> _dialogs;
 };
 

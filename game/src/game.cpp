@@ -588,7 +588,7 @@ void Game::setupInputCallbacks() {
             currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
         }
 
-        constexpr float hoverStrength = 0.5f;
+        constexpr float hoverStrength = 0.5F;
 
         if (currentRenderer != lastHitRenderer) {
 
@@ -615,8 +615,12 @@ void Game::setupInputCallbacks() {
     });
 
     _engine->getInput()->OnKeyPressed.addListener([this](dzemikk::KeyPressedEvent& event) {
+        auto* dialogManagerGo = _mainScene.get()->findGameObjectByTag("DialogManager");
+        auto* dialogManager = dialogManagerGo->getComponent<game::DialogManager>();
+
         if (event.GetKeyCode() == GLFW_KEY_ESCAPE &&
-            _stateMachine->getCurrentStateAs<game::ExplorationState>()) {
+            _stateMachine->getCurrentStateAs<game::ExplorationState>() &&
+            !dialogManager->isInDialog()) {
             auto* btnResetInteractable = _menuScene.get()
                                              ->findGameObjectByName("ResetButton")
                                              ->getComponent<dzemikk::IUIInteractable>();
@@ -644,8 +648,12 @@ void Game::setupInputCallbacks() {
 
     _engine->getInput()->OnMouseButtonPressed.addListener(
         [this](dzemikk::MouseButtonPressedEvent& event) {
+            auto* dialogManagerGo = _mainScene.get()->findGameObjectByTag("DialogManager");
+            auto* dialogManager = dialogManagerGo->getComponent<game::DialogManager>();
+
             if (event.GetMouseButton() != GLFW_MOUSE_BUTTON_LEFT ||
-                !_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
+                !_stateMachine->getCurrentStateAs<game::ExplorationState>() ||
+                dialogManager->isInDialog()) {
                 return;
             }
 
@@ -660,7 +668,6 @@ void Game::setupInputCallbacks() {
                 static_cast<float>(windowHeight));
 
             if (collider && _engine->getInput()->IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-
                 auto* currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
 
                 auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
@@ -1277,7 +1284,9 @@ void Game::setupTotems() {
         manager->loadState(worldData["totems"]);
     } else {
         manager->addTotem(_hexGrid->getChunkByName("chunkMain2")->getPersistantId(),
-                          {.pattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
+                          {.persistantId = boost::uuids::string_generator()(
+                               "478657ac-c332-43a8-b9bb-3aca14c32662"),
+                           .pattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
                                                        game::HexPattern::Type::ATK, 1.2F)});
     }
 }
@@ -1313,7 +1322,7 @@ void Game::setupDialogs() {
     } else {
         manager->addDialog({
             .targetEntityId =
-                boost::uuids::string_generator()("4cc18023-7826-402a-a787-0293f6e1ee2e"),
+                boost::uuids::string_generator()("478657ac-c332-43a8-b9bb-3aca14c32662"),
             .entries =
                 {
                     {.speaker = "Totem", .text = "Hello there!"},
@@ -1343,6 +1352,9 @@ void Game::restartGame() {
 
     auto* totemManagerGO = scene->findGameObjectByTag("TotemManager");
     auto* totemManager = totemManagerGO->getComponent<game::TotemManager>();
+
+    auto* dialogManagerGO = scene->findGameObjectByTag("DialogManager");
+    auto* dialogManager = dialogManagerGO->getComponent<game::DialogManager>();
 
     auto currentState = world->save();
 
@@ -1449,6 +1461,32 @@ void Game::restartGame() {
                        currentState["totems"][idStr].contains("used") &&
                        currentState["totems"][idStr]["used"].get<bool>()) {
                 totemManager->markTotemUnused(boost::uuids::string_generator()(idStr));
+            }
+        }
+    }
+
+    std::unordered_set<std::string> currentDialogIds;
+    if (currentState.contains("dialogs")) {
+        for (const auto& [idStr, _] : currentState["dialogs"].items()) {
+            currentDialogIds.insert(idStr);
+        }
+    }
+
+    if (checkpoint.contains("dialogs")) {
+        for (const auto& [idStr, dialogData] : checkpoint["dialogs"].items()) {
+            if (!currentDialogIds.contains(idStr)) {
+                if (dialogData.contains("config")) {
+                    auto cfg = dialogData["config"].get<game::DialogSpawnConfig>();
+                    dialogManager->addDialog(cfg);
+                }
+            } else if (dialogData.contains("triggered") && dialogData["triggered"].get<bool>()) {
+                auto dialogId = boost::uuids::string_generator()(idStr);
+                dialogManager->markDialogTriggered(dialogId);
+            } else if (dialogData.contains("triggered") && !dialogData["triggered"].get<bool>() &&
+                       currentDialogIds.contains(idStr) &&
+                       currentState["dialogs"][idStr].contains("triggered") &&
+                       currentState["dialogs"][idStr]["triggered"].get<bool>()) {
+                dialogManager->markDialogUntriggered(boost::uuids::string_generator()(idStr));
             }
         }
     }
