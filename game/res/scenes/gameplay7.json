@@ -397,6 +397,7 @@
                                     "currentStateName": "Idle",
                                     "currentTime": 0.0,
                                     "id": "af81862b-8e42-45a7-b6bb-93f859af6a78",
+                                    "parameters": {},
                                     "stateMachine": [
                                         {
                                             "name": "Idle",
@@ -479,19 +480,19 @@
                                             ]
                                         },
                                         {
-                                            "name": "R90",
-                                            "transitions": []
-                                        },
-                                        {
                                             "name": "R210",
                                             "transitions": []
                                         },
                                         {
-                                            "name": "R150",
+                                            "name": "R90",
                                             "transitions": []
                                         },
                                         {
                                             "name": "R330",
+                                            "transitions": []
+                                        },
+                                        {
+                                            "name": "R150",
                                             "transitions": []
                                         },
                                         {
@@ -1088,10 +1089,10 @@
                                                         1.0,
                                                         1.0
                                                     ],
-                                                    "font": "fonts/Lato-Regular.ttf",
+                                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                     "horizontalAlign": 1,
                                                     "id": "d0cb8aa3-a446-4477-b6bf-6ed733a12ef0",
-                                                    "scale": 0.5,
+                                                    "scale": 0.4000000059604645,
                                                     "text": "YOUR PATTERNS",
                                                     "type": "UITextRenderer",
                                                     "verticalAlign": 1
@@ -1347,6 +1348,14 @@
                                                 0.5
                                             ],
                                             "id": "1111712b-e6a6-4d85-b549-b3d1034ddbfb",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
                                             "pivot": [
                                                 0.5,
                                                 0.5
@@ -1494,10 +1503,10 @@
                                                         1.0,
                                                         1.0
                                                     ],
-                                                    "font": "fonts/Lato-Regular.ttf",
+                                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                     "horizontalAlign": 1,
                                                     "id": "1105d15f-e4f5-4d59-8ba7-671070e68935",
-                                                    "scale": 0.5,
+                                                    "scale": 0.4000000059604645,
                                                     "text": "ENEMY PATTERNS",
                                                     "type": "UITextRenderer",
                                                     "verticalAlign": 1
@@ -1910,10 +1919,10 @@
                                                                 1.0,
                                                                 1.0
                                                             ],
-                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 1,
                                                             "id": "128934b5-dde7-4255-a2c7-c40d9b5c983d",
-                                                            "scale": 0.4000000059604645,
+                                                            "scale": 0.30000001192092896,
                                                             "text": "Select and place",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 0
@@ -1951,7 +1960,7 @@
                                                             ],
                                                             "position": [
                                                                 0.0,
-                                                                -25.399999618530273
+                                                                -19.399999618530273
                                                             ],
                                                             "rotation": 0.0,
                                                             "scale": [
@@ -1971,10 +1980,10 @@
                                                                 1.0,
                                                                 1.0
                                                             ],
-                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 1,
                                                             "id": "d6c02495-9edf-4de1-99c1-6523dc8b1a28",
-                                                            "scale": 0.4000000059604645,
+                                                            "scale": 0.30000001192092896,
                                                             "text": "pattern",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 0
@@ -2010,7 +2019,7 @@
                                                         0.5
                                                     ],
                                                     "position": [
-                                                        -255.0,
+                                                        -340.0,
                                                         -70.0
                                                     ],
                                                     "rotation": 0.0,
@@ -2146,10 +2155,10 @@
                                                                 1.0,
                                                                 1.0
                                                             ],
-                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 1,
                                                             "id": "7e71561f-ce50-4dee-969c-cc9cfa12805c",
-                                                            "scale": 0.4000000059604645,
+                                                            "scale": 0.30000001192092896,
                                                             "text": "Rotate pattern\n",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 0
@@ -2185,7 +2194,7 @@
                                                         0.5
                                                     ],
                                                     "position": [
-                                                        -85.0,
+                                                        -115.0,
                                                         -70.0
                                                     ],
                                                     "rotation": 0.0,
@@ -2321,10 +2330,10 @@
                                                                 1.0,
                                                                 1.0
                                                             ],
-                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 1,
                                                             "id": "61f1fb91-3023-40a5-81a5-717a83d1197d",
-                                                            "scale": 0.4000000059604645,
+                                                            "scale": 0.30000001192092896,
                                                             "text": "Delete pattern",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 0
@@ -2360,7 +2369,7 @@
                                                         0.5
                                                     ],
                                                     "position": [
-                                                        85.0,
+                                                        115.0,
                                                         -70.0
                                                     ],
                                                     "rotation": 0.0,
@@ -2439,10 +2448,10 @@
                                                                         0.0,
                                                                         0.0
                                                                     ],
-                                                                    "font": "fonts/Lato-Regular.ttf",
+                                                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                                     "horizontalAlign": 1,
                                                                     "id": "50ecc529-4b51-4dbd-a8e8-bbbf539d319e",
-                                                                    "scale": 0.30000001192092896,
+                                                                    "scale": 0.20000000298023224,
                                                                     "text": "[SPACE]",
                                                                     "type": "UITextRenderer",
                                                                     "verticalAlign": 1
@@ -2558,10 +2567,10 @@
                                                                 1.0,
                                                                 1.0
                                                             ],
-                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 1,
                                                             "id": "baa824a3-d330-413e-ad9d-e33b8dafcf2a",
-                                                            "scale": 0.4000000059604645,
+                                                            "scale": 0.30000001192092896,
                                                             "text": "Confirm round",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 0
@@ -2597,7 +2606,7 @@
                                                         0.5
                                                     ],
                                                     "position": [
-                                                        255.0,
+                                                        340.0,
                                                         -70.0
                                                     ],
                                                     "rotation": 0.0,
@@ -2818,7 +2827,7 @@
                                                         0.5
                                                     ],
                                                     "position": [
-                                                        -20.0,
+                                                        -52.400001525878906,
                                                         40.0
                                                     ],
                                                     "rotation": 0.0,
@@ -2839,7 +2848,7 @@
                                                         1.0,
                                                         1.0
                                                     ],
-                                                    "font": "fonts/Lato-Regular.ttf",
+                                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                     "horizontalAlign": 2,
                                                     "id": "99d444ce-7949-47d2-8f89-9f7742d1493d",
                                                     "scale": 0.6000000238418579,
@@ -3021,10 +3030,10 @@
                                                                 1.0,
                                                                 1.0
                                                             ],
-                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 0,
                                                             "id": "22f0980b-1ae7-4962-99bf-e36028912045",
-                                                            "scale": 0.5,
+                                                            "scale": 0.4000000059604645,
                                                             "text": "30/30\n",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 1
@@ -3060,7 +3069,7 @@
                                                         0.5
                                                     ],
                                                     "position": [
-                                                        470.0,
+                                                        461.8999938964844,
                                                         -1.9073486328125e-06
                                                     ],
                                                     "rotation": 0.0,
@@ -3630,6 +3639,14 @@
                                                         0.5
                                                     ],
                                                     "id": "4b2867ec-2375-4a04-ac70-62171d630d9b",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -3681,6 +3698,14 @@
                                                         0.5
                                                     ],
                                                     "id": "6af5e3ac-d4c0-4814-8ad4-c8638f83c25a",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -3707,7 +3732,7 @@
                                                         0.0,
                                                         0.0
                                                     ],
-                                                    "font": "fonts/Lato-Bold.ttf",
+                                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                     "horizontalAlign": 1,
                                                     "id": "8aaa6ef8-ba19-42d6-8b71-b833bebfa18f",
                                                     "scale": 0.4000000059604645,
@@ -3736,6 +3761,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "2f3807f8-74f3-47e0-add0-d624b6789d31",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -3762,10 +3795,10 @@
                                                                 0.7490196228027344,
                                                                 0.01568627543747425
                                                             ],
-                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 1,
                                                             "id": "f1bb899e-773e-4e67-a847-edf9b55ad4fa",
-                                                            "scale": 0.25,
+                                                            "scale": 0.20000000298023224,
                                                             "text": "PER HEX",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 1
@@ -3791,6 +3824,14 @@
                                                                         0.5
                                                                     ],
                                                                     "id": "7a100986-af5b-4b18-868f-45da808783c4",
+                                                                    "offsetMax": [
+                                                                        0.0,
+                                                                        0.0
+                                                                    ],
+                                                                    "offsetMin": [
+                                                                        0.0,
+                                                                        0.0
+                                                                    ],
                                                                     "pivot": [
                                                                         0.5,
                                                                         0.5
@@ -3841,6 +3882,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "2ca132ec-354d-49c9-81d8-9267e9b52cdd",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -3892,6 +3941,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "a00ba8ee-8ab2-4671-9437-6813777e3e7c",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -3918,10 +3975,10 @@
                                                                 1.0,
                                                                 1.0
                                                             ],
-                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 1,
                                                             "id": "2a71c6cc-09ea-4cdf-9e37-3dbad4905d42",
-                                                            "scale": 0.23000000417232513,
+                                                            "scale": 0.15000000596046448,
                                                             "text": "Deals 5 Damage",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 1
@@ -3944,6 +4001,14 @@
                                                         0.5
                                                     ],
                                                     "id": "b0cbe7b0-3f08-4b6d-93b0-09db6b3bbb59",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -3985,6 +4050,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "31eaf60d-737f-42dc-8f00-4b39fdc1d93d",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -4011,10 +4084,10 @@
                                                                 0.7490196228027344,
                                                                 0.01568627543747425
                                                             ],
-                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 1,
                                                             "id": "bbb3d714-6660-4552-8e88-e35b22d2156d",
-                                                            "scale": 0.25,
+                                                            "scale": 0.20000000298023224,
                                                             "text": "MAXIMUM EFFECT",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 1
@@ -4040,6 +4113,14 @@
                                                                         0.5
                                                                     ],
                                                                     "id": "93afc43d-975e-4518-9a83-c561fa74a696",
+                                                                    "offsetMax": [
+                                                                        0.0,
+                                                                        0.0
+                                                                    ],
+                                                                    "offsetMin": [
+                                                                        0.0,
+                                                                        0.0
+                                                                    ],
                                                                     "pivot": [
                                                                         0.5,
                                                                         0.5
@@ -4090,6 +4171,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "56ddd3e9-2cd2-4bbf-bfa5-9a36287ed14c",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -4141,6 +4230,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "9fab734d-04c8-4e06-8267-ca44792326dd",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -4167,10 +4264,10 @@
                                                                 1.0,
                                                                 1.0
                                                             ],
-                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 1,
                                                             "id": "5d7c90f2-8ff2-4b7a-b978-9e217d027b16",
-                                                            "scale": 0.23000000417232513,
+                                                            "scale": 0.15000000596046448,
                                                             "text": "10 Damage total",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 1
@@ -4193,6 +4290,14 @@
                                                         0.5
                                                     ],
                                                     "id": "667797af-82a4-4592-8652-935f97a34bf6",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -4234,6 +4339,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "223f2da1-b24f-49a4-9fa9-796c4c884e65",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -4285,6 +4398,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "0bd03233-0b33-43ca-a062-4198add9a2bb",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -4335,6 +4456,14 @@
                                                         0.5
                                                     ],
                                                     "id": "cc4f346e-050b-48b6-a0f3-e85416d90d53",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -4373,6 +4502,14 @@
                                                 0.5
                                             ],
                                             "id": "50ee5c4f-4727-4e0b-9b74-fe4b4adf1ee5",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
                                             "pivot": [
                                                 0.5,
                                                 0.5
@@ -4414,12 +4551,20 @@
                                                         0.5
                                                     ],
                                                     "id": "3c7163dc-3dfa-4ee4-9148-b928d7d265f3",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
                                                     ],
                                                     "position": [
-                                                        -85.0,
+                                                        -103.80000305175781,
                                                         33.0
                                                     ],
                                                     "rotation": 0.0,
@@ -4465,6 +4610,14 @@
                                                         0.5
                                                     ],
                                                     "id": "552599f9-3570-48aa-977f-428eaa4fc214",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -4491,7 +4644,7 @@
                                                         0.7490196228027344,
                                                         0.01568627543747425
                                                     ],
-                                                    "font": "fonts/Lato-Bold.ttf",
+                                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                     "horizontalAlign": 1,
                                                     "id": "bc598efa-1eba-4b21-b9ef-ed6c5ce4ba97",
                                                     "scale": 0.4000000059604645,
@@ -4520,6 +4673,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "042e87e0-a468-440b-92d8-6f903a4c9d4f",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -4570,6 +4731,14 @@
                                                         0.5
                                                     ],
                                                     "id": "a877d5a6-5b2a-4f97-9374-b2327a01c9aa",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -4611,6 +4780,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "48e1dac0-e264-4553-a455-7153137dd8cb",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -4661,6 +4838,14 @@
                                                         0.5
                                                     ],
                                                     "id": "a6bfa66b-9adc-4ff4-a92c-2f54773273ba",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -4712,6 +4897,14 @@
                                                         0.5
                                                     ],
                                                     "id": "e02e72eb-7e97-4574-b185-3e56d13b00e1",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -4738,10 +4931,10 @@
                                                         1.0,
                                                         1.0
                                                     ],
-                                                    "font": "fonts/Lato-Regular.ttf",
+                                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                     "horizontalAlign": 1,
                                                     "id": "e99cfb2c-b4a6-4416-90bc-6d5dae0f573b",
-                                                    "scale": 0.30000001192092896,
+                                                    "scale": 0.20000000298023224,
                                                     "text": "Expands your territory by 1 tile",
                                                     "type": "UITextRenderer",
                                                     "verticalAlign": 1
@@ -4764,6 +4957,14 @@
                                                 0.5
                                             ],
                                             "id": "4b5fab5b-2c65-47f9-af34-dd59b76f4cb1",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
                                             "pivot": [
                                                 0.5,
                                                 0.5
@@ -4805,6 +5006,14 @@
                                                         0.5
                                                     ],
                                                     "id": "d0a3d4da-128f-4f6a-af32-be4d7f4ec860",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -4856,13 +5065,21 @@
                                                         0.5
                                                     ],
                                                     "id": "1eed8f92-ecab-4599-954d-80942495f7f8",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
                                                     ],
                                                     "position": [
                                                         0.0,
-                                                        30.0
+                                                        25.0
                                                     ],
                                                     "rotation": 0.0,
                                                     "scale": [
@@ -4882,10 +5099,10 @@
                                                         0.7490196228027344,
                                                         0.01568627543747425
                                                     ],
-                                                    "font": "fonts/Lato-Bold.ttf",
+                                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                     "horizontalAlign": 1,
                                                     "id": "b4fc1964-e1d6-48f8-b485-9279aced0f55",
-                                                    "scale": 0.4000000059604645,
+                                                    "scale": 0.30000001192092896,
                                                     "text": "REVEAL PATTERN",
                                                     "type": "UITextRenderer",
                                                     "verticalAlign": 1
@@ -4911,6 +5128,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "704830d6-a9eb-4be7-8378-f77168a96892",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -4961,6 +5186,14 @@
                                                         0.5
                                                     ],
                                                     "id": "5e63872c-2c4d-4228-a96f-040fb24ffb77",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -5000,6 +5233,14 @@
                                                         0.5
                                                     ],
                                                     "id": "f1492234-5b08-4226-b72d-a736e950dbdb",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
                                                     "pivot": [
                                                         0.5,
                                                         0.5
@@ -5026,10 +5267,10 @@
                                                         1.0,
                                                         1.0
                                                     ],
-                                                    "font": "fonts/Lato-Regular.ttf",
+                                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                     "horizontalAlign": 1,
                                                     "id": "a2a0aa76-0d4e-498a-a6df-05709d08d42d",
-                                                    "scale": 0.30000001192092896,
+                                                    "scale": 0.20000000298023224,
                                                     "text": "Reveals enemy pattern shape",
                                                     "type": "UITextRenderer",
                                                     "verticalAlign": 0
@@ -5052,6 +5293,14 @@
                                                 0.5
                                             ],
                                             "id": "c2998128-ce28-410f-a9c6-eb2fe2847a30",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
                                             "pivot": [
                                                 0.5,
                                                 0.5
@@ -5185,10 +5434,10 @@
                                                 1.0,
                                                 1.0
                                             ],
-                                            "font": "fonts/Lato-Regular.ttf",
+                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                             "horizontalAlign": 1,
                                             "id": "514b90ac-ebcb-42e1-a041-f284c6095161",
-                                            "scale": 0.800000011920929,
+                                            "scale": 0.699999988079071,
                                             "text": "ROUND 1",
                                             "type": "UITextRenderer",
                                             "verticalAlign": 1
@@ -5361,14 +5610,14 @@
                                         },
                                         {
                                             "color": [
-                                                0.0,
-                                                0.0,
-                                                0.0
+                                                0.11764705181121826,
+                                                0.11591694504022598,
+                                                0.11591694504022598
                                             ],
-                                            "font": "fonts/Lato-Regular.ttf",
+                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                             "horizontalAlign": 1,
                                             "id": "004c0173-5b22-43a0-acc0-ceaefa8798a8",
-                                            "scale": 0.6000000238418579,
+                                            "scale": 0.5,
                                             "text": "CONFIRM",
                                             "type": "UITextRenderer",
                                             "verticalAlign": 1
@@ -5605,7 +5854,7 @@
                                                 0.5
                                             ],
                                             "position": [
-                                                3.5,
+                                                26.200000762939453,
                                                 37.5
                                             ],
                                             "rotation": 0.0,
@@ -5626,7 +5875,7 @@
                                                 1.0,
                                                 1.0
                                             ],
-                                            "font": "fonts/Lato-Regular.ttf",
+                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                             "horizontalAlign": 2,
                                             "id": "2ab8f336-7f0e-4b4e-bab6-df3fdb95ae55",
                                             "scale": 0.6000000238418579,
@@ -5808,10 +6057,10 @@
                                                         1.0,
                                                         1.0
                                                     ],
-                                                    "font": "fonts/Lato-Regular.ttf",
+                                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                     "horizontalAlign": 0,
                                                     "id": "e445ad2b-ac8f-4466-8a9f-d79e084eae23",
-                                                    "scale": 0.5,
+                                                    "scale": 0.4000000059604645,
                                                     "text": "30/30\n",
                                                     "type": "UITextRenderer",
                                                     "verticalAlign": 1
@@ -5903,7 +6152,7 @@
                                                         0.5
                                                     ],
                                                     "position": [
-                                                        -99.83300018310547,
+                                                        -90.63300323486328,
                                                         0.0
                                                     ],
                                                     "rotation": 0.0,
@@ -5924,10 +6173,10 @@
                                                         1.0,
                                                         1.0
                                                     ],
-                                                    "font": "fonts/Lato-Regular.ttf",
+                                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                     "horizontalAlign": 2,
                                                     "id": "0ace9774-a093-4be6-afb3-ecffb34426a5",
-                                                    "scale": 0.5,
+                                                    "scale": 0.4000000059604645,
                                                     "text": "ITEMS:",
                                                     "type": "UITextRenderer",
                                                     "verticalAlign": 1
@@ -5987,10 +6236,10 @@
                                                                 1.0,
                                                                 1.0
                                                             ],
-                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 1,
                                                             "id": "a945e3a1-7b7a-4561-99eb-4b7c0169c4db",
-                                                            "scale": 0.4000000059604645,
+                                                            "scale": 0.30000001192092896,
                                                             "text": "0",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 1
@@ -6016,6 +6265,14 @@
                                                                         0.5
                                                                     ],
                                                                     "id": "079d4fca-43d2-4771-a11e-03ad89d7d4c2",
+                                                                    "offsetMax": [
+                                                                        0.0,
+                                                                        0.0
+                                                                    ],
+                                                                    "offsetMin": [
+                                                                        0.0,
+                                                                        0.0
+                                                                    ],
                                                                     "pivot": [
                                                                         0.5,
                                                                         0.5
@@ -6066,6 +6323,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "dd7b289f-d8e2-4759-b251-8b64b125e62c",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -6117,6 +6382,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "fa68c408-b06a-4225-a8a1-e246a50cfde8",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -6168,6 +6441,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "054fc5e2-3744-48d5-bff9-7156045bd7ed",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -6352,10 +6633,10 @@
                                                                 1.0,
                                                                 1.0
                                                             ],
-                                                            "font": "fonts/Lato-Regular.ttf",
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 1,
                                                             "id": "a67af521-7f57-44aa-9dc5-690669dc0b1c",
-                                                            "scale": 0.4000000059604645,
+                                                            "scale": 0.30000001192092896,
                                                             "text": "0",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 1
@@ -6379,6 +6660,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "f12a5d9e-0c76-4921-83d6-1b4b4f4b5e52",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -6432,6 +6721,14 @@
                                                                         0.5
                                                                     ],
                                                                     "id": "126bb6ff-d80a-48f5-9188-0627d1ca82a3",
+                                                                    "offsetMax": [
+                                                                        0.0,
+                                                                        0.0
+                                                                    ],
+                                                                    "offsetMin": [
+                                                                        0.0,
+                                                                        0.0
+                                                                    ],
                                                                     "pivot": [
                                                                         0.5,
                                                                         0.5
@@ -6482,6 +6779,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "4b09453f-80d1-42bc-af41-f0692a80172b",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -6533,6 +6838,14 @@
                                                                 0.5
                                                             ],
                                                             "id": "caa58f5b-90ec-47c3-b19e-7b01c033ce42",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
                                                             "pivot": [
                                                                 0.5,
                                                                 0.5
@@ -7179,10 +7492,10 @@
                                                 1.0,
                                                 1.0
                                             ],
-                                            "font": "fonts/Lato-Regular.ttf",
+                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                             "horizontalAlign": 0,
                                             "id": "a85f529c-ac0b-43c2-b3de-fa27cb0c6d54",
-                                            "scale": 1.0,
+                                            "scale": 0.8999999761581421,
                                             "text": "Speaker",
                                             "type": "UITextRenderer",
                                             "verticalAlign": 1
@@ -7298,10 +7611,10 @@
                                         1.0,
                                         1.0
                                     ],
-                                    "font": "fonts/Lato-Regular.ttf",
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                     "horizontalAlign": 0,
                                     "id": "663d0b15-2ab3-49fb-8cff-6f7b2bd7f51f",
-                                    "scale": 1.0,
+                                    "scale": 0.8999999761581421,
                                     "text": "TextContent",
                                     "type": "UITextRenderer",
                                     "verticalAlign": 2
