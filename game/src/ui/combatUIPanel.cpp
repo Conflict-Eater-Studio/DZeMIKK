@@ -638,32 +638,36 @@ void game::CombatUIPanel::onMouseScrolled(dzemikk::MouseScrolledEvent& e) {
     if (!_patterns)
         return;
 
-    const auto visibleIndices = getAvailablePatternIndices();
+    const auto& patterns = _patterns->getPatterns();
+    const size_t total = patterns.size();
 
-    if (visibleIndices.size() <= MAX_VISIBLE_PATTERNS)
+    if (total <= MAX_VISIBLE_PATTERNS)
         return;
 
-    size_t maxStartIndex = visibleIndices.size() - MAX_VISIBLE_PATTERNS;
+    constexpr size_t SCROLL_STEP = 2;
 
     if (e.GetYOffset() < 0) {
-        _firstVisiblePatternIndex =
-            std::min(_firstVisiblePatternIndex + PATTERNS_PER_ROW, maxStartIndex);
+        _firstVisiblePatternIndex += SCROLL_STEP;
     } else if (e.GetYOffset() > 0) {
-        if (_firstVisiblePatternIndex >= PATTERNS_PER_ROW) {
-            _firstVisiblePatternIndex -= PATTERNS_PER_ROW;
-        } else {
+        if (_firstVisiblePatternIndex >= SCROLL_STEP)
+            _firstVisiblePatternIndex -= SCROLL_STEP;
+        else
             _firstVisiblePatternIndex = 0;
-        }
     }
+
+    // ?? KLUCZ: clamp tylko do realnego koñca listy
+    const size_t maxStartIndex = total > 0 ? total - 1 : 0;
+
+    _firstVisiblePatternIndex = std::clamp(_firstVisiblePatternIndex, size_t(0), maxStartIndex);
 
     refresh(true);
     updateScrollHandle();
 }
 
 float game::CombatUIPanel::calculateScrollHandleY() const {
-    const auto visibleIndices = getAvailablePatternIndices();
+    const auto& patterns = _patterns->getPatterns();
 
-    const int total = static_cast<int>(visibleIndices.size());
+    const int total = static_cast<int>(patterns.size());
     const int visible = MAX_VISIBLE_PATTERNS;
 
     if (total <= visible)
@@ -672,6 +676,8 @@ float game::CombatUIPanel::calculateScrollHandleY() const {
     const int maxStart = total - visible;
 
     float t = static_cast<float>(_firstVisiblePatternIndex) / static_cast<float>(maxStart);
+
+    t = std::clamp(t, 0.0f, 1.0f);
 
     return _scrollHandleMaxY + t * (_scrollHandleMinY - _scrollHandleMaxY);
 }

@@ -90,7 +90,8 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                     auto* playerPanel =
                         this->getOwner()->getScene()->findGameObjectByName("Player_Panel");
                     auto* combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
-                    combatPlayerPanel->addPatternSlot(*pattern);
+                    combatPlayerPanel->refresh();
+                    //combatPlayerPanel->addPatternSlot(*pattern);
 
                     playerEntitySound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
                     dzemikk::AssetManager::AssetTask<dzemikk::Sound,

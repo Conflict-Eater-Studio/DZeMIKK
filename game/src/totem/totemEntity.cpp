@@ -49,7 +49,8 @@ void game::TotemEntity::use() {
 
     auto* playerPanel = this->getOwner()->getScene()->findGameObjectByName("Player_Panel");
     auto* combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
-    combatPlayerPanel->addPatternSlot(*pattern);
+    combatPlayerPanel->refresh();
+    //combatPlayerPanel->addPatternSlot(*pattern);
 
     lightOff();
 }
