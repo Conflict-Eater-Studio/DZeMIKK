@@ -20,6 +20,8 @@ class World;
 
 class ItemManager : public dzemikk::MonoBehaviour {
   public:
+    using Base = dzemikk::MonoBehaviour;
+
     ItemManager(unsigned int seed = 1);
 
     void setWorld(World* world);

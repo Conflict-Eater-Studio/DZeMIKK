@@ -61,6 +61,7 @@ class Game {
     void setupItems();
     void registerDefaultTerritories();
     void setupTotems();
+    void setupDialogs();
     void spawnRandomPointLight();
 
     dzemikk::Engine* _engine;

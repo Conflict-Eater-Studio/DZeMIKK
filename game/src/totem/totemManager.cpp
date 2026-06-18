@@ -9,6 +9,7 @@
 #include <ecs/gameobject.h>
 #include <ecs/serialize/prefabSerializer.h>
 #include <renderer/texture.h>
+#include <unordered_map>
 
 game::TotemManager::TotemManager(unsigned int seed) : _rng(seed) {}
 

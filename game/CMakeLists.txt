@@ -37,6 +37,8 @@ set(GAME_SOURCES
     ${SRC_DIR}/totem/totemEntity.cpp
     ${SRC_DIR}/totem/totemManager.cpp
     ${SRC_DIR}/item/itemManager.cpp
+    ${SRC_DIR}/dialog/dialogManager.cpp
+    ${SRC_DIR}/dialog/dialog.cpp
 )
 
 set(GAME_HEADERS
@@ -88,6 +90,9 @@ set(GAME_HEADERS
     ${INC_DIR}/totem/totemEntity.h
     ${INC_DIR}/totem/totemManager.h
     ${INC_DIR}/item/itemManager.h
+    ${INC_DIR}/dialog/dialogManager.h
+    ${INC_DIR}/dialog/dialog.h
+    ${INC_DIR}/dialog/dialogEntity.h
 )
 
 add_executable(game

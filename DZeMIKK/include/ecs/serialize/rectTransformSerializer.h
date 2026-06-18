@@ -18,6 +18,8 @@ inline void to_json(nlohmann::json& json, const RectTransform& trs) {
     auto scale = trs.getScale();
     auto anchorMin = trs.getAnchorMin();
     auto anchorMax = trs.getAnchorMax();
+    auto offsetMin = trs.getOffsetMin();
+    auto offsetMax = trs.getOffsetMax();
     auto pivot = trs.getPivot();
     auto rot = trs.getRotation();
     auto zIndex = trs.getZIndex();
@@ -29,6 +31,8 @@ inline void to_json(nlohmann::json& json, const RectTransform& trs) {
     json["scale"] = {scale[0], scale[1]};
     json["anchorMin"] = {anchorMin[0], anchorMin[1]};
     json["anchorMax"] = {anchorMax[0], anchorMax[1]};
+    json["offsetMin"] = {offsetMin[0], offsetMin[1]};
+    json["offsetMax"] = {offsetMax[0], offsetMax[1]};
     json["pivot"] = {pivot[0], pivot[1]};
     json["zIndex"] = zIndex;
 
@@ -59,6 +63,16 @@ inline void from_json(const nlohmann::json& json, RectTransform& trs) {
     const auto& pivot = json["pivot"];
     const auto& size = json["size"];
     const auto& zIndex = json["zIndex"];
+    glm::vec2 offsetMin{0, 0};
+    glm::vec2 offsetMax{0, 0};
+
+    if (json.contains("offsetMin")) {
+        offsetMin = {json["offsetMin"][0].get<float>(), json["offsetMin"][1].get<float>()};
+    }
+
+    if (json.contains("offsetMax")) {
+        offsetMax = {json["offsetMax"][0].get<float>(), json["offsetMax"][1].get<float>()};
+    }
 
     trs.setId(uuidGenerator(json["id"].get<std::string>()));
     trs.setPosition({pos[0].get<float>(), pos[1].get<float>()});
@@ -70,6 +84,8 @@ inline void from_json(const nlohmann::json& json, RectTransform& trs) {
 
     trs.setAnchorMin(storedAnchorMin);
     trs.setAnchorMax(storedAnchorMax);
+    trs.setOffsetMin(offsetMin);
+    trs.setOffsetMax(offsetMax);
     trs.setPivot({pivot[0].get<float>(), pivot[1].get<float>()});
 
     const glm::vec2 anchorSpan = glm::abs(storedAnchorMax - storedAnchorMin);
