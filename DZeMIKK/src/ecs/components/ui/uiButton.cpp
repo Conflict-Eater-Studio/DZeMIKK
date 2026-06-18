@@ -21,8 +21,10 @@ void UIButton::processPointer(const glm::vec2& point, bool isDown, bool pressedT
     setPointerDown(isDown);
     setPointerInside(_owner != nullptr && _owner->rectTransform() != nullptr &&
                      _owner->rectTransform()->containsPoint(point));
-    updateHoverState();
-    processStandardPressRelease(pressedThisFrame, releasedThisFrame);
+    if (isInteractable()) {
+        updateHoverState();
+        processStandardPressRelease(pressedThisFrame, releasedThisFrame);
+    }
     applyVisualState();
 }
 
@@ -40,7 +42,9 @@ void UIButton::applyVisualState() {
         return;
     }
 
-    if (pressedInside() && pointerInside() && pointerDown()) {
+    if (!isInteractable()) {
+        _spriteRenderer->setColor(_style.disabledColor);
+    } else if (pressedInside() && pointerInside() && pointerDown()) {
         _spriteRenderer->setColor(_style.pressedColor);
     } else if (isHovered()) {
         _spriteRenderer->setColor(_style.hoverColor);

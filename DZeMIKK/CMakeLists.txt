@@ -159,7 +159,7 @@ set(ENGINE_HEADERS
         "${INC_DIR}/renderer/renderPasses/postProcessRenderPass.h"
         "${INC_DIR}/renderer/lightUtils.h"
         "${INC_DIR}/renderer/lightSystem.h"
-        "${INC_DIR}/renderer/.h"
+        "${INC_DIR}/renderer/lightSSBO.h"
         "${INC_DIR}/ecs/components/monobehaviour.h"
         "${INC_DIR}/ecs/components/transform.h"
      "${INC_DIR}/ecs/components/meshRenderer.h"

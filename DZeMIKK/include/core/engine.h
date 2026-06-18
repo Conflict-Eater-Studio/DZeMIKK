@@ -40,6 +40,7 @@ class Engine {
     Engine& operator=(Engine&&) = delete;
 
     void start();
+    void exit();
 
     [[nodiscard]] Renderer* getRenderer() const;
     [[nodiscard]] Window* getWindow() const;

@@ -1,0 +1,734 @@
+{
+    "id": "97e02499-727d-4861-a4ff-735f14784b43",
+    "roots": [
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "391ad0d9-9743-422b-96b8-c2f30aa20479",
+                    "position": [
+                        0.0,
+                        4.0,
+                        5.599999904632568
+                    ],
+                    "rotation": [
+                        0.9834831357002258,
+                        -0.18099981546401978,
+                        -5.267820207821572e-11,
+                        2.862330095165788e-10
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "aspect": 1.7699999809265137,
+                    "bottom": -1.0,
+                    "far": 1000.0,
+                    "fov": 60.0,
+                    "id": 0,
+                    "left": -1.0,
+                    "near": 0.10000000149011612,
+                    "projectionType": 0,
+                    "right": 1.0,
+                    "top": 1.0,
+                    "type": "Camera"
+                }
+            ],
+            "enabled": true,
+            "id": "f596f462-d3bf-40aa-bb65-9db746fb5a56",
+            "name": "Editor Camera",
+            "tags": []
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "22edec92-75a2-4d25-8988-08e7545e1df9",
+                    "position": [
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "rotation": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "aspect": 1.7699999809265137,
+                    "bottom": 0.0,
+                    "far": 1.0,
+                    "fov": 60.0,
+                    "id": 1,
+                    "left": 0.0,
+                    "near": -1.0,
+                    "projectionType": 1,
+                    "right": 1920.0,
+                    "top": 1080.0,
+                    "type": "Camera"
+                }
+            ],
+            "enabled": true,
+            "id": "1ba86b50-ba7c-4968-a838-fef96e8f472f",
+            "name": "UICamera",
+            "tags": []
+        },
+        {
+            "children": [
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                1.0,
+                                1.0
+                            ],
+                            "anchorMin": [
+                                0.0,
+                                0.0
+                            ],
+                            "id": "fcce3319-594c-4d59-96b2-83c62da1c690",
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                0.0,
+                                0.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 0
+                        },
+                        {
+                            "color": [
+                                0.0,
+                                0.0,
+                                0.0,
+                                1.0
+                            ],
+                            "id": "c19f1754-658f-4dcc-aea1-a07922cad501",
+                            "materialPath": "shaders/quad",
+                            "texture": "",
+                            "type": "ImageRenderer"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "2baad52d-157f-46b2-8ee2-01ea00cb7fc7",
+                    "name": "BG",
+                    "tags": []
+                },
+                {
+                    "children": [
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "14e694a1-006c-4021-95d8-1af5f78a1441",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        180.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        1920.0,
+                                        64.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Lato-Regular.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "d123a641-e635-4acd-8d12-ca0426f658c9",
+                                    "scale": 1.0,
+                                    "text": "Zaneta Zuranska - Lead, Programmer",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "040d2ab6-7ab0-41ee-9b27-92fedded7469",
+                            "name": "Text",
+                            "tags": []
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "0282c8de-b55b-47f3-9eec-120efa3a527f",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        108.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        1920.0,
+                                        64.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Lato-Regular.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "48785a8d-5a5f-4da9-a0ff-a44d2cd24c62",
+                                    "scale": 1.0,
+                                    "text": "Mateusz Lipinski - Programmer",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "f75a0bcc-2982-44a7-b4ca-6a102a5098bc",
+                            "name": "Text",
+                            "tags": []
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "e84b490b-9f32-49bd-871b-3a044831f1f5",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        36.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        1920.0,
+                                        64.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Lato-Regular.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "2c78111c-9f0a-4c7c-9dd7-0f9e639e3c05",
+                                    "scale": 1.0,
+                                    "text": "Damian Jasek - Programmer",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "6cd5a0c8-9ad9-4915-b465-c848c6415087",
+                            "name": "Text",
+                            "tags": []
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "af7d1208-e4f2-488e-8a37-113245c40bb1",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        -36.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        1920.0,
+                                        64.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Lato-Regular.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "974dd45e-9daf-4f59-8a36-0bc6de756634",
+                                    "scale": 1.0,
+                                    "text": "Konrad Kuberski - Programmer",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "c1326a73-23d3-40b9-9c3d-967610ee0bb8",
+                            "name": "Text",
+                            "tags": []
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "6f76b3be-1bea-4859-bee8-42e621340ebe",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        -108.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        1920.0,
+                                        64.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Lato-Regular.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "e8d88ccc-74a8-4188-830c-1d5173f61975",
+                                    "scale": 1.0,
+                                    "text": "Jakub Bukowski - Graphic Designer",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "e4e0e7b0-78ac-46a8-9af7-7acd69b3813a",
+                            "name": "Text",
+                            "tags": []
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "e1f58894-2214-4f27-80e1-1201b36ac112",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        -180.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        1920.0,
+                                        64.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Lato-Regular.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "d1f5ccbb-479a-45a8-8c74-8cccb8ca0de8",
+                                    "scale": 1.0,
+                                    "text": "Igor Skwarczynski - Graphic Designer",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "94888cd6-5ec5-4caf-86cd-ab477f8e5594",
+                            "name": "Text",
+                            "tags": []
+                        }
+                    ],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                1.0,
+                                0.5
+                            ],
+                            "anchorMin": [
+                                0.0,
+                                0.5
+                            ],
+                            "id": "56a5ed24-6db6-4399-b22c-4bc688b61986",
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                0.0,
+                                424.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 0
+                        },
+                        {
+                            "childForceExpandHeight": false,
+                            "childForceExpandWidth": true,
+                            "id": "3de7dda7-4d79-42cd-850b-389ab331f5be",
+                            "spacing": 8.0,
+                            "type": "VerticalLayout"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "d15fe80a-d14b-49fe-9ab7-92c145e6a66d",
+                    "name": "Credits",
+                    "tags": []
+                },
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                1.0
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                1.0
+                            ],
+                            "id": "a9ad9f1c-e27d-4f7a-b614-85ab94b9d733",
+                            "pivot": [
+                                0.5,
+                                0.0
+                            ],
+                            "position": [
+                                0.0,
+                                -96.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                0.0,
+                                0.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 0
+                        },
+                        {
+                            "color": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "font": "fonts/Lato-Regular.ttf",
+                            "horizontalAlign": 1,
+                            "id": "0823bfcd-a9f5-4aad-addb-e8f33b15dd96",
+                            "scale": 3.0,
+                            "text": "Credits",
+                            "type": "UITextRenderer",
+                            "verticalAlign": 1
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "5df1954d-df15-40d9-9523-46fc5e3eb8ed",
+                    "name": "Title",
+                    "tags": []
+                },
+                {
+                    "children": [
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "anchorMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "id": "1be701f5-7ff2-4fe1-86ab-e2a0d0f8fd43",
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 2
+                                },
+                                {
+                                    "color": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "font": "fonts/Lato-Regular.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "0c21f846-1180-4f9f-9cee-64a785bbb0b4",
+                                    "scale": 1.0,
+                                    "text": "Back",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "f1b1e6cf-c041-4fdd-95a2-2600659d0c2c",
+                            "name": "Button_Text",
+                            "tags": []
+                        }
+                    ],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                0.0
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                0.0
+                            ],
+                            "id": "493dd362-7e32-436d-9e1d-8e23f68338cc",
+                            "pivot": [
+                                0.5,
+                                0.0
+                            ],
+                            "position": [
+                                0.0,
+                                16.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                256.0,
+                                64.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 1
+                        },
+                        {
+                            "events": {
+                                "click": [
+                                    "ui.credits.back"
+                                ]
+                            },
+                            "hoverColor": [
+                                0.800000011920929,
+                                0.800000011920929,
+                                0.800000011920929,
+                                1.0
+                            ],
+                            "id": "320a9982-05ad-49a6-bafc-20c8a0c26ec6",
+                            "normalColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "pressedColor": [
+                                0.6000000238418579,
+                                0.6000000238418579,
+                                0.6000000238418579,
+                                1.0
+                            ],
+                            "type": "UIButton"
+                        },
+                        {
+                            "color": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "id": "9cabe349-862e-4d8f-a139-9193206416ee",
+                            "materialPath": "shaders/quad",
+                            "texture": "",
+                            "type": "ImageRenderer"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "7c5c17f1-cbc2-4dc9-b7a7-3c6a77b761fd",
+                    "name": "Button",
+                    "tags": []
+                }
+            ],
+            "components": [
+                {
+                    "anchorMax": [
+                        0.5,
+                        0.5
+                    ],
+                    "anchorMin": [
+                        0.5,
+                        0.5
+                    ],
+                    "id": "08931297-b1ef-4e0f-af6e-d8540db5deb6",
+                    "pivot": [
+                        0.5,
+                        0.5
+                    ],
+                    "position": [
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": 0.0,
+                    "scale": [
+                        1.0,
+                        1.0
+                    ],
+                    "size": [
+                        1920.0,
+                        1080.0
+                    ],
+                    "type": "RectTransform",
+                    "zIndex": 0
+                },
+                {
+                    "id": "8a6d08f4-61b3-43bb-9864-46d78e5d9b25",
+                    "type": "Canvas"
+                }
+            ],
+            "enabled": true,
+            "id": "156d2bf7-54ad-4fa7-b6c7-ded68874ec55",
+            "name": "Canvas",
+            "tags": []
+        }
+    ]
+}

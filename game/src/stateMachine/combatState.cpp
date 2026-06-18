@@ -26,9 +26,6 @@
 #include <ecs/scene.h>
 #include <enemySystem/enemyPatternComponent.h>
 #include <iostream>
-
-#include <assetManager/soundHandler.h>
-#include <audio/audioManager.h>
 #include <renderer/shader.h>
 
 namespace combatSound {
@@ -193,7 +190,7 @@ void game::CombatState::onUpdate(float dt) {
             _exitAnimation = false;
 
             if (_playerDied) {
-                _game->restart();
+                _game->restartGame();
             } else {
                 _game->setExplorationState();
             }
@@ -309,7 +306,7 @@ void game::CombatState::startNewTurn() {
     auto* enemyPanel = _game->getCurrentScene().get()->findGameObjectByName("Enemy_Panel");
     auto* enemyPanelUI = enemyPanel->getComponent<CombatUIPanel>();
     enemyPanelUI->refresh(true);
-    
+
     _playerPatternComponent->refillAllPatterns();
 
     auto* playerPanel = _game->getCurrentScene().get()->findGameObjectByName("Player_Panel");

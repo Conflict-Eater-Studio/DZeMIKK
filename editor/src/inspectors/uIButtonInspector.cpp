@@ -1,11 +1,11 @@
 #include "inspectors/uIButtonInspector.h"
+
 #include "inspectors/inspectorRegistry.h"
 #include "ui/propertyDrawer.h"
 
 #include <ecs/components/ui/imageRenderer.h>
 #include <ecs/components/ui/uiButton.h>
 #include <ecs/gameObject.h>
-
 #include <imgui.h>
 
 void editor::UIButtonInspector::draw(dzemikk::UIButton* uiButton, const InspectorContext& ctx) {
@@ -23,6 +23,7 @@ void editor::UIButtonInspector::draw(dzemikk::UIButton* uiButton, const Inspecto
         changed |= editor::PropertyDrawer::drawColor("Normal Color", style.normalColor);
         changed |= editor::PropertyDrawer::drawColor("Hover Color", style.hoverColor);
         changed |= editor::PropertyDrawer::drawColor("Pressed Color", style.pressedColor);
+        changed |= editor::PropertyDrawer::drawColor("Disabled Color", style.disabledColor);
 
         if (changed) {
             uiButton->setStyle(style);

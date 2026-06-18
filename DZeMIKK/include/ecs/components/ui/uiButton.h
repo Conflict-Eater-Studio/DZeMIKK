@@ -23,6 +23,7 @@ class UIButton : public IUIInteractable {
         glm::vec4 normalColor;
         glm::vec4 hoverColor;
         glm::vec4 pressedColor;
+        glm::vec4 disabledColor;
     };
 
     UIButton() = default;
@@ -51,7 +52,8 @@ class UIButton : public IUIInteractable {
   private:
     Style _style{.normalColor = glm::vec4(1.0F),
                  .hoverColor = glm::vec4(0.9F, 0.9F, 0.9F, 1.0F),
-                 .pressedColor = glm::vec4(0.8F, 0.8F, 0.8F, 1.0F)};
+                 .pressedColor = glm::vec4(0.8F, 0.8F, 0.8F, 1.0F),
+                 .disabledColor = glm::vec4(0.5F, 0.5F, 0.5F, 1.0F)};
 
     mutable ImageRenderer* _spriteRenderer = nullptr;
 };
