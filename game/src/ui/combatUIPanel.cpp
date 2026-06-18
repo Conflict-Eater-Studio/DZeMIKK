@@ -388,6 +388,7 @@ void game::CombatUIPanel::setupButton(dzemikk::UIButton* button, size_t index,
                 auto tooltipsGO =
                     getOwner()->getScene()->findGameObjectByName("Tooltips_Panel");
                 auto patternTooltip = tooltipsGO->findDescendantByName("Pattern");
+                auto bonusTooltip = tooltipsGO->findDescendantByName("BonusHex");
 
                 auto iconGO = patternTooltip->findChildByName("Icon");
                 auto iconRenderer = iconGO->getComponent<dzemikk::ImageRenderer>();
@@ -406,6 +407,10 @@ void game::CombatUIPanel::setupButton(dzemikk::UIButton* button, size_t index,
 
                 auto rightTextGo = patternTooltip->findChildByName("Right")->findChildByName("T1");
                 auto rightTextRenderer = rightTextGo->getComponent<dzemikk::UITextRenderer>();
+
+                auto bonusTooltipTextGO = bonusTooltip->findChildByName("Text");
+                auto bonusTooltipTextRenderer =
+                    bonusTooltipTextGO->getComponent<dzemikk::UITextRenderer>();
 
                 switch (_patterns->getPattern(index)->pattern.getType()) {
                 case HexPattern::Type::ATK:
@@ -435,6 +440,7 @@ void game::CombatUIPanel::setupButton(dzemikk::UIButton* button, size_t index,
                         std::format("{:.1f} Damage total",
                                     _patterns->getPattern(index)->pattern.getEffectStrength() *
                                         _patterns->getPattern(index)->pattern.getHexes().size());
+                    patternTooltip->enabled(true);
                     break;
                 case HexPattern::Type::DEF:
                     iconRenderer->setTexture(_assetManager->get<dzemikk::Texture>(
@@ -463,6 +469,7 @@ void game::CombatUIPanel::setupButton(dzemikk::UIButton* button, size_t index,
                         std::format("{:.1f} Armor total",
                                     _patterns->getPattern(index)->pattern.getEffectStrength() *
                                         _patterns->getPattern(index)->pattern.getHexes().size());
+                    patternTooltip->enabled(true);
                     break;
                 case HexPattern::Type::HEAL:
                     iconRenderer->setTexture(_assetManager->get<dzemikk::Texture>(
@@ -491,15 +498,18 @@ void game::CombatUIPanel::setupButton(dzemikk::UIButton* button, size_t index,
                         std::format("{:.1f} Health total",
                                     _patterns->getPattern(index)->pattern.getEffectStrength() *
                                         _patterns->getPattern(index)->pattern.getHexes().size());
+                    patternTooltip->enabled(true);
                     break;
                 case HexPattern::Type::BONUSHEX:
+                    bonusTooltipTextRenderer->text =
+                        std::format("Expands your territory by {} tile",
+                                        _patterns->getPattern(index)->pattern.getHexes().size());
+
+                    bonusTooltip->enabled(true);
                     break;
                 default:
                     break;
                 }
-
-
-                patternTooltip->enabled(true);
             },
             hoverAction);
 
@@ -508,6 +518,9 @@ void game::CombatUIPanel::setupButton(dzemikk::UIButton* button, size_t index,
                 auto tooltipsGO = getOwner()->getScene()->findGameObjectByName("Tooltips_Panel");
                 auto patternTooltip = tooltipsGO->findDescendantByName("Pattern");
                 patternTooltip->enabled(false);
+
+                auto bonusTooltip = tooltipsGO->findDescendantByName("BonusHex");
+                bonusTooltip->enabled(false);
             },
             unhoverAction);
 

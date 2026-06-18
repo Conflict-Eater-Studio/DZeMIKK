@@ -214,6 +214,9 @@ void Game::enableCombatUI(bool enable) {
     auto tooltipsGO = _mainScene.get()->findGameObjectByName("Tooltips_Panel");
     auto patternTooltip = tooltipsGO->findDescendantByName("Pattern");
     patternTooltip->enabled(false);
+
+    auto bonusTooltip = tooltipsGO->findDescendantByName("BonusHex");
+    bonusTooltip->enabled(false);
 }
 
 dzemikk::AssetHandle<dzemikk::Scene> Game::getCurrentScene() {
@@ -1103,7 +1106,8 @@ void Game::restart() {
             for (const auto& pj : playerData["patterns"]) {
                 game::HexPattern pat = pj.at("pattern").get<game::HexPattern>();
                 int count = pj.at("count").get<int>();
-                patternComponent->addPattern(pat, count);
+                int maxCount = pj.at("maxCount").get<int>();
+                patternComponent->addPattern(pat, count, maxCount);
             }
             auto* playerPanel = _mainScene.get()->findGameObjectByName("Player_Panel");
             if (auto* combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
