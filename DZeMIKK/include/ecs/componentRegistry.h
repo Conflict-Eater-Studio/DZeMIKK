@@ -31,13 +31,65 @@ class ComponentRegistry {
     }
 
     void setComponentScene(Component* component, Scene* scene) {
-        _componentScenes[component] = scene;
+        auto infoIt = _componentInfo.find(component);
+        if (infoIt == _componentInfo.end()) {
+            return;
+        }
+
+        Scene* oldScene = infoIt->second.first;
+        if (oldScene == scene) {
+            return;
+        }
+
+        const std::vector<std::type_index>& types = infoIt->second.second;
+
+        for (const std::type_index& typeIdx : types) {
+            auto oldSceneIt = _sceneComponents.find(oldScene);
+            if (oldSceneIt == _sceneComponents.end()) {
+                continue;
+            }
+            auto oldTypeIt = oldSceneIt->second.find(typeIdx);
+            if (oldTypeIt == oldSceneIt->second.end()) {
+                continue;
+            }
+
+            auto& oldVec = oldTypeIt->second;
+            auto oldIndexIt = _sceneComponentIndices[oldScene][typeIdx].find(component);
+            if (oldIndexIt == _sceneComponentIndices[oldScene][typeIdx].end()) {
+                continue;
+            }
+
+            std::size_t removeIdx = oldIndexIt->second;
+            std::size_t lastIdx = oldVec.size() - 1;
+
+            if (removeIdx != lastIdx) {
+                Component* lastComp = oldVec[lastIdx];
+                oldVec[removeIdx] = lastComp;
+                _sceneComponentIndices[oldScene][typeIdx][lastComp] = removeIdx;
+            }
+            oldVec.pop_back();
+            _sceneComponentIndices[oldScene][typeIdx].erase(oldIndexIt);
+
+            if (oldVec.empty()) {
+                oldSceneIt->second.erase(oldTypeIt);
+                _sceneComponentIndices[oldScene].erase(typeIdx);
+                if (oldSceneIt->second.empty()) {
+                    _sceneComponents.erase(oldSceneIt);
+                }
+            }
+
+            _sceneComponents[scene][typeIdx].push_back(component);
+            _sceneComponentIndices[scene][typeIdx][component] =
+                _sceneComponents[scene][typeIdx].size() - 1;
+        }
+
+        infoIt->second.first = scene;
     }
 
     template <typename T>
         requires std::derived_from<T, Component>
     void registerComponent(T* component) {
-        if (!component || _componentToTypes.contains(component)) {
+        if (!component || _componentInfo.contains(component)) {
             return;
         }
         registerRecursive<T>(component);
@@ -47,27 +99,34 @@ class ComponentRegistry {
         if (!component) {
             return;
         }
-        auto typeIter = _componentToTypes.find(component);
-        if (typeIter == _componentToTypes.end()) {
+        auto infoIt = _componentInfo.find(component);
+        if (infoIt == _componentInfo.end()) {
             return;
         }
 
-        for (const std::type_index& typeIdx : typeIter->second) {
-            auto vecIter = _components.find(typeIdx);
-            auto indexMapIter = _componentIndices.find(typeIdx);
-            if (vecIter == _components.end() || indexMapIter == _componentIndices.end()) {
+        Scene* scene = infoIt->second.first;
+        const std::vector<std::type_index>& types = infoIt->second.second;
+
+        for (const std::type_index& typeIdx : types) {
+            auto sceneCompIt = _sceneComponents.find(scene);
+            if (sceneCompIt == _sceneComponents.end()) {
                 continue;
             }
 
-            auto& vec = vecIter->second;
-            auto& indices = indexMapIter->second;
-
-            auto componentIndexIter = indices.find(component);
-            if (componentIndexIter == indices.end() || vec.empty()) {
+            auto typeIt = sceneCompIt->second.find(typeIdx);
+            if (typeIt == sceneCompIt->second.end()) {
                 continue;
             }
 
-            std::size_t removeIndex = componentIndexIter->second;
+            auto& indices = _sceneComponentIndices[scene][typeIdx];
+            auto& vec = typeIt->second;
+
+            auto indexIt = indices.find(component);
+            if (indexIt == indices.end() || vec.empty()) {
+                continue;
+            }
+
+            std::size_t removeIndex = indexIt->second;
             std::size_t lastIndex = vec.size() - 1;
 
             if (removeIndex != lastIndex) {
@@ -77,42 +136,52 @@ class ComponentRegistry {
             }
 
             vec.pop_back();
-            indices.erase(componentIndexIter);
+            indices.erase(indexIt);
 
             if (vec.empty()) {
-                _components.erase(vecIter);
-                _componentIndices.erase(indexMapIter);
+                sceneCompIt->second.erase(typeIt);
+                _sceneComponentIndices[scene].erase(typeIdx);
+                if (sceneCompIt->second.empty()) {
+                    _sceneComponents.erase(sceneCompIt);
+                }
             }
         }
 
-        _componentToTypes.erase(typeIter);
-        _componentScenes.erase(component);
+        _componentInfo.erase(infoIt);
     }
 
     void clear() {
-        _components.clear();
-        _componentIndices.clear();
-        _componentToTypes.clear();
-        _componentScenes.clear();
+        _sceneComponents.clear();
+        _sceneComponentIndices.clear();
+        _componentInfo.clear();
     }
 
     template <typename T>
         requires std::derived_from<T, Component>
     void getComponents(std::vector<T*>& out) {
         out.clear();
-        auto iter = _components.find(std::type_index(typeid(T)));
-        if (iter == _components.end()) {
+        auto typeIdx = std::type_index(typeid(T));
+        if (!_activeScene) {
+            for (const auto& [scene, typeMap] : _sceneComponents) {
+                auto typeIt = typeMap.find(typeIdx);
+                if (typeIt != typeMap.end()) {
+                    for (Component* component : typeIt->second) {
+                        out.push_back(static_cast<T*>(component));
+                    }
+                }
+            }
             return;
         }
-        for (Component* component : iter->second) {
-            if (!_activeScene) {
-                out.push_back(static_cast<T*>(component));
-                continue;
-            }
-            auto sceneIt = _componentScenes.find(component);
-            if (sceneIt != _componentScenes.end() && sceneIt->second == _activeScene) {
-                out.push_back(static_cast<T*>(component));
-            }
+        auto sceneIt = _sceneComponents.find(_activeScene);
+        if (sceneIt == _sceneComponents.end()) {
+            return;
+        }
+        auto typeIt = sceneIt->second.find(typeIdx);
+        if (typeIt == sceneIt->second.end()) {
+            return;
+        }
+        for (Component* component : typeIt->second) {
+            out.push_back(static_cast<T*>(component));
         }
     }
 
@@ -120,18 +189,30 @@ class ComponentRegistry {
         requires std::derived_from<T, Component>
     void getEnabledComponents(std::vector<T*>& out) {
         out.clear();
-        auto iter = _components.find(std::type_index(typeid(T)));
-        if (iter == _components.end()) {
+        auto typeIdx = std::type_index(typeid(T));
+        if (!_activeScene) {
+            for (const auto& [scene, typeMap] : _sceneComponents) {
+                auto typeIt = typeMap.find(typeIdx);
+                if (typeIt != typeMap.end()) {
+                    for (Component* component : typeIt->second) {
+                        if (component->isEnabled()) {
+                            out.push_back(static_cast<T*>(component));
+                        }
+                    }
+                }
+            }
             return;
         }
-
-        for (Component* component : iter->second) {
-            bool sceneMatch = !_activeScene;
-            if (!sceneMatch) {
-                auto sceneIt = _componentScenes.find(component);
-                sceneMatch = sceneIt != _componentScenes.end() && sceneIt->second == _activeScene;
-            }
-            if (sceneMatch && component->isEnabled()) {
+        auto sceneIt = _sceneComponents.find(_activeScene);
+        if (sceneIt == _sceneComponents.end()) {
+            return;
+        }
+        auto typeIt = sceneIt->second.find(typeIdx);
+        if (typeIt == sceneIt->second.end()) {
+            return;
+        }
+        for (Component* component : typeIt->second) {
+            if (component->isEnabled()) {
                 out.push_back(static_cast<T*>(component));
             }
         }
@@ -144,11 +225,22 @@ class ComponentRegistry {
     template <typename T>
         requires std::derived_from<T, Component>
     void registerRecursive(T* component) {
+        auto infoIt = _componentInfo.find(component);
+        Scene* scene = nullptr;
+        if (infoIt != _componentInfo.end()) {
+            scene = infoIt->second.first;
+        }
+
         std::type_index idx(typeid(T));
-        auto& components = _components[idx];
-        components.push_back(component);
-        _componentIndices[idx][component] = components.size() - 1;
-        _componentToTypes[component].push_back(idx);
+        _sceneComponents[scene][idx].push_back(component);
+        _sceneComponentIndices[scene][idx][component] = _sceneComponents[scene][idx].size() - 1;
+
+        if (infoIt == _componentInfo.end()) {
+            _componentInfo[component] = {scene, {idx}};
+        } else {
+            infoIt->second.second.push_back(idx);
+        }
+
         if constexpr (requires { typename T::Base; }) {
             static_assert(!std::is_same_v<T, typename T::Base>,
                           "Base type cannot be the same as derived type");
@@ -156,15 +248,15 @@ class ComponentRegistry {
         }
     }
 
-    // Type -> Component list (active scene only)
-    std::unordered_map<std::type_index, std::vector<Component*>> _components;
-    // Type -> (component -> index in _components[type])
-    std::unordered_map<std::type_index, std::unordered_map<Component*, std::size_t>>
-        _componentIndices;
-    // Component -> list of types it was registered under
-    std::unordered_map<Component*, std::vector<std::type_index>> _componentToTypes;
-    // Component -> scene it was registered in
-    std::unordered_map<Component*, Scene*> _componentScenes;
+    // Scene -> (Type -> Component list)
+    std::unordered_map<Scene*, std::unordered_map<std::type_index, std::vector<Component*>>>
+        _sceneComponents;
+    // Scene -> (Type -> (Component -> index))
+    std::unordered_map<
+        Scene*, std::unordered_map<std::type_index, std::unordered_map<Component*, std::size_t>>>
+        _sceneComponentIndices;
+    // Component -> (Scene, list of types it was registered under)
+    std::unordered_map<Component*, std::pair<Scene*, std::vector<std::type_index>>> _componentInfo;
     // Currently active scene for filtering queries
     Scene* _activeScene = nullptr;
 };
