@@ -45,13 +45,22 @@ class Dialog {
 
     void start();
 
+    /**
+     * Set the text writing speed
+     *
+     * @param textSpeed seconds per character
+     */
+    void setTextSpeed(float textSpeed) {
+        _textSpeed = textSpeed;
+    }
+
     [[nodiscard]] bool isTriggered() const {
         return _triggered;
     }
     void setTriggered(bool triggered) {
         _triggered = triggered;
     }
-    void update(float dt);
+    bool update(float dt);
     void advance();
 
   private:

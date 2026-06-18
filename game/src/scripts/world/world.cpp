@@ -2,6 +2,7 @@
 
 #include "assetManager/assetHandle.h"
 #include "assetManager/assetmanager.h"
+#include "dialog/dialogManager.h"
 #include "ecs/components/collider.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/gameobject.h"
@@ -245,6 +246,12 @@ nlohmann::json World::save() {
     if (totemManagerGo) {
         auto* tm = totemManagerGo->getComponent<TotemManager>();
         j["totems"] = tm->saveState()["totems"];
+    }
+
+    auto* dialogManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("DialogManager");
+    if (dialogManagerGo) {
+        auto* dm = dialogManagerGo->getComponent<DialogManager>();
+        j["dialogs"] = dm->saveState();
     }
 
     auto* playerGO = _game->getCurrentScene().get()->findGameObjectByTag("Player");

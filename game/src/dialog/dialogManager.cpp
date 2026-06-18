@@ -28,6 +28,8 @@ void DialogManager::addDialog(const DialogSpawnConfig& config) {
         return;
     }
 
+    _configs[config.targetEntityId] = config;
+
     Entity* targetEntity = nullptr;
     for (const auto& [chunkId, chunk] : _world->getGrid()->getChunks()) {
         if (!chunk) {
@@ -99,15 +101,23 @@ void DialogManager::update(double dt) {
         return;
     }
 
+    _inDialog = false;
     for (auto& [entityId, dialog] : _dialogs) {
-        dialog.update(static_cast<float>(dt));
+        if (dialog.update(static_cast<float>(dt))) {
+            _inDialog = true;
+        }
     }
 }
 
 nlohmann::json DialogManager::saveState() const {
     nlohmann::json j;
-    for (const auto& [entityId, dialog] : _dialogs) {
-        j[boost::uuids::to_string(entityId)]["triggered"] = dialog.isTriggered();
+    for (const auto& [entityId, config] : _configs) {
+        auto key = boost::uuids::to_string(entityId);
+        j[key]["config"] = config;
+        auto it = _dialogs.find(entityId);
+        if (it != _dialogs.end()) {
+            j[key]["triggered"] = it->second.isTriggered();
+        }
     }
     return j;
 }
@@ -116,6 +126,11 @@ void DialogManager::loadState(const nlohmann::json& j) {
     for (const auto& [idStr, dialogData] : j.items()) {
         auto entityId = boost::uuids::string_generator()(idStr);
         bool triggered = dialogData.value("triggered", false);
+
+        if (!_dialogs.contains(entityId) && dialogData.contains("config")) {
+            auto config = dialogData["config"].get<DialogSpawnConfig>();
+            addDialog(config);
+        }
 
         auto it = _dialogs.find(entityId);
         if (it != _dialogs.end()) {
@@ -126,6 +141,25 @@ void DialogManager::loadState(const nlohmann::json& j) {
 
 void DialogManager::clear() {
     _dialogs.clear();
+    _configs.clear();
+}
+
+void DialogManager::markDialogTriggered(const boost::uuids::uuid& targetEntityId) {
+    auto it = _dialogs.find(targetEntityId);
+    if (it != _dialogs.end()) {
+        it->second.setTriggered(true);
+    }
+}
+
+void DialogManager::markDialogUntriggered(const boost::uuids::uuid& targetEntityId) {
+    auto it = _dialogs.find(targetEntityId);
+    if (it != _dialogs.end()) {
+        it->second.setTriggered(false);
+    }
+}
+
+bool DialogManager::isInDialog() const {
+    return _inDialog;
 }
 
 } // namespace game
