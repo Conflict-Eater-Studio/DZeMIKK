@@ -69,7 +69,6 @@ dzemikk::AnimationClip* dzemikk::Skeleton::getClip(const std::string& name) {
 
 glm::mat4 dzemikk::Skeleton::computeBoneWorldTransform(int boneIndex) const {
     if (boneIndex < 0 || boneIndex >= static_cast<int>(_bones.size())) {
-        spdlog::error("Invalid bone index: {}", boneIndex);
         return glm::mat4(1.0f);
     }
 

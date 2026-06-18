@@ -22,7 +22,6 @@
 #include "ecs/scenemanager.h"
 #include "ecs/serialize/prefabSerializer.h"
 #include "enemySystem/enemyTypes.h"
-#include "imgui_internal.h"
 #include "input/input.h"
 #include "map/HexCoord.h"
 #include "map/HexPattern.h"
@@ -547,32 +546,6 @@ void Game::setupInputCallbacks() {
         baseMaterials;
 
     _engine->SetUserUpdateCallback([this]() {
-        ImGui::Begin("Light Debug Tools");
-
-        auto& reg = dzemikk::ComponentRegistry::get();
-
-        static std::vector<dzemikk::DirectionalLight*> dir;
-        static std::vector<dzemikk::PointLight*> point;
-        static std::vector<dzemikk::SpotLight*> spot;
-
-        reg.getEnabledComponents<dzemikk::DirectionalLight>(dir);
-        reg.getEnabledComponents<dzemikk::PointLight>(point);
-        reg.getEnabledComponents<dzemikk::SpotLight>(spot);
-
-        ImGui::Text("Directional Lights: %d", (int)dir.size());
-        ImGui::Text("Point Lights: %d", (int)point.size());
-        ImGui::Text("Spot Lights: %d", (int)spot.size());
-
-        ImGui::Separator();
-
-        if (ImGui::Button("Spawn Random Point Light")) {
-            for (int i = 0; i < 100; i++) {
-                spawnRandomPointLight();
-            }
-        }
-
-        ImGui::End();
-
         if (!_engine || !_engine->getInput() ||
             !_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
             return;
