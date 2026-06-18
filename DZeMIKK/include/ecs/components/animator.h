@@ -3,6 +3,7 @@
 #define DZEMIKK_ANIMATOR_H
 
 #include "animation/animationstate.h"
+#include "animation/rootMotion.h"
 #include "assetManager/assetHandle.h"
 #include "ecs/component.h"
 #include "nlohmann/json.hpp"
@@ -16,6 +17,7 @@ class AnimationState;
 class ComponentSerializerRegistry;
 struct Condition;
 class AnimationStateMachine;
+class Skeleton;
     /**
      * @brief Handles animation playback and state transitions for an entity.
      *
@@ -101,6 +103,15 @@ class AnimationStateMachine;
 
         std::string typeName() const override;
 
+        void setApplyRootMotion(bool apply);
+        [[nodiscard]] bool getApplyRootMotion() const;
+        void setRootMotionMode(RootMotionMode mode);
+        [[nodiscard]] RootMotionMode getRootMotionMode() const;
+        void setRootMotionBoneName(const std::string& boneName);
+        [[nodiscard]] const std::string& getRootMotionBoneName() const;
+        void setSkeleton(Skeleton* skeleton);
+        [[nodiscard]] Skeleton* getSkeleton() const;
+
       private:
         std::shared_ptr<AnimationStateMachine> _stateMachine = nullptr;
         std::unordered_map<std::string, float> _floatParams;
@@ -108,6 +119,16 @@ class AnimationStateMachine;
         std::unordered_map<std::string, int>   _intParams;
         AnimationState* _currentState = nullptr;
         float _currentTime = 0.0f;
+
+        bool _applyRootMotion = false;
+        RootMotionMode _rootMotionMode = RootMotionMode::Position;
+        std::string _rootMotionBoneName;
+        Skeleton* _skeleton = nullptr;
+        glm::mat4 _prevRootWorldTransform{1.0f};
+        bool _hasPrevRootTransform = false;
+
+        RootMotionDelta extractRootMotionDelta();
+        void applyRootMotionDelta(const RootMotionDelta& delta) const;
     };
 
 } // namespace dzemikk

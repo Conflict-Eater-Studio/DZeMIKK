@@ -49,6 +49,9 @@
 #endif
 #include "ecs/components/antiAliasingEffect.h"
 #include "ecs/components/colorGradingEffect.h"
+
+#include "animation/animationclip.h"
+#include "ecs/components/colorGradingEffect.h"
 #include "ecs/components/fxaaPostProcessEffect.h"
 #include "ecs/components/outlinePostProcessEffect.h"
 #include "ecs/components/postProcessEffect.h"
@@ -674,19 +677,58 @@ void Game::setupPlayer() {
     auto* inventory = playerGO->addComponent<game::Inventory>();
     inventory->setGame(this);
 
-    dzemikk::AnimationClip* clip = nullptr;
-    auto skeleton =
-        playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
-    clip = skeleton->getClip("forward_2_60");
+    auto skeleton = playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
     auto* animator = playerGO->getComponent<dzemikk::Animator>();
-    animator->getStateMachine()->getState("Idle")->setClip(clip);
+
+    dzemikk::AnimationClip* idleClip = nullptr;
+    dzemikk::AnimationClip* forward30Clip = nullptr;
+    dzemikk::AnimationClip* forward90Clip = nullptr;
+    dzemikk::AnimationClip* forward150Clip = nullptr;
+    dzemikk::AnimationClip* forward210Clip = nullptr;
+    dzemikk::AnimationClip* forward270Clip = nullptr;
+    dzemikk::AnimationClip* forward330Clip = nullptr;
+
+
+    idleClip = skeleton->getClip("idle");
+    idleClip->setLoop(true);
+
+    forward30Clip = skeleton->getClip("300");
+    forward30Clip->setLoop(false);
+
+    forward90Clip = skeleton->getClip("0");
+    forward90Clip->setLoop(false);
+
+    forward150Clip = skeleton->getClip("60");
+    forward150Clip->setLoop(false);
+
+    forward210Clip = skeleton->getClip("120");
+    forward210Clip->setLoop(false);
+
+    forward270Clip = skeleton->getClip("180");
+    forward270Clip->setLoop(false);
+
+    forward330Clip = skeleton->getClip("240");
+    forward330Clip->setLoop(false);
+
+    animator->getStateMachine()->getState("Idle")->setClip(idleClip);
+    animator->getStateMachine()->getState("R30")->setClip(forward30Clip);
+    animator->getStateMachine()->getState("R90")->setClip(forward90Clip);
+    animator->getStateMachine()->getState("R150")->setClip(forward150Clip);
+    animator->getStateMachine()->getState("R210")->setClip(forward210Clip);
+    animator->getStateMachine()->getState("R270")->setClip(forward270Clip);
+    animator->getStateMachine()->getState("R330")->setClip(forward330Clip);
+
+    playerGO->transform()->rotateAround(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    playerGO->transform()->setScale(glm::vec3(0.015f, 0.015f, 0.015f));
+    animator->setSkeleton(skeleton.get());
 
     _playerEntity = playerGO->addComponent<game::PlayerEntity>();
     _playerEntity->setGame(this);
     _playerMovement = playerGO->addComponent<game::PlayerMovement>();
     _playerMovement->setPlayerEntity(_playerEntity);
-    _playerMovement->setSpeed(0.25F);
     _playerMovement->setGame(this);
+    _playerMovement->setAnimator(animator);
+    _playerMovement->setWorld(_worldGO->getComponent<game::World>());
 
     animator->play("Idle");
 
@@ -723,6 +765,7 @@ void Game::setupPlayer() {
 
     // Restore saved player state
     nlohmann::json worldData;
+
     if (std::filesystem::exists("./world.json")) {
         std::ifstream in("./world.json");
         worldData = nlohmann::json::parse(in);

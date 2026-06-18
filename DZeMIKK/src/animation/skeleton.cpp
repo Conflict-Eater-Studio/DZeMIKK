@@ -1,6 +1,9 @@
 #include "animation/skeleton.h"
-#include "animation/animationclip.h"
 
+#include "animation/animationclip.h"
+#if DZEMIKK_DEV_TOOLS
+#include "spdlog/spdlog.h"
+#endif
 int dzemikk::Skeleton::addBone(const std::string& name, int parentIndex) {
     auto it = _boneMap.find(name);
     if (it != _boneMap.end()) {
@@ -62,4 +65,21 @@ void dzemikk::Skeleton::addClip(const std::string& name, AnimationClip* clip) {
 dzemikk::AnimationClip* dzemikk::Skeleton::getClip(const std::string& name) {
     auto it = _clips.find(name);
     return it != _clips.end() ? it->second.get() : nullptr;
+}
+
+glm::mat4 dzemikk::Skeleton::computeBoneWorldTransform(int boneIndex) const {
+    if (boneIndex < 0 || boneIndex >= static_cast<int>(_bones.size())) {
+        spdlog::error("Invalid bone index: {}", boneIndex);
+        return glm::mat4(1.0f);
+    }
+
+    glm::mat4 world = _bones[boneIndex].getLocalTransform();
+    int parent = _bones[boneIndex].getParentIndex();
+
+    while (parent >= 0 && parent < static_cast<int>(_bones.size())) {
+        world = _bones[parent].getLocalTransform() * world;
+        parent = _bones[parent].getParentIndex();
+    }
+
+    return world;
 }

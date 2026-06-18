@@ -51,7 +51,7 @@ BoneTrack* AnimationClip::addBoneTrack() {
 }
 
 void AnimationClip::apply(float timeInSeconds) const {
-    float time = timeInSeconds * _ticksPerSecond;
+    float time = timeInSeconds * _ticksPerSecond * _playbackSpeed;
 
     if (_tracks.empty()) {
 #if DZEMIKK_DEV_TOOLS
@@ -61,10 +61,15 @@ void AnimationClip::apply(float timeInSeconds) const {
     }
 
     float keyframe = time;
+
     if (_loop) {
+        _isFinished = false;
         keyframe = fmod(keyframe, _durationInTicks);
     } else if (_durationInTicks > 0.0f && time > _durationInTicks) {
         keyframe = _durationInTicks;
+        _isFinished = true;
+    } else {
+        _isFinished = false;
     }
 
     for (auto& track : _tracks) {
@@ -81,6 +86,9 @@ void AnimationClip::setDuration(float duration) {
 void AnimationClip::setTickrate(float tickrate) {
     _ticksPerSecond = tickrate;
 }
+void AnimationClip::setPlaybackSpeed(float speed) {
+    _playbackSpeed = speed;
+}
 void AnimationClip::setTracks(std::vector<std::unique_ptr<IAnimationTrack>> tracks) {
     _tracks = std::move(tracks);
 }
@@ -92,6 +100,18 @@ void AnimationClip::setName(const std::string& name) {
 }
 std::string AnimationClip::getName() {
     return _nameInSkeleton;
+}
+bool AnimationClip::isFinished() const {
+    return _isFinished;
+}
+void AnimationClip::setFinished(bool finished) {
+    _isFinished = finished;
+}
+void AnimationClip::setRootMotionMode(RootMotionMode mode) {
+    _rootMotionMode = mode;
+}
+RootMotionMode AnimationClip::getRootMotionMode() const {
+    return _rootMotionMode;
 }
 }
 

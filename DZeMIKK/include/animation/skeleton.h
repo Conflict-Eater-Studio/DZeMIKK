@@ -60,6 +60,8 @@ class Skeleton {
      */
     [[nodiscard]] const std::vector<Bone>& getBones() const;
 
+    [[nodiscard]] glm::mat4 computeBoneWorldTransform(int boneIndex) const;
+
 #pragma endregion
 
 #pragma region Global Transform
