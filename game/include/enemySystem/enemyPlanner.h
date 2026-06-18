@@ -163,6 +163,8 @@ class EnemyPlanner {
      */
     BTNode::ContextModifiers evaluateBehaviorTree(Game* game, EnemyEntity* enemy,
                                        const PlayerPatternStatsComponent* playerStats);
+
+    static size_t getMaxPatternSize(const EnemyEntity* enemy, const HexGrid* grid);
 };
 
 } // namespace game

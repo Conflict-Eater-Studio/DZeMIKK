@@ -689,7 +689,7 @@ void Game::setupPlayer() {
     dzemikk::AnimationClip* forward330Clip = nullptr;
 
 
-    float animSpeed = 6.0F;
+    float animSpeed = 15.0F;
 
     idleClip = skeleton->getClip("idle");
     idleClip->setLoop(true);
@@ -818,29 +818,29 @@ void Game::setupPlayer() {
         patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::ATK, 1.0F),
                                      5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 1.1F), 5, 5);
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 1.5F), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {1, 0}}, game::HexPattern::Type::ATK, 1.2F), 5, 5);
+            game::HexPattern({{0, 0}, {1, -1}, {1, 0}}, game::HexPattern::Type::ATK, 2.0F), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {0, 1}}, game::HexPattern::Type::ATK, 1.3F),
+            game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {0, 1}}, game::HexPattern::Type::ATK, 2.5F),
             5, 5);
 
-        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::DEF), 5, 5);
+        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::DEF, 1.0F), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::DEF, 1.1F), 5, 5);
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::DEF, 1.5F), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {2, -2}}, game::HexPattern::Type::DEF, 1.2F), 5, 5);
+            game::HexPattern({{0, 0}, {1, -1}, {2, -2}}, game::HexPattern::Type::DEF, 2.0F), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {2, -1}}, game::HexPattern::Type::DEF, 1.3F),
+            game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {2, -1}}, game::HexPattern::Type::DEF, 2.5F),
             5, 5);
 
         patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL, 0.5F), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 0.6F), 5, 5);
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 0.75F), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {0, -1}}, game::HexPattern::Type::HEAL, 0.7F), 5, 5);
+            game::HexPattern({{0, 0}, {1, -1}, {0, -1}}, game::HexPattern::Type::HEAL, 1.0F), 5, 5);
         patternComponent->addPattern(game::HexPattern({{0, 0}, {1, -1}, {0, -1}, {-1, 0}},
-                                                      game::HexPattern::Type::HEAL, 0.8F),
+                                                      game::HexPattern::Type::HEAL, 2.0F),
                                      5, 5);
     }
 }

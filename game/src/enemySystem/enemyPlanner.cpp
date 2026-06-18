@@ -123,9 +123,14 @@ game::EnemyPlanner::generateCandidates(EnemyEntity* enemy, EnemyPatternComponent
         return result;
     }
 
+    const size_t maxSize = getMaxPatternSize(enemy, grid);
+
     for (const auto& entry : patternComponent->getPatterns()) {
 
         const auto& pattern = entry.pattern;
+
+        if (pattern.getHexes().size() > maxSize)
+            continue;
 
         for (auto* anchor : availableCells) {
 
@@ -210,7 +215,7 @@ game::EnemyPlanner::chooseCandidate(std::vector<PlacementCandidate>& candidates)
         candidates.begin(), candidates.end(),
         [](const PlacementCandidate& a, const PlacementCandidate& b) { return a.score > b.score; });
 
-    size_t topCount = std::min<size_t>(3, candidates.size());
+    size_t topCount = std::min<size_t>(5, candidates.size());
 
     static std::mt19937 rng(std::random_device{}());
 
@@ -350,6 +355,24 @@ game::EnemyPlanner::evaluateBehaviorTree(Game* game, EnemyEntity* enemy,
     _root->evaluate(ctx, modifiers);
 
     return modifiers;
+}
+
+size_t game::EnemyPlanner::getMaxPatternSize(const EnemyEntity* enemy, const HexGrid* grid) {
+    if (!enemy || !grid)
+        return 1;
+
+    const size_t territorySize = enemy->getTerritory().size();
+
+    if (territorySize <= 4)
+        return 1;
+    if (territorySize <= 6)
+        return 2;
+    if (territorySize <= 12)
+        return 3;
+    if (territorySize <= 18)
+        return 4;
+
+    return 5; 
 }
 
 

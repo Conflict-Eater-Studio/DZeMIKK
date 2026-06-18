@@ -52,7 +52,7 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                 break;
             }
             case ItemEntity::ItemType::RevealPattern: {
-                getOwner()->getComponent<Inventory>()->addItem(ItemEntity::ItemType::RevealPattern);
+                getOwner()->getComponent<Inventory>()->addItem(ItemEntity::ItemType::RevealPattern, 5);
                 ent->consume();
 
                 playerEntitySound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
@@ -66,7 +66,7 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                 break;
             }
             case ItemEntity::ItemType::RevealHex: {
-                getOwner()->getComponent<Inventory>()->addItem(ItemEntity::ItemType::RevealHex);
+                getOwner()->getComponent<Inventory>()->addItem(ItemEntity::ItemType::RevealHex, 5);
                 ent->consume();
 
                 playerEntitySound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
