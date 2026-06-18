@@ -80,6 +80,7 @@
 #include <random>
 
 #include "ui/logoComponent.h"
+#include "totem/totemDialogEntity.h"
 
 static std::mt19937 rng{std::random_device{}()};
 
@@ -441,7 +442,12 @@ void Game::setupWorld() {
         in.close();
         world->load(worldData);
     } else {
-        auto chunkMain1 = world->addChunk({.name = "chunkMain1", .steps = 7});
+        auto chunkMain0 = world->addChunk({.name = "chunkMain0", .steps = 9});
+
+        auto chunkMain1 = world->addChunk({.parentPersistantId = chunkMain0,
+                                           .name = "chunkMain1",
+                                           .steps = 7,
+                                           .dirFromParent = game::HexCoord::Direction::R0});
 
         auto chunkMain2 = world->addChunk({.parentPersistantId = chunkMain1,
                                            .name = "chunkMain2",
@@ -1288,6 +1294,12 @@ void Game::setupDialogs() {
         return;
     }
 
+    auto prefab = _engine->getAssetManager()->get<nlohmann::json>("prefabs/totem/totem_container.prefab");
+    auto totem = dzemikk::PrefabSerializer::instantiate(
+        *_mainScene.get(), *prefab.get(), _engine->getAssetManager());
+    auto entity = totem->addComponent<game::TotemDialogEntity>();
+    entity->onEnter(world->getGrid()->getCell({2, 0}));
+
     nlohmann::json worldData;
     if (std::filesystem::exists("./world.json")) {
         std::ifstream in("./world.json");
@@ -1299,12 +1311,15 @@ void Game::setupDialogs() {
         manager->loadState(worldData["dialogs"]);
     } else {
         manager->addDialog({
-            .targetEntityId =
-                boost::uuids::string_generator()("478657ac-c332-43a8-b9bb-3aca14c32662"),
+            .targetEntityId = totem->getComponent<game::TotemDialogEntity>()->getId(),
             .entries =
                 {
-                    {.speaker = "Totem", .text = "Hello there!"},
-                    {.speaker = "Lily", .text = "Oh hi"},
+                    {.speaker = "Mother", .text = "Where am I? Where is my son?!"},
+                    {.speaker = "Totem",
+                     .text = "You stand upon a land of runes, spirits, and blood offered\n"
+                             "to the gods. The shamans have taken your son. They will\n"
+                             "sacrifice him in the heart of the volcano."},
+                    {.speaker = "Mother", .text = "I’d rather die than let them hurt my child!"},
                 },
         });
     }

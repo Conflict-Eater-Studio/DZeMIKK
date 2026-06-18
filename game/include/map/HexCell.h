@@ -18,7 +18,7 @@ class HexCell {
   public:
     friend class HexChunk;
 
-    enum class State : uint8_t { Prop, Item, Player, Enemy, Empty, Totem };
+    enum class State : uint8_t { Prop, Item, Player, Enemy, Empty, Totem, TotemDialog };
     enum class Type : uint8_t {
         Normal,
         PlayerBattleHex,

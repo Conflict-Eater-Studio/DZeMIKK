@@ -480,19 +480,19 @@
                                             ]
                                         },
                                         {
-                                            "name": "R210",
-                                            "transitions": []
-                                        },
-                                        {
                                             "name": "R90",
                                             "transitions": []
                                         },
                                         {
-                                            "name": "R330",
+                                            "name": "R210",
                                             "transitions": []
                                         },
                                         {
                                             "name": "R150",
+                                            "transitions": []
+                                        },
+                                        {
+                                            "name": "R330",
                                             "transitions": []
                                         },
                                         {
@@ -631,7 +631,7 @@
                                     "type": "PointLight"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "15f90c5a-401d-49b8-9584-b421561344fe",
                             "name": "Empty",
                             "tags": []
@@ -693,7 +693,7 @@
                             "type": "MeshRenderer"
                         }
                     ],
-                    "enabled": true,
+                    "enabled": false,
                     "id": "b57f4cf7-6929-481a-927b-5e5ef89d5365",
                     "name": "Emissive",
                     "tags": []
