@@ -221,7 +221,7 @@
                     },
                     null
                 ],
-                "model": "models/Pivot.fbx",
+                "model": "models/MiniAggresive.fbx",
                 "type": "SkinnedMeshRenderer"
             },
             {

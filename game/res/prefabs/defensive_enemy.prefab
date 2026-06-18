@@ -170,7 +170,7 @@
                     },
                     null
                 ],
-                "model": "models/Orc Idle.fbx",
+                "model": "models/TankDefensive.fbx",
                 "type": "SkinnedMeshRenderer"
             },
             {

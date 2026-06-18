@@ -158,7 +158,7 @@ void game::EnemyManager::spawnEnemy(const boost::uuids::uuid& chunkId,
     dzemikk::AnimationClip* clip = nullptr;
     auto skeleton =
         enemyGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
-    clip = skeleton->getClip("mixamo.com");
+    clip = skeleton->getClip("idle");
     auto* animator = enemyGO->getComponent<dzemikk::Animator>();
     animator->getStateMachine()->getState("Idle")->setClip(clip);
     animator->play("Idle");
