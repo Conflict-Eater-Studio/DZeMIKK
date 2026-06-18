@@ -12,7 +12,9 @@
 #include "ecs/components/collider.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/ui/gridLayout.h"
+#include "ecs/components/ui/iUIInteractable.h"
 #include "ecs/components/ui/uiActionRegistry.h"
+#include "ecs/components/ui/uiTextRenderer.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
 #include "ecs/scenemanager.h"
@@ -45,6 +47,7 @@
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
 #endif
+#include "ecs/components/antiAliasingEffect.h"
 #include "ecs/components/colorGradingEffect.h"
 #include "ecs/components/fxaaPostProcessEffect.h"
 #include "ecs/components/outlinePostProcessEffect.h"
@@ -65,20 +68,12 @@
 #include <audio/audioManager.h>
 #include <audio/sound.h>
 #include <ecs/components/animator.h>
+#include <ecs/components/light/pointLight.h>
 #include <ecs/components/skinnedMeshRenderer.h>
 #include <gameStateMachine.h>
 #include <healthSystem.h>
 #include <iostream>
-
-#include "totem/totemManager.h"
-#include <audio/sound.h>
-#include <audio/audioManager.h>
-#include "ecs/components/postProcessEffect.h"
-#include "ecs/components/colorGradingEffect.h"
-#include "ecs/components/antiAliasingEffect.h"
-
 #include <random>
-#include <ecs/components/light/pointLight.h>
 
 static std::mt19937 rng{std::random_device{}()};
 
@@ -137,16 +132,36 @@ void onSkyboxLoad(const dzemikk::AssetHandle<dzemikk::Skybox>& skybox, SkyboxIni
 Game::Game(dzemikk::Engine* engine) : _engine(engine) {}
 
 void Game::start() {
+    startGame();
+    _engine->start();
+}
+
+void Game::startGame() {
     auto* assetManager = _engine->getAssetManager();
     auto* sceneManager = _engine->getSceneManager();
 
     setupSkybox();
 
     _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay7.json");
+    _menuScene = assetManager->get<dzemikk::Scene>("scenes/menu3.json");
+    _creditsScene = assetManager->get<dzemikk::Scene>("scenes/credits.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
+    std::shared_ptr<dzemikk::Scene> menuShared(_menuScene.get(), [](dzemikk::Scene*) {});
+    std::shared_ptr<dzemikk::Scene> creditsShared(_creditsScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
-    sceneManager->setActiveScene(sceneShared);
+    sceneManager->loadScene(menuShared);
+    sceneManager->loadScene(creditsShared);
+    sceneManager->setActiveScene(menuShared);
+
+    auto* btnResetInteractable = _menuScene.get()
+                                     ->findGameObjectByName("ResetButton")
+                                     ->getComponent<dzemikk::IUIInteractable>();
+    if (!std::filesystem::exists("./world.json")) {
+        btnResetInteractable->setInteractable(false);
+    } else {
+        btnResetInteractable->setInteractable(true);
+    }
 
     setupMainCamera();
     setupUICamera();
@@ -267,9 +282,40 @@ void Game::start() {
         },
         "combat.exit.randomHex");
 
-    setupInputCallbacks();
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this, sceneManager, sceneShared](const dzemikk::UIEvent&) {
+            _gameStarted = true;
+            sceneManager->setActiveScene(sceneShared);
+        },
+        "ui.menu.play");
 
-    _engine->start();
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this, sceneManager, sceneShared](const dzemikk::UIEvent&) {
+            if (!std::filesystem::exists("./world.json")) {
+                return;
+            }
+
+            restartGame();
+            sceneManager->setActiveScene(sceneShared);
+        },
+        "ui.menu.fromcheckpoint");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [sceneManager, creditsShared](const dzemikk::UIEvent&) {
+            sceneManager->setActiveScene(creditsShared);
+        },
+        "ui.menu.credits");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent&) { _engine->exit(); }, "ui.menu.exit");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [sceneManager, menuShared](const dzemikk::UIEvent&) {
+            sceneManager->setActiveScene(menuShared);
+        },
+        "ui.credits.back");
+
+    setupInputCallbacks();
 }
 
 game::CameraController* Game::getCameraController() {
@@ -560,7 +606,34 @@ void Game::setupInputCallbacks() {
 
             lastHitRenderer = currentRenderer;
         }
-        
+    });
+
+    _engine->getInput()->OnKeyPressed.addListener([this](dzemikk::KeyPressedEvent& event) {
+        if (event.GetKeyCode() == GLFW_KEY_ESCAPE &&
+            _stateMachine->getCurrentStateAs<game::ExplorationState>()) {
+            auto* btnResetInteractable = _menuScene.get()
+                                             ->findGameObjectByName("ResetButton")
+                                             ->getComponent<dzemikk::IUIInteractable>();
+            if (!std::filesystem::exists("./world.json")) {
+                btnResetInteractable->setInteractable(false);
+            } else {
+                btnResetInteractable->setInteractable(true);
+            }
+
+            auto* btnPlayText = _menuScene.get()
+                                    ->findGameObjectByName("PlayButton")
+                                    ->getChildren()
+                                    .at(0)
+                                    ->getComponent<dzemikk::UITextRenderer>();
+            if (!_gameStarted) {
+                btnPlayText->text = "PLAY";
+            } else {
+                btnPlayText->text = "RESUME";
+            }
+
+            std::shared_ptr<dzemikk::Scene> menuShared(_menuScene.get(), [](dzemikk::Scene*) {});
+            _engine->getSceneManager()->setActiveScene(menuShared);
+        }
     });
 
     _engine->getInput()->OnMouseButtonPressed.addListener(
@@ -1138,7 +1211,7 @@ void Game::setupTotems() {
     }
 }
 
-void Game::restart() {
+void Game::restartGame() {
     if (!std::filesystem::exists("./world.json")) {
         spdlog::warn("[Game] No world.json file found. Cannot restart.");
         throw std::runtime_error("No world.json file found. Cannot restart.");

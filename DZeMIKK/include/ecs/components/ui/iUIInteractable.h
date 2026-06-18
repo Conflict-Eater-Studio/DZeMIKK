@@ -58,6 +58,10 @@ class IUIInteractable : public Component {
         _eventActionIds.erase(eventType);
     }
 
+    void setInteractable(bool value) {
+        _interactable = value;
+    }
+
     [[nodiscard]] std::unordered_map<UIEventType, std::vector<std::string>>
     getEventActions() const {
         return _eventActionIds;
@@ -75,6 +79,11 @@ class IUIInteractable : public Component {
     [[nodiscard]] bool isHovered() const {
         return _hovered;
     }
+
+    [[nodiscard]] bool isInteractable() const {
+        return _interactable;
+    }
+
   protected:
     void emit(UIEventType eventType,
               std::variant<std::monostate, float, bool> payload = std::monostate{}) {
@@ -107,7 +116,6 @@ class IUIInteractable : public Component {
     [[nodiscard]] bool pressedInside() const {
         return _pressedInside;
     }
-
 
     void setPressedInside(bool value) {
         _pressedInside = value;
@@ -144,6 +152,7 @@ class IUIInteractable : public Component {
   private:
     std::unordered_map<UIEventType, std::vector<std::string>> _eventActionIds;
 
+    bool _interactable = true;
     bool _pointerInside = false;
     bool _pointerDown = false;
     bool _pressedInside = false;

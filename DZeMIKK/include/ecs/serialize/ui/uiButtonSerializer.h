@@ -21,12 +21,15 @@ inline void to_json(nlohmann::json& json, const UIButton& button) {
     const auto normalColor = button.getStyle().normalColor;
     const auto hoverColor = button.getStyle().hoverColor;
     const auto pressedColor = button.getStyle().pressedColor;
+    const auto disabledColor = button.getStyle().disabledColor;
 
     json["type"] = button.typeName();
     json["id"] = boost::uuids::to_string(button.getId());
     json["normalColor"] = {normalColor[0], normalColor[1], normalColor[2], normalColor[3]};
     json["hoverColor"] = {hoverColor[0], hoverColor[1], hoverColor[2], hoverColor[3]};
     json["pressedColor"] = {pressedColor[0], pressedColor[1], pressedColor[2], pressedColor[3]};
+    json["disabledColor"] = {disabledColor[0], disabledColor[1], disabledColor[2],
+                             disabledColor[3]};
 
     auto ea = button.getEventActions();
     for (const auto& [eventType, actionIds] : ea) {
@@ -65,16 +68,35 @@ inline void from_json(const nlohmann::json& json, UIButton& button, AssetManager
     button.setId(uuidGenerator(json["id"].get<std::string>()));
 
     UIButton::Style style{};
-    if (json.contains("normalColor") && json.contains("hoverColor") &&
-        json.contains("pressedColor")) {
+    if (json.contains("normalColor")) {
         style.normalColor = {
             json["normalColor"][0].get<float>(), json["normalColor"][1].get<float>(),
             json["normalColor"][2].get<float>(), json["normalColor"][3].get<float>()};
+    } else {
+        style.normalColor = glm::vec4(1.0F);
+    }
+
+    if (json.contains("hoverColor")) {
         style.hoverColor = {json["hoverColor"][0].get<float>(), json["hoverColor"][1].get<float>(),
                             json["hoverColor"][2].get<float>(), json["hoverColor"][3].get<float>()};
+    } else {
+        style.hoverColor = glm::vec4(0.9F, 0.9F, 0.9F, 1.0F);
+    }
+
+    if (json.contains("pressedColor")) {
         style.pressedColor = {
             json["pressedColor"][0].get<float>(), json["pressedColor"][1].get<float>(),
             json["pressedColor"][2].get<float>(), json["pressedColor"][3].get<float>()};
+    } else {
+        style.pressedColor = glm::vec4(0.8F, 0.8F, 0.8F, 1.0F);
+    }
+
+    if (json.contains("disabledColor")) {
+        style.disabledColor = {
+            json["disabledColor"][0].get<float>(), json["disabledColor"][1].get<float>(),
+            json["disabledColor"][2].get<float>(), json["disabledColor"][3].get<float>()};
+    } else {
+        style.disabledColor = glm::vec4(0.5F, 0.5F, 0.5F, 1.0F);
     }
 
     std::vector<std::pair<UIEventType, std::string>> events;

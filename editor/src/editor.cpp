@@ -2,18 +2,18 @@
 
 #if DZEMIKK_DEV_TOOLS
 
-#include "core/engine.h"
+#include "animatorStateMachinePanel.h"
 #include "assetManager/assetmanager.h"
 #include "assetManagerPanel.h"
+#include "core/engine.h"
+#include "ecs/components/animator.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/meshRenderer.h"
 #include "ecs/components/transform.h"
 #include "ecs/scenemanager.h"
 #include "ecs/serialize/sceneSerializer.h"
-#include "ecs/components/animator.h"
 #include "hierarchyPanel.h"
 #include "inspectorPanel.h"
-#include "animatorStateMachinePanel.h"
 #include "renderer/material.h"
 #include "renderer/renderer.h"
 #include "scenePanel.h"
@@ -307,7 +307,7 @@ void Editor::setupEditor() {
 
     auto* sceneManager = _engine->getSceneManager();
 
-    auto scene = _engine->getAssetManager()->get<dzemikk::Scene>("scenes/gameplay7.json");
+    auto scene = _engine->getAssetManager()->get<dzemikk::Scene>("scenes/menu3.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(scene.get(), [](dzemikk::Scene*) {});
 

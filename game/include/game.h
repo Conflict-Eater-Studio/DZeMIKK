@@ -46,7 +46,9 @@ class Game {
         return _engine;
     }
     void setExplorationState();
-    void restart();
+
+    void startGame();
+    void restartGame();
 
   private:
     void setupSkybox();
@@ -63,6 +65,8 @@ class Game {
 
     dzemikk::Engine* _engine;
     dzemikk::AssetHandle<dzemikk::Scene> _mainScene;
+    dzemikk::AssetHandle<dzemikk::Scene> _menuScene;
+    dzemikk::AssetHandle<dzemikk::Scene> _creditsScene;
     game::HexGrid* _hexGrid = nullptr;
     dzemikk::GameObject* _worldGO = nullptr;
     dzemikk::GameObject* _playerGO = nullptr;
@@ -77,6 +81,8 @@ class Game {
 
     dzemikk::MeshRenderer* _lastHitRenderer = nullptr;
     std::unordered_map<dzemikk::MeshRenderer*, glm::vec4> _lastHitBaseColors;
+
+    bool _gameStarted = false;
 };
 
 #endif

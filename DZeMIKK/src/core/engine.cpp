@@ -10,9 +10,6 @@
 #include FT_FREETYPE_H
 #endif
 
-#include "ecs/components/colorGradingEffect.h"
-#include "ecs/components/antiAliasingEffect.h"
-
 #include "animation/animationmodule.h"
 #include "assetManager/assetmanager.h"
 #include "audio/audioManager.h"
@@ -23,6 +20,7 @@
 #include "core/time.h"
 #include "core/window.h"
 #include "core/windowContext.h"
+#include "ecs/components/antiAliasingEffect.h"
 #include "ecs/components/camera.h"
 #include "ecs/components/colorGradingEffect.h"
 #include "ecs/components/transform.h"
@@ -208,10 +206,9 @@ void Engine::start() {
                     if (ImGui::CollapsingHeader("Color Grading", ImGuiTreeNodeFlags_DefaultOpen)) {
                         for (size_t i = 0; i < gradingEffects.size(); ++i) {
                             auto* effect = gradingEffects[i];
-                            std::string label = "Color Grading " + std::to_string(i) + " (" + effect->getOwner()->getName() + ")";
-                            if (ImGui::TreeNode(label.c_str())) {
-                                bool enabled = effect->isEnabled();
-                                if (ImGui::Checkbox("Enabled", &enabled)) {
+                            std::string label = "Color Grading " + std::to_string(i) + " (" +
+            effect->getOwner()->getName() + ")"; if (ImGui::TreeNode(label.c_str())) { bool enabled
+            = effect->isEnabled(); if (ImGui::Checkbox("Enabled", &enabled)) {
                                     effect->setEnabled(enabled);
                                 }
 
@@ -252,13 +249,11 @@ void Engine::start() {
                 }
 
                 if (!aaEffects.empty()) {
-                    if (ImGui::CollapsingHeader("Anti-Aliasing (FXAA)", ImGuiTreeNodeFlags_DefaultOpen)) {
-                        for (size_t i = 0; i < aaEffects.size(); ++i) {
-                            auto* effect = aaEffects[i];
-                            std::string label = "FXAA " + std::to_string(i) + " (" + effect->getOwner()->getName() + ")";
-                            if (ImGui::TreeNode(label.c_str())) {
-                                bool enabled = effect->isEnabled();
-                                if (ImGui::Checkbox("Enabled##FXAA", &enabled)) {
+                    if (ImGui::CollapsingHeader("Anti-Aliasing (FXAA)",
+            ImGuiTreeNodeFlags_DefaultOpen)) { for (size_t i = 0; i < aaEffects.size(); ++i) { auto*
+            effect = aaEffects[i]; std::string label = "FXAA " + std::to_string(i) + " (" +
+            effect->getOwner()->getName() + ")"; if (ImGui::TreeNode(label.c_str())) { bool enabled
+            = effect->isEnabled(); if (ImGui::Checkbox("Enabled##FXAA", &enabled)) {
                                     effect->setEnabled(enabled);
                                 }
 
@@ -273,8 +268,8 @@ void Engine::start() {
                                 }
 
                                 float reduceMin = effect->getReduceMin();
-                                if (ImGui::SliderFloat("Reduce Min", &reduceMin, 0.0f, 0.1f, "%.5f")) {
-                                    effect->setReduceMin(reduceMin);
+                                if (ImGui::SliderFloat("Reduce Min", &reduceMin, 0.0f, 0.1f,
+            "%.5f")) { effect->setReduceMin(reduceMin);
                                 }
 
                                 ImGui::TreePop();
@@ -296,6 +291,11 @@ void Engine::start() {
         _mainWindow->pollEvents();
     }
 }
+
+void Engine::exit() {
+    glfwSetWindowShouldClose(_mainWindow->nativeHandle(), GLFW_TRUE);
+}
+
 Renderer* Engine::getRenderer() const {
     return _renderer.get();
 }
