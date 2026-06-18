@@ -390,17 +390,112 @@
                                             "shader": "shaders/skinned"
                                         }
                                     ],
-                                    "model": "models/DwieAnimacjeNa1Modelu.fbx",
+                                    "model": "models/Baba.fbx",
                                     "type": "SkinnedMeshRenderer"
                                 },
                                 {
                                     "currentStateName": "Idle",
                                     "currentTime": 0.0,
                                     "id": "af81862b-8e42-45a7-b6bb-93f859af6a78",
-                                    "parameters": {},
                                     "stateMachine": [
                                         {
                                             "name": "Idle",
+                                            "transitions": [
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "direction",
+                                                        "type": 1,
+                                                        "value": 1.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "R30"
+                                                },
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "direction",
+                                                        "type": 1,
+                                                        "value": 3.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "R90"
+                                                },
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "direction",
+                                                        "type": 1,
+                                                        "value": 5.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "R150"
+                                                },
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "direction",
+                                                        "type": 1,
+                                                        "value": 7.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "R210"
+                                                },
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "direction",
+                                                        "type": 1,
+                                                        "value": 9.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "R270"
+                                                },
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "direction",
+                                                        "type": 1,
+                                                        "value": 11.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "R330"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "R30",
+                                            "transitions": [
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "isMoving",
+                                                        "type": 1,
+                                                        "value": 0.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "Idle"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "R90",
+                                            "transitions": []
+                                        },
+                                        {
+                                            "name": "R210",
+                                            "transitions": []
+                                        },
+                                        {
+                                            "name": "R150",
+                                            "transitions": []
+                                        },
+                                        {
+                                            "name": "R330",
+                                            "transitions": []
+                                        },
+                                        {
+                                            "name": "R270",
                                             "transitions": []
                                         }
                                     ],
@@ -720,6 +815,12 @@
                             "zIndex": 1
                         },
                         {
+                            "disabledColor": [
+                                0.5,
+                                0.5,
+                                0.5,
+                                1.0
+                            ],
                             "events": {
                                 "click": [
                                     "E"
@@ -852,6 +953,12 @@
                             "zIndex": 1
                         },
                         {
+                            "disabledColor": [
+                                0.5,
+                                0.5,
+                                0.5,
+                                1.0
+                            ],
                             "events": {
                                 "click": [
                                     "C"
@@ -4889,6 +4996,12 @@
                                     "zIndex": 1
                                 },
                                 {
+                                    "disabledColor": [
+                                        0.5,
+                                        0.5,
+                                        0.5,
+                                        1.0
+                                    ],
                                     "events": {
                                         "click": [
                                             "Confirm_Round"
@@ -5579,6 +5692,12 @@
                                                     "zIndex": 1
                                                 },
                                                 {
+                                                    "disabledColor": [
+                                                        0.5,
+                                                        0.5,
+                                                        0.5,
+                                                        1.0
+                                                    ],
                                                     "events": {
                                                         "click": [
                                                             "combat.reveal.randomPattern"
@@ -5922,6 +6041,12 @@
                                                     "zIndex": 1
                                                 },
                                                 {
+                                                    "disabledColor": [
+                                                        0.5,
+                                                        0.5,
+                                                        0.5,
+                                                        1.0
+                                                    ],
                                                     "events": {
                                                         "click": [
                                                             "combat.reveal.randomHex"
