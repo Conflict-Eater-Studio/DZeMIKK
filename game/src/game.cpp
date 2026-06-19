@@ -791,6 +791,7 @@ void Game::setupPlayer() {
     playerHealthGO->addTag("PlayerHealthSystem");
 
     auto* playerHealthSystem = playerHealthGO->addComponent<game::HealthSystem>();
+    playerCombatAnimationController->setHealthSystem(playerHealthSystem);
     playerHealthSystem->setOwner(playerHealthGO);
     playerHealthSystem->setHealth(30.0F);
     playerHealthSystem->setMaxHealth(30.0F);

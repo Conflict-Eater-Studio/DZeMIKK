@@ -480,6 +480,10 @@
                                             ]
                                         },
                                         {
+                                            "name": "R90",
+                                            "transitions": []
+                                        },
+                                        {
                                             "name": "R210",
                                             "transitions": []
                                         },
@@ -499,15 +503,11 @@
                                             ]
                                         },
                                         {
-                                            "name": "R90",
+                                            "name": "R150",
                                             "transitions": []
                                         },
                                         {
                                             "name": "R330",
-                                            "transitions": []
-                                        },
-                                        {
-                                            "name": "R150",
                                             "transitions": []
                                         },
                                         {
@@ -5032,7 +5032,8 @@
                                     ],
                                     "events": {
                                         "click": [
-                                            "Confirm_Round"
+                                            "Confirm_Round",
+                                            "Confirm_Round_AttackAnim"
                                         ]
                                     },
                                     "hoverColor": [
