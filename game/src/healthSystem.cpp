@@ -1,5 +1,7 @@
 #include "healthSystem.h"
 
+#include "ecs/components/ui/uiSlider.h"
+
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -52,6 +54,9 @@ void HealthSystem::setTextRenderer(dzemikk::UITextRenderer* textRenderer) {
     _textRenderer = textRenderer;
     updateUI();
 }
+void HealthSystem::setSlider(dzemikk::UISlider* slider) {
+    _slider = slider;
+}
 
 float HealthSystem::getMaxHealth() const {
     return _maxHealth;
@@ -80,6 +85,11 @@ void HealthSystem::updateUI() {
        << static_cast<int>(std::round(_maxHealth));
 
     _textRenderer->text = ss.str();
+    if (!_slider) {
+        return;
+    }
+    float value = _currentHealth / _maxHealth;
+    _slider->onValueChanged(value);
 }
 
 } // namespace game

@@ -48,26 +48,28 @@
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
 #endif
-#include "ecs/components/antiAliasingEffect.h"
-#include "ecs/components/colorGradingEffect.h"
-
 #include "animation/animationclip.h"
+#include "ecs/components/antiAliasingEffect.h"
 #include "ecs/components/colorGradingEffect.h"
 #include "ecs/components/fxaaPostProcessEffect.h"
 #include "ecs/components/outlinePostProcessEffect.h"
 #include "ecs/components/postProcessEffect.h"
+#include "ecs/components/ui/uiSlider.h"
 #include "enemySystem/enemyManager.h"
 #include "enemySystem/enemyPatternComponent.h"
 #include "enemySystem/territoryPatternRegistry.h"
 #include "item/itemManager.h"
 #include "player/playerPatternComponent.h"
 #include "player/playerPatternStatsComponent.h"
+#include "stateMachine/cinematicState.h"
 #include "stateMachine/combatState.h"
 #include "stateMachine/explorationState.h"
-#include "stateMachine/cinematicState.h"
+#include "totem/totemDialogEntity.h"
 #include "totem/totemEntity.h"
 #include "totem/totemManager.h"
 #include "ui/combatUIPanel.h"
+#include "ui/logoComponent.h"
+#include "ui/uIPulseEffect.h"
 
 #include <animation/animationstatemachine.h>
 #include <audio/audioManager.h>
@@ -79,10 +81,6 @@
 #include <healthSystem.h>
 #include <iostream>
 #include <random>
-
-#include "ui/logoComponent.h"
-#include "ui/uIPulseEffect.h"
-#include "totem/totemDialogEntity.h"
 
 static std::mt19937 rng{std::random_device{}()};
 
@@ -151,7 +149,7 @@ void Game::startGame() {
 
     setupSkybox();
 
-    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay7.json");
+    _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay8.json");
     _menuScene = assetManager->get<dzemikk::Scene>("scenes/menu3.json");
     _creditsScene = assetManager->get<dzemikk::Scene>("scenes/credits.json");
 
@@ -775,8 +773,9 @@ void Game::setupPlayer() {
     playerHealthSystem->setHealth(30.0F);
     playerHealthSystem->setMaxHealth(30.0F);
     playerHealthSystem->setTextRenderer(
-        playerHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
-
+    playerHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
+    playerHealthSystem->setSlider(
+    playerHealthGO->findChildByName("Slider")->getComponent<dzemikk::UISlider>());
     // Restore saved player state
     nlohmann::json worldData;
 

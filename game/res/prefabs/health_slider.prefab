@@ -1,0 +1,218 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "anchorMax": [
+                            1.0,
+                            1.0
+                        ],
+                        "anchorMin": [
+                            0.0,
+                            0.0
+                        ],
+                        "id": "86e9b114-c118-4581-85ad-923a3283a14b",
+                        "offsetMax": [
+                            0.0,
+                            0.0
+                        ],
+                        "offsetMin": [
+                            0.0,
+                            0.0
+                        ],
+                        "pivot": [
+                            0.0,
+                            0.5
+                        ],
+                        "position": [
+                            -160.0,
+                            0.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            0.0,
+                            0.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 2
+                    },
+                    {
+                        "color": [
+                            0.9215686321258545,
+                            0.2040843665599823,
+                            0.10841983556747437,
+                            1.0
+                        ],
+                        "id": "0de81b42-86e7-4092-8f3d-9c3f3d18145b",
+                        "materialPath": "shaders/quad",
+                        "texture": "",
+                        "type": "ImageRenderer"
+                    }
+                ],
+                "enabled": true,
+                "id": "ddcc3720-429b-4557-be80-056012e1c285",
+                "name": "Slider_Fill",
+                "tags": []
+            },
+            {
+                "children": [],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "dbeed6c7-1ef3-4a71-952a-2b6ed587ad6a",
+                        "offsetMax": [
+                            0.0,
+                            0.0
+                        ],
+                        "offsetMin": [
+                            0.0,
+                            0.0
+                        ],
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            160.0,
+                            0.0
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            20.0,
+                            20.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 3
+                    },
+                    {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0,
+                            0.0
+                        ],
+                        "id": "f15b5a17-1da2-451e-b7cd-de0ef6954ede",
+                        "materialPath": "shaders/quad",
+                        "texture": "",
+                        "type": "ImageRenderer"
+                    }
+                ],
+                "enabled": true,
+                "id": "d8326c55-0650-4973-ac00-be2962a9bc55",
+                "name": "Slider_Handle",
+                "tags": []
+            }
+        ],
+        "components": [
+            {
+                "anchorMax": [
+                    0.5,
+                    0.5
+                ],
+                "anchorMin": [
+                    0.5,
+                    0.5
+                ],
+                "id": "619e68d2-16e3-45c1-aabd-81baba7ff287",
+                "offsetMax": [
+                    0.0,
+                    0.0
+                ],
+                "offsetMin": [
+                    0.0,
+                    0.0
+                ],
+                "pivot": [
+                    0.5,
+                    0.5
+                ],
+                "position": [
+                    -95.0,
+                    0.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                    1.0,
+                    1.0
+                ],
+                "size": [
+                    320.0,
+                    25.0
+                ],
+                "type": "RectTransform",
+                "zIndex": 1
+            },
+            {
+                "backgroundColor": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "fillColor": [
+                    0.9215686321258545,
+                    0.2040843665599823,
+                    0.10841983556747437,
+                    1.0
+                ],
+                "handleColor": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "handleHoverColor": [
+                    0.800000011920929,
+                    0.800000011920929,
+                    0.800000011920929,
+                    1.0
+                ],
+                "handlePressedColor": [
+                    0.6000000238418579,
+                    0.6000000238418579,
+                    0.6000000238418579,
+                    1.0
+                ],
+                "id": "8a65400b-0564-4d6d-baf2-6251cad60076",
+                "maxValue": 1.0,
+                "minValue": 0.0,
+                "step": 0.009999999776482582,
+                "type": "UISlider",
+                "value": 1.0
+            },
+            {
+                "color": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "id": "ea16f369-fc08-4831-bd8e-20e60f4a8e5e",
+                "materialPath": "shaders/quad",
+                "texture": "",
+                "type": "ImageRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "73ce042e-82b4-4455-8cc4-b428875c4b4a",
+        "name": "Slider",
+        "tags": []
+    }
+}
