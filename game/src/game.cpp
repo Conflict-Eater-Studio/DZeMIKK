@@ -475,7 +475,7 @@ void Game::setupWorld() {
                              .steps = 15,
                              .dirFromParent = game::HexCoord::Direction::R330,
                              .unlockPattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
-                                                               game::HexPattern::Type::ATK, 1.2F)});
+                                                               game::HexPattern::Type::ATK, 12.0F)});
 
         auto chunkMain3 = world->addChunk({.parentPersistantId = chunkMain2,
                                            .name = "chunkMain3",
@@ -770,8 +770,8 @@ void Game::setupPlayer() {
 
     auto* playerHealthSystem = playerHealthGO->addComponent<game::HealthSystem>();
     playerHealthSystem->setOwner(playerHealthGO);
-    playerHealthSystem->setHealth(30.0F);
-    playerHealthSystem->setMaxHealth(30.0F);
+    playerHealthSystem->setHealth(300.0F);
+    playerHealthSystem->setMaxHealth(300.0F);
     playerHealthSystem->setTextRenderer(
     playerHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
     playerHealthSystem->setSlider(
@@ -823,25 +823,25 @@ void Game::setupPlayer() {
         patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::ATK, 10.0F),
                                      5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 1.5F), 5, 5);
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 15.0F), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {1, 0}}, game::HexPattern::Type::ATK, 2.0F), 5, 5);
+            game::HexPattern({{0, 0}, {1, -1}, {1, 0}}, game::HexPattern::Type::ATK, 20.0F), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {0, 1}}, game::HexPattern::Type::ATK, 2.5F),
+            game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {0, 1}}, game::HexPattern::Type::ATK, 25.0F),
             5, 5);
 
-        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::DEF, 1.0F), 5, 5);
+        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::DEF, 10.0F), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::DEF, 1.5F), 5, 5);
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::DEF, 15.0F), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {2, -2}}, game::HexPattern::Type::DEF, 2.0F), 5, 5);
+            game::HexPattern({{0, 0}, {1, -1}, {2, -2}}, game::HexPattern::Type::DEF, 20.0F), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {2, -1}}, game::HexPattern::Type::DEF, 2.5F),
+            game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {2, -1}}, game::HexPattern::Type::DEF, 25.0F),
             5, 5);
 
-        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL, 0.5F), 5, 5);
+        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL, 5.0F), 5, 5);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 0.75F), 5, 5);
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 8.0F), 5, 5);
         patternComponent->addPattern(
             game::HexPattern({{0, 0}, {1, -1}, {0, -1}}, game::HexPattern::Type::HEAL, 1.0F), 5, 5);
         patternComponent->addPattern(game::HexPattern({{0, 0}, {1, -1}, {0, -1}, {-1, 0}},
@@ -884,7 +884,7 @@ void Game::setupEnemies() {
         game::EnemySpawnConfig chunkMain1Config = {
             .personality = game::EnemyPersonality::Aggressive,
             .type = game::EnemyType::Normal,
-            .hp = 10,
+            .hp = 100,
             .territoryPattern = "1",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain2")->getPersistantId()},
         };
@@ -894,7 +894,7 @@ void Game::setupEnemies() {
         game::EnemySpawnConfig chunkMain2Config = {
             .personality = game::EnemyPersonality::Balanced,
             .type = game::EnemyType::Normal,
-            .hp = 15,
+            .hp = 150,
             .territoryPattern = "2",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain3")->getPersistantId()},
         };
@@ -904,13 +904,13 @@ void Game::setupEnemies() {
         game::EnemySpawnConfig chunkMain3Config1 = {
             .personality = game::EnemyPersonality::Aggressive,
             .type = game::EnemyType::Special,
-            .hp = 20,
+            .hp = 200,
             .territoryPattern = "2",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain3Sub1")->getPersistantId()}};
         game::EnemySpawnConfig chunkMain3Config2 = {
             .personality = game::EnemyPersonality::Defensive,
             .type = game::EnemyType::Normal,
-            .hp = 20,
+            .hp = 200,
             .territoryPattern = "3",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain4")->getPersistantId()}};
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain3")->getPersistantId(),
@@ -921,7 +921,7 @@ void Game::setupEnemies() {
         game::EnemySpawnConfig chunkMain4Config1 = {
             .personality = game::EnemyPersonality::Aggressive,
             .type = game::EnemyType::Boss,
-            .hp = 25,
+            .hp = 250,
             .territoryPattern = "5",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain5")->getPersistantId()}};
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain4")->getPersistantId(),
@@ -930,13 +930,13 @@ void Game::setupEnemies() {
         game::EnemySpawnConfig chunkMain5Config1 = {
             .personality = game::EnemyPersonality::Balanced,
             .type = game::EnemyType::Normal,
-            .hp = 30,
+            .hp = 300,
             .territoryPattern = "3",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain6")->getPersistantId()}};
         game::EnemySpawnConfig chunkMain5Config2 = {
             .personality = game::EnemyPersonality::Aggressive,
             .type = game::EnemyType::Normal,
-            .hp = 25,
+            .hp = 250,
             .territoryPattern = "3",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain6")->getPersistantId()}};
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain5")->getPersistantId(),
@@ -947,7 +947,7 @@ void Game::setupEnemies() {
         game::EnemySpawnConfig chunkMain6Config = {
             .personality = game::EnemyPersonality::Balanced,
             .type = game::EnemyType::Normal,
-            .hp = 35,
+            .hp = 350,
             .territoryPattern = "4",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain7")->getPersistantId()}};
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain6")->getPersistantId(),
@@ -956,13 +956,13 @@ void Game::setupEnemies() {
         game::EnemySpawnConfig chunkMain7Config1 = {
             .personality = game::EnemyPersonality::Defensive,
             .type = game::EnemyType::Normal,
-            .hp = 25,
+            .hp = 250,
             .territoryPattern = "3",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain8")->getPersistantId()}};
         game::EnemySpawnConfig chunkMain7Config2 = {
             .personality = game::EnemyPersonality::Defensive,
             .type = game::EnemyType::Normal,
-            .hp = 30,
+            .hp = 300,
             .territoryPattern = "3",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain8")->getPersistantId()}};
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain7")->getPersistantId(),
@@ -973,7 +973,7 @@ void Game::setupEnemies() {
         game::EnemySpawnConfig chunkMain7Sub1Config = {
             .personality = game::EnemyPersonality::Defensive,
             .type = game::EnemyType::Special,
-            .hp = 40,
+            .hp = 400,
             .territoryPattern = "5",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain7Sub2")->getPersistantId()}};
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain7Sub1")->getPersistantId(),
@@ -982,7 +982,7 @@ void Game::setupEnemies() {
         game::EnemySpawnConfig chunkMain7Sub2Config = {
             .personality = game::EnemyPersonality::Defensive,
             .type = game::EnemyType::Normal,
-            .hp = 35,
+            .hp = 350,
             .territoryPattern = "4",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain7Sub3")->getPersistantId()},
         };
@@ -992,13 +992,13 @@ void Game::setupEnemies() {
         game::EnemySpawnConfig chunkMain8Config1 = {
             .personality = game::EnemyPersonality::Aggressive,
             .type = game::EnemyType::Normal,
-            .hp = 35,
+            .hp = 350,
             .territoryPattern = "4",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain9")->getPersistantId()}};
         game::EnemySpawnConfig chunkMain8Config2 = {
             .personality = game::EnemyPersonality::Balanced,
             .count = 1,
-            .hp = 40,
+            .hp = 400,
             .territoryPattern = "5",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain9")->getPersistantId()}};
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain8")->getPersistantId(),
@@ -1010,14 +1010,14 @@ void Game::setupEnemies() {
             .personality = game::EnemyPersonality::Balanced,
             .type = game::EnemyType::Normal,
             .count = 1,
-            .hp = 35,
+            .hp = 350,
             .territoryPattern = "4",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain10")->getPersistantId()}};
         game::EnemySpawnConfig chunkMain9Config2 = {
             .personality = game::EnemyPersonality::Aggressive,
             .type = game::EnemyType::Normal,
             .count = 1,
-            .hp = 30,
+            .hp = 300,
             .territoryPattern = "1",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain10")->getPersistantId()}};
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain9")->getPersistantId(),
@@ -1029,7 +1029,7 @@ void Game::setupEnemies() {
             .personality = game::EnemyPersonality::Aggressive,
             .type = game::EnemyType::Normal,
             .count = 1,
-            .hp = 50,
+            .hp = 500,
             .territoryPattern = "6",
         };
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain10")->getPersistantId(),
@@ -1265,7 +1265,7 @@ void Game::setupTotems() {
                           {.persistantId = boost::uuids::string_generator()(
                                "478657ac-c332-43a8-b9bb-3aca14c32662"),
                            .pattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
-                                                       game::HexPattern::Type::ATK, 1.2F)});
+                                                       game::HexPattern::Type::ATK, 12.0F)});
     }
 }
 
