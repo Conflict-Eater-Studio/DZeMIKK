@@ -63,8 +63,6 @@ class PlayerMovement : public dzemikk::MonoBehaviour {
     float _lerpSpeed = 0.2f;
     int _playerDir = 3;
     bool isFallingFinished = true;
-    float _moveTimer = 0.0f;
-    float _moveDelay = 0.5f;
     std::vector<CellLerp> _cellLerps;
     std::vector<HexGrid::HexCellPtr> _path;
     std::vector<HexGrid::HexCellPtr> _cachedPath;

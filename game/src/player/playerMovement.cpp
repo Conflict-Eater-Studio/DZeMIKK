@@ -37,7 +37,6 @@ void PlayerMovement::update(double deltaTime) {
         return;
     }
 
-    _moveTimer += deltaTime;
     HexGrid::HexCellPtr currentTargetCell = _path[_step % _path.size()];
     _animator->setInt("isMoving", 1);
 
@@ -69,7 +68,7 @@ void PlayerMovement::update(double deltaTime) {
     }
 
 
-    if (_step < _path.size() && _moveTimer >= _moveDelay) {
+    if (_step < _path.size()) {
         auto dir = HexCoord::dir(currentTargetCell->getCoord() - _playerEntity->getCell()->getCoord());
         if (dir.has_value()) {
             int hexDir = static_cast<int>(dir.value());
@@ -83,7 +82,6 @@ void PlayerMovement::update(double deltaTime) {
             }
 
             _playerDir = hexDir;
-            _moveTimer = 0.0f;
         }
     }
 
