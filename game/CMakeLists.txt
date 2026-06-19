@@ -32,6 +32,7 @@ set(GAME_SOURCES
     ${SRC_DIR}/player/playerPatternStatsComponent.cpp
     ${SRC_DIR}/ui/combatUIPanel.cpp
     ${SRC_DIR}/ui/logoComponent.cpp
+    ${SRC_DIR}/ui/uIPulseEffect.cpp
     ${SRC_DIR}/enemySystem/combatArenaBuilder.cpp
     ${SRC_DIR}/player/inventory.cpp
     ${SRC_DIR}/healthSystem.cpp
@@ -88,6 +89,7 @@ set(GAME_HEADERS
     ${INC_DIR}/player/playerPatternStatsComponent.h
     ${INC_DIR}/ui/combatUIPanel.h
     ${INC_DIR}/ui/logoComponent.h
+    ${INC_DIR}/ui/uIPulseEffect.h
     ${INC_DIR}/enemySystem/combatArenaBuilder.h
     ${INC_DIR}/player/inventory.h
     ${INC_DIR}/healthSystem.h

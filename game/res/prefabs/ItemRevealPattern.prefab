@@ -1,9 +1,50 @@
 {
     "root": {
-        "children": [],
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "b2d869db-6aa4-4c59-b42d-0873a14eaac3",
+                        "position": [
+                            -0.20000000298023224,
+                            0.10000000149011612,
+                            0.10000000149011612
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "castsShadows": false,
+                        "color": [
+                            1.0,
+                            0.47058823704719543,
+                            0.0
+                        ],
+                        "intensity": 3.2190001010894775,
+                        "range": 10.0,
+                        "type": "PointLight"
+                    }
+                ],
+                "enabled": true,
+                "id": "530bd94e-6801-4339-90e1-8b165b3b10ec",
+                "name": "Empty",
+                "tags": []
+            }
+        ],
         "components": [
             {
-                "id": "e54d52f5-d04c-444b-8190-aee7dbca4401",
+                "id": "cff6e846-0eba-4eb8-a897-6ab1b5e89055",
                 "position": [
                     0.0,
                     0.0,
@@ -23,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "77013e18-e163-448d-83bc-69feedccdd6b",
+                "id": "1ed5372e-8868-437b-822a-cd2319f1f464",
                 "materials": [
                     {
                         "pbr": {
@@ -58,7 +99,7 @@
             }
         ],
         "enabled": true,
-        "id": "bd9d9779-1cd1-4769-bd94-93115048141e",
+        "id": "adad8c02-f91f-4be2-9e4f-f6cee0e6051a",
         "name": "ItemRevealPattern",
         "tags": []
     }

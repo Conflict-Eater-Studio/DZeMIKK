@@ -1,13 +1,54 @@
 {
     "root": {
-        "children": [],
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "1edaedde-bdcc-44f0-a909-9ca0654785c4",
+                        "position": [
+                            0.0,
+                            -0.10000000149011612,
+                            0.20000000298023224
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "castsShadows": false,
+                        "color": [
+                            0.058823466300964355,
+                            1.0,
+                            0.0
+                        ],
+                        "intensity": 5.535999774932861,
+                        "range": 10.0,
+                        "type": "PointLight"
+                    }
+                ],
+                "enabled": true,
+                "id": "172b7ecc-1191-458a-b2dd-2b12e46a5c01",
+                "name": "Empty",
+                "tags": []
+            }
+        ],
         "components": [
             {
-                "id": "ea461b8b-9725-4e6a-a043-ac87beef02cc",
+                "id": "0a323b8d-a072-4844-8dec-fe29fd38332e",
                 "position": [
                     0.0,
                     0.0,
-                    0.0
+                    0.10000000149011612
                 ],
                 "rotation": [
                     0.7071067690849304,
@@ -23,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "e24977d7-44f0-4ef4-85ae-0f72372d5874",
+                "id": "ba596b3c-67b5-4575-afec-62e571dce4b7",
                 "materials": [
                     {
                         "pbr": {
@@ -58,7 +99,7 @@
             }
         ],
         "enabled": true,
-        "id": "99eea75d-72c7-4a96-832e-67069541fa7c",
+        "id": "3a91469c-7bb9-4807-b9b2-469cddc16996",
         "name": "ItemHeal",
         "tags": []
     }

@@ -13,6 +13,8 @@
 #include <audio/sound.h>
 #include <iostream>
 
+#include "ui/uIPulseEffect.h"
+
 namespace inventorySound {
 struct SoundInitContext {
     dzemikk::AudioManager* audioManager;
@@ -55,6 +57,9 @@ void Inventory::addItem(ItemEntity::ItemType item, unsigned int count) {
 
         if (btn != nullptr) {
             btn->getChildren().at(0)->getComponent<dzemikk::UITextRenderer>()->text = newText;
+
+            auto pulse = btn->getComponent<UIPulseEffect>();
+            pulse->trigger();
         }
     }
 }

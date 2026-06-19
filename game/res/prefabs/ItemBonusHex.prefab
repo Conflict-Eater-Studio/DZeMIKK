@@ -1,9 +1,50 @@
 {
     "root": {
-        "children": [],
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "e05e558b-fe0f-4d9b-a462-daf225a870a1",
+                        "position": [
+                            0.30000001192092896,
+                            0.0,
+                            0.30000001192092896
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "castsShadows": false,
+                        "color": [
+                            1.0,
+                            0.47058820724487305,
+                            0.0
+                        ],
+                        "intensity": 4.506999969482422,
+                        "range": 10.0,
+                        "type": "PointLight"
+                    }
+                ],
+                "enabled": true,
+                "id": "8069a401-46e1-4874-b3a2-d8cc810a8118",
+                "name": "Empty",
+                "tags": []
+            }
+        ],
         "components": [
             {
-                "id": "aca8413a-dc7a-41df-a918-d7caea636eb9",
+                "id": "5fdb2ab7-ca47-467a-ba1f-ebaaf7f6c1a2",
                 "position": [
                     0.0,
                     0.0,
@@ -23,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "e66fbe63-a271-4b1c-99a4-5f8373ae3845",
+                "id": "efb30d28-e7c5-4d93-a578-2bf83d38b10e",
                 "materials": [
                     {
                         "pbr": {
@@ -58,7 +99,7 @@
             }
         ],
         "enabled": true,
-        "id": "4de9c4f4-eed7-435c-b32e-46dfd113285a",
+        "id": "c4acd807-7726-4d0e-b9f7-62c2eb8a9b4b",
         "name": "ItemBonusHex",
         "tags": []
     }

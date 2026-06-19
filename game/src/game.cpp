@@ -81,6 +81,7 @@
 #include <random>
 
 #include "ui/logoComponent.h"
+#include "ui/uIPulseEffect.h"
 #include "totem/totemDialogEntity.h"
 
 static std::mt19937 rng{std::random_device{}()};
@@ -340,6 +341,8 @@ void Game::startGame() {
         },
         "cinematic.endscreen.no");
 
+    _mainScene.get()->findGameObjectByName("UI_RevealPatternBtn")->addComponent<UIPulseEffect>();
+    _mainScene.get()->findGameObjectByName("UI_RevealHexBtn")->addComponent<UIPulseEffect>();
     setupInputCallbacks();
 }
 
@@ -1085,7 +1088,7 @@ void Game::setupItems() {
         manager->loadState(worldData["items"]);
     } else {
         // Heal Item setup
-        auto healChunks = {"chunkMain2Sub1", "chunkMain3",     "chunkMain4Sub1",
+        auto healChunks = {"chunkMain2Sub1", "chunkMain3",  "chunkMain3Sub1",   "chunkMain4Sub1",
                            "chunkMain7",     "chunkMain7Sub2", "chunkMain9"};
         for (const auto& name : healChunks) {
             manager->addItem(world->getGrid()->getChunkByName(name)->getPersistantId(),
@@ -1093,7 +1096,8 @@ void Game::setupItems() {
         }
 
         // Reveal Pattern Item setup
-        auto revealPatternChunks = {"chunkMain2Sub1",
+        auto revealPatternChunks = {
+            "chunkMain2Sub1", "chunkMain3Sub1",
                                     "chunkMain4",     "chunkMain4Sub1", "chunkMain5",
                                     "chunkMain6",     "chunkMain7",     "chunkMain7Sub1",
                                     "chunkMain7Sub3", "chunkMain9"};
@@ -1103,7 +1107,7 @@ void Game::setupItems() {
         }
 
         // Reveal Hex Item setup
-        auto revealHexChunks = {"chunkMain2Sub1", "chunkMain4",
+        auto revealHexChunks = {"chunkMain2Sub1", "chunkMain4",     "chunkMain3Sub1",
                                 "chunkMain6", "chunkMain7Sub1", "chunkMain7Sub2"};
         for (const auto& name : revealHexChunks) {
             manager->addItem(world->getGrid()->getChunkByName(name)->getPersistantId(),
@@ -1112,7 +1116,7 @@ void Game::setupItems() {
 
         // Bonus Hex Item Setup
         game::HexPattern pat = game::HexPattern({{0, 0}}, game::HexPattern::Type::BONUSHEX);
-        auto bonusHex = {"chunkMain2Sub1", "chunkMain4Sub1",
+        auto bonusHex = {"chunkMain2Sub1", "chunkMain4Sub1", "chunkMain3Sub1",
                          "chunkMain7",     "chunkMain7Sub1", "chunkMain7Sub3", "chunkMain7Sub3"};
         for (const auto& name : bonusHex) {
             manager->addItem(world->getGrid()->getChunkByName(name)->getPersistantId(),

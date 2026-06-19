@@ -1,19 +1,60 @@
 {
     "root": {
-        "children": [],
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "140da33b-609e-4f70-8e9b-732dcc076c3f",
+                        "position": [
+                            0.0,
+                            0.0,
+                            0.20000000298023224
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "castsShadows": false,
+                        "color": [
+                            1.0,
+                            0.47058823704719543,
+                            0.0
+                        ],
+                        "intensity": 3.0899999141693115,
+                        "range": 10.0,
+                        "type": "PointLight"
+                    }
+                ],
+                "enabled": true,
+                "id": "bf0cbb1f-0308-42e5-97bd-3be6609dbae6",
+                "name": "Empty",
+                "tags": []
+            }
+        ],
         "components": [
             {
-                "id": "8a993c12-52ca-4034-815d-45a10bdd2e64",
+                "id": "835adb77-3ec6-43f1-ab45-a70294b324bc",
                 "position": [
                     0.0,
                     0.0,
                     0.0
                 ],
                 "rotation": [
-                    0.8807569146156311,
-                    0.32755061984062195,
-                    -0.32056930661201477,
-                    0.11921866238117218
+                    0.8830221891403198,
+                    0.32139381766319275,
+                    -0.321393758058548,
+                    0.11697781831026077
                 ],
                 "scale": [
                     10.0,
@@ -23,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "a4e87368-ebf2-4409-9b6b-49b6bdf019d8",
+                "id": "1267f685-79e7-4e71-94c1-7bc878b32914",
                 "materials": [
                     {
                         "pbr": {
@@ -58,7 +99,7 @@
             }
         ],
         "enabled": true,
-        "id": "815a23d8-1d9b-4294-b073-1e0a90fcb5e2",
+        "id": "f2591500-60e3-4d06-9063-ec2a07eb5690",
         "name": "ItemRevealHex",
         "tags": []
     }
