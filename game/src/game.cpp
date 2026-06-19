@@ -1045,7 +1045,8 @@ void Game::setupEnemies() {
     combatEnamyPanel->setCanvas(enemyPanel);
     combatEnamyPanel->setHideEmptyPatterns(true);
     combatEnamyPanel->setEngine(_engine);
-    
+
+
     auto* enemyHealthGO = _mainScene.get()
                               ->findGameObjectByName("Enemy_Avatar_Panel")
                               ->findDescendantByName("Health_Holder");
@@ -1054,7 +1055,10 @@ void Game::setupEnemies() {
     enemyHealthSystem->setOwner(enemyHealthGO);
     enemyHealthSystem->setTextRenderer(
         enemyHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
+    enemyHealthSystem->setSlider(
+        enemyHealthGO->findChildByName("Slider")->getComponent<dzemikk::UISlider>());
 }
+
 
 void Game::setupItems() {
     if (_worldGO == nullptr || _worldGO->getComponent<game::World>() == nullptr) {
