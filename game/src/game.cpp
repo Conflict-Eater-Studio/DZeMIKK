@@ -64,6 +64,7 @@
 #include "player/playerPatternStatsComponent.h"
 #include "stateMachine/combatState.h"
 #include "stateMachine/explorationState.h"
+#include "stateMachine/cinematicState.h"
 #include "totem/totemEntity.h"
 #include "totem/totemManager.h"
 #include "ui/combatUIPanel.h"
@@ -325,6 +326,19 @@ void Game::startGame() {
             sceneManager->setActiveScene(menuShared);
         },
         "ui.credits.back");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [sceneManager, creditsShared, this](const dzemikk::UIEvent&) {
+            setExplorationState();
+            _mainScene.get()->findGameObjectByName("Cinematic")->enabled(false);
+        },
+        "cinematic.endscreen.yes");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [sceneManager, creditsShared, this](const dzemikk::UIEvent&) { 
+            _engine->exit();
+        },
+        "cinematic.endscreen.no");
 
     setupInputCallbacks();
 }
@@ -804,7 +818,7 @@ void Game::setupPlayer() {
     } else {
         _playerEntity->teleportTo(_hexGrid->getCell({0, 0}));
 
-        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::ATK, 1.0F),
+        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::ATK, 10.0F),
                                      5, 5);
         patternComponent->addPattern(
             game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 1.5F), 5, 5);
@@ -1205,6 +1219,10 @@ void Game::registerDefaultTerritories() {
 
 void Game::setExplorationState() {
     _stateMachine->setState(std::make_unique<game::ExplorationState>(this));
+}
+
+void Game::setCinematicState() {
+    _stateMachine->setState(std::make_unique<game::CinematicState>(this));
 }
 
 void Game::setupTotems() {

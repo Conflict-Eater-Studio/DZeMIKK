@@ -46,6 +46,7 @@ class Game {
         return _engine;
     }
     void setExplorationState();
+    void setCinematicState();
 
     void startGame();
     void restartGame();

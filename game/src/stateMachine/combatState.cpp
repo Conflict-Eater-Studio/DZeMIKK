@@ -223,7 +223,12 @@ void game::CombatState::onUpdate(float dt) {
             if (_playerDied) {
                 _game->restartGame();
             } else {
-                _game->setExplorationState();
+
+                if (_currentEnemy->getEnemyType() == EnemyType::Boss) {
+                    _game->setCinematicState();
+                } else {
+                    _game->setExplorationState();
+                }
             }
             return;
         }

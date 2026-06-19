@@ -16,6 +16,10 @@ void game::CameraController::lateUpdate(double dt) {
     case Mode::Combat:
         updateCombat(dt);
         break;
+
+    case Mode::Cinematic:
+        updateCinematic(dt);
+        break;
     }
 }
 
@@ -26,7 +30,7 @@ void game::CameraController::setPlayerTransform(dzemikk::Transform* playerTransf
 void game::CameraController::setMode(Mode mode) {
     _mode = mode;
 
-    if (_mode == Mode::Exploration) {
+    if (_mode == Mode::Exploration || _mode == Mode::Cinematic) {
         getOwner()->transform()->setRotation(glm::vec3(glm::radians(-30.0F),
                                                        glm::radians(-90.0F), 
                                                        0.0F                  
@@ -80,6 +84,25 @@ void game::CameraController::updateCombat(double dt) {
     glm::vec3 playerPos = _playerTransform->getPosition();
 
     glm::vec3 targetPos = playerPos + _offsetCombatMode;
+
+    glm::vec3 currentPos = cameraTransform->getPosition();
+
+    float t = (float)1.0F - std::exp(-_followSpeed * dt);
+    glm::vec3 newPos = glm::mix(currentPos, targetPos, t);
+
+    cameraTransform->setPosition(newPos);
+}
+
+void game::CameraController::updateCinematic(double dt) {
+    if (!_playerTransform) {
+        return;
+    }
+
+    auto* cameraTransform = getOwner()->transform();
+
+    glm::vec3 playerPos = _playerTransform->getPosition();
+
+    glm::vec3 targetPos = playerPos + _offsetExplorationMode;
 
     glm::vec3 currentPos = cameraTransform->getPosition();
 

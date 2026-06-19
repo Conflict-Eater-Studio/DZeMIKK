@@ -24,7 +24,7 @@ class CameraController : public dzemikk::MonoBehaviour {
     /**
      * @brief Available camera behavior modes.
      */
-    enum class Mode { Exploration, Combat };
+    enum class Mode { Exploration, Combat, Cinematic};
 
 #pragma region Lifecycle
 
@@ -95,6 +95,8 @@ class CameraController : public dzemikk::MonoBehaviour {
      * @param dt Delta time in seconds.
      */
     void updateCombat(double dt);
+
+    void updateCinematic(double dt);
 
 #pragma endregion
 

@@ -17,6 +17,7 @@ set(GAME_SOURCES
     ${SRC_DIR}/stateMachine/explorationState.cpp
     ${SRC_DIR}/stateMachine/combatState.cpp
     ${SRC_DIR}/stateMachine/combatResolver.cpp
+    ${SRC_DIR}/stateMachine/cinematicState.cpp
     ${SRC_DIR}/enemySystem/enemyEntity.cpp
     ${SRC_DIR}/enemySystem/enemyManager.cpp
     ${SRC_DIR}/enemySystem/territoryPatternRegistry.cpp
@@ -37,6 +38,7 @@ set(GAME_SOURCES
     ${SRC_DIR}/totem/totemSpawnConfig.cpp
     ${SRC_DIR}/totem/totemEntity.cpp
     ${SRC_DIR}/totem/totemManager.cpp
+    ${SRC_DIR}/totem/totemDialogEntity.cpp
     ${SRC_DIR}/item/itemManager.cpp
     ${SRC_DIR}/dialog/dialogManager.cpp
     ${SRC_DIR}/dialog/dialog.cpp
@@ -69,6 +71,7 @@ set(GAME_HEADERS
     ${INC_DIR}/stateMachine/combatState.h
     ${INC_DIR}/stateMachine/combatTypes.h
     ${INC_DIR}/stateMachine/combatResolver.h
+    ${INC_DIR}/stateMachine/cinematicState.h
     ${INC_DIR}/enemySystem/enemyEntity.h
     ${INC_DIR}/enemySystem/enemyManager.h
     ${INC_DIR}/enemySystem/enemyTypes.h
@@ -91,6 +94,7 @@ set(GAME_HEADERS
     ${INC_DIR}/totem/totemSpawnConfig.h
     ${INC_DIR}/totem/totemEntity.h
     ${INC_DIR}/totem/totemManager.h
+    ${INC_DIR}/totem/totemDialogEntity.h
     ${INC_DIR}/item/itemManager.h
     ${INC_DIR}/dialog/dialogManager.h
     ${INC_DIR}/dialog/dialog.h
