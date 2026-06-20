@@ -43,7 +43,10 @@ void dzemikk::MeshRenderPass::buildMeshBatches(RenderContext& ctx) {
 
             float radius = r->getCullingRadius();
 
-            if (!ctx.frustum->isSphereVisible(r->getTransform()->getPosition(), radius))
+
+            auto center = glm::vec3(r->getTransform()->getWorldMatrix()[3]);
+
+            if (!ctx.frustum->isSphereVisible(center, radius))
                 continue;
 
             for (size_t i = 0; i < model->getSubMeshes().size(); i++) {

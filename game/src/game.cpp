@@ -503,7 +503,7 @@ void Game::setupWorld() {
 
         auto chunkMain5 = world->addChunk({.parentPersistantId = chunkMain4,
                                            .name = "chunkMain5",
-                                           .steps = 19,
+                                           .steps = 18,
                                            .dirFromParent = game::HexCoord::Direction::R330});
 
         auto chunkMain6 = world->addChunk({.parentPersistantId = chunkMain5,
@@ -518,7 +518,7 @@ void Game::setupWorld() {
 
         auto chunkMain4Sub1 = world->addChunk({.parentPersistantId = chunkMain4,
                                                .name = "chunkMain4Sub1",
-                                               .steps = 14,
+                                               .steps = 13,
                                                .dirFromParent = game::HexCoord::Direction::R30});
 
         auto chunkMain7Sub1 = world->addChunk({.parentPersistantId = chunkMain7,
