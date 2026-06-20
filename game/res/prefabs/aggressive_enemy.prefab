@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "77d5c2ca-dbd4-4cfb-8c18-8b42356bbac4",
+                        "id": "f0c78bb0-f13c-45cf-b302-17959502911f",
                         "position": [
                             0.0,
                             17.0,
@@ -37,14 +37,14 @@
                     }
                 ],
                 "enabled": true,
-                "id": "02421293-340e-433e-9dca-d2491332aa07",
+                "id": "6515735f-ee0b-40ae-bbce-ce44fefe5d07",
                 "name": "Light",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "897b2b6e-48ee-47dc-961c-eb984a844b7b",
+                "id": "44593e81-611f-4ac8-bb3f-9e2749feb598",
                 "position": [
                     0.0,
                     0.4000000059604645,
@@ -64,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "c0353530-1849-446d-a904-ee66a6b14c9b",
+                "id": "254db91d-0a65-4735-836f-5e2408619868",
                 "materials": [
                     {
                         "albedoColor": [
@@ -280,11 +280,30 @@
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "57fa57b7-336f-4720-8363-66d0540ed0d1",
+                "id": "4d9cbfc2-738c-4301-9f38-44f3f0994cfc",
                 "parameters": {},
                 "stateMachine": [
                     {
                         "name": "Idle",
+                        "transitions": [
+                            {
+                                "condition": {
+                                    "op": 2,
+                                    "parameter": "Attack",
+                                    "type": 2,
+                                    "value": 1.0
+                                },
+                                "duration": 0.25,
+                                "to": "Attack"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Death",
+                        "transitions": []
+                    },
+                    {
+                        "name": "Attack",
                         "transitions": []
                     }
                 ],
@@ -292,7 +311,7 @@
             }
         ],
         "enabled": true,
-        "id": "7cd10191-fff6-4960-87c8-5f4d56352058",
+        "id": "9e082ea8-4551-4b9e-9fc1-970858c50ee8",
         "name": "Aggressive",
         "tags": []
     }

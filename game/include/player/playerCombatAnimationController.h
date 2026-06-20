@@ -2,6 +2,7 @@
 #define DZEMIKK_PLAYER_COMBAT_ANIMATION_CONTROLLER_H
 
 #include "ecs/components/monobehaviour.h"
+#include "gameStateMachine.h"
 #include "healthSystem.h"
 
 namespace dzemikk {
@@ -26,12 +27,17 @@ class PlayerCombatAnimationController : public dzemikk::MonoBehaviour {
     void setHealthSystem(HealthSystem* healthSystem);
     [[nodiscard]] HealthSystem* getHealthSystem() const;
 
-    void playConfirmRoundAttack() const;
+    void setGameStateMachine(GameStateMachine* gameStateMachine);
+    [[nodiscard]] GameStateMachine* getGameStateMachine() const;
+
+    void playConfirmRoundAttack();
 
   private:
     dzemikk::Animator* _playerAnimator = nullptr;
     HealthSystem* _playerHealthSystem = nullptr;
+    GameStateMachine* _gameStateMachine = nullptr;
     dzemikk::Animator* _enemyAnimator = nullptr;
+    bool canPlay = true;
 };
 
 } // namespace game

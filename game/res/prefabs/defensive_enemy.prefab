@@ -182,6 +182,14 @@
                     {
                         "name": "Idle",
                         "transitions": []
+                    },
+                    {
+                        "name": "Attack",
+                        "transitions": []
+                    },
+                    {
+                        "name": "Death",
+                        "transitions": []
                     }
                 ],
                 "type": "Animator"

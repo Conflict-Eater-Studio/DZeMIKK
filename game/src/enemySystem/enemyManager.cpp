@@ -1,5 +1,6 @@
 #include "enemySystem/enemyManager.h"
 
+#include "animation/animationclip.h"
 #include "enemySystem/enemyEntity.h"
 #include "enemySystem/enemyTypes.h"
 #include "enemySystem/territoryPatternRegistry.h"
@@ -30,7 +31,6 @@ void game::EnemyManager::addEnemy(const boost::uuids::uuid& chunkId, EnemySpawnC
         return;
 #endif
     }
-
     config.chunkId = chunkId;
     _spawnRules[chunkId].emplace_back(config);
 
@@ -147,7 +147,6 @@ void game::EnemyManager::spawnEnemy(const boost::uuids::uuid& chunkId,
     auto* scene = getOwner()->getScene();
     auto* enemyGO =
         dzemikk::PrefabSerializer::instantiate(*scene, *enemyPrefab.get(), _assetManager);
-
     enemyGO->addTag("Enemy");
     enemyGO->setParent(getOwner());
 
@@ -156,11 +155,22 @@ void game::EnemyManager::spawnEnemy(const boost::uuids::uuid& chunkId,
         glm::vec3(0.0F, 0.4F, 0.0F));
 
     dzemikk::AnimationClip* clip = nullptr;
+    dzemikk::AnimationClip* deathClip = nullptr;
+    dzemikk::AnimationClip* attackClip = nullptr;
+
     auto skeleton =
         enemyGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
     clip = skeleton->getClip("idle");
+    deathClip = skeleton->getClip("death");
+    deathClip->setLoop(false);
+    attackClip = skeleton->getClip("attack");
+    attackClip->setLoop(false);
+
     auto* animator = enemyGO->getComponent<dzemikk::Animator>();
     animator->getStateMachine()->getState("Idle")->setClip(clip);
+    animator->getStateMachine()->getState("Attack")->setClip(attackClip);
+    animator->getStateMachine()->getState("Death")->setClip(deathClip);
+
     animator->play("Idle");
 
     auto* enemy = enemyGO->addComponent<EnemyEntity>();

@@ -317,6 +317,7 @@ void Game::startGame() {
         },
         "ui.credits.back");
 
+    _playerGO->getComponent<game::PlayerCombatAnimationController>()->setGameStateMachine(_stateMachine);
     setupInputCallbacks();
 }
 
