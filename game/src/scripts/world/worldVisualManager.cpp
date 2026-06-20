@@ -233,8 +233,6 @@ void game::WorldVisualManager::spawnForestChunk(const std::string& chunkName) {
         } else if (r < fill * 1.0f) {
 
             spawnClusterObject(scene, "Bush", pos, 0.6f, 0.9f, _world->getHexTransformByCell(*hex));
-
-            //hex->setState(HexCell::State::Prop);
             spawned++;
         }
     }
@@ -248,8 +246,6 @@ void game::WorldVisualManager::spawnForestChunk(const std::string& chunkName) {
 
         if (r < 0.55f) {
             spawnClusterObject(scene, "Bush", pos, 0.6f, 0.9f, _world->getHexTransformByCell(*hex));
-
-            //hex->setState(HexCell::State::Prop);
             spawned++;
         } else if (r < 0.70f) {
 

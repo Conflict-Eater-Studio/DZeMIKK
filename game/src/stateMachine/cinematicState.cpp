@@ -65,6 +65,9 @@ void game::CinematicState::onEnter() {
 }
 
 void game::CinematicState::onExit() {
+    auto* playerAvatar =
+        _game->getCurrentScene().get()->findGameObjectByName("Player_Avatar_Panel");
+    playerAvatar->enabled(true);
     _game->getEngine()->getAudioManager()->stop(cinematicSound::combatFMODChannel);
 }
 
