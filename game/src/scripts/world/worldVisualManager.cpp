@@ -129,64 +129,6 @@ void game::WorldVisualManager::spawnForestChunk(const std::string& chunkName) {
     if (!camGO)
         return;
 
-    std::unordered_map<HexCoord, HexCell*> coordMap;
-
-    bool hasStart = false;
-    bool hasTarget = false;
-
-    HexCoord startCoord;
-    HexCoord targetCoord;
-
-    glm::vec3 startPos;
-    startPos.z = -FLT_MAX;
-
-    float bestBridgeDist = FLT_MAX;
-
-    for (auto hex : hexes) {
-        auto* t = _world->getHexTransformByCell(*hex);
-        if (!t)
-            continue;
-
-        glm::vec3 pos = t->getPosition();
-        coordMap[hex->getCoord()] = hex.get();
-
-        if (!hasStart || pos.z < startPos.z) {
-            startPos = pos;
-            startCoord = hex->getCoord();
-            hasStart = true;
-        }
-    }
-
-    for (auto hex : hexes) {
-        if (hex->getType() != HexCell::Type::Bridge)
-            continue;
-
-        auto* t = _world->getHexTransformByCell(*hex);
-        if (!t)
-            continue;
-
-        float d = glm::distance(startPos, t->getPosition());
-        if (d < bestBridgeDist) {
-            bestBridgeDist = d;
-            targetCoord = hex->getCoord();
-            hasTarget = true;
-        }
-    }
-
-    if (!hasStart || !hasTarget)
-        return;
-
-    auto path = HexCoord::hexesOnLine(startCoord, targetCoord);
-
-    for (const auto& c : path) {
-        auto it = coordMap.find(c);
-        if (it == coordMap.end())
-            continue;
-
-        it->second->setState(HexCell::State::Path);
-        it->second->setDirty(true);
-    }
-
     std::vector<HexCell*> freeHexes;
     freeHexes.reserve(hexes.size());
 
@@ -402,5 +344,68 @@ void game::WorldVisualManager::spawnRockCluster(dzemikk::Scene* scene, const std
 
         float rotY = rand01() * 360.0f;
         go->transform()->setRotation(glm::vec3(0.f, rotY, 0.f));
+    }
+}
+
+void game::WorldVisualManager::generateForestPath(
+    const std::vector<std::shared_ptr<HexCell>>& hexes) {
+
+    std::unordered_map<HexCoord, HexCell*> coordMap;
+
+    bool hasStart = false;
+    bool hasTarget = false;
+
+    HexCoord startCoord;
+    HexCoord targetCoord;
+
+    glm::vec3 startPos;
+    startPos.z = -FLT_MAX;
+
+    float bestBridgeDist = FLT_MAX;
+
+    for (auto& hex : hexes) {
+        auto* t = _world->getHexTransformByCell(*hex);
+        if (!t)
+            continue;
+
+        glm::vec3 pos = t->getPosition();
+        coordMap[hex->getCoord()] = hex.get();
+
+        if (!hasStart || pos.z < startPos.z) {
+            startPos = pos;
+            startCoord = hex->getCoord();
+            hasStart = true;
+        }
+    }
+
+    for (auto& hex : hexes) {
+        if (hex->getType() != HexCell::Type::Bridge)
+            continue;
+
+        auto* t = _world->getHexTransformByCell(*hex);
+        if (!t)
+            continue;
+
+        float d = glm::distance(startPos, t->getPosition());
+
+        if (d < bestBridgeDist) {
+            bestBridgeDist = d;
+            targetCoord = hex->getCoord();
+            hasTarget = true;
+        }
+    }
+
+    if (!hasStart || !hasTarget)
+        return;
+
+    auto path = HexCoord::hexesOnLine(startCoord, targetCoord);
+
+    for (const auto& c : path) {
+        auto it = coordMap.find(c);
+        if (it == coordMap.end())
+            continue;
+
+        it->second->setState(HexCell::State::Path);
+        it->second->setDirty(true);
     }
 }

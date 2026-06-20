@@ -61,6 +61,8 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
                           const glm::vec3& basePos, int minCount, int maxCount, float spread,
                           float minScale, float maxScale);
 
+    void generateForestPath(const std::vector<std::shared_ptr<HexCell>>& hexes);
+
     World* _world = nullptr;
     Game* _game = nullptr;
 

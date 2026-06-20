@@ -73,6 +73,7 @@ void dzemikk::MeshRenderPass::buildMeshBatches(RenderContext& ctx) {
 
                     if (b.mesh == mesh && 
                         b.material->getAlbedoColor() == material->getAlbedoColor() &&
+                        b.material->getAlbedoTexture() == material->getAlbedoTexture() &&
                         b.material->getNormalTexture() == material->getNormalTexture() &&
                         b.material->getMetallicTexture() == material->getMetallicTexture() &&
                         b.material->getRoughnessTexture() == material->getRoughnessTexture() &&

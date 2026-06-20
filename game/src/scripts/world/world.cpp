@@ -272,8 +272,9 @@ nlohmann::json World::save() {
 
         if (auto* patternComp = playerGO->getComponent<PlayerPatternComponent>(); patternComp) {
             for (const auto& entry : patternComp->getPatterns()) {
-                j["player"]["patterns"].push_back(
-                    {{"pattern", entry.pattern}, {"count", entry.count}, {"maxCount", entry.maxCount}});
+                j["player"]["patterns"].push_back({{"pattern", entry.pattern},
+                                                   {"count", entry.count},
+                                                   {"maxCount", entry.maxCount}});
             }
         }
 
@@ -312,7 +313,6 @@ void World::update(double dt) {
             if (cell->getHexCell()->getType() == HexCell::Type::Normal) {
                 cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
                     0, _hexMaterials[HexCell::Type::Normal]);
-                //color = glm::vec4(1.0F, 1.0F, 1.0F, 1.0F);
                 color = glm::vec4(0.075, 0.133, 0.290, 1.0F);
             }
 
@@ -461,11 +461,6 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
     auto* meshRenderer = obj->addComponent<dzemikk::MeshRenderer>();
     meshRenderer->setModel(_hexModel);
 
-    if (cell->getState() == HexCell::State::Path) {
-        meshRenderer->setMaterial(0, _hexMaterialsState[HexCell::State::Path]);
-        meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(0.56F, 0.44F, 0.13F, 1.0F));
-    }
-
     switch (cell->getGenState()) {
     case HexCell::GenState::Blocked:
         meshRenderer->setMaterial(0, _hexMaterialsGenState[HexCell::GenState::Blocked]);
@@ -477,8 +472,13 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
         break;
     case HexCell::GenState::Normal:
         meshRenderer->setMaterial(0, _hexMaterialsGenState[HexCell::GenState::Normal]);
-        meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(1.0F, 1.0F, 1.0F, 1.0F));
+        meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(0.075, 0.133, 0.290, 1.0F));
         break;
+    }
+
+    if (cell->getState() == HexCell::State::Path) {
+        meshRenderer->setMaterial(0, _hexMaterialsState[HexCell::State::Path]);
+        meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(0.56F, 0.44F, 0.13F, 1.0F));
     }
 
     if (cell->getType() == HexCell::Type::Bridge) {
@@ -489,6 +489,13 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
         meshRenderer->setMaterial(0, _hexMaterials[HexCell::Type::EnemyBattleHex]);
         meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(1.0F, 0.0F, 0.0F, 1.0F));
     }
+
+    auto texture = _game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
+        "textures/assets/hex_wypukly_BaseColor.png");
+    meshRenderer->getMaterial(0)->setAlbedoTexture(texture);
+    meshRenderer->getMaterial(0)->setMetallic(0.05F);
+    meshRenderer->getMaterial(0)->setRoughness(0.43F);
+    meshRenderer->getMaterial(0)->setAO(0.58F);
 
     meshRenderer->setTransform(obj->transform());
     auto* worldHex = obj->addComponent<WorldHex>();
@@ -536,5 +543,4 @@ World::getVisualHexesByChunk() const {
 
     return result;
 }
-
 } // namespace game

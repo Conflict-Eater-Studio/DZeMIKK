@@ -556,6 +556,31 @@ void Game::setupWorld() {
     }
 }
 
+void Game::setupWorldVisuals() {
+    auto worldVisualManager = _worldGO->addComponent<game::WorldVisualManager>();
+    worldVisualManager->setWorld(_worldGO->getComponent<game::World>());
+    worldVisualManager->setAssetManager(_engine->getAssetManager());
+    worldVisualManager->setGame(this);
+    worldVisualManager->init();
+    worldVisualManager->spawnForestChunk("chunkMain0");
+    worldVisualManager->spawnForestChunk("chunkMain1");
+    worldVisualManager->spawnForestChunk("chunkMain2");
+    worldVisualManager->spawnForestChunk("chunkMain2Sub1");
+    worldVisualManager->spawnForestChunk("chunkMain3");
+    worldVisualManager->spawnForestChunk("chunkMain3Sub1");
+    worldVisualManager->spawnForestChunk("chunkMain4");
+    worldVisualManager->spawnForestChunk("chunkMain5");
+    worldVisualManager->spawnForestChunk("chunkMain6");
+    worldVisualManager->spawnForestChunk("chunkMain7");
+    worldVisualManager->spawnForestChunk("chunkMain4Sub1");
+    worldVisualManager->spawnForestChunk("chunkMain7Sub1");
+    worldVisualManager->spawnForestChunk("chunkMain7Sub2");
+    worldVisualManager->spawnForestChunk("chunkMain7Sub3");
+    worldVisualManager->spawnForestChunk("chunkMain8");
+    worldVisualManager->spawnForestChunk("chunkMain9");
+    worldVisualManager->spawnForestChunk("chunkMain10");
+}
+
 void Game::setupUICamera() {
     auto* uiCameraGO = _mainScene.get()->createGameObject("UICamera");
     uiCameraGO->transform()->setPosition({0.0F, 0.0F, 1.0F});
@@ -1330,15 +1355,6 @@ void Game::setupDialogs() {
                 },
         });
     }
-}
-
-void Game::setupWorldVisuals() {
-    auto worldVisualManager = _worldGO->addComponent<game::WorldVisualManager>();
-    worldVisualManager->setWorld(_worldGO->getComponent<game::World>());
-    worldVisualManager->setAssetManager(_engine->getAssetManager());
-    worldVisualManager->setGame(this);
-    worldVisualManager->init();
-    worldVisualManager->spawnForestChunk("chunkMain0");
 }
 
 void Game::restartGame() {
