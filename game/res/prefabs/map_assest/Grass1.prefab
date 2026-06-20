@@ -1,0 +1,65 @@
+{
+    "root": {
+        "children": [],
+        "components": [
+            {
+                "id": "c657ef49-4eee-4364-81fc-b2f2dd45e174",
+                "position": [
+                    9.399999618530273,
+                    0.0,
+                    0.30000001192092896
+                ],
+                "rotation": [
+                    -4.371138828673793e-08,
+                    -1.0,
+                    2.5603889583454336e-15,
+                    1.1191815786972923e-22
+                ],
+                "scale": [
+                    0.10000000149011612,
+                    0.10000000149011612,
+                    0.10000000149011612
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "4e641e5c-e4f8-4993-affa-87dbc34241da",
+                "materials": [
+                    {
+                        "pbr": {
+                            "albedo": [
+                                0.1764705926179886,
+                                0.25882354378700256,
+                                0.19607843458652496
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "",
+                            "normal": "",
+                            "roughness": ""
+                        }
+                    }
+                ],
+                "model": "models/assets/Grass1.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "372b8f20-7d66-4713-9ca0-aadc26ae5808",
+        "name": "Grass1",
+        "tags": []
+    }
+}

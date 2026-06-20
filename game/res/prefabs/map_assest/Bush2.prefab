@@ -1,0 +1,65 @@
+{
+    "root": {
+        "children": [],
+        "components": [
+            {
+                "id": "58008e36-9043-4f7a-84b3-1f353ad9dfa1",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "76a7e843-94ca-4a8d-ae6d-244c65102d03",
+                "materials": [
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "textures/totems/a.png",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "",
+                            "normal": "",
+                            "roughness": ""
+                        }
+                    }
+                ],
+                "model": "models/assets/krzak.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "1934312c-0005-415c-b215-94b5bb42d2c3",
+        "name": "Bush2",
+        "tags": []
+    }
+}

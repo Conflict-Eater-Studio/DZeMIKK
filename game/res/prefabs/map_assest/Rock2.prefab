@@ -1,0 +1,65 @@
+{
+    "root": {
+        "children": [],
+        "components": [
+            {
+                "id": "efeeec2f-8c8e-438b-8dc5-f03c4763f1a1",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    5.0,
+                    5.0,
+                    5.0
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "56d284c2-d099-41fb-8e9e-3504251c1423",
+                "materials": [
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "",
+                            "ao": "",
+                            "emissive": "models/assets/kamory/kamien_v1_jasny/kamien_v1_jasny_Emissive.png",
+                            "metallic": "models/assets/kamory/kamien_v1_jasny/kamien_v1_jasny_Metallic.png",
+                            "normal": "models/assets/kamory/kamien_v1_jasny/kamien_v1_jasny_Normal.png",
+                            "roughness": "models/assets/kamory/kamien_v1_jasny/kamien_v1_jasny_Roughness.png"
+                        }
+                    }
+                ],
+                "model": "models/assets/kamory/kamien_v1_jasny/kamien_v1_jasny.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "902cb0ad-7e59-43ce-966e-4f98e18af1c6",
+        "name": "Rock2",
+        "tags": []
+    }
+}

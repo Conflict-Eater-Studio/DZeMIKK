@@ -1,0 +1,65 @@
+{
+    "root": {
+        "children": [],
+        "components": [
+            {
+                "id": "dd38393f-278d-4a0d-a0bf-f0c7ed6f0e11",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.6257807612419128,
+                    -0.6257807612419128,
+                    -0.3292391896247864,
+                    -0.3292391896247864
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "ee913324-7c0d-41f2-8484-877695dd8e4b",
+                "materials": [
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "models/assets/drzewa/drzewo_male/drzewo_male_BaseColor.png",
+                            "ao": "",
+                            "emissive": "models/assets/drzewa/drzewo_male/drzewo_male_Emissive.png",
+                            "metallic": "models/assets/drzewa/drzewo_male/drzewo_male_Metallic.png",
+                            "normal": "models/assets/drzewa/drzewo_male/drzewo_male_Normal.png",
+                            "roughness": "models/assets/drzewa/drzewo_male/drzewo_male_ImphenziaPixPal_Roughness.png"
+                        }
+                    }
+                ],
+                "model": "models/assets/drzewa/drzewo_male/drzewo_male.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "e973f413-d21f-468f-96c3-ed75662d7236",
+        "name": "Tree_small",
+        "tags": []
+    }
+}

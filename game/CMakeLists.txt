@@ -10,6 +10,7 @@ set(GAME_SOURCES
     ${SRC_DIR}/map/PlayerEntity.cpp
     ${SRC_DIR}/map/HexPattern.cpp
     ${SRC_DIR}/scripts/world/world.cpp
+    ${SRC_DIR}/scripts/world/worldVisualManager.cpp
     ${SRC_DIR}/game.cpp
     ${SRC_DIR}/player/playerMovement.cpp
     ${SRC_DIR}/camera/cameraController.cpp
@@ -60,6 +61,7 @@ set(GAME_HEADERS
     ${INC_DIR}/map/PlayerEntity.h
     ${INC_DIR}/scripts/world/world.h
     ${INC_DIR}/scripts/world/worldHex.h
+    ${INC_DIR}/scripts/world/worldVisualManager.h
     ${INC_DIR}/utils/perlin.h
     ${INC_DIR}/game.h
     ${INC_DIR}/player/playerMovement.h

@@ -1,0 +1,65 @@
+{
+    "root": {
+        "children": [],
+        "components": [
+            {
+                "id": "f178925a-f470-4b39-88a9-33a5e11bdcef",
+                "position": [
+                    0.0,
+                    0.0,
+                    -0.20000000298023224
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    5.0,
+                    5.0,
+                    5.0
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "750b3a63-00ec-48a2-94aa-14d0abad8847",
+                "materials": [
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "models/assets/kamory/kamien_v2_ciemny/kamien_v2_ciemny_BaseColor.png",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "models/assets/kamory/kamien_v2_ciemny/kamien_v2_ciemny_Metallic.png",
+                            "normal": "models/assets/kamory/kamien_v2_ciemny/kamien_v2_ciemny_Normal.png",
+                            "roughness": "models/assets/kamory/kamien_v2_ciemny/kamien_v2_ciemny_Roughness.png"
+                        }
+                    }
+                ],
+                "model": "models/assets/kamory/kamien_v2_ciemny/kamien_v2_ciemny.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "4e1aeb4e-74ea-4932-9904-27f6d17a9949",
+        "name": "Rock3",
+        "tags": []
+    }
+}

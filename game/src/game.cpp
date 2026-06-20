@@ -83,6 +83,7 @@
 #include "ui/logoComponent.h"
 #include "ui/uIPulseEffect.h"
 #include "totem/totemDialogEntity.h"
+#include "scripts/world/worldVisualManager.h"
 
 static std::mt19937 rng{std::random_device{}()};
 
@@ -185,6 +186,9 @@ void Game::startGame() {
     setupItems();
     setupTotems();
     setupDialogs();
+
+    // Setup visuals ALWAYS at the end
+    setupWorldVisuals();
 
     if (_worldGO) {
         if (auto* world = _worldGO->getComponent<game::World>(); world) {
@@ -442,7 +446,10 @@ void Game::setupWorld() {
     auto shader = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
     auto material = std::make_shared<dzemikk::Material>();
     material->setShader(shader);
-    material->setAlbedoTexture(_engine->getAssetManager()->get<dzemikk::Texture>("textures/assets/hex_wypukly_BaseColor.png"));
+    material->setAlbedoTexture(_engine->getAssetManager()->get<dzemikk::Texture>("models/assets/hexy/hex_wypukly/hex_wypukly_BaseColor.png"));
+    material->setEmissiveTexture(_engine->getAssetManager()->get<dzemikk::Texture>("models/assets/hexy/hex_wypukly/hex_wypukly_Emissive.png"));
+    material->setMetallicTexture(_engine->getAssetManager()->get<dzemikk::Texture>("models/assets/hexy/hex_wypukly/hex_wypukly_Metallic.png"));
+    material->setRoughnessTexture(_engine->getAssetManager()->get<dzemikk::Texture>("models/assets/hexy/hex_wypukly/hex_wypukly_Roughness.png"));
 
     _worldGO = _mainScene.get()->findGameObjectByName("World");
     _worldGO->addTag("World");
@@ -459,7 +466,7 @@ void Game::setupWorld() {
         in.close();
         world->load(worldData);
     } else {
-        auto chunkMain0 = world->addChunk({.name = "chunkMain0", .steps = 9});
+        auto chunkMain0 = world->addChunk({.name = "chunkMain0", .steps = 10});
 
         auto chunkMain1 = world->addChunk({.parentPersistantId = chunkMain0,
                                            .name = "chunkMain1",
@@ -1289,7 +1296,7 @@ void Game::setupDialogs() {
     auto totem = dzemikk::PrefabSerializer::instantiate(
         *_mainScene.get(), *prefab.get(), _engine->getAssetManager());
     auto entity = totem->addComponent<game::TotemDialogEntity>();
-    entity->onEnter(world->getGrid()->getCell({5, -1}));
+    entity->onEnter(world->getGrid()->getCell({4, -1}));
 
     nlohmann::json worldData;
     if (std::filesystem::exists("./world.json")) {
@@ -1323,6 +1330,15 @@ void Game::setupDialogs() {
                 },
         });
     }
+}
+
+void Game::setupWorldVisuals() {
+    auto worldVisualManager = _worldGO->addComponent<game::WorldVisualManager>();
+    worldVisualManager->setWorld(_worldGO->getComponent<game::World>());
+    worldVisualManager->setAssetManager(_engine->getAssetManager());
+    worldVisualManager->setGame(this);
+    worldVisualManager->init();
+    worldVisualManager->spawnForestChunk("chunkMain0");
 }
 
 void Game::restartGame() {

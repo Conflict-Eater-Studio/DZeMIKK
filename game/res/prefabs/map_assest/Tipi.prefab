@@ -1,0 +1,106 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "b89dd4c9-ffe3-47a2-9c25-4ac257e762d8",
+                        "position": [
+                            -0.4000000059604645,
+                            0.0,
+                            0.5
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "castsShadows": false,
+                        "color": [
+                            1.0,
+                            0.6487888693809509,
+                            0.0049019455909729
+                        ],
+                        "intensity": 1.0,
+                        "range": 10.0,
+                        "type": "PointLight"
+                    }
+                ],
+                "enabled": true,
+                "id": "197da887-b658-4202-bd98-d03446967dcf",
+                "name": "Empty",
+                "tags": []
+            }
+        ],
+        "components": [
+            {
+                "id": "e7eb53e8-f190-4824-b5bb-84c1271c8006",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.5000970959663391,
+                    -0.4999028742313385,
+                    0.5000970959663391,
+                    0.4999028742313385
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "3adb5a81-848d-4478-ad0b-f7da4dea5f98",
+                "materials": [
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "models/assets/tipiii/tipi/tipi_BaseColor.png",
+                            "ao": "",
+                            "emissive": "models/assets/tipiii/tipi/tipi_Emissive.png",
+                            "metallic": "models/assets/tipiii/tipi/tipi_Metallic.png",
+                            "normal": "models/assets/tipiii/tipi/tipi_Normal.png",
+                            "roughness": "models/assets/tipiii/tipi/tipi_Roughness.png"
+                        }
+                    }
+                ],
+                "model": "models/assets/tipiii/tipi/tipi.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "75a1b0af-190c-4bb2-8947-95b867759b8c",
+        "name": "Tipi1",
+        "tags": []
+    }
+}

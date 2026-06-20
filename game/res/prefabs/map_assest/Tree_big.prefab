@@ -1,0 +1,65 @@
+{
+    "root": {
+        "children": [],
+        "components": [
+            {
+                "id": "f7d9b14c-9938-4882-bb52-ed64c91a8f61",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.6740075349807739,
+                    -0.6740076541900635,
+                    -0.21380768716335297,
+                    -0.2138078659772873
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "64179151-b999-4bc1-969a-750bfe9c965a",
+                "materials": [
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "models/assets/drzewa/drzewo_duze/drzewo_duze_BaseColor.png",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "models/assets/drzewa/drzewo_duze/drzewo_duze_Metallic.png",
+                            "normal": "models/assets/drzewa/drzewo_duze/drzewo_duze_Normal.png",
+                            "roughness": "models/assets/drzewa/drzewo_duze/drzewo_duze_Roughness.png"
+                        }
+                    }
+                ],
+                "model": "models/assets/drzewa/drzewo_duze/drzewo_duze.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "66f4e708-54b9-4e92-977c-d3fae7a3373c",
+        "name": "Tree_big",
+        "tags": []
+    }
+}

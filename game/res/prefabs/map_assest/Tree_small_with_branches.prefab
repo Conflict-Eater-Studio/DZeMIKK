@@ -1,0 +1,255 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "c076aeeb-fda9-444b-ac04-86d2f1ec1eee",
+                        "position": [
+                            0.07999999821186066,
+                            0.5,
+                            2.799999952316284
+                        ],
+                        "rotation": [
+                            0.8690635561943054,
+                            -0.49470043182373047,
+                            -0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            0.05999999865889549,
+                            0.05999999865889549,
+                            0.05999999865889549
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "id": "cc6ec3e8-093a-4957-9ba4-9bb618fc6d6a",
+                        "materials": [
+                            {
+                                "pbr": {
+                                    "albedo": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "ao": 1.0,
+                                    "emissive": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "emissiveStrength": 0.0,
+                                    "metallic": 0.0,
+                                    "roughness": 0.5
+                                },
+                                "shader": "shaders/tile1",
+                                "textures": {
+                                    "albedo": "textures/totems/b.png",
+                                    "ao": "",
+                                    "emissive": "",
+                                    "metallic": "",
+                                    "normal": "",
+                                    "roughness": ""
+                                }
+                            }
+                        ],
+                        "model": "models/assets/drzewo.fbx",
+                        "type": "MeshRenderer"
+                    }
+                ],
+                "enabled": true,
+                "id": "e7a34102-2200-4806-8fea-11b7c7d8e139",
+                "name": "Branch1",
+                "tags": []
+            },
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "3663d796-b0e6-4083-b59a-a260a140cb8e",
+                        "position": [
+                            -0.10000000149011612,
+                            0.10000000149011612,
+                            3.5999999046325684
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            0.03999999910593033,
+                            0.03999999910593033,
+                            0.03999999910593033
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "id": "03dd00a1-d3fe-4e0e-99e9-30a6c3bb8b81",
+                        "materials": [
+                            {
+                                "pbr": {
+                                    "albedo": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "ao": 1.0,
+                                    "emissive": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "emissiveStrength": 0.0,
+                                    "metallic": 0.0,
+                                    "roughness": 0.5
+                                },
+                                "shader": "shaders/tile1",
+                                "textures": {
+                                    "albedo": "textures/totems/b.png",
+                                    "ao": "",
+                                    "emissive": "",
+                                    "metallic": "",
+                                    "normal": "",
+                                    "roughness": ""
+                                }
+                            }
+                        ],
+                        "model": "models/assets/drzewo.fbx",
+                        "type": "MeshRenderer"
+                    }
+                ],
+                "enabled": true,
+                "id": "5e72a018-11c4-4e34-84dc-c34335defef8",
+                "name": "Branch2",
+                "tags": []
+            },
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "fc971cbb-5e43-4037-902e-0b740b468f59",
+                        "position": [
+                            -0.20000000298023224,
+                            -0.5,
+                            2.3399999141693115
+                        ],
+                        "rotation": [
+                            0.923334538936615,
+                            0.3839879035949707,
+                            0.0009798113023862243,
+                            0.0023560472764074802
+                        ],
+                        "scale": [
+                            0.05999999865889549,
+                            0.05999999865889549,
+                            0.05999999865889549
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "id": "7efeeb9e-3ad4-496f-8e09-cecac2653e7e",
+                        "materials": [
+                            {
+                                "pbr": {
+                                    "albedo": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "ao": 1.0,
+                                    "emissive": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "emissiveStrength": 0.0,
+                                    "metallic": 0.0,
+                                    "roughness": 0.5
+                                },
+                                "shader": "shaders/tile1",
+                                "textures": {
+                                    "albedo": "textures/totems/b.png",
+                                    "ao": "",
+                                    "emissive": "",
+                                    "metallic": "",
+                                    "normal": "",
+                                    "roughness": ""
+                                }
+                            }
+                        ],
+                        "model": "models/assets/drzewo.fbx",
+                        "type": "MeshRenderer"
+                    }
+                ],
+                "enabled": true,
+                "id": "48045b9a-faf9-40b5-bce1-331a57b9ad99",
+                "name": "Branch3",
+                "tags": []
+            }
+        ],
+        "components": [
+            {
+                "id": "dd38393f-278d-4a0d-a0bf-f0c7ed6f0e11",
+                "position": [
+                    13.5,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.49964678287506104,
+                    -0.49990803003311157,
+                    -0.5000903606414795,
+                    -0.500354528427124
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "ee913324-7c0d-41f2-8484-877695dd8e4b",
+                "materials": [
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "models/assets/drzewa/drzewo_male/drzewo_male_BaseColor.png",
+                            "ao": "",
+                            "emissive": "models/assets/drzewa/drzewo_male/drzewo_male_Emissive.png",
+                            "metallic": "models/assets/drzewa/drzewo_male/drzewo_male_Metallic.png",
+                            "normal": "models/assets/drzewa/drzewo_male/drzewo_male_Normal.png",
+                            "roughness": "models/assets/drzewa/drzewo_male/drzewo_male_ImphenziaPixPal_Roughness.png"
+                        }
+                    }
+                ],
+                "model": "models/assets/drzewa/drzewo_male/drzewo_male.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "e973f413-d21f-468f-96c3-ed75662d7236",
+        "name": "Tree_small",
+        "tags": []
+    }
+}

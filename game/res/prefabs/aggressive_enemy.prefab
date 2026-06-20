@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "eea6090b-5112-4cd6-8a3a-5034121dc611",
+                        "id": "88a6bf11-d28d-4bdd-84c1-a3aad5a7fef5",
                         "position": [
                             0.0,
                             17.0,
@@ -37,17 +37,17 @@
                     }
                 ],
                 "enabled": true,
-                "id": "bb614c3c-590b-4bfc-aecf-c478ed5c85f4",
+                "id": "196452df-05fa-46eb-8f78-ce35f4234df0",
                 "name": "Light",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "58e111ef-3eba-4658-94ff-ae78ad318c5d",
+                "id": "b3454c2f-8773-4cef-8c7b-2b01649e3dce",
                 "position": [
-                    0.0,
-                    0.4000000059604645,
+                    66.19999694824219,
+                    -0.5,
                     0.0
                 ],
                 "rotation": [
@@ -64,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "9d69035f-fa5d-4b13-bfdb-015da5ba25ff",
+                "id": "281b7f3f-9fae-45de-aa71-860ea1f5ddcd",
                 "materials": [
                     {
                         "albedoColor": [
@@ -75,7 +75,13 @@
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
                         "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
@@ -92,7 +98,13 @@
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
                         "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
@@ -109,7 +121,13 @@
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
                         "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
@@ -119,14 +137,20 @@
                     },
                     {
                         "albedoColor": [
-                            0.1764705926179886,
-                            0.3607843220233917,
-                            0.04313725605607033
+                            0.49803921580314636,
+                            0.0,
+                            0.0
                         ],
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
                         "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
@@ -136,14 +160,20 @@
                     },
                     {
                         "albedoColor": [
-                            0.1764705926179886,
-                            0.3607843220233917,
-                            0.04313725605607033
+                            0.49803921580314636,
+                            0.0,
+                            0.0
                         ],
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
                         "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
@@ -153,14 +183,20 @@
                     },
                     {
                         "albedoColor": [
-                            0.1764705926179886,
-                            0.3607843220233917,
-                            0.04313725605607033
+                            0.49803921580314636,
+                            0.0,
+                            0.0
                         ],
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
                         "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
@@ -177,7 +213,13 @@
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
                         "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
@@ -194,7 +236,13 @@
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
                         "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
@@ -211,15 +259,20 @@
                         "albedoTexture": "",
                         "aoTexture": "",
                         "aoValue": 1.0,
+                        "emissiveColor": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
                         "emissiveTexture": "",
+                        "emissiveValue": 1.0,
                         "metallicTexture": "",
                         "metallicValue": 0.0,
                         "normalTexture": "",
                         "roughnessTexture": "",
                         "roughnessValue": 0.5,
                         "shader": "shaders/skinned"
-                    },
-                    null
+                    }
                 ],
                 "model": "models/Pivot.fbx",
                 "type": "SkinnedMeshRenderer"
@@ -227,7 +280,7 @@
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "72071875-dabc-4e44-9541-f8068029558c",
+                "id": "a386b8b2-326e-4d81-af34-4f7c0382ba55",
                 "parameters": {},
                 "stateMachine": [
                     {
@@ -239,7 +292,7 @@
             }
         ],
         "enabled": true,
-        "id": "c59cca90-2613-4b52-821e-becce94134d4",
+        "id": "9f9eca3d-e728-426c-944d-22e8bbb19aef",
         "name": "Aggressive",
         "tags": []
     }

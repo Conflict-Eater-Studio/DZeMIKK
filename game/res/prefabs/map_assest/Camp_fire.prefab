@@ -1,0 +1,106 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "22ee0eb0-7283-4a11-b8f5-8844981ce128",
+                        "position": [
+                            0.0,
+                            0.0,
+                            0.30000001192092896
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "castsShadows": false,
+                        "color": [
+                            1.0,
+                            0.591262936592102,
+                            0.07352942228317261
+                        ],
+                        "intensity": 1.1399999856948853,
+                        "range": 10.0,
+                        "type": "PointLight"
+                    }
+                ],
+                "enabled": true,
+                "id": "302de491-1c10-44c1-9afd-5a4e67e4fe32",
+                "name": "Empty",
+                "tags": []
+            }
+        ],
+        "components": [
+            {
+                "id": "1d38ae52-0520-4d39-8299-f11a55a8be60",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    -0.4994601011276245,
+                    0.5005393028259277,
+                    -0.4994601011276245,
+                    -0.5005393028259277
+                ],
+                "scale": [
+                    2.0,
+                    2.0,
+                    2.0
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "119cd835-b278-4940-94b6-a5da79f153b1",
+                "materials": [
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                1.0,
+                                0.029411792755126953,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.42899999022483826,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "models/assets/ognisko/ognisko_BaseColor.png",
+                            "ao": "",
+                            "emissive": "models/assets/ognisko/ognisko_Emissive.png",
+                            "metallic": "models/assets/ognisko/ognisko_Metallic.png",
+                            "normal": "models/assets/ognisko/ognisko_Normal.png",
+                            "roughness": "models/assets/ognisko/ognisko_Roughness.png"
+                        }
+                    }
+                ],
+                "model": "models/assets/ognisko/ognisko.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "a0774d83-3794-4d1d-a567-ad4d51a4026e",
+        "name": "CampFire",
+        "tags": []
+    }
+}

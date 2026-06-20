@@ -1,0 +1,65 @@
+{
+    "root": {
+        "children": [],
+        "components": [
+            {
+                "id": "0c18cd1e-1d15-4c77-8d7c-76a07bfad708",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    0.7071067690849304,
+                    -0.7071067690849304,
+                    -0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "c4c0af1e-85ea-4d51-853e-b0ccc10bd720",
+                "materials": [
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "models/assets/krzak/krzak_BaseColor.png",
+                            "ao": "",
+                            "emissive": "models/assets/krzak/krzak_Emissive.png",
+                            "metallic": "models/assets/krzak/krzak_Metallic.png",
+                            "normal": "models/assets/krzak/krzak_Normal.png",
+                            "roughness": "models/assets/krzak/krzak_Roughness.png"
+                        }
+                    }
+                ],
+                "model": "models/assets/krzak/krzak.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "04b1b77f-7486-4baf-b765-48da0e8ea316",
+        "name": "Bush",
+        "tags": []
+    }
+}

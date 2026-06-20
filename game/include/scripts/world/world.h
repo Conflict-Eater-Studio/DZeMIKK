@@ -81,6 +81,8 @@ class World : public dzemikk::MonoBehaviour {
         _hexMaterialsGenState[HexCell::GenState::Blocked] = _material.get()->clone();
         _hexMaterialsGenState[HexCell::GenState::Protected] = _material.get()->clone();
         _hexMaterialsGenState[HexCell::GenState::Normal] = _material.get()->clone();
+
+        _hexMaterialsState[HexCell::State::Path] = _material.get()->clone();
     }
 
     void setPlayer(PlayerEntity* playerEntity);
@@ -122,6 +124,10 @@ class World : public dzemikk::MonoBehaviour {
 
     void clearHexVisuals();
 
+    [[nodiscard]]
+    std::unordered_map<std::string, std::vector<std::shared_ptr<HexCell>>>
+    getVisualHexesByChunk() const;
+
   private:
     void spawnHexVisual(const std::shared_ptr<HexCell>& cell);
 
@@ -138,6 +144,7 @@ class World : public dzemikk::MonoBehaviour {
     std::shared_ptr<dzemikk::Material> _material;
     std::unordered_map<HexCell::Type, std::shared_ptr<dzemikk::Material>> _hexMaterials;
     std::unordered_map<HexCell::GenState, std::shared_ptr<dzemikk::Material>> _hexMaterialsGenState;
+    std::unordered_map<HexCell::State, std::shared_ptr<dzemikk::Material>> _hexMaterialsState;
     std::unordered_set<dzemikk::Transform*> _hexTransforms;
     std::unordered_set<HexCoord> _spawnedHexes;
     std::unordered_set<HexCoord> _reservedTerritory;
