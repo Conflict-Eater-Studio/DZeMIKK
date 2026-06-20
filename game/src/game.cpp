@@ -562,6 +562,13 @@ void Game::setupWorldVisuals() {
     worldVisualManager->setAssetManager(_engine->getAssetManager());
     worldVisualManager->setGame(this);
     worldVisualManager->init();
+    worldVisualManager->generatePathBetweenChunks("chunkMain0", "chunkMain1");
+    worldVisualManager->generatePathBetweenChunks("chunkMain1", "chunkMain2");
+    worldVisualManager->generatePathBetweenChunks("chunkMain3", "chunkMain4");
+    worldVisualManager->generatePathBetweenChunks("chunkMain5", "chunkMain6");
+    worldVisualManager->generatePathBetweenChunks("chunkMain7", "chunkMain8");
+    worldVisualManager->generatePathBetweenChunks("chunkMain8", "chunkMain9");
+    worldVisualManager->generatePathBetweenChunks("chunkMain9", "chunkMain10");
     worldVisualManager->spawnForestChunk("chunkMain0");
     worldVisualManager->spawnForestChunk("chunkMain1");
     worldVisualManager->spawnForestChunk("chunkMain2");
@@ -1320,8 +1327,26 @@ void Game::setupDialogs() {
     auto prefab = _engine->getAssetManager()->get<nlohmann::json>("prefabs/totem/totem_dialog.prefab");
     auto totem = dzemikk::PrefabSerializer::instantiate(
         *_mainScene.get(), *prefab.get(), _engine->getAssetManager());
+
+    auto* rendererTotemGO =
+        totem->findChildByName("platform")->getComponent<dzemikk::MeshRenderer>();
+    rendererTotemGO->setCullingRadius(60.0F);
+    rendererTotemGO = totem->findDescendantByName("Left")->getComponent<dzemikk::MeshRenderer>();
+    rendererTotemGO->setCullingRadius(60.0F);
+    rendererTotemGO = totem->findDescendantByName("Right")->getComponent<dzemikk::MeshRenderer>();
+    rendererTotemGO->setCullingRadius(60.0F);
+
+    rendererTotemGO = totem->findDescendantByName("Totem3")->getComponent<dzemikk::MeshRenderer>();
+    rendererTotemGO->setCullingRadius(60.0F);
+    rendererTotemGO =
+        totem->findDescendantByName("Totem5")->getComponent<dzemikk::MeshRenderer>();
+    rendererTotemGO->setCullingRadius(60.0F);
+    rendererTotemGO =
+        totem->findDescendantByName("Totem6")->getComponent<dzemikk::MeshRenderer>();
+    rendererTotemGO->setCullingRadius(60.0F);
+
     auto entity = totem->addComponent<game::TotemDialogEntity>();
-    entity->onEnter(world->getGrid()->getCell({4, -1}));
+    entity->onEnter(world->getGrid()->getCell({5, 0}));
 
     nlohmann::json worldData;
     if (std::filesystem::exists("./world.json")) {

@@ -82,7 +82,7 @@ class World : public dzemikk::MonoBehaviour {
         _hexMaterialsGenState[HexCell::GenState::Protected] = _material.get()->clone();
         _hexMaterialsGenState[HexCell::GenState::Normal] = _material.get()->clone();
 
-        _hexMaterialsState[HexCell::State::Path] = _material.get()->clone();
+        _hexMaterialsVisualState[HexCell::VisualState::Path] = _material.get()->clone();
     }
 
     void setPlayer(PlayerEntity* playerEntity);
@@ -144,7 +144,7 @@ class World : public dzemikk::MonoBehaviour {
     std::shared_ptr<dzemikk::Material> _material;
     std::unordered_map<HexCell::Type, std::shared_ptr<dzemikk::Material>> _hexMaterials;
     std::unordered_map<HexCell::GenState, std::shared_ptr<dzemikk::Material>> _hexMaterialsGenState;
-    std::unordered_map<HexCell::State, std::shared_ptr<dzemikk::Material>> _hexMaterialsState;
+    std::unordered_map<HexCell::VisualState, std::shared_ptr<dzemikk::Material>> _hexMaterialsVisualState;
     std::unordered_set<dzemikk::Transform*> _hexTransforms;
     std::unordered_set<HexCoord> _spawnedHexes;
     std::unordered_set<HexCoord> _reservedTerritory;

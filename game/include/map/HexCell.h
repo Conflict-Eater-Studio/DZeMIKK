@@ -18,7 +18,7 @@ class HexCell {
   public:
     friend class HexChunk;
 
-    enum class State : uint8_t { Prop, Item, Player, Enemy, Empty, Totem, TotemDialog, Path};
+    enum class State : uint8_t { Prop, Item, Player, Enemy, Empty, Totem, TotemDialog};
     enum class Type : uint8_t {
         Normal,
         PlayerBattleHex,
@@ -28,6 +28,7 @@ class HexCell {
         BlockingBridge
     };
     enum class GenState : uint8_t { Normal, Blocked, Protected };
+    enum class VisualState : uint8_t {None, Path};
 
     HexCell() : _coord(0, 0) {}
     HexCell(HexCoord coord, State state, Type type, GenState genState = GenState::Normal,
@@ -50,6 +51,9 @@ class HexCell {
     }
     [[nodiscard]] GenState getGenState() const {
         return static_cast<GenState>((_flags >> 16) & 0xFF);
+    }
+    [[nodiscard]] VisualState getVisualState() const {
+        return _visualState;
     }
     [[nodiscard]] Entity* getEntity() const {
         return _entity;
@@ -97,6 +101,9 @@ class HexCell {
         } else {
             _flags &= ~kDirty;
         }
+    }
+    void setVisualState(VisualState visualState) {
+        _visualState = visualState;
     }
     void setCheckpoint(bool checkpoint) {
         if (checkpoint) {
@@ -153,6 +160,7 @@ class HexCell {
     // 0-7: State, 8-15: Type, 16-23: GenState, 24: Dirty, 25: Checkpoint, 26: CheckpointUsed
     uint32_t _flags{0};
     Entity* _entity = nullptr;
+    VisualState _visualState = VisualState::None;
 
     float _height{0.0F};
 };

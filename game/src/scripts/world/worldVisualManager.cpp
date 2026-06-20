@@ -5,6 +5,7 @@
 #include <ecs/serialize/prefabSerializer.h>
 #include <ecs/scene.h>
 #include <ecs/components/camera.h>
+#include <ecs/components/meshRenderer.h>
 
 #include <glm/glm.hpp>
 
@@ -123,11 +124,13 @@ void game::WorldVisualManager::spawnForestChunk(const std::string& chunkName) {
         return;
 
     auto* scene = _world->getOwner()->getScene();
-    const auto& hexes = chunkIt->second;
 
-    auto* camGO = _game->getCurrentScene().get()->findGameObjectByName("Camera");
-    if (!camGO)
-        return;
+    struct SpawnPoint {
+        HexCell* hex;
+        glm::vec3 pos;
+    };
+
+    const auto& hexes = chunkIt->second;
 
     std::vector<HexCell*> freeHexes;
     freeHexes.reserve(hexes.size());
@@ -145,19 +148,21 @@ void game::WorldVisualManager::spawnForestChunk(const std::string& chunkName) {
     if (freeHexes.empty())
         return;
 
-    std::vector<glm::vec3> positions;
-    positions.reserve(freeHexes.size());
+    std::vector<SpawnPoint> points;
+    points.reserve(freeHexes.size());
 
     glm::vec3 center(0.f);
     int count = 0;
 
     for (auto* hex : freeHexes) {
+
         auto* t = _world->getHexTransformByCell(*hex);
         if (!t)
             continue;
 
         glm::vec3 p = t->getPosition();
-        positions.push_back(p);
+
+        points.push_back({hex, p});
 
         center += p;
         count++;
@@ -170,83 +175,212 @@ void game::WorldVisualManager::spawnForestChunk(const std::string& chunkName) {
 
     glm::vec3 axis(0.f);
 
-    for (auto& p : positions) {
-        glm::vec3 d = p - center;
+    for (auto& point : points) {
+        glm::vec3 d = point.pos - center;
         axis += glm::abs(d);
     }
 
     axis = glm::normalize(axis);
 
-    glm::vec3 right = glm::normalize(glm::cross(axis, glm::vec3(0, 1, 0)));
+    glm::vec3 right = glm::normalize(glm::cross(axis, glm::vec3(0.f, 1.f, 0.f)));
 
     auto sideValue = [&](const glm::vec3& p) { return glm::dot(p - center, right); };
 
-    std::vector<glm::vec3> rightSide;
-    std::vector<glm::vec3> leftSide;
+    std::vector<SpawnPoint> leftSide;
+    std::vector<SpawnPoint> rightSide;
 
-    for (auto& p : positions) {
-        if (sideValue(p) > 0.f)
-            rightSide.push_back(p);
+    for (auto& point : points) {
+        if (sideValue(point.pos) > 0.f)
+            rightSide.push_back(point);
         else
-            leftSide.push_back(p);
+            leftSide.push_back(point);
     }
 
     int spawned = 0;
 
-    for (auto& pos : leftSide) {
-        float fill = 0.65f;
+    for (auto& point : leftSide) {
 
+        auto* hex = point.hex;
+        const glm::vec3& pos = point.pos;
+
+        float fill = 0.65f;
         float r = rand01();
 
-        if (r < fill * 0.50f) {
+        if (r < fill * 0.45f) {
+
             float treeRoll = rand01();
 
             if (treeRoll < 0.30f) {
-                spawnClusterObject(scene, "Tree_big_with_branches", pos, 1.0f, 1.4f);
+                spawnClusterObject(scene, "Tree_big_with_branches", pos, 1.0f, 1.4f, _world->getHexTransformByCell(*hex));
             } else if (treeRoll < 0.50f) {
-                spawnClusterObject(scene, "Tree_big_with_branches", pos, 0.8f, 1.2f);
+                spawnClusterObject(scene, "Tree_big", pos, 0.8f, 1.2f,
+                                   _world->getHexTransformByCell(*hex));
             } else if (treeRoll < 0.65f) {
-                spawnClusterObject(scene, "Tree_smal_with_branches", pos, 0.7f, 1.1f);
+                spawnClusterObject(scene, "Tree_small_with_branches", pos, 0.7f, 1.1f,
+                                   _world->getHexTransformByCell(*hex));
             } else {
-                spawnClusterObject(scene, "Tree_smal", pos, 0.8f, 1.2f);
+                spawnClusterObject(scene, "Tree_smal", pos, 0.8f, 1.2f,
+                                   _world->getHexTransformByCell(*hex));
             }
 
+            hex->setState(HexCell::State::Prop);
             spawned++;
         } else if (r < fill * 0.80f) {
-            spawnRockCluster(scene, {"Rock1", "Rock2", "Rock3"}, pos, 2,
-                                     6,        
-                                     1.0f,     
-                                     0.6f, 3.0f);
+
+            spawnRockCluster(scene, {"Rock1", "Rock2", "Rock3"}, pos, 2, 6, 1.0f, 0.6f, 3.0f,
+                             _world->getHexTransformByCell(*hex));
             spawned++;
         } else if (r < fill * 1.0f) {
-            spawnClusterObject(scene, "Bush", pos, 0.6f, 0.9f);
 
+            spawnClusterObject(scene, "Bush", pos, 0.6f, 0.9f, _world->getHexTransformByCell(*hex));
+
+            //hex->setState(HexCell::State::Prop);
             spawned++;
-        } 
+        }
     }
 
-    for (auto& pos : rightSide) {
+    for (auto& point : rightSide) {
+
+        auto* hex = point.hex;
+        const glm::vec3& pos = point.pos;
+
         float r = rand01();
 
-        if (r < 0.5f) {
-            spawnClusterObject(scene, "Bush", pos, 0.6f, 0.9f);
+        if (r < 0.55f) {
+            spawnClusterObject(scene, "Bush", pos, 0.6f, 0.9f, _world->getHexTransformByCell(*hex));
 
-            spawned++;
-        } else if (r < 0.60f) {
-            spawnRockCluster(scene, {"Rock1", "Rock2", "Rock3"}, pos, 2, 6, 1.0f, 0.6f, 4.0f);
+            //hex->setState(HexCell::State::Prop);
             spawned++;
         } else if (r < 0.70f) {
+
+            spawnRockCluster(scene, {"Rock1", "Rock2", "Rock3"}, pos, 2, 6, 1.0f, 0.6f, 4.0f,
+                             _world->getHexTransformByCell(*hex));
+
+            spawned++;
+        } else if (r < 0.80f) {
+
             float treeRoll = rand01();
+
             if (treeRoll < 0.65f) {
-                spawnClusterObject(scene, "Tree_smal_with_branches", pos, 0.7f, 1.1f);
+                spawnClusterObject(scene, "Tree_small_with_branches", pos, 0.7f, 1.1f,
+                                   _world->getHexTransformByCell(*hex));
             } else {
-                spawnClusterObject(scene, "Tree_smal", pos, 0.8f, 1.2f);
+                spawnClusterObject(scene, "Tree_smal", pos, 0.8f, 1.2f,
+                                   _world->getHexTransformByCell(*hex));
             }
+
+            hex->setState(HexCell::State::Prop);
+            spawned++;
         }
     }
 
     spdlog::info("[WorldVisualManager] Forest chunk '{}' spawned -> {} objects", chunkName,
                  spawned);
+}
+
+void game::WorldVisualManager::generatePathBetweenChunks(const std::string& chunkA,
+                                                   const std::string& chunkB) {
+
+    auto chunks = _world->getVisualHexesByChunk();
+
+    auto itA = chunks.find(chunkA);
+    auto itB = chunks.find(chunkB);
+
+    if (itA == chunks.end() || itB == chunks.end())
+        return;
+
+    HexCell* start = getTopHex(itA->second);
+    HexCell* target = getTopHex(itB->second);
+
+    if (!start || !target)
+        return;
+
+    generatePath(start->getCoord(), target->getCoord());
+}
+
+game::HexCell* game::WorldVisualManager::getTopHex(const std::vector<std::shared_ptr<HexCell>>& hexes) {
+
+    HexCell* result = nullptr;
+    float bestZ = FLT_MAX;
+
+    for (auto& hex : hexes) {
+
+        auto* t = _world->getHexTransformByCell(*hex);
+        if (!t)
+            continue;
+
+        if (t->getPosition().z < bestZ) {
+            bestZ = t->getPosition().z;
+            result = hex.get();
+        }
+    }
+
+    return result;
+}
+
+void game::WorldVisualManager::generatePath(const HexCoord& start, const HexCoord& end) {
+    auto path = findPath(start, end);
+
+    for (const auto& coord : path) {
+
+        auto* hex = _world->getGrid()->getCell(coord).get();
+
+        if (!hex)
+            continue;
+
+        hex->setVisualState(HexCell::VisualState::Path);
+        hex->setDirty(true);
+    }
+}
+
+std::vector<game::HexCoord> game::WorldVisualManager::findPath(const HexCoord& start, const HexCoord& goal) {
+    std::queue<HexCoord> open;
+    std::unordered_map<HexCoord, HexCoord> cameFrom;
+    std::unordered_set<HexCoord> visited;
+
+    open.push(start);
+    visited.insert(start);
+
+    while (!open.empty()) {
+
+        HexCoord current = open.front();
+        open.pop();
+
+        if (current == goal)
+            break;
+
+        for (const auto& next : HexCoord::getNeighbors(current)) {
+
+            auto cell = _world->getGrid()->getCell(next);
+
+            if (!cell)
+                continue;
+
+            if (visited.contains(next))
+                continue;
+
+            if (cell->getGenState() == HexCell::GenState::Blocked)
+                continue;
+
+            visited.insert(next);
+            cameFrom[next] = current;
+            open.push(next);
+        }
+    }
+
+    std::vector<HexCoord> path;
+
+    if (!cameFrom.contains(goal))
+        return path;
+
+    for (HexCoord c = goal; c != start; c = cameFrom[c])
+        path.push_back(c);
+
+    path.push_back(start);
+
+    std::reverse(path.begin(), path.end());
+
+    return path;
 }
 
 bool game::WorldVisualManager::isHexFree(HexCell* hex) const {
@@ -256,7 +390,7 @@ bool game::WorldVisualManager::isHexFree(HexCell* hex) const {
     if (hex->getState() == HexCell::State::Prop || hex->getState() == HexCell::State::Item ||
         hex->getState() == HexCell::State::Player || hex->getState() == HexCell::State::Enemy ||
         hex->getState() == HexCell::State::Totem || hex->getState() == HexCell::State::TotemDialog ||
-        hex->getState() == HexCell::State::Path)
+        hex->getVisualState() == HexCell::VisualState::Path)
         return false;
 
     if (hex->getType() == HexCell::Type::PlayerBattleHex ||
@@ -270,24 +404,47 @@ bool game::WorldVisualManager::isHexFree(HexCell* hex) const {
         hex->getGenState() == HexCell::GenState::Protected)
         return false;
 
+    for (const auto& neighborCoord : HexCoord::getNeighbors(hex->getCoord())) {
+
+        auto neighbor = _world->getGrid()->getCell(neighborCoord);
+
+        if (!neighbor)
+            continue;
+
+        if (neighbor->getType() == HexCell::Type::EnemyBattleHex || 
+            neighbor->getType() == HexCell::Type::BlockingBridge ||
+            neighbor->getType() == HexCell::Type::BlockingPattern ||
+            neighbor->getType() == HexCell::Type::Bridge)
+            return false;
+    }
+
     return true;
 }
 
 void game::WorldVisualManager::spawnClusterObject(dzemikk::Scene* scene,
                                                   const std::string& prefabKey,
                                                   const glm::vec3& pos, float minScale,
-                                                  float maxScale) {
+                                                  float maxScale, dzemikk::Transform* parent) {
     auto it = _cache.find(prefabKey);
     if (it == _cache.end())
         return;
 
-    auto* go = dzemikk::PrefabSerializer::instantiate(*scene, *it->second.get(), _assetManager);
+    auto* go = dzemikk::PrefabSerializer::instantiate(*scene, *it->second.get(), _assetManager, parent->getOwner());
     if (!go)
         return;
 
-    if (prefabKey == "Tree_big_with_branches") {
+    auto* renderer = go->getComponent<dzemikk::MeshRenderer>();
+    renderer->setCullingRadius(60.0F);
 
+    if (prefabKey == "Tree_big_with_branches") {
         auto& children = go->getChildren();
+
+        for (auto go : children) {
+            auto* renderer = go->getComponent<dzemikk::MeshRenderer>();
+            if (renderer) {
+                renderer->setCullingRadius(60.0F);
+            }
+        }
 
         float killRatio = 0.4f + rand01() * 0.6f;
 
@@ -303,7 +460,17 @@ void game::WorldVisualManager::spawnClusterObject(dzemikk::Scene* scene,
         }
     }
 
-    go->transform()->setPosition(pos);
+        if (prefabKey == "Tree_small_with_branches") {
+        auto& children = go->getChildren();
+
+        for (auto go : children) {
+            auto* renderer = go->getComponent<dzemikk::MeshRenderer>();
+            if (renderer) {
+                renderer->setCullingRadius(60.0F);
+            }
+        }
+    }
+
     float scale = minScale + rand01() * (maxScale - minScale);
     go->transform()->setScale(glm::vec3(scale));
 
@@ -312,7 +479,7 @@ void game::WorldVisualManager::spawnClusterObject(dzemikk::Scene* scene,
     }
 
     float rotY = rand01() * 360.0f;
-    glm::quat rot = glm::angleAxis(glm::radians(-90.f), glm::vec3(1, 0, 0)) *
+    glm::quat rot = glm::angleAxis(glm::radians(0.f), glm::vec3(1, 0, 0)) *
                     glm::angleAxis(glm::radians(0.0F), glm::vec3(0, 1, 0)) *
                     glm::angleAxis(glm::radians(rotY), glm::vec3(0, 0, 1));
 
@@ -320,92 +487,36 @@ void game::WorldVisualManager::spawnClusterObject(dzemikk::Scene* scene,
 }
 
 void game::WorldVisualManager::spawnRockCluster(dzemikk::Scene* scene, const std::vector<std::string>& rocks,
-                      const glm::vec3& basePos, int minCount, int maxCount, float spread,
-                      float minScale, float maxScale) {
+                      const glm::vec3& basePos, int minCount, int maxCount, float spread, float minScale,
+                                                float maxScale, dzemikk::Transform* parent) {
 
     int count = minCount + rand() % (maxCount - minCount + 1);
 
     for (int i = 0; i < count; i++) {
         std::string prefab = rocks[rand() % rocks.size()];
 
-        glm::vec3 offset((rand01() - 0.5f) * spread, 0.0f, (rand01() - 0.5f) * spread);
+        glm::vec3 offset((rand01() - 0.5f) * spread, (rand01() - 0.5f) * spread, 0.0f);
 
         auto* go =
-            dzemikk::PrefabSerializer::instantiate(*scene, *_cache[prefab].get(), _assetManager);
+            dzemikk::PrefabSerializer::instantiate(*scene, *_cache[prefab].get(), _assetManager, parent->getOwner());
 
         if (!go)
             continue;
 
-        glm::vec3 pos = basePos + offset;
+        auto* renderer = go->getComponent<dzemikk::MeshRenderer>();
+        renderer->setCullingRadius(60.0F);
+
+        glm::vec3 pos = offset;
         go->transform()->setPosition(pos);
 
         float scale = minScale + rand01() * (maxScale - minScale);
         go->transform()->setScale(glm::vec3(scale));
 
         float rotY = rand01() * 360.0f;
-        go->transform()->setRotation(glm::vec3(0.f, rotY, 0.f));
-    }
-}
+        glm::quat rot = glm::angleAxis(glm::radians(0.0f), glm::vec3(1, 0, 0)) *
+                        glm::angleAxis(glm::radians(0.0F), glm::vec3(0, 1, 0)) *
+                        glm::angleAxis(glm::radians(rotY), glm::vec3(0, 0, 1));
 
-void game::WorldVisualManager::generateForestPath(
-    const std::vector<std::shared_ptr<HexCell>>& hexes) {
-
-    std::unordered_map<HexCoord, HexCell*> coordMap;
-
-    bool hasStart = false;
-    bool hasTarget = false;
-
-    HexCoord startCoord;
-    HexCoord targetCoord;
-
-    glm::vec3 startPos;
-    startPos.z = -FLT_MAX;
-
-    float bestBridgeDist = FLT_MAX;
-
-    for (auto& hex : hexes) {
-        auto* t = _world->getHexTransformByCell(*hex);
-        if (!t)
-            continue;
-
-        glm::vec3 pos = t->getPosition();
-        coordMap[hex->getCoord()] = hex.get();
-
-        if (!hasStart || pos.z < startPos.z) {
-            startPos = pos;
-            startCoord = hex->getCoord();
-            hasStart = true;
-        }
-    }
-
-    for (auto& hex : hexes) {
-        if (hex->getType() != HexCell::Type::Bridge)
-            continue;
-
-        auto* t = _world->getHexTransformByCell(*hex);
-        if (!t)
-            continue;
-
-        float d = glm::distance(startPos, t->getPosition());
-
-        if (d < bestBridgeDist) {
-            bestBridgeDist = d;
-            targetCoord = hex->getCoord();
-            hasTarget = true;
-        }
-    }
-
-    if (!hasStart || !hasTarget)
-        return;
-
-    auto path = HexCoord::hexesOnLine(startCoord, targetCoord);
-
-    for (const auto& c : path) {
-        auto it = coordMap.find(c);
-        if (it == coordMap.end())
-            continue;
-
-        it->second->setState(HexCell::State::Path);
-        it->second->setDirty(true);
+        go->transform()->setRotation(rot);
     }
 }

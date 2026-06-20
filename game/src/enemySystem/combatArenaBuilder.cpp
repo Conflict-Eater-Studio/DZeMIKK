@@ -16,6 +16,11 @@ CombatArenaResult CombatArenaBuilder::build(game::EnemyEntity* enemy, game::Play
         return result;
     }
 
+    auto playerT = world->getHexTransformByCell(*player->getCell().get());
+    for (auto g : playerT->getOwner()->getChildren()) {
+        g->enabled(false);
+    }
+
     const auto& territorySet = enemy->getTerritory();
 
     if (territorySet.empty()) {
@@ -45,6 +50,12 @@ CombatArenaResult CombatArenaBuilder::build(game::EnemyEntity* enemy, game::Play
 
         cell->setType(game::HexCell::Type::PlayerBattleHex);
         cell->setDirty(true);
+
+        auto transform = world->getHexTransformByCell(*cell.get());
+
+        for (auto g : transform->getOwner()->getChildren()) {
+            g->enabled(false);
+        }
 
         player->addTerritoryCell(cell.get());
 

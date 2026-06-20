@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "c8a94531-3aa5-42f1-b980-aac5de15e1dc",
+                        "id": "f410b9a0-d74c-42a3-8017-e5b16f9aa01e",
                         "position": [
                             0.10000000149011612,
                             0.5,
@@ -25,7 +25,7 @@
                         "type": "Transform"
                     },
                     {
-                        "id": "7c81a7fc-cfd3-4743-97b5-02f9576889e3",
+                        "id": "44253691-5fe6-4810-8ef7-4043a5f73638",
                         "materials": [
                             {
                                 "pbr": {
@@ -60,7 +60,7 @@
                     }
                 ],
                 "enabled": true,
-                "id": "0b9827d0-726b-442f-b778-de261029df94",
+                "id": "ef35e3b0-6066-43b1-a291-6248ff7e491b",
                 "name": "Branch1",
                 "tags": []
             },
@@ -68,7 +68,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "48b2756b-2f77-4a49-8091-32fa11692e89",
+                        "id": "00e8e6a1-9f8c-4e0f-9599-d5d7f37034af",
                         "position": [
                             -0.10000000149011612,
                             -0.30000001192092896,
@@ -88,7 +88,7 @@
                         "type": "Transform"
                     },
                     {
-                        "id": "ce42243f-8b99-48c0-8054-7a5eb4980ac0",
+                        "id": "22c988fc-23ee-4d9b-a189-3f18dd2f6d3d",
                         "materials": [
                             {
                                 "pbr": {
@@ -123,7 +123,7 @@
                     }
                 ],
                 "enabled": true,
-                "id": "63c5f4ab-8800-4b18-a0c0-d10995fd8fa7",
+                "id": "45dc4f94-ff04-4274-81af-593b0e5b7e75",
                 "name": "Branch2",
                 "tags": []
             },
@@ -131,7 +131,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "b08cb370-cb53-4f70-a9d3-acc63e9d8d10",
+                        "id": "49806d44-bc52-4f2e-bcef-d2ff1bd638bc",
                         "position": [
                             0.0,
                             -0.699999988079071,
@@ -151,7 +151,7 @@
                         "type": "Transform"
                     },
                     {
-                        "id": "7f03514e-9c6e-49e6-9551-5233827c699c",
+                        "id": "3cfb617b-e07a-46c9-a6c8-6c2f708b4e59",
                         "materials": [
                             {
                                 "pbr": {
@@ -186,7 +186,7 @@
                     }
                 ],
                 "enabled": true,
-                "id": "9cbdacc1-2380-4c3d-8e63-04f5751eadcf",
+                "id": "aa84cd0b-e8a3-443e-95ac-0656a6783562",
                 "name": "Branch3",
                 "tags": []
             },
@@ -194,7 +194,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "f7875c3f-420d-4ac3-9435-d19160b38c38",
+                        "id": "0c48e46d-58e5-482f-a42c-b70fc55c6a71",
                         "position": [
                             -0.30000001192092896,
                             -0.10000000149011612,
@@ -214,7 +214,7 @@
                         "type": "Transform"
                     },
                     {
-                        "id": "53d18d09-a71d-4a05-a488-dd5b97b58382",
+                        "id": "6370e1a9-7ef3-44c9-8cea-0c50d396f72a",
                         "materials": [
                             {
                                 "pbr": {
@@ -249,7 +249,7 @@
                     }
                 ],
                 "enabled": true,
-                "id": "8165d0e3-478d-424c-8d4e-36c222c26dc5",
+                "id": "6cf4db24-380e-4d1e-acfa-c32c4a0bae13",
                 "name": "Branch4",
                 "tags": []
             },
@@ -257,7 +257,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "11c9a3d3-c90b-415c-9a27-6e906c8db15c",
+                        "id": "f94a0e57-2ce2-4dbf-83ef-1ab6f31673b0",
                         "position": [
                             -0.30000001192092896,
                             0.20000000298023224,
@@ -277,7 +277,7 @@
                         "type": "Transform"
                     },
                     {
-                        "id": "d7dd2f98-606d-4b3a-ab5a-c828d3dc030b",
+                        "id": "8e7923bc-431a-4c36-9479-1d93002b1ab9",
                         "materials": [
                             {
                                 "pbr": {
@@ -312,7 +312,7 @@
                     }
                 ],
                 "enabled": true,
-                "id": "d12cc08f-e4b4-4e7e-843b-429335204fde",
+                "id": "b20a6cd7-dcd5-4cf1-82e1-1aacba416efd",
                 "name": "Branch5",
                 "tags": []
             },
@@ -320,7 +320,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "f5b2100d-37c8-4dc9-bc90-59e7978f014c",
+                        "id": "6e7a947d-fad0-4a13-98cf-6a87988ce0b0",
                         "position": [
                             -0.10000000149011612,
                             0.10000000149011612,
@@ -340,7 +340,7 @@
                         "type": "Transform"
                     },
                     {
-                        "id": "90d89679-e142-443a-979b-24ece5fc141d",
+                        "id": "61d668c5-fdff-45ec-bdd5-6c27854cb53b",
                         "materials": [
                             {
                                 "pbr": {
@@ -368,24 +368,23 @@
                                     "normal": "",
                                     "roughness": ""
                                 }
-                            },
-                            null
+                            }
                         ],
                         "model": "models/assets/drzewo.fbx",
                         "type": "MeshRenderer"
                     }
                 ],
                 "enabled": true,
-                "id": "8ec78cf2-987e-40eb-b55f-4e16b6205d59",
+                "id": "93838e80-c9de-47d3-ad85-008dcbf3f769",
                 "name": "Branch6",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "f7d9b14c-9938-4882-bb52-ed64c91a8f61",
+                "id": "aec0110e-2c92-49d1-8eec-b6c7f88d0ed2",
                 "position": [
-                    9.300000190734863,
+                    0.0,
                     0.0,
                     0.0
                 ],
@@ -403,7 +402,7 @@
                 "type": "Transform"
             },
             {
-                "id": "64179151-b999-4bc1-969a-750bfe9c965a",
+                "id": "8833e91b-6e2e-47b7-a0e4-f6a9efc7922c",
                 "materials": [
                     {
                         "pbr": {
@@ -438,7 +437,7 @@
             }
         ],
         "enabled": true,
-        "id": "66f4e708-54b9-4e92-977c-d3fae7a3373c",
+        "id": "2b491d01-e63a-4fc1-97c7-d08f2ffbc75a",
         "name": "Tree_big",
         "tags": []
     }

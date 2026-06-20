@@ -185,9 +185,14 @@ nlohmann::json World::save() {
         }
         j["chunkData"][chunkKey]["origin"] = chunk->getOrigin();
         for (const auto& [coord, cell] : chunk->getHexes()) {
+            HexCell::State state = cell->getState();
+            if (state == HexCell::State::Prop) {
+                state = HexCell::State::Empty;
+            }
+
             nlohmann::json data{
                 {"coord", cell->getCoord()},
-                {"state", static_cast<uint8_t>(cell->getState())},
+                {"state", static_cast<uint8_t>(state)},
                 {"type", static_cast<uint8_t>(cell->getType())},
                 {"genState", static_cast<uint8_t>(cell->getGenState())},
                 {"height", cell->getHeight()},
@@ -316,9 +321,9 @@ void World::update(double dt) {
                 color = glm::vec4(0.075, 0.133, 0.290, 1.0F);
             }
 
-            if (cell->getHexCell()->getState() == HexCell::State::Path) {
+            if (cell->getHexCell()->getVisualState() == HexCell::VisualState::Path) {
                 cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
-                    0, _hexMaterialsState[HexCell::State::Path]);
+                    0, _hexMaterialsVisualState[HexCell::VisualState::Path]);
                 color = glm::vec4(1.000, 0.875, 0.580, 1.0F);
             }
 
@@ -460,6 +465,7 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
         glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
     auto* meshRenderer = obj->addComponent<dzemikk::MeshRenderer>();
     meshRenderer->setModel(_hexModel);
+    meshRenderer->setCullingRadius(60.0F);
 
     switch (cell->getGenState()) {
     case HexCell::GenState::Blocked:
@@ -476,8 +482,8 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
         break;
     }
 
-    if (cell->getState() == HexCell::State::Path) {
-        meshRenderer->setMaterial(0, _hexMaterialsState[HexCell::State::Path]);
+    if (cell->getVisualState() == HexCell::VisualState::Path) {
+        meshRenderer->setMaterial(0, _hexMaterialsVisualState[HexCell::VisualState::Path]);
         meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(0.56F, 0.44F, 0.13F, 1.0F));
     }
 

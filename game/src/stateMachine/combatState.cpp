@@ -148,6 +148,14 @@ void game::CombatState::onExit() {
         return;
     }
 
+    auto* worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
+    auto* world = worldGO->getComponent<World>();
+
+    auto player = world->getHexTransformByCell(*_player->getCell().get());
+    for (auto g : player->getOwner()->getChildren()) {
+        g->enabled(false);
+    }
+
     for (auto* cell : _player->getTerritory()) {
 
         if (!cell) {
@@ -155,6 +163,13 @@ void game::CombatState::onExit() {
         }
 
         cell->setType(HexCell::Type::Normal);
+
+        auto transform = world->getHexTransformByCell(*cell);
+
+        for (auto g : transform->getOwner()->getChildren()) {
+            g->enabled(false);
+        }
+
         cell->setDirty(true);
     }
 
@@ -562,6 +577,11 @@ void game::CombatState::initializeCombat() {
     }
 
     _player->teleportTo(arena.centerCell);
+
+    auto playerT = world->getHexTransformByCell(*_player->getCell().get());
+    for (auto g : playerT->getOwner()->getChildren()) {
+        g->enabled(false);
+    }
 
     _playerPatternComponent = playerGO->getComponent<PlayerPatternComponent>();
     _playerPatternComponent->setEnemyEntity(_currentEnemy);

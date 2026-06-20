@@ -7,6 +7,7 @@ class Game;
 
 namespace dzemikk {
 class AssetManager;
+class Transform;
 }
 
 namespace game {
@@ -47,6 +48,8 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
     void init();
 
     void spawnForestChunk(const std::string& chunkName);
+
+    void generatePathBetweenChunks(const std::string& chunkA, const std::string& chunkB);
   private:
     struct ForestCluster {
         glm::vec3 center;
@@ -56,12 +59,10 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
     bool isHexFree(HexCell* hex) const;
 
     void spawnClusterObject(dzemikk::Scene* scene, const std::string& prefabKey,
-                            const glm::vec3& pos, float minScale, float maxScale);
+                            const glm::vec3& pos, float minScale, float maxScale, dzemikk::Transform* parent);
     void spawnRockCluster(dzemikk::Scene* scene, const std::vector<std::string>& rocks,
                           const glm::vec3& basePos, int minCount, int maxCount, float spread,
-                          float minScale, float maxScale);
-
-    void generateForestPath(const std::vector<std::shared_ptr<HexCell>>& hexes);
+                          float minScale, float maxScale, dzemikk::Transform* parent);
 
     World* _world = nullptr;
     Game* _game = nullptr;
@@ -73,6 +74,10 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
     float rand01() {
         return (float)rand() / (float)RAND_MAX;
     }
+
+    HexCell* getTopHex(const std::vector<std::shared_ptr<HexCell>>& hexes);
+    void generatePath(const HexCoord& start, const HexCoord& end);
+    std::vector<HexCoord> findPath(const HexCoord& start, const HexCoord& goal);
 };
 
 } // namespace game
