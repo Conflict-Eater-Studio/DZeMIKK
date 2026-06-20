@@ -76,6 +76,8 @@ class CombatState : public IGameState {
      * @param cell Cell to remove.
      */
     void removeHiddenHex(HexCell* cell);
+    [[nodiscard]] EnemyEntity* getCurrentEnemy() const;
+
 
   private:
     Game* _game = nullptr;

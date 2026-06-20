@@ -1,6 +1,7 @@
 #include "stateMachine/combatState.h"
 
 #include "camera/cameraController.h"
+#include "ecs/components/animator.h"
 #include "enemySystem/combatArenaBuilder.h"
 #include "enemySystem/enemyEntity.h"
 #include "enemySystem/enemyManager.h"
@@ -22,10 +23,10 @@
 #include <audio/audioManager.h>
 #include <ecs/components/meshRenderer.h>
 #include <ecs/components/transform.h>
+#include <ecs/components/ui/imageRenderer.h>
 #include <ecs/gameobject.h>
 #include <ecs/scene.h>
 #include <enemySystem/enemyPatternComponent.h>
-#include <ecs/components/ui/imageRenderer.h>
 #include <iostream>
 #include <renderer/shader.h>
 
@@ -791,6 +792,10 @@ void game::CombatState::showCellColor(HexCell* cell, HexPattern::Type type) {
     }
 
     mesh->setMaterial(0, getPatternMaterial(type));
+}
+
+game::EnemyEntity* game::CombatState::getCurrentEnemy() const {
+    return _currentEnemy;
 }
 
 void game::CombatState::removeHiddenHex(HexCell* cell) {
