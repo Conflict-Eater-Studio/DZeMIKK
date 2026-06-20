@@ -6,6 +6,9 @@
 
 #include <string>
 
+namespace dzemikk {
+class UISlider;
+}
 namespace game {
 
 class HealthSystem : public dzemikk::MonoBehaviour {
@@ -21,7 +24,7 @@ class HealthSystem : public dzemikk::MonoBehaviour {
     void heal(float amount);
 
     void setTextRenderer(dzemikk::UITextRenderer* textRenderer);
-
+    void setSlider(dzemikk::UISlider* slider);
     [[nodiscard]] float getMaxHealth() const;
     [[nodiscard]] float getCurrentHealth() const;
     [[nodiscard]] bool isDead() const;
@@ -36,6 +39,7 @@ class HealthSystem : public dzemikk::MonoBehaviour {
     float _currentHealth = 100.0f;
 
     dzemikk::UITextRenderer* _textRenderer = nullptr;
+    dzemikk::UISlider* _slider = nullptr;
 };
 
 } // namespace game
