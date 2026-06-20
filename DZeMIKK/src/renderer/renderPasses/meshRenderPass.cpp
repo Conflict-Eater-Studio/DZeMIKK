@@ -71,7 +71,19 @@ void dzemikk::MeshRenderPass::buildMeshBatches(RenderContext& ctx) {
                         continue;
                     }
 
-                    if (b.mesh == mesh && b.material == material) {
+                    if (b.mesh == mesh && 
+                        b.material->getAlbedoColor() == material->getAlbedoColor() &&
+                        b.material->getNormalTexture() == material->getNormalTexture() &&
+                        b.material->getMetallicTexture() == material->getMetallicTexture() &&
+                        b.material->getRoughnessTexture() == material->getRoughnessTexture() &&
+                        b.material->getAOTexture() == material->getAOTexture() &&
+                        b.material->getEmissiveTexture() == material->getEmissiveTexture() &&
+                        b.material->getAlbedoColor() == material->getAlbedoColor() &&
+                        b.material->getMetallic() == material->getMetallic() &&
+                        b.material->getRoughness() == material->getRoughness() &&
+                        b.material->getAO() == material->getAO() &&
+                        b.material->getEmissiveColor() == material->getEmissiveColor() &&
+                        b.material->getEmissiveStrength() == material->getEmissiveStrength()) {
                         batch = &b;
                         break;
                     }
