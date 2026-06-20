@@ -35,8 +35,8 @@ class HealthSystem : public dzemikk::MonoBehaviour {
     void updateUI();
 
   private:
-    float _maxHealth = 100.0f;
-    float _currentHealth = 100.0f;
+    float _maxHealth = 300.0f;
+    float _currentHealth = 300.0f;
 
     dzemikk::UITextRenderer* _textRenderer = nullptr;
     dzemikk::UISlider* _slider = nullptr;

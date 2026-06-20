@@ -81,7 +81,7 @@ void HealthSystem::updateUI() {
 
     std::ostringstream ss;
 
-    ss << std::fixed << std::setprecision(1) << _currentHealth << "/"
+    ss << std::fixed  << static_cast<int>(std::round(_currentHealth)) << "/"
        << static_cast<int>(std::round(_maxHealth));
 
     _textRenderer->text = ss.str();

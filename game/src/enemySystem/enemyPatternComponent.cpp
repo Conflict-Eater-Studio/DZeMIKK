@@ -5,59 +5,47 @@ std::string game::EnemyPatternComponent::typeName() const {
 }
 
 void game::EnemyPatternComponent::start() {
-    // atk1
-    addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::ATK, 1.0F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 1.5F), -1);
-    addPattern(game::HexPattern({{0, 0}, {2, -1}}, game::HexPattern::Type::ATK, 1.5F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {1, 0}}, game::HexPattern::Type::ATK, 2.0F), -1);
-    addPattern(game::HexPattern({{0, 0}, {2, -1}, {1, 1}}, game::HexPattern::Type::ATK, 2.0F), -1);
-    addPattern(game::HexPattern({{0, 0}, {2, -2}, {1, -1}}, game::HexPattern::Type::ATK, 2.0F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -1}}, game::HexPattern::Type::ATK, 2.0F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -2}, {0, 1}}, game::HexPattern::Type::ATK, 2.5F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, 0}, {2, 0}, {1, -1}}, game::HexPattern::Type::ATK, 2.5F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -2}, {2, -1}}, game::HexPattern::Type::ATK, 2.5F),
-        -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {1, 1}, {2, -1}}, game::HexPattern::Type::ATK, 2.5F),
-        -1);
-    addPattern(game::HexPattern({{0, 0}, {2, -1}, {2, -2}, {1, -1}}, game::HexPattern::Type::ATK, 2.5F),
-        -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {0, 2}, {2, -2}}, game::HexPattern::Type::ATK, 2.5F),
-        -1);
+       // atk1
+    addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::ATK, 10.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 15.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {2, -1}}, game::HexPattern::Type::ATK, 15.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {1, 0}}, game::HexPattern::Type::ATK, 20.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {2, -1}, {1, 1}}, game::HexPattern::Type::ATK, 20.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {2, -2}, {1, -1}}, game::HexPattern::Type::ATK, 20.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -1}}, game::HexPattern::Type::ATK, 20.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -2}, {0, 1}}, game::HexPattern::Type::ATK, 25.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, 0}, {2, 0}, {1, -1}}, game::HexPattern::Type::ATK, 25.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -2}, {2, -1}}, game::HexPattern::Type::ATK, 25.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {1, 1}, {2, -1}}, game::HexPattern::Type::ATK, 25.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {2, -1}, {2, -2}, {1, -1}}, game::HexPattern::Type::ATK, 25.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {0, 2}, {2, -2}}, game::HexPattern::Type::ATK, 25.0F), -1);
 
     // def1
-    addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::DEF), -1);
-    addPattern(game::HexPattern({{0, 0}, {0, 1}}, game::HexPattern::Type::DEF, 1.5F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, 0}, {0, 1}}, game::HexPattern::Type::DEF, 2.0F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {-1, 1}}, game::HexPattern::Type::DEF, 2.0F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {-1, 0}}, game::HexPattern::Type::DEF, 2.0F), -1);
-    addPattern(game::HexPattern({{0, 0}, {0, 1}, {1, -1}, {-1, 1}}, game::HexPattern::Type::DEF, 2.5F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -2}, {-1, 1}}, game::HexPattern::Type::DEF, 2.5F), -1);
-    addPattern(game::HexPattern({{0, 0}, {0, 1}, {0, -1}}, game::HexPattern::Type::DEF, 2.0F), 2.0F);
-    addPattern(game::HexPattern({{0, 0}, {1, 0}, {2, 0}}, game::HexPattern::Type::DEF, 2.0F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {1, 1}, {2, 0}}, game::HexPattern::Type::DEF, 2.5F), -1);
-    addPattern(game::HexPattern({{0, 0}, {-1, 1}, {-1, 0}, {0, 1}}, game::HexPattern::Type::DEF, 2.5F),
-        -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -1}, {2, -2}}, game::HexPattern::Type::DEF, 2.5F),
-        -1);
+    addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::DEF, 10.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {0, 1}}, game::HexPattern::Type::DEF, 15.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, 0}, {0, 1}}, game::HexPattern::Type::DEF, 20.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {-1, 1}}, game::HexPattern::Type::DEF, 20.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {-1, 0}}, game::HexPattern::Type::DEF, 20.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {0, 1}, {1, -1}, {-1, 1}}, game::HexPattern::Type::DEF, 25.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -2}, {-1, 1}}, game::HexPattern::Type::DEF, 25.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {0, 1}, {0, -1}}, game::HexPattern::Type::DEF, 20.0F), 2.0F);
+    addPattern(game::HexPattern({{0, 0}, {1, 0}, {2, 0}}, game::HexPattern::Type::DEF, 20.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {1, 1}, {2, 0}}, game::HexPattern::Type::DEF, 25.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {-1, 1}, {-1, 0}, {0, 1}}, game::HexPattern::Type::DEF, 25.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -1}, {2, -2}}, game::HexPattern::Type::DEF, 25.0F), -1);
 
     // hp1
-    addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL, 0.5F),
-                                 -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 0.75F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, 0}, {-1, 1}}, game::HexPattern::Type::HEAL, 1.0F), -1);
-    addPattern(game::HexPattern({{0, 0}, {2, -2}}, game::HexPattern::Type::HEAL, 0.75F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -2}}, game::HexPattern::Type::HEAL, 1.0F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {-1, 1}, {0, 2}}, game::HexPattern::Type::HEAL, 2.0F),
-        -1);
-    addPattern(game::HexPattern({{0, 0}, {0, 2}}, game::HexPattern::Type::HEAL, 0.75F), -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -2}, {1, 0}}, game::HexPattern::Type::HEAL, 2.0F),
-        -1);
-    addPattern(game::HexPattern({{0, 0}, {-1, 1}, {-2, 2}, {0, 2}}, game::HexPattern::Type::HEAL, 2.0F),
-        -1);
-    addPattern(game::HexPattern({{0, 0}, {1, 0}, {2, -1}, {2, -2}}, game::HexPattern::Type::HEAL, 2.0F),
-        -1);
-    addPattern(game::HexPattern({{0, 0}, {1, -1}, {1, -2}, {2, -2}}, game::HexPattern::Type::HEAL, 2.0F),
-        -1);
+    addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL, 5.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 8.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, 0}, {-1, 1}}, game::HexPattern::Type::HEAL, 10.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {2, -2}}, game::HexPattern::Type::HEAL, 8.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -2}}, game::HexPattern::Type::HEAL, 10.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {-1, 1}, {0, 2}}, game::HexPattern::Type::HEAL, 20.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {0, 2}}, game::HexPattern::Type::HEAL, 8.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {2, -2}, {1, 0}}, game::HexPattern::Type::HEAL, 20.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {-1, 1}, {-2, 2}, {0, 2}}, game::HexPattern::Type::HEAL, 20.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, 0}, {2, -1}, {2, -2}}, game::HexPattern::Type::HEAL, 20.0F), -1);
+    addPattern(game::HexPattern({{0, 0}, {1, -1}, {1, -2}, {2, -2}}, game::HexPattern::Type::HEAL, 20.0F), -1);
 }
 
 void game::EnemyPatternComponent::update(double deltaTime) {}
