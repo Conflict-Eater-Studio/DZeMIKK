@@ -479,8 +479,25 @@ void game::CombatState::resolveConflict() {
         auto enemyChunkId =
             grid->findChunkForCoord(_currentEnemy->getCell()->getCoord())->getPersistantId();
         auto enemyConfig = _currentEnemy->getConfig();
+        auto enemyId = _currentEnemy->getId();
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[CombatState] Enemy defeated. ID: {}, Chunk: {}", 
+                     boost::uuids::to_string(enemyId), boost::uuids::to_string(enemyChunkId));
+#endif
         for (const auto& childChunk : enemyConfig.blocksChunks) {
-            grid->unlockBridge({enemyChunkId, childChunk}, _currentEnemy->getId());
+            HexGrid::BridgeId bridgeId{enemyChunkId, childChunk};
+#if DZEMIKK_DEV_TOOLS
+            bool bridgeExists = grid->getBridges().contains(bridgeId);
+            spdlog::info("[CombatState] Unlocking bridge {{ {}, {} }} - exists: {}", 
+                         boost::uuids::to_string(enemyChunkId), 
+                         boost::uuids::to_string(childChunk), bridgeExists);
+            if (bridgeExists) {
+                const auto& bridge = grid->getBridges().at(bridgeId);
+                spdlog::info("[CombatState] Bridge has {} blocking enemies, {} hexes", 
+                             bridge.blockingEnemies.size(), bridge.hexes.size());
+            }
+#endif
+            grid->unlockBridge(bridgeId, enemyId);
         }
 
         auto* enemyManagerGO = _game->getCurrentScene().get()->findGameObjectByName("EnemyManager");

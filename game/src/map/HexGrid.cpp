@@ -526,6 +526,7 @@ bool HexGrid::unlockChunk(const boost::uuids::uuid& chunkId) {
         auto cell = parentChunk->getCell(coord);
         if (cell != nullptr) {
             cell->setType(HexCell::Type::Bridge);
+            parentChunk->markSaveDirty();
         }
     }
 
@@ -538,32 +539,84 @@ const std::unordered_map<HexGrid::BridgeId, HexGrid::BridgeInfo>& HexGrid::getBr
 }
 
 void HexGrid::lockBridge(const BridgeId& bridgeId, const boost::uuids::uuid& enemyId) {
-    // If bridge between two chunks exists, add the enemy to the set of blocking enemies
-    // Bridge is only valid of it's between two chunks that are next to each other
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[HexGrid::lockBridge] Bridge {{ {}, {} }}, enemy {}", 
+                 boost::uuids::to_string(bridgeId.first), 
+                 boost::uuids::to_string(bridgeId.second),
+                 boost::uuids::to_string(enemyId));
+    bool bridgeExists = _bridges.contains(bridgeId);
+    spdlog::info("[HexGrid::lockBridge] Bridge exists: {}", bridgeExists);
+#endif
     if (_bridges.contains(bridgeId)) {
+#if DZEMIKK_DEV_TOOLS
+        size_t currentBlockingCount = _bridges[bridgeId].blockingEnemies.size();
+        spdlog::info("[HexGrid::lockBridge] Current blocking enemies count: {}", currentBlockingCount);
+#endif
         if (_bridges[bridgeId].blockingEnemies.empty()) {
+#if DZEMIKK_DEV_TOOLS
+            int changedCount = 0;
+#endif
             for (const auto& cell : _bridges[bridgeId].hexes) {
                 if (cell->getType() == HexCell::Type::Bridge) {
                     cell->setType(HexCell::Type::BlockingBridge);
+                    if (auto* parentChunk = cell->getParentChunk()) {
+                        parentChunk->markSaveDirty();
+                    }
+#if DZEMIKK_DEV_TOOLS
+                    changedCount++;
+#endif
                 }
             }
+#if DZEMIKK_DEV_TOOLS
+            spdlog::info("[HexGrid::lockBridge] Changed {} hexes from Bridge to BlockingBridge", changedCount);
+#endif
         }
 
         _bridges[bridgeId].blockingEnemies.insert(enemyId);
+#if DZEMIKK_DEV_TOOLS
+        spdlog::info("[HexGrid::lockBridge] After insert, blocking enemies count: {}", 
+                     _bridges[bridgeId].blockingEnemies.size());
+#endif
+    } else {
+#if DZEMIKK_DEV_TOOLS
+        spdlog::warn("[HexGrid::lockBridge] Bridge {{ {}, {} }} not found!", 
+                     boost::uuids::to_string(bridgeId.first), 
+                     boost::uuids::to_string(bridgeId.second));
+#endif
     }
 }
 
 void HexGrid::unlockBridge(const BridgeId& bridgeId, const boost::uuids::uuid& enemyId) {
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[HexGrid::unlockBridge] Bridge {{ {}, {} }}, enemy {}", 
+                 boost::uuids::to_string(bridgeId.first), 
+                 boost::uuids::to_string(bridgeId.second),
+                 boost::uuids::to_string(enemyId));
+#endif
     if (_bridges.contains(bridgeId) && _bridges[bridgeId].blockingEnemies.contains(enemyId)) {
         _bridges[bridgeId].blockingEnemies.erase(enemyId);
 
         if (_bridges[bridgeId].blockingEnemies.empty()) {
+#if DZEMIKK_DEV_TOOLS
+            spdlog::info("[HexGrid::unlockBridge] No more blocking enemies, changing {} hexes from BlockingBridge to Bridge", 
+                         _bridges[bridgeId].hexes.size());
+#endif
             for (const auto& cell : _bridges[bridgeId].hexes) {
                 if (cell->getType() == HexCell::Type::BlockingBridge) {
                     cell->setType(HexCell::Type::Bridge);
+                    if (auto* parentChunk = cell->getParentChunk()) {
+                        parentChunk->markSaveDirty();
+                    }
                 }
             }
         }
+    } else {
+#if DZEMIKK_DEV_TOOLS
+        bool bridgeExists = _bridges.contains(bridgeId);
+        bool enemyInSet = bridgeExists && _bridges[bridgeId].blockingEnemies.contains(enemyId);
+        spdlog::info("[HexGrid::unlockBridge] Bridge exists: {}, enemy in set: {}", 
+                     bridgeExists, enemyInSet);
+#endif
     }
 }
 

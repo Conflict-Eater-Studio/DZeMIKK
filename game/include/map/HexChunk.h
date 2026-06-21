@@ -63,6 +63,7 @@ class HexChunk {
 
     [[nodiscard]] bool isSaveDirty() const;
     void clearSaveDirty();
+    void markSaveDirty();
 
     [[nodiscard]] bool isDirty() const;
     void clearDirty();

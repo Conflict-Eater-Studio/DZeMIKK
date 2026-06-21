@@ -432,6 +432,10 @@ void HexChunk::clearSaveDirty() {
     _saveDirty = false;
 }
 
+void HexChunk::markSaveDirty() {
+    _saveDirty = true;
+}
+
 bool HexChunk::isDirty() const {
     return _dirty;
 }

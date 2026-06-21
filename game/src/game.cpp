@@ -1530,6 +1530,8 @@ void Game::restartGame() {
         }
     }
 
+    enemyManager->relockBridges();
+
     std::unordered_set<std::string> currentTotemIds;
     if (currentState.contains("totems")) {
         for (const auto& [idStr, _] : currentState["totems"].items()) {

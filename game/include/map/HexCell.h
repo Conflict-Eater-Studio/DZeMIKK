@@ -139,6 +139,10 @@ class HexCell {
         _parentChunk = chunk;
     }
 
+    [[nodiscard]] HexChunk* getParentChunk() const {
+        return _parentChunk;
+    }
+
     void clearSaveDirty() {
         _flags &= ~kSaveDirty;
     }

@@ -90,6 +90,8 @@ class EnemyManager : public dzemikk::MonoBehaviour {
     void loadState(const nlohmann::json& j);
     void clear();
 
+    void relockBridges();
+
     [[nodiscard]] std::vector<boost::uuids::uuid> getAndClearRemovedEnemyIds();
 
 #pragma endregion
