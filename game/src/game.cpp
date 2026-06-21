@@ -1426,6 +1426,12 @@ void Game::restartGame() {
         throw std::runtime_error("No world.json file found. Cannot restart.");
     }
 
+    if (_worldGO) {
+        if (auto* world = _worldGO->getComponent<game::World>(); world) {
+            world->waitForSaveCompletion();
+        }
+    }
+
     auto in = std::ifstream("./world.json");
     auto checkpoint = nlohmann::json::parse(in);
     in.close();

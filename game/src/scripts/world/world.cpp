@@ -569,19 +569,6 @@ void World::updateSnapshot() {
     auto gridEnd = std::chrono::steady_clock::now();
     auto gridUs = std::chrono::duration_cast<std::chrono::microseconds>(gridEnd - gridStart).count();
     spdlog::info("[World::updateSnapshot] Grid cells update: {} us", gridUs);
-    
-    // Log bridge state for debugging
-    for (const auto& [bridgeId, bridgeInfo] : _grid.getBridges()) {
-        spdlog::info("[World::updateSnapshot] Bridge {{ {}, {} }}: {} blocking enemies", 
-                     boost::uuids::to_string(bridgeId.first), 
-                     boost::uuids::to_string(bridgeId.second),
-                     bridgeInfo.blockingEnemies.size());
-        for (const auto& cell : bridgeInfo.hexes) {
-            spdlog::info("[World::updateSnapshot]   Bridge hex at ({}, {}): type={}, saveDirty={}", 
-                         cell->getCoord().q(), cell->getCoord().r(),
-                         static_cast<int>(cell->getType()), cell->isSaveDirty());
-        }
-    }
 #endif
 
 #if DZEMIKK_DEV_TOOLS
@@ -749,13 +736,11 @@ void World::saveToFile(const std::string& filename) {
         updateSnapshot();
     }
 
-    auto snapshotCopy = _snapshot;
-
-    _saveFuture = std::async(std::launch::async, [filename, snapshot = std::move(snapshotCopy)]() {
+    _saveFuture = std::async(std::launch::async, [this, filename]() {
 #if DZEMIKK_DEV_TOOLS
         auto serializeStart = std::chrono::steady_clock::now();
 #endif
-        auto serializedJson = snapshot.serialize();
+        auto serializedJson = _snapshot.serialize();
 #if DZEMIKK_DEV_TOOLS
         auto serializeEnd = std::chrono::steady_clock::now();
         auto serializeUs = std::chrono::duration_cast<std::chrono::microseconds>(serializeEnd - serializeStart).count();
