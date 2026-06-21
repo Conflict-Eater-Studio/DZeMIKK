@@ -436,7 +436,7 @@ void Game::setupMainCamera() {
 
     _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
     auto postProccessEffect = cameraGO->addComponent<dzemikk::PostProcessEffect>();
-    postProccessEffect->setEnabled(false);
+    postProccessEffect->setEnabled(true);
     postProccessEffect->setShader(
         _engine->getAssetManager()->get<dzemikk::Shader>("shaders/vignette"));
     postProccessEffect->setPriority(5);
