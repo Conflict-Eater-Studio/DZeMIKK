@@ -61,6 +61,12 @@ class HexChunk {
     bool setEntity(const HexCoord& coord, HexCell::Type entityType, Entity* entity = nullptr);
     void clean();
 
+    [[nodiscard]] bool isSaveDirty() const;
+    void clearSaveDirty();
+
+    [[nodiscard]] bool isDirty() const;
+    void clearDirty();
+
     template <typename T> bool addItem(T* item) {
         static_assert(std::is_base_of_v<ItemEntity, T>, "T must be derived from ItemEntity");
 
@@ -100,6 +106,9 @@ class HexChunk {
 
     std::mt19937 _rng;
     std::uniform_real_distribution<float> _chanceDist{0.0F, 1.0F};
+
+    bool _saveDirty{true};
+    bool _dirty{true};
 
     void generateHexes();
     void generateHexCells();
