@@ -725,26 +725,33 @@ void World::saveToFile(const std::string& filename) {
         auto buildSnapshotUs = std::chrono::duration_cast<std::chrono::microseconds>(buildSnapshotEnd - buildSnapshotStart).count();
         spdlog::info("[World::saveToFile] Build snapshot from JSON: {} us", buildSnapshotUs);
 #endif
+
+        for (const auto& [chunkId, chunk] : _grid.getChunks()) {
+            for (const auto& [coord, cell] : chunk->getHexes()) {
+                cell->clearSaveDirty();
+            }
+            chunk->clearSaveDirty();
+        }
     } else {
         updateSnapshot();
     }
 
-#if DZEMIKK_DEV_TOOLS
-    auto serializeStart = std::chrono::steady_clock::now();
-#endif
-    auto serializedJson = _snapshot.serialize();
-#if DZEMIKK_DEV_TOOLS
-    auto serializeEnd = std::chrono::steady_clock::now();
-    auto serializeUs = std::chrono::duration_cast<std::chrono::microseconds>(serializeEnd - serializeStart).count();
-    spdlog::info("[World::saveToFile] Snapshot serialize: {} us", serializeUs);
-#endif
+    auto snapshotCopy = _snapshot;
 
-    _saveFuture = std::async(std::launch::async, [filename, json = std::move(serializedJson)]() {
+    _saveFuture = std::async(std::launch::async, [filename, snapshot = std::move(snapshotCopy)]() {
 #if DZEMIKK_DEV_TOOLS
+        auto serializeStart = std::chrono::steady_clock::now();
+#endif
+        auto serializedJson = snapshot.serialize();
+#if DZEMIKK_DEV_TOOLS
+        auto serializeEnd = std::chrono::steady_clock::now();
+        auto serializeUs = std::chrono::duration_cast<std::chrono::microseconds>(serializeEnd - serializeStart).count();
+        spdlog::info("[World::saveToFile] Snapshot serialize (worker thread): {} us", serializeUs);
+
         auto fileStart = std::chrono::steady_clock::now();
 #endif
         std::ofstream out(filename);
-        out << json.dump(4);
+        out << serializedJson.dump(4);
         out.close();
 #if DZEMIKK_DEV_TOOLS
         auto fileEnd = std::chrono::steady_clock::now();
