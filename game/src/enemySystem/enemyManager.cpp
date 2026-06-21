@@ -323,12 +323,21 @@ void game::EnemyManager::clear() {
     _spawnedEnemies.clear();
     _spawnRules.clear();
     _cellToEnemy.clear();
+    _removedEnemyIds.clear();
+}
+
+std::vector<boost::uuids::uuid> game::EnemyManager::getAndClearRemovedEnemyIds() {
+    auto result = std::move(_removedEnemyIds);
+    _removedEnemyIds.clear();
+    return result;
 }
 
 void game::EnemyManager::removeEnemy(game::EnemyEntity* enemy) {
     if (!enemy) {
         return;
     }
+
+    _removedEnemyIds.push_back(enemy->getConfig().persistantId);
 
     auto chunkId = enemy->getConfig().chunkId;
 

@@ -11,9 +11,11 @@
 #include "map/HexPattern.h"
 #include "renderer/material.h"
 #include "renderer/model.h"
+#include "scripts/world/saveSnapshot.h"
 #include "utils/perlin.h"
 
 #include <nlohmann/json.hpp>
+#include <future>
 #include <random>
 #include <unordered_set>
 
@@ -52,7 +54,7 @@ class World : public dzemikk::MonoBehaviour {
     void update(double dt) override;
     void lateUpdate(double dt) override {};
     void fixedUpdate(double dt) override {};
-    void onDestroy() override {};
+    void onDestroy() override;
 
     [[nodiscard]] std::string typeName() const override {
         return "World";
@@ -132,6 +134,8 @@ class World : public dzemikk::MonoBehaviour {
   private:
     void spawnHexVisual(const std::shared_ptr<HexCell>& cell);
     void despawnHexVisual(const HexCoord& coord);
+    void updateSnapshot();
+    void waitForSaveCompletion();
 
     std::unordered_map<std::string, std::function<float(int step, int maxSteps)>> _generators;
 
@@ -153,7 +157,9 @@ class World : public dzemikk::MonoBehaviour {
 
     PlayerEntity* _player{nullptr};
 
-    // --- Materials and Models
+    SaveSnapshot _snapshot;
+    std::future<void> _saveFuture;
+
     dzemikk::AssetHandle<dzemikk::Model> _hexModel;
 };
 

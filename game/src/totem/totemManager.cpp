@@ -196,6 +196,7 @@ void game::TotemManager::clear() {
     }
     _spawnedTotems.clear();
     _spawnRules.clear();
+    _changedTotemIds.clear();
 }
 
 void game::TotemManager::markTotemUsed(const boost::uuids::uuid& persistantId) {
@@ -204,6 +205,7 @@ void game::TotemManager::markTotemUsed(const boost::uuids::uuid& persistantId) {
             if (totem->getConfig().persistantId == persistantId) {
                 if (!totem->getConfig().used) {
                     totem->lightOff();
+                    _changedTotemIds.emplace_back(persistantId, true);
                 }
                 return;
             }
@@ -217,9 +219,16 @@ void game::TotemManager::markTotemUnused(const boost::uuids::uuid& persistantId)
             if (totem->getConfig().persistantId == persistantId) {
                 if (totem->getConfig().used) {
                     totem->unuse();
+                    _changedTotemIds.emplace_back(persistantId, false);
                 }
                 return;
             }
         }
     }
+}
+
+std::vector<std::pair<boost::uuids::uuid, bool>> game::TotemManager::getAndClearChangedTotemIds() {
+    auto result = std::move(_changedTotemIds);
+    _changedTotemIds.clear();
+    return result;
 }

@@ -16,14 +16,23 @@
 #include "player/inventory.h"
 #include "player/playerPatternComponent.h"
 #include "renderer/shader.h"
+#include "scripts/world/saveSnapshot.h"
 #include "scripts/world/worldHex.h"
 #include "totem/totemManager.h"
 
 #include <boost/uuid/detail/nil_uuid.hpp>
 #include <boost/uuid/string_generator.hpp>
+#include <chrono>
+#include <filesystem>
 #include <format>
+#include <fstream>
+#include <future>
 #include <memory>
 #include <random>
+
+#if DZEMIKK_DEV_TOOLS
+#include <spdlog/spdlog.h>
+#endif
 
 namespace game {
 World::World(unsigned int seed) : _rng(seed), _perlin(seed), _grid(seed) {
@@ -32,6 +41,10 @@ World::World(unsigned int seed) : _rng(seed), _perlin(seed), _grid(seed) {
     _generators["default"] = [](int step, int maxSteps) {
         return 1.0F - (static_cast<float>(step) / static_cast<float>(maxSteps));
     };
+}
+
+void World::onDestroy() {
+    waitForSaveCompletion();
 }
 
 void World::load(const nlohmann::json& def) {
@@ -191,6 +204,9 @@ void World::despawnHexVisual(const HexCoord& coord) {
 void World::loadDiff(const nlohmann::json& def) {
     boost::uuids::string_generator gen;
 
+    waitForSaveCompletion();
+    _snapshot.invalidate();
+
     if (!def.contains("chunkData")) {
         return;
     }
@@ -310,6 +326,10 @@ void World::loadDiff(const nlohmann::json& def) {
 nlohmann::json World::save() {
     nlohmann::json j;
 
+#if DZEMIKK_DEV_TOOLS
+    auto gridStart = std::chrono::steady_clock::now();
+#endif
+
     for (const auto& [chunkId, chunk] : _grid.getChunks()) {
         auto chunkKey = boost::uuids::to_string(chunkId);
         j["chunkData"][chunkKey]["cells"] = nlohmann::json::array();
@@ -371,6 +391,16 @@ nlohmann::json World::save() {
             d);
     }
 
+#if DZEMIKK_DEV_TOOLS
+    auto gridEnd = std::chrono::steady_clock::now();
+    auto gridUs = std::chrono::duration_cast<std::chrono::microseconds>(gridEnd - gridStart).count();
+    spdlog::info("[World::save] Grid serialization: {} us", gridUs);
+#endif
+
+#if DZEMIKK_DEV_TOOLS
+    auto itemsStart = std::chrono::steady_clock::now();
+#endif
+
     auto* itemManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("ItemManager");
     if (itemManagerGo) {
         auto* im = itemManagerGo->getComponent<ItemManager>();
@@ -380,6 +410,16 @@ nlohmann::json World::save() {
         spdlog::warn("[World] No ItemManager GameObject found during save");
 #endif
     }
+
+#if DZEMIKK_DEV_TOOLS
+    auto itemsEnd = std::chrono::steady_clock::now();
+    auto itemsUs = std::chrono::duration_cast<std::chrono::microseconds>(itemsEnd - itemsStart).count();
+    spdlog::info("[World::save] Items serialization: {} us", itemsUs);
+#endif
+
+#if DZEMIKK_DEV_TOOLS
+    auto enemiesStart = std::chrono::steady_clock::now();
+#endif
 
     auto* enemyManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("EnemyManager");
     if (enemyManagerGo) {
@@ -391,17 +431,47 @@ nlohmann::json World::save() {
 #endif
     }
 
+#if DZEMIKK_DEV_TOOLS
+    auto enemiesEnd = std::chrono::steady_clock::now();
+    auto enemiesUs = std::chrono::duration_cast<std::chrono::microseconds>(enemiesEnd - enemiesStart).count();
+    spdlog::info("[World::save] Enemies serialization: {} us", enemiesUs);
+#endif
+
+#if DZEMIKK_DEV_TOOLS
+    auto totemsStart = std::chrono::steady_clock::now();
+#endif
+
     auto* totemManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("TotemManager");
     if (totemManagerGo) {
         auto* tm = totemManagerGo->getComponent<TotemManager>();
         j["totems"] = tm->saveState()["totems"];
     }
 
+#if DZEMIKK_DEV_TOOLS
+    auto totemsEnd = std::chrono::steady_clock::now();
+    auto totemsUs = std::chrono::duration_cast<std::chrono::microseconds>(totemsEnd - totemsStart).count();
+    spdlog::info("[World::save] Totems serialization: {} us", totemsUs);
+#endif
+
+#if DZEMIKK_DEV_TOOLS
+    auto dialogsStart = std::chrono::steady_clock::now();
+#endif
+
     auto* dialogManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("DialogManager");
     if (dialogManagerGo) {
         auto* dm = dialogManagerGo->getComponent<DialogManager>();
         j["dialogs"] = dm->saveState();
     }
+
+#if DZEMIKK_DEV_TOOLS
+    auto dialogsEnd = std::chrono::steady_clock::now();
+    auto dialogsUs = std::chrono::duration_cast<std::chrono::microseconds>(dialogsEnd - dialogsStart).count();
+    spdlog::info("[World::save] Dialogs serialization: {} us", dialogsUs);
+#endif
+
+#if DZEMIKK_DEV_TOOLS
+    auto playerStart = std::chrono::steady_clock::now();
+#endif
 
     auto* playerGO = _game->getCurrentScene().get()->findGameObjectByTag("Player");
     if (playerGO) {
@@ -434,13 +504,260 @@ nlohmann::json World::save() {
         }
     }
 
+#if DZEMIKK_DEV_TOOLS
+    auto playerEnd = std::chrono::steady_clock::now();
+    auto playerUs = std::chrono::duration_cast<std::chrono::microseconds>(playerEnd - playerStart).count();
+    spdlog::info("[World::save] Player serialization: {} us", playerUs);
+#endif
+
     return j;
 }
 
+void World::waitForSaveCompletion() {
+    if (_saveFuture.valid()) {
+        _saveFuture.wait();
+    }
+}
+
+void World::updateSnapshot() {
+#if DZEMIKK_DEV_TOOLS
+    auto totalStart = std::chrono::steady_clock::now();
+#endif
+
+#if DZEMIKK_DEV_TOOLS
+    auto gridStart = std::chrono::steady_clock::now();
+#endif
+
+    for (const auto& [chunkId, chunk] : _grid.getChunks()) {
+        if (!chunk->isSaveDirty()) {
+            continue;
+        }
+
+        auto chunkKey = boost::uuids::to_string(chunkId);
+
+        if (!_snapshot.isValid()) {
+            continue;
+        }
+
+        for (const auto& [coord, cell] : chunk->getHexes()) {
+            if (!cell->isSaveDirty()) {
+                continue;
+            }
+
+            HexCell::State state = cell->getState();
+            if (state == HexCell::State::Prop) {
+                state = HexCell::State::Empty;
+            }
+
+            SaveSnapshot::CellData cellData;
+            cellData.coord = cell->getCoord();
+            cellData.state = static_cast<uint8_t>(state);
+            cellData.type = static_cast<uint8_t>(cell->getType());
+            cellData.genState = static_cast<uint8_t>(cell->getGenState());
+            cellData.height = cell->getHeight();
+            cellData.checkpoint = cell->isCheckpoint();
+            cellData.checkpointUsed = cell->isCheckpointUsed();
+
+            _snapshot.updateCell(chunkKey, cellData);
+            cell->clearSaveDirty();
+        }
+
+        chunk->clearSaveDirty();
+    }
+
+#if DZEMIKK_DEV_TOOLS
+    auto gridEnd = std::chrono::steady_clock::now();
+    auto gridUs = std::chrono::duration_cast<std::chrono::microseconds>(gridEnd - gridStart).count();
+    spdlog::info("[World::updateSnapshot] Grid cells update: {} us", gridUs);
+#endif
+
+#if DZEMIKK_DEV_TOOLS
+    auto itemsStart = std::chrono::steady_clock::now();
+#endif
+
+    auto* itemManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("ItemManager");
+    if (itemManagerGo) {
+        auto* im = itemManagerGo->getComponent<ItemManager>();
+        auto consumedIds = im->getAndClearConsumedItemIds();
+        for (const auto& id : consumedIds) {
+            _snapshot.removeItem(boost::uuids::to_string(id));
+        }
+    }
+
+#if DZEMIKK_DEV_TOOLS
+    auto itemsEnd = std::chrono::steady_clock::now();
+    auto itemsUs = std::chrono::duration_cast<std::chrono::microseconds>(itemsEnd - itemsStart).count();
+    spdlog::info("[World::updateSnapshot] Items update: {} us", itemsUs);
+#endif
+
+#if DZEMIKK_DEV_TOOLS
+    auto enemiesStart = std::chrono::steady_clock::now();
+#endif
+
+    auto* enemyManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("EnemyManager");
+    if (enemyManagerGo) {
+        auto* em = enemyManagerGo->getComponent<EnemyManager>();
+        auto removedIds = em->getAndClearRemovedEnemyIds();
+        for (const auto& id : removedIds) {
+            _snapshot.removeEnemy(boost::uuids::to_string(id));
+        }
+    }
+
+#if DZEMIKK_DEV_TOOLS
+    auto enemiesEnd = std::chrono::steady_clock::now();
+    auto enemiesUs = std::chrono::duration_cast<std::chrono::microseconds>(enemiesEnd - enemiesStart).count();
+    spdlog::info("[World::updateSnapshot] Enemies update: {} us", enemiesUs);
+#endif
+
+#if DZEMIKK_DEV_TOOLS
+    auto totemsStart = std::chrono::steady_clock::now();
+#endif
+
+    auto* totemManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("TotemManager");
+    if (totemManagerGo) {
+        auto* tm = totemManagerGo->getComponent<TotemManager>();
+        auto changedTotems = tm->getAndClearChangedTotemIds();
+        for (const auto& [id, used] : changedTotems) {
+            _snapshot.updateTotemUsed(boost::uuids::to_string(id), used);
+        }
+    }
+
+#if DZEMIKK_DEV_TOOLS
+    auto totemsEnd = std::chrono::steady_clock::now();
+    auto totemsUs = std::chrono::duration_cast<std::chrono::microseconds>(totemsEnd - totemsStart).count();
+    spdlog::info("[World::updateSnapshot] Totems update: {} us", totemsUs);
+#endif
+
+#if DZEMIKK_DEV_TOOLS
+    auto dialogsStart = std::chrono::steady_clock::now();
+#endif
+
+    auto* dialogManagerGo = _game->getCurrentScene().get()->findGameObjectByTag("DialogManager");
+    if (dialogManagerGo) {
+        auto* dm = dialogManagerGo->getComponent<DialogManager>();
+        _snapshot.setDialogs(dm->saveState());
+    }
+
+#if DZEMIKK_DEV_TOOLS
+    auto dialogsEnd = std::chrono::steady_clock::now();
+    auto dialogsUs = std::chrono::duration_cast<std::chrono::microseconds>(dialogsEnd - dialogsStart).count();
+    spdlog::info("[World::updateSnapshot] Dialogs update: {} us", dialogsUs);
+#endif
+
+#if DZEMIKK_DEV_TOOLS
+    auto playerStart = std::chrono::steady_clock::now();
+#endif
+
+    auto* playerGO = _game->getCurrentScene().get()->findGameObjectByTag("Player");
+    if (playerGO) {
+        nlohmann::json playerData;
+
+        if (auto* playerEntity = playerGO->getComponent<PlayerEntity>();
+            playerEntity && playerEntity->getCell()) {
+            playerData["position"] = playerEntity->getCell()->getCoord();
+        }
+
+        if (auto* healthGO =
+                _game->getCurrentScene().get()->findGameObjectByTag("PlayerHealthSystem");
+            healthGO) {
+            if (auto* health = healthGO->getComponent<HealthSystem>(); health) {
+                playerData["health"] = health->getCurrentHealth();
+                playerData["maxHealth"] = health->getMaxHealth();
+            }
+        }
+
+        if (auto* patternComp = playerGO->getComponent<PlayerPatternComponent>(); patternComp) {
+            for (const auto& entry : patternComp->getPatterns()) {
+                playerData["patterns"].push_back({{"pattern", entry.pattern},
+                                                  {"count", entry.count},
+                                                  {"maxCount", entry.maxCount}});
+            }
+        }
+
+        if (auto* inventory = playerGO->getComponent<Inventory>(); inventory) {
+            for (const auto& [type, count] : inventory->getItems()) {
+                playerData["inventory"][std::to_string(static_cast<uint8_t>(type))] = count;
+            }
+        }
+
+        _snapshot.setPlayer(playerData);
+    }
+
+#if DZEMIKK_DEV_TOOLS
+    auto playerEnd = std::chrono::steady_clock::now();
+    auto playerUs = std::chrono::duration_cast<std::chrono::microseconds>(playerEnd - playerStart).count();
+    spdlog::info("[World::updateSnapshot] Player update: {} us", playerUs);
+#endif
+
+#if DZEMIKK_DEV_TOOLS
+    auto totalEnd = std::chrono::steady_clock::now();
+    auto totalUs = std::chrono::duration_cast<std::chrono::microseconds>(totalEnd - totalStart).count();
+    spdlog::info("[World::updateSnapshot] Total snapshot update: {} us", totalUs);
+#endif
+}
+
 void World::saveToFile(const std::string& filename) {
-    std::ofstream out(filename);
-    out << save().dump(4);
-    out.close();
+#if DZEMIKK_DEV_TOOLS
+    auto totalStart = std::chrono::steady_clock::now();
+#endif
+
+    waitForSaveCompletion();
+
+    bool isFirstSave = !_snapshot.isValid();
+
+    if (isFirstSave) {
+#if DZEMIKK_DEV_TOOLS
+        auto jsonSaveStart = std::chrono::steady_clock::now();
+#endif
+        auto fullJson = save();
+#if DZEMIKK_DEV_TOOLS
+        auto jsonSaveEnd = std::chrono::steady_clock::now();
+        auto jsonSaveUs = std::chrono::duration_cast<std::chrono::microseconds>(jsonSaveEnd - jsonSaveStart).count();
+        spdlog::info("[World::saveToFile] Full JSON save: {} us", jsonSaveUs);
+#endif
+
+#if DZEMIKK_DEV_TOOLS
+        auto buildSnapshotStart = std::chrono::steady_clock::now();
+#endif
+        _snapshot.buildFull(fullJson);
+#if DZEMIKK_DEV_TOOLS
+        auto buildSnapshotEnd = std::chrono::steady_clock::now();
+        auto buildSnapshotUs = std::chrono::duration_cast<std::chrono::microseconds>(buildSnapshotEnd - buildSnapshotStart).count();
+        spdlog::info("[World::saveToFile] Build snapshot from JSON: {} us", buildSnapshotUs);
+#endif
+    } else {
+        updateSnapshot();
+    }
+
+#if DZEMIKK_DEV_TOOLS
+    auto serializeStart = std::chrono::steady_clock::now();
+#endif
+    auto serializedJson = _snapshot.serialize();
+#if DZEMIKK_DEV_TOOLS
+    auto serializeEnd = std::chrono::steady_clock::now();
+    auto serializeUs = std::chrono::duration_cast<std::chrono::microseconds>(serializeEnd - serializeStart).count();
+    spdlog::info("[World::saveToFile] Snapshot serialize: {} us", serializeUs);
+#endif
+
+    _saveFuture = std::async(std::launch::async, [filename, json = std::move(serializedJson)]() {
+#if DZEMIKK_DEV_TOOLS
+        auto fileStart = std::chrono::steady_clock::now();
+#endif
+        std::ofstream out(filename);
+        out << json.dump(4);
+        out.close();
+#if DZEMIKK_DEV_TOOLS
+        auto fileEnd = std::chrono::steady_clock::now();
+        auto fileUs = std::chrono::duration_cast<std::chrono::microseconds>(fileEnd - fileStart).count();
+        spdlog::info("[World::saveToFile] File write (worker thread): {} us", fileUs);
+#endif
+    });
+
+#if DZEMIKK_DEV_TOOLS
+    auto totalEnd = std::chrono::steady_clock::now();
+    auto totalUs = std::chrono::duration_cast<std::chrono::microseconds>(totalEnd - totalStart).count();
+    spdlog::info("[World::saveToFile] Total main thread time: {} us", totalUs);
+#endif
 }
 
 void World::update(double dt) {
