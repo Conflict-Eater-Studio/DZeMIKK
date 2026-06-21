@@ -49,7 +49,8 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
 
     void spawnForestChunk(const std::string& chunkName);
 
-    void generatePathBetweenChunks(const std::string& chunkA, const std::string& chunkB);
+    void generatePathBetweenChunks(const std::string& chunkA, const std::string& chunkB,
+                                   HexCell::Type chunkAtype, HexCell::Type chunkBtype);
   private:
     struct ForestCluster {
         glm::vec3 center;
@@ -76,6 +77,8 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
     }
 
     HexCell* getTopHex(const std::vector<std::shared_ptr<HexCell>>& hexes);
+    HexCell* getExtremeHexOfType(const std::vector<std::shared_ptr<HexCell>>& hexes,
+                                            HexCell::Type type, bool top);
     void generatePath(const HexCoord& start, const HexCoord& end);
     std::vector<HexCoord> findPath(const HexCoord& start, const HexCoord& goal);
 };

@@ -275,18 +275,33 @@ void game::WorldVisualManager::spawnForestChunk(const std::string& chunkName) {
 }
 
 void game::WorldVisualManager::generatePathBetweenChunks(const std::string& chunkA,
-                                                   const std::string& chunkB) {
+                                                         const std::string& chunkB,
+                                                         HexCell::Type chunkAtype,
+                                                         HexCell::Type chunkBtype) {
 
     auto chunks = _world->getVisualHexesByChunk();
 
     auto itA = chunks.find(chunkA);
     auto itB = chunks.find(chunkB);
 
+    if (itB == chunks.end()) {
+        auto itB = chunks.find(chunkA);
+    }
+
     if (itA == chunks.end() || itB == chunks.end())
         return;
 
     HexCell* start = getTopHex(itA->second);
     HexCell* target = getTopHex(itB->second);
+
+    if (chunkAtype == HexCell::Type::BlockingBridge || chunkAtype == HexCell::Type::BlockingPattern || chunkAtype == HexCell::Type::Bridge) {
+        start = getExtremeHexOfType(itA->second, chunkAtype, true);
+    }
+
+    if (chunkBtype == HexCell::Type::BlockingBridge ||
+        chunkBtype == HexCell::Type::BlockingPattern || chunkBtype == HexCell::Type::Bridge || chunkBtype == HexCell::Type::EnemyBattleHex) {
+        target = getExtremeHexOfType(itB->second, chunkBtype, true);
+    }
 
     if (!start || !target)
         return;
@@ -308,6 +323,43 @@ game::HexCell* game::WorldVisualManager::getTopHex(const std::vector<std::shared
         if (t->getPosition().z < bestZ) {
             bestZ = t->getPosition().z;
             result = hex.get();
+        }
+    }
+
+    return result;
+}
+
+game::HexCell*
+game::WorldVisualManager::getExtremeHexOfType(const std::vector<std::shared_ptr<HexCell>>& hexes,
+                                              HexCell::Type type, bool top) {
+    HexCell* result = nullptr;
+
+    float bestZ = top ? -FLT_MAX : FLT_MAX;
+
+    for (auto& hex : hexes) {
+
+        if (!hex)
+            continue;
+
+        if (hex->getType() != type)
+            continue;
+
+        auto* t = _world->getHexTransformByCell(*hex);
+        if (!t)
+            continue;
+
+        float z = t->getPosition().z;
+
+        if (top) {
+            if (z > bestZ) {
+                bestZ = z;
+                result = hex.get();
+            }
+        } else {
+            if (z < bestZ) {
+                bestZ = z;
+                result = hex.get();
+            }
         }
     }
 
@@ -410,7 +462,9 @@ bool game::WorldVisualManager::isHexFree(HexCell* hex) const {
         if (neighbor->getType() == HexCell::Type::EnemyBattleHex || 
             neighbor->getType() == HexCell::Type::BlockingBridge ||
             neighbor->getType() == HexCell::Type::BlockingPattern ||
-            neighbor->getType() == HexCell::Type::Bridge)
+            neighbor->getType() == HexCell::Type::Bridge ||
+            neighbor->getState() == HexCell::State::Item ||
+            neighbor->getState() == HexCell::State::Totem)
             return false;
     }
 
