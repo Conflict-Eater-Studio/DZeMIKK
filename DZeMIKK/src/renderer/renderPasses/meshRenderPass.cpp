@@ -203,6 +203,10 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
                 shader->setInt("hasEmissiveMap", 0);
             }
 
+            shader->setVec3("glowColor", {1.0f, 1.0f, 1.0f});
+            shader->setFloat("glowStrength", 2.0f);
+            shader->setFloat("glowPower", 4.0f);
+
             mesh->drawInstanced(batch.models, batch.instanceVBO);
 
             for (int i = 0; i < 6; i++) {

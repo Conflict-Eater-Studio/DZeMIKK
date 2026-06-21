@@ -68,22 +68,7 @@ class World : public dzemikk::MonoBehaviour {
         return _worldData;
     }
 
-    void setMaterial(std::shared_ptr<dzemikk::Material> material) {
-        _material = material;
-
-        _hexMaterials[HexCell::Type::Normal] = _material;
-        _hexMaterials[HexCell::Type::EnemyBattleHex] = _material.get()->clone();
-        _hexMaterials[HexCell::Type::PlayerBattleHex] = _material.get()->clone();
-        _hexMaterials[HexCell::Type::Bridge] = _material.get()->clone();
-        _hexMaterials[HexCell::Type::BlockingBridge] = _material.get()->clone();
-        _hexMaterials[HexCell::Type::BlockingPattern] = _material.get()->clone();
-
-        _hexMaterialsGenState[HexCell::GenState::Blocked] = _material.get()->clone();
-        _hexMaterialsGenState[HexCell::GenState::Protected] = _material.get()->clone();
-        _hexMaterialsGenState[HexCell::GenState::Normal] = _material.get()->clone();
-
-        _hexMaterialsVisualState[HexCell::VisualState::Path] = _material.get()->clone();
-    }
+    void setMaterial(std::shared_ptr<dzemikk::Material> material);
 
     void setPlayer(PlayerEntity* playerEntity);
 

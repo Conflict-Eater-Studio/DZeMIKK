@@ -387,7 +387,7 @@ void Engine::updateCameraArrows(float speed) {
         getAssetManager()->reload<dzemikk::Model>("models/Flair(1).fbx");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_Y) == GLFW_PRESS) {
-        getAssetManager()->reload<dzemikk::Shader>("shaders/vignette");
+        getAssetManager()->reload<dzemikk::Shader>("shaders/PBRFresnelGlow");
     }
     if (glfwGetKey(_mainWindow->nativeHandle(), GLFW_KEY_U) == GLFW_PRESS) {
         getAssetManager()->reload<dzemikk::Skybox>("textures/Daylight Box_Pieces");
