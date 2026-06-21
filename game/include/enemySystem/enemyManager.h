@@ -82,6 +82,8 @@ class EnemyManager : public dzemikk::MonoBehaviour {
      */
     [[nodiscard]] EnemyEntity* getEnemyByCell(HexCell* cell) const;
 
+    [[nodiscard]] EnemyEntity* getEnemyByTerritoryCell(HexCell* cell) const;
+
 #pragma endregion
 
 #pragma region Save Load

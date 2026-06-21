@@ -203,7 +203,7 @@ void dzemikk::MeshRenderPass::renderMeshBatches(RenderContext& ctx) {
                 shader->setInt("hasEmissiveMap", 0);
             }
 
-            shader->setVec3("glowColor", {1.0f, 1.0f, 1.0f});
+            shader->setVec3("glowColor", {0.573, 0.435, 1.0});
             shader->setFloat("glowStrength", 2.0f);
             shader->setFloat("glowPower", 4.0f);
 

@@ -11,6 +11,7 @@
 #include "renderer/renderPasses/imageRenderPass.h"
 #include "renderer/renderPasses/textRenderPass.h"
 #include "renderer/renderPasses/uITextRenderPass.h"
+#include "renderer/renderPasses/BloomRenderPass.h"
 
 #include <GLFW/glfw3.h>
 #include <algorithm>
@@ -42,6 +43,9 @@ void dzemikk::Renderer::initialize() {
     addUIPass<ImageRenderPass>();
     addUIPass<TextRenderPass>();
     addUIPass<UITextRenderPass>();
+
+    _bloomRenderPass.setEngine(_engine);
+    _bloomRenderPass.initialize();
 
     glGenBuffers(1, &_uboMatrices);
 
@@ -100,6 +104,7 @@ void dzemikk::Renderer::render() {
 
     _sceneFramebuffer->unbind();
 
+    _bloomRenderPass.execute(_context);
     _postProcessingPass.execute(_context);
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);

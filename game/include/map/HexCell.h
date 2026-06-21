@@ -28,7 +28,7 @@ class HexCell {
         BlockingBridge
     };
     enum class GenState : uint8_t { Normal, Blocked, Protected };
-    enum class VisualState : uint8_t { None, Path, Signpost};
+    enum class VisualState : uint8_t { None, Path, Signpost, LightUpEnemyBattleHex};
 
     HexCell() : _coord(0, 0) {}
     HexCell(HexCoord coord, State state, Type type, GenState genState = GenState::Normal,

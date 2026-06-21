@@ -13,6 +13,7 @@
 
 #include "renderer/framebuffer.h"
 #include "renderer/renderPasses/postProcessRenderPass.h"
+#include "renderer/renderPasses/BloomRenderPass.h"
 
 namespace dzemikk {
     class Camera;
@@ -130,6 +131,7 @@ namespace dzemikk {
         std::vector<std::unique_ptr<IRenderPass>> _passes;
         std::vector<std::unique_ptr<IRenderPass>> _uiPasses;
         PostProcessRenderPass _postProcessingPass;
+        BloomRenderPass _bloomRenderPass;
 
         /**
          * @brief Fast lookup map for render passes by type.

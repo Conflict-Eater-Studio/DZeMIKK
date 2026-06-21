@@ -386,7 +386,7 @@ void Game::setupSkybox() {
     dzemikk::AssetManager::AssetTask<dzemikk::Skybox, SkyboxInitContext> taskSk;
     taskSk.context = sCtx;
     taskSk.onLoad = onSkyboxLoad;
-    _engine->getAssetManager()->getAsync("textures/Skybox", taskSk);
+    _engine->getAssetManager()->getAsync("textures/Skybox_darker", taskSk);
 }
 
 void Game::setupMainCamera() {
@@ -620,6 +620,14 @@ void Game::setupInputCallbacks() {
     static std::unordered_map<dzemikk::MeshRenderer*, std::shared_ptr<dzemikk::Material>>
         baseMaterials;
 
+    static game::EnemyEntity* lastHighlightedEnemy = nullptr;
+    static game::EnemyEntity* animEnemy = nullptr;
+    static std::vector<game::HexCell*> animCells;
+    static size_t animIndex = 0;
+    static int animFrameCounter = 0;
+    static const int animFrameDelay = 2; 
+    static game::EnemyEntity* requestedEnemy = nullptr;
+
     _engine->SetUserUpdateCallback([this]() {
         if (!_engine || !_engine->getInput() ||
             !_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
@@ -637,9 +645,107 @@ void Game::setupInputCallbacks() {
 
         dzemikk::MeshRenderer* currentRenderer = nullptr;
 
+        game::EnemyEntity* currentEnemy = nullptr;
+
         if (collider) {
             currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
+
+            auto* enemyManagerGO = _mainScene.get()->findGameObjectByName("EnemyManager");
+            auto* manager = enemyManagerGO->getComponent<game::EnemyManager>();
+
+            auto* wh = collider->getOwner()->getComponent<game::WorldHex>();
+
+            if (wh && wh->getHexCell()) {
+                auto cell = wh->getHexCell();
+
+                currentEnemy = manager->getEnemyByTerritoryCell(cell.get());
+
+                if (currentEnemy != requestedEnemy) {
+
+                    requestedEnemy = currentEnemy;
+
+                    if (currentEnemy) {
+                        animEnemy = currentEnemy;
+
+                        animCells.clear();
+                        animIndex = 0;
+                        animFrameCounter = 0;
+
+                        for (auto* c : currentEnemy->getTerritory()) {
+                            animCells.push_back(c);
+                        }
+                    }
+                }
+            }
         }
+
+        auto clearAnim = [&]() {
+            for (auto* c : animCells) {
+                c->setVisualState(game::HexCell::VisualState::None);
+                c->setDirty(true);
+            }
+
+            animEnemy = nullptr;
+            animCells.clear();
+            animIndex = 0;
+            animFrameCounter = 0;
+        };
+
+        if (!currentEnemy) {
+            if (lastHighlightedEnemy) {
+
+                for (auto* tCell : lastHighlightedEnemy->getTerritory()) {
+                    tCell->setVisualState(game::HexCell::VisualState::None);
+                    tCell->setDirty(true);
+                }
+
+                lastHighlightedEnemy = nullptr;
+            }
+
+            clearAnim(); 
+        } else if (currentEnemy) {
+            lastHighlightedEnemy = currentEnemy;
+        }
+
+        if (currentEnemy != requestedEnemy) {
+            clearAnim();
+
+            requestedEnemy = currentEnemy;
+
+            if (currentEnemy) {
+                animEnemy = currentEnemy;
+
+                animCells.clear();
+                animIndex = 0;
+                animFrameCounter = 0;
+
+                for (auto* c : currentEnemy->getTerritory()) {
+                    animCells.push_back(c);
+                }
+            }
+        }
+
+        if (animEnemy && animIndex < animCells.size()) {
+
+            animFrameCounter++;
+
+            if (animFrameCounter >= animFrameDelay) {
+
+                animFrameCounter = 0;
+
+                auto* cell = animCells[animIndex];
+
+                cell->setVisualState(game::HexCell::VisualState::LightUpEnemyBattleHex);
+                cell->setDirty(true);
+
+                animIndex++;
+            }
+
+            if (animIndex >= animCells.size()) {
+                animEnemy = nullptr;
+                animCells.clear();
+            }
+        }   
 
         constexpr float hoverStrength = 0.5F;
 

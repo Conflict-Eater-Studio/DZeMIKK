@@ -328,9 +328,16 @@ void World::update(double dt) {
             }
 
             if (cell->getHexCell()->getType() == HexCell::Type::EnemyBattleHex) {
-                cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
-                    0, _hexMaterials[HexCell::Type::EnemyBattleHex]);
-                color = glm::vec4(0.1F, 0.0F, 0.4F, 1.0F);
+                if (cell->getHexCell()->getVisualState() ==
+                    HexCell::VisualState::LightUpEnemyBattleHex) {
+                    cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
+                        0, _hexMaterialsVisualState[HexCell::VisualState::LightUpEnemyBattleHex]);
+                    color = glm::vec4(0.173, 0.106, 0.388, 1.0F);
+                } else {
+                    cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
+                        0, _hexMaterials[HexCell::Type::EnemyBattleHex]);
+                    color = glm::vec4(0.1F, 0.0F, 0.4F, 1.0F);
+                }
             }
 
             if (cell->getHexCell()->getType() == HexCell::Type::PlayerBattleHex) {
@@ -461,8 +468,7 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
     auto worldPos = cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight());
     obj->transform()->setPosition(worldPos);
     obj->transform()->setScale({1.0F, 1.0F, 1.0F});
-    obj->transform()->setRotation(
-        glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
+    obj->transform()->setRotation(glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
     auto* meshRenderer = obj->addComponent<dzemikk::MeshRenderer>();
     meshRenderer->setModel(_hexModel);
     meshRenderer->setCullingRadius(60.0F);
@@ -492,8 +498,14 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
         meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(0.0F, 1.0F, 0.0F, 1.0F));
     }
     if (cell->getType() == HexCell::Type::EnemyBattleHex) {
-        meshRenderer->setMaterial(0, _hexMaterials[HexCell::Type::EnemyBattleHex]);
-        meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(1.0F, 0.0F, 0.0F, 1.0F));
+        if (cell->getVisualState() == HexCell::VisualState::LightUpEnemyBattleHex) {
+            meshRenderer->setMaterial(
+                0, _hexMaterialsVisualState[HexCell::VisualState::LightUpEnemyBattleHex]);
+            meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(0.173, 0.106, 0.388, 1.0F));
+        } else {
+            meshRenderer->setMaterial(0, _hexMaterials[HexCell::Type::EnemyBattleHex]);
+            meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(0.1F, 0.0F, 0.4F, 1.0F));
+        }
     }
 
     auto texture = _game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
@@ -517,11 +529,7 @@ void World::setMaterial(std::shared_ptr<dzemikk::Material> material) {
 
     _hexMaterials[HexCell::Type::Normal] = _material;
 
-    auto shader =
-        _game->getEngine()->getAssetManager()->get<dzemikk::Shader>("shaders/PBRFresnelGlow");
     _hexMaterials[HexCell::Type::EnemyBattleHex] = _material.get()->clone();
-    _hexMaterials[HexCell::Type::EnemyBattleHex]->setShader(shader);
-
     _hexMaterials[HexCell::Type::PlayerBattleHex] = _material.get()->clone();
     _hexMaterials[HexCell::Type::Bridge] = _material.get()->clone();
     _hexMaterials[HexCell::Type::BlockingBridge] = _material.get()->clone();
@@ -532,6 +540,12 @@ void World::setMaterial(std::shared_ptr<dzemikk::Material> material) {
     _hexMaterialsGenState[HexCell::GenState::Normal] = _material.get()->clone();
 
     _hexMaterialsVisualState[HexCell::VisualState::Path] = _material.get()->clone();
+
+    auto shader =
+        _game->getEngine()->getAssetManager()->get<dzemikk::Shader>("shaders/PBRFresnelGlow");
+    _hexMaterialsVisualState[HexCell::VisualState::LightUpEnemyBattleHex] = _material.get()->clone();
+    _hexMaterialsVisualState[HexCell::VisualState::LightUpEnemyBattleHex]->setShader(shader);
+
 }
 
 void World::setPlayer(PlayerEntity* playerEntity) {

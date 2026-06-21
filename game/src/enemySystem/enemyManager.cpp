@@ -280,6 +280,26 @@ game::EnemyEntity* game::EnemyManager::getEnemyByCell(game::HexCell* cell) const
     return nullptr;
 }
 
+game::EnemyEntity* game::EnemyManager::getEnemyByTerritoryCell(HexCell* cell) const {
+    if (!cell)
+        return nullptr;
+
+    for (const auto& [chunkId, enemies] : _spawnedEnemies) {
+        for (EnemyEntity* enemy : enemies) {
+            if (!enemy)
+                continue;
+
+            const auto& territory = enemy->getTerritory();
+
+            if (territory.find(cell) != territory.end()) {
+                return enemy;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
 nlohmann::json game::EnemyManager::saveState() const {
     nlohmann::json j;
     for (const auto& [chunkId, enemies] : _spawnedEnemies) {
