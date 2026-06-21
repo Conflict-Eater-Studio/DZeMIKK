@@ -576,6 +576,17 @@ void Game::setupWorldVisuals() {
     worldVisualManager->generatePathBetweenChunks("chunkMain9", "chunkMain10",game::HexCell::Type::BlockingBridge, game::HexCell::Type::BlockingBridge);
     worldVisualManager->generatePathBetweenChunks("chunkMain10", "", game::HexCell::Type::BlockingBridge, game::HexCell::Type::EnemyBattleHex);
 
+    worldVisualManager->spawnSignToChunk("chunkMain0", "chunkMain1");
+    worldVisualManager->spawnSignToChunk("chunkMain1", "chunkMain2");
+    worldVisualManager->spawnSignToChunk("chunkMain2", "chunkMain3");
+    worldVisualManager->spawnSignToChunk("chunkMain3", "chunkMain4");
+    worldVisualManager->spawnSignToChunk("chunkMain4", "chunkMain5");
+    worldVisualManager->spawnSignToChunk("chunkMain5", "chunkMain6");
+    worldVisualManager->spawnSignToChunk("chunkMain6", "chunkMain7");
+    worldVisualManager->spawnSignToChunk("chunkMain7", "chunkMain8");
+    worldVisualManager->spawnSignToChunk("chunkMain8", "chunkMain9");
+    worldVisualManager->spawnSignToChunk("chunkMain9", "chunkMain10");
+
     worldVisualManager->spawnForestChunk("chunkMain0");
     worldVisualManager->spawnForestChunk("chunkMain1");
     worldVisualManager->spawnForestChunk("chunkMain2");

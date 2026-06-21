@@ -43,6 +43,7 @@ void game::WorldVisualManager::init() {
     _cache["Tree_bush"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Tree_bush.prefab");
     _cache["Tree_smal"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Tree_smal.prefab");
     _cache["Grass1"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Grass1.prefab");
+    _cache["Signpost"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Signpost.prefab");
 }
 
 void game::WorldVisualManager::spawnPrefabOnChunk(const std::string& chunkName,
@@ -309,6 +310,127 @@ void game::WorldVisualManager::generatePathBetweenChunks(const std::string& chun
     generatePath(start->getCoord(), target->getCoord());
 }
 
+void game::WorldVisualManager::spawnSignToChunk(const std::string& sourceChunk,
+                                                const std::string& targetChunk) {
+    if (!_world)
+        return;
+
+    auto chunks = _world->getVisualHexesByChunk();
+
+    auto sourceIt = chunks.find(sourceChunk);
+    auto targetIt = chunks.find(targetChunk);
+
+    if (sourceIt == chunks.end() || targetIt == chunks.end())
+        return;
+
+    HexCell* bridgeHex = nullptr;
+
+    for (auto& hexPtr : targetIt->second) {
+        if (!hexPtr)
+            continue;
+
+        if (hexPtr->getType() == HexCell::Type::Bridge ||
+            hexPtr->getType() == HexCell::Type::BlockingBridge) {
+            bridgeHex = hexPtr.get();
+            break;
+        }
+    }
+
+    if (!bridgeHex)
+        return;
+
+    auto* bridgeTransform = _world->getHexTransformByCell(*bridgeHex);
+
+    if (!bridgeTransform)
+        return;
+
+    std::vector<HexCell*> candidates;
+
+    for (auto& hexPtr : sourceIt->second) {
+
+        auto* hex = hexPtr.get();
+
+        if (!hex || !isHexFree(hex))
+            continue;
+
+        auto* hexTransform = _world->getHexTransformByCell(*hex);
+
+        if (!hexTransform)
+            continue;
+
+        bool hasPathNeighbour = false;
+        glm::vec3 pathPos;
+
+        for (const auto& neighbourCoord : HexCoord::getNeighbors(hex->getCoord())) {
+
+            auto neighbour = _world->getGrid()->getCell(neighbourCoord);
+
+            if (!neighbour)
+                continue;
+
+            if (neighbour->getVisualState() != HexCell::VisualState::Path)
+                continue;
+
+            auto* pathTransform = _world->getHexTransformByCell(*neighbour);
+
+            if (!pathTransform)
+                continue;
+
+            hasPathNeighbour = true;
+            pathPos = pathTransform->getPosition();
+            break;
+        }
+
+        if (!hasPathNeighbour)
+            continue;
+
+        glm::vec3 signPos = hexTransform->getPosition();
+        glm::vec3 targetPos = bridgeTransform->getPosition();
+
+        glm::vec2 forward(targetPos.x - pathPos.x, targetPos.z - pathPos.z);
+
+        glm::vec2 side(signPos.x - pathPos.x, signPos.z - pathPos.z);
+
+        float cross = forward.x * side.y - forward.y * side.x;
+
+        if (cross > 0.0f)
+            candidates.push_back(hex);
+    }
+
+    if (candidates.empty())
+        return;
+
+    HexCell* signHex = candidates[rand() % candidates.size()];
+
+    auto* signTransform = _world->getHexTransformByCell(*signHex);
+
+    if (!signTransform)
+        return;
+
+    auto* scene = _world->getOwner()->getScene();
+
+    auto* sign = dzemikk::PrefabSerializer::instantiate(*scene, *_cache["Signpost"].get(),
+                                                        _assetManager, signTransform->getOwner());
+
+    if (!sign)
+        return;
+
+    signHex->setState(HexCell::State::Prop);
+    signHex->setVisualState(HexCell::VisualState::Signpost);
+
+    sign->transform()->setPosition(glm::vec3(0.f));
+
+    glm::vec3 dir = glm::normalize(bridgeTransform->getPosition() - signTransform->getPosition());
+
+    float angle = glm::degrees(std::atan2(dir.x, dir.z));
+
+    constexpr float modelOffset = -180.0f;
+
+    glm::quat rot = glm::angleAxis(glm::radians(angle + modelOffset), glm::vec3(0, 0, 1));
+
+    sign->transform()->setRotation(rot);
+}
+
 game::HexCell* game::WorldVisualManager::getTopHex(const std::vector<std::shared_ptr<HexCell>>& hexes) {
 
     HexCell* result = nullptr;
@@ -438,7 +560,7 @@ bool game::WorldVisualManager::isHexFree(HexCell* hex) const {
     if (hex->getState() == HexCell::State::Prop || hex->getState() == HexCell::State::Item ||
         hex->getState() == HexCell::State::Player || hex->getState() == HexCell::State::Enemy ||
         hex->getState() == HexCell::State::Totem || hex->getState() == HexCell::State::TotemDialog ||
-        hex->getVisualState() == HexCell::VisualState::Path)
+        hex->getVisualState() == HexCell::VisualState::Path || hex->getVisualState() == HexCell::VisualState::Path)
         return false;
 
     if (hex->getType() == HexCell::Type::PlayerBattleHex ||
@@ -464,7 +586,8 @@ bool game::WorldVisualManager::isHexFree(HexCell* hex) const {
             neighbor->getType() == HexCell::Type::BlockingPattern ||
             neighbor->getType() == HexCell::Type::Bridge ||
             neighbor->getState() == HexCell::State::Item ||
-            neighbor->getState() == HexCell::State::Totem)
+            neighbor->getState() == HexCell::State::Totem ||
+            neighbor->getVisualState() == HexCell::VisualState::Signpost)
             return false;
     }
 
