@@ -82,6 +82,14 @@ void game::CombatState::onEnter() {
     auto shader = _game->getEngine()->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
     auto material = std::make_shared<dzemikk::Material>();
     material->setShader(shader);
+    material->setAlbedoTexture(_game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
+        "models/assets/hexy/hex_wypukly/hex_wypukly_BaseColor.png"));
+    material->setEmissiveTexture(_game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
+        "models/assets/hexy/hex_wypukly/hex_wypukly_Emissive.png"));
+    material->setMetallicTexture(_game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
+        "models/assets/hexy/hex_wypukly/hex_wypukly_Metallic.png"));
+    material->setRoughnessTexture(_game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
+        "models/assets/hexy/hex_wypukly/hex_wypukly_Roughness.png"));
 
     _hexMaterials[HexPattern::Type::ATK] = material;
     _hexMaterials[HexPattern::Type::ATK]->setAlbedoColor({1.0F, 0.0F, 0.0F});

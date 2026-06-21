@@ -33,7 +33,7 @@ class ItemEntityHealth : public ItemEntity {
     }
 
   private:
-    float _healAmount{10.0F};
+    float _healAmount{100.0F};
 };
 } // namespace game
 

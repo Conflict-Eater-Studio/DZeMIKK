@@ -1,0 +1,106 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "d3b7a63b-e74c-475c-8a43-89536488a791",
+                        "position": [
+                            0.6000000238418579,
+                            -0.4000000059604645,
+                            3.5999999046325684
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "castsShadows": false,
+                        "color": [
+                            1.0,
+                            0.7647058963775635,
+                            0.0
+                        ],
+                        "intensity": 9.927000045776367,
+                        "range": 10.0,
+                        "type": "PointLight"
+                    }
+                ],
+                "enabled": true,
+                "id": "ba18ef55-f2ca-4d56-a614-efea6eaa2c7e",
+                "name": "Empty",
+                "tags": []
+            }
+        ],
+        "components": [
+            {
+                "id": "84f81dc9-9fa1-4249-bc7b-e32cf2dfbd8a",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "rotation": [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "scale": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "4b313e13-3209-4ede-907c-a15fa84ca6d0",
+                "materials": [
+                    {
+                        "pbr": {
+                            "albedo": [
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "models/assets/znak/znak_BaseColor.png",
+                            "ao": "",
+                            "emissive": "models/assets/znak/znak_Emissive.png",
+                            "metallic": "models/assets/znak/znak_Metallic.png",
+                            "normal": "models/assets/znak/znak_Normal.png",
+                            "roughness": "models/assets/znak/znak_Roughness.png"
+                        }
+                    }
+                ],
+                "model": "models/assets/znak/znak.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "146236ca-baa5-48b6-8ec9-beeef42a7d17",
+        "name": "Signpost",
+        "tags": []
+    }
+}
