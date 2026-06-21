@@ -82,7 +82,7 @@ void game::EnemyManager::addEnemy(const boost::uuids::uuid& chunkId, EnemySpawnC
     }
 
     auto cellPtr = chunk->second->getCell(coord);
-    spawnEnemy(chunkId, cellPtr, config);
+    spawnEnemy(chunkId, cellPtr, config, true);
 }
 
 std::vector<game::HexChunk::HexCellPtr> game::EnemyManager::collectAvailableCells(HexChunk* chunk) {

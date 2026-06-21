@@ -163,6 +163,150 @@ void World::load(const nlohmann::json& def) {
     }
 }
 
+void World::despawnHexVisual(const HexCoord& coord) {
+    if (!_spawnedHexes.contains(coord)) {
+        return;
+    }
+
+    auto* scene = _owner->getScene();
+    for (auto it = _hexTransforms.begin(); it != _hexTransforms.end(); ++it) {
+        auto* transform = *it;
+        if (!transform || !transform->getOwner()) {
+            continue;
+        }
+        auto* worldHex = transform->getOwner()->getComponent<WorldHex>();
+        if (!worldHex || !worldHex->getHexCell()) {
+            continue;
+        }
+        if (worldHex->getHexCell()->getCoord() == coord) {
+            scene->destroyGameObject(transform->getOwner());
+            _hexTransforms.erase(it);
+            break;
+        }
+    }
+
+    _spawnedHexes.erase(coord);
+}
+
+void World::loadDiff(const nlohmann::json& def) {
+    boost::uuids::string_generator gen;
+
+    if (!def.contains("chunkData")) {
+        return;
+    }
+
+    for (const auto& [chunkKey, chunkJson] : def["chunkData"].items()) {
+        auto chunkId = gen(chunkKey);
+        auto* chunk = _grid.getChunkById(chunkId);
+        if (!chunk) {
+            continue;
+        }
+
+        if (chunkJson.contains("cells")) {
+            std::unordered_map<HexCoord, std::shared_ptr<HexCell>> checkpointCells;
+            for (const auto& cellJson : chunkJson["cells"]) {
+                auto coord = cellJson.at("coord").get<HexCoord>();
+                auto state = static_cast<HexCell::State>(cellJson.at("state").get<uint8_t>());
+                auto type = static_cast<HexCell::Type>(cellJson.at("type").get<uint8_t>());
+                auto genState =
+                    static_cast<HexCell::GenState>(cellJson.at("genState").get<uint8_t>());
+
+                auto cell = std::make_shared<HexCell>(coord, state, type, genState);
+
+                if (cellJson.contains("height")) {
+                    cell->setHeight(cellJson.at("height").get<float>());
+                }
+                if (cellJson.contains("checkpoint")) {
+                    cell->setCheckpoint(cellJson.at("checkpoint").get<bool>());
+                }
+                if (cellJson.contains("checkpointUsed")) {
+                    cell->setCheckpointUsed(cellJson.at("checkpointUsed").get<bool>());
+                }
+
+                checkpointCells[coord] = cell;
+            }
+
+            auto& currentHexes = chunk->getHexes();
+
+            std::vector<HexCoord> coordsToRemove;
+            for (const auto& [coord, cell] : currentHexes) {
+                if (!checkpointCells.contains(coord)) {
+                    coordsToRemove.push_back(coord);
+                }
+            }
+
+            for (const auto& coord : coordsToRemove) {
+                chunk->extractCell(coord);
+                despawnHexVisual(coord);
+            }
+
+            for (const auto& [coord, checkpointCell] : checkpointCells) {
+                auto it = currentHexes.find(coord);
+                if (it == currentHexes.end()) {
+                    chunk->insertCell(coord, checkpointCell);
+                    checkpointCell->setParentChunk(chunk);
+                    spawnHexVisual(checkpointCell);
+                } else {
+                    auto& currentCell = it->second;
+                    if (currentCell->getState() != checkpointCell->getState()) {
+                        currentCell->setState(checkpointCell->getState());
+                    }
+                    if (currentCell->getType() != checkpointCell->getType()) {
+                        currentCell->setType(checkpointCell->getType());
+                    }
+                    if (currentCell->getGenState() != checkpointCell->getGenState()) {
+                        currentCell->setGenState(checkpointCell->getGenState());
+                    }
+                    if (currentCell->isCheckpoint() != checkpointCell->isCheckpoint()) {
+                        currentCell->setCheckpoint(checkpointCell->isCheckpoint());
+                    }
+                    if (currentCell->isCheckpointUsed() != checkpointCell->isCheckpointUsed()) {
+                        currentCell->setCheckpointUsed(checkpointCell->isCheckpointUsed());
+                    }
+                }
+            }
+        }
+
+        if (chunkJson.contains("bridges")) {
+            auto parentId = gen(chunkKey);
+            for (const auto& bridgeJson : chunkJson["bridges"]) {
+                auto childId = gen(bridgeJson.at("childPersistantId").get<std::string>());
+                HexGrid::BridgeId bridgeId{parentId, childId};
+
+                HexGrid::BridgeInfo info;
+                info.parentId = parentId;
+                info.childId = childId;
+
+                if (bridgeJson.contains("hexes")) {
+                    for (const auto& hexJson : bridgeJson["hexes"]) {
+                        auto coord = hexJson.get<HexCell>();
+                        auto cell = _grid.getCell(coord.getCoord());
+                        if (cell) {
+                            info.hexes.insert(cell.get());
+                        }
+                    }
+                }
+
+                _grid.loadBridge(bridgeId, std::move(info));
+            }
+        }
+
+        if (chunkJson.contains("blockingPatterns")) {
+            auto chunkIdForBp = gen(chunkKey);
+            for (const auto& bpJson : chunkJson["blockingPatterns"]) {
+                HexGrid::BlockingPatternInfo bp;
+                bp.parentChunkId = gen(bpJson.at("parentPersistantId").get<std::string>());
+                bp.blockedChunkId = gen(bpJson.at("childPersistantId").get<std::string>());
+                bp.pattern = bpJson.at("pattern").get<HexPattern>();
+                bp.occupiedCoords = bpJson.at("coords").get<std::vector<HexCoord>>();
+                bp.unlocked = bpJson.at("unlocked").get<bool>();
+
+                _grid.loadBlockingPattern(chunkIdForBp, std::move(bp));
+            }
+        }
+    }
+}
+
 nlohmann::json World::save() {
     nlohmann::json j;
 

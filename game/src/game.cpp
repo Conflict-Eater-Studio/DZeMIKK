@@ -37,9 +37,9 @@
 #include "scripts/world/world.h"
 #include "scripts/world/worldHex.h"
 #include "utils/perlin.h"
-#include <ecs/components/ui/imageRenderer.h>
 
 #include <GLFW/glfw3.h>
+#include <ecs/components/ui/imageRenderer.h>
 #include <filesystem>
 #include <memory>
 #include <unordered_set>
@@ -61,6 +61,7 @@
 #include "item/itemManager.h"
 #include "player/playerPatternComponent.h"
 #include "player/playerPatternStatsComponent.h"
+#include "scripts/world/worldVisualManager.h"
 #include "stateMachine/cinematicState.h"
 #include "stateMachine/combatState.h"
 #include "stateMachine/explorationState.h"
@@ -81,11 +82,6 @@
 #include <healthSystem.h>
 #include <iostream>
 #include <random>
-
-#include "ui/logoComponent.h"
-#include "ui/uIPulseEffect.h"
-#include "totem/totemDialogEntity.h"
-#include "scripts/world/worldVisualManager.h"
 
 static std::mt19937 rng{std::random_device{}()};
 
@@ -342,9 +338,7 @@ void Game::startGame() {
         "cinematic.endscreen.yes");
 
     dzemikk::UIActionRegistry::get().registerAction(
-        [sceneManager, creditsShared, this](const dzemikk::UIEvent&) { 
-            _engine->exit();
-        },
+        [sceneManager, creditsShared, this](const dzemikk::UIEvent&) { _engine->exit(); },
         "cinematic.endscreen.no");
 
     _mainScene.get()->findGameObjectByName("UI_RevealPatternBtn")->addComponent<UIPulseEffect>();
@@ -448,10 +442,14 @@ void Game::setupWorld() {
     auto shader = _engine->getAssetManager()->get<dzemikk::Shader>("shaders/tile1");
     auto material = std::make_shared<dzemikk::Material>();
     material->setShader(shader);
-    material->setAlbedoTexture(_engine->getAssetManager()->get<dzemikk::Texture>("models/assets/hexy/hex_wypukly/hex_wypukly_BaseColor.png"));
-    material->setEmissiveTexture(_engine->getAssetManager()->get<dzemikk::Texture>("models/assets/hexy/hex_wypukly/hex_wypukly_Emissive.png"));
-    material->setMetallicTexture(_engine->getAssetManager()->get<dzemikk::Texture>("models/assets/hexy/hex_wypukly/hex_wypukly_Metallic.png"));
-    material->setRoughnessTexture(_engine->getAssetManager()->get<dzemikk::Texture>("models/assets/hexy/hex_wypukly/hex_wypukly_Roughness.png"));
+    material->setAlbedoTexture(_engine->getAssetManager()->get<dzemikk::Texture>(
+        "models/assets/hexy/hex_wypukly/hex_wypukly_BaseColor.png"));
+    material->setEmissiveTexture(_engine->getAssetManager()->get<dzemikk::Texture>(
+        "models/assets/hexy/hex_wypukly/hex_wypukly_Emissive.png"));
+    material->setMetallicTexture(_engine->getAssetManager()->get<dzemikk::Texture>(
+        "models/assets/hexy/hex_wypukly/hex_wypukly_Metallic.png"));
+    material->setRoughnessTexture(_engine->getAssetManager()->get<dzemikk::Texture>(
+        "models/assets/hexy/hex_wypukly/hex_wypukly_Roughness.png"));
 
     _worldGO = _mainScene.get()->findGameObjectByName("World");
     _worldGO->addTag("World");
@@ -485,8 +483,8 @@ void Game::setupWorld() {
                              .name = "chunkMain2Sub1",
                              .steps = 15,
                              .dirFromParent = game::HexCoord::Direction::R330,
-                             .unlockPattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
-                                                               game::HexPattern::Type::ATK, 12.0F)});
+                             .unlockPattern = game::HexPattern(
+                                 {{-1, 1}, {0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 12.0F)});
 
         auto chunkMain3 = world->addChunk({.parentPersistantId = chunkMain2,
                                            .name = "chunkMain3",
@@ -494,9 +492,9 @@ void Game::setupWorld() {
                                            .dirFromParent = game::HexCoord::Direction::R30});
 
         auto chunkMain3Sub1 = world->addChunk({.parentPersistantId = chunkMain3,
-                             .name = "chunkMain3Sub1",
-                             .steps = 10,
-                             .dirFromParent = game::HexCoord::Direction::R90});
+                                               .name = "chunkMain3Sub1",
+                                               .steps = 10,
+                                               .dirFromParent = game::HexCoord::Direction::R90});
 
         auto chunkMain4 = world->addChunk({.parentPersistantId = chunkMain3,
                                            .name = "chunkMain4",
@@ -564,17 +562,38 @@ void Game::setupWorldVisuals() {
     worldVisualManager->setAssetManager(_engine->getAssetManager());
     worldVisualManager->setGame(this);
     worldVisualManager->init();
-    worldVisualManager->generatePathBetweenChunks("chunkMain0", "chunkMain1", game::HexCell::Type::Normal, game::HexCell::Type::Bridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain1", "chunkMain2", game::HexCell::Type::Bridge, game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain2", "chunkMain3", game::HexCell::Type::BlockingBridge, game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain3", "chunkMain4", game::HexCell::Type::BlockingBridge, game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain4", "chunkMain5", game::HexCell::Type::BlockingBridge, game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain5", "chunkMain6",game::HexCell::Type::BlockingBridge, game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain6", "chunkMain7",game::HexCell::Type::BlockingBridge, game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain7", "chunkMain8",game::HexCell::Type::BlockingBridge, game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain8", "chunkMain9",game::HexCell::Type::BlockingBridge, game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain9", "chunkMain10",game::HexCell::Type::BlockingBridge, game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain10", "", game::HexCell::Type::BlockingBridge, game::HexCell::Type::EnemyBattleHex);
+    worldVisualManager->generatePathBetweenChunks(
+        "chunkMain0", "chunkMain1", game::HexCell::Type::Normal, game::HexCell::Type::Bridge);
+    worldVisualManager->generatePathBetweenChunks("chunkMain1", "chunkMain2",
+                                                  game::HexCell::Type::Bridge,
+                                                  game::HexCell::Type::BlockingBridge);
+    worldVisualManager->generatePathBetweenChunks("chunkMain2", "chunkMain3",
+                                                  game::HexCell::Type::BlockingBridge,
+                                                  game::HexCell::Type::BlockingBridge);
+    worldVisualManager->generatePathBetweenChunks("chunkMain3", "chunkMain4",
+                                                  game::HexCell::Type::BlockingBridge,
+                                                  game::HexCell::Type::BlockingBridge);
+    worldVisualManager->generatePathBetweenChunks("chunkMain4", "chunkMain5",
+                                                  game::HexCell::Type::BlockingBridge,
+                                                  game::HexCell::Type::BlockingBridge);
+    worldVisualManager->generatePathBetweenChunks("chunkMain5", "chunkMain6",
+                                                  game::HexCell::Type::BlockingBridge,
+                                                  game::HexCell::Type::BlockingBridge);
+    worldVisualManager->generatePathBetweenChunks("chunkMain6", "chunkMain7",
+                                                  game::HexCell::Type::BlockingBridge,
+                                                  game::HexCell::Type::BlockingBridge);
+    worldVisualManager->generatePathBetweenChunks("chunkMain7", "chunkMain8",
+                                                  game::HexCell::Type::BlockingBridge,
+                                                  game::HexCell::Type::BlockingBridge);
+    worldVisualManager->generatePathBetweenChunks("chunkMain8", "chunkMain9",
+                                                  game::HexCell::Type::BlockingBridge,
+                                                  game::HexCell::Type::BlockingBridge);
+    worldVisualManager->generatePathBetweenChunks("chunkMain9", "chunkMain10",
+                                                  game::HexCell::Type::BlockingBridge,
+                                                  game::HexCell::Type::BlockingBridge);
+    worldVisualManager->generatePathBetweenChunks("chunkMain10", "",
+                                                  game::HexCell::Type::BlockingBridge,
+                                                  game::HexCell::Type::EnemyBattleHex);
 
     worldVisualManager->spawnSignToChunk("chunkMain0", "chunkMain1");
     worldVisualManager->spawnSignToChunk("chunkMain1", "chunkMain2");
@@ -740,7 +759,8 @@ void Game::setupPlayer() {
     auto* inventory = playerGO->addComponent<game::Inventory>();
     inventory->setGame(this);
 
-    auto skeleton = playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
+    auto skeleton =
+        playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
     auto* animator = playerGO->getComponent<dzemikk::Animator>();
 
     dzemikk::AnimationClip* idleClip = nullptr;
@@ -750,7 +770,6 @@ void Game::setupPlayer() {
     dzemikk::AnimationClip* forward210Clip = nullptr;
     dzemikk::AnimationClip* forward270Clip = nullptr;
     dzemikk::AnimationClip* forward330Clip = nullptr;
-
 
     float animSpeed = 15.0F;
 
@@ -832,9 +851,9 @@ void Game::setupPlayer() {
     playerHealthSystem->setHealth(300.0F);
     playerHealthSystem->setMaxHealth(300.0F);
     playerHealthSystem->setTextRenderer(
-    playerHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
+        playerHealthGO->findChildByName("Text")->getComponent<dzemikk::UITextRenderer>());
     playerHealthSystem->setSlider(
-    playerHealthGO->findChildByName("Slider")->getComponent<dzemikk::UISlider>());
+        playerHealthGO->findChildByName("Slider")->getComponent<dzemikk::UISlider>());
     // Restore saved player state
     nlohmann::json worldData;
 
@@ -879,8 +898,8 @@ void Game::setupPlayer() {
     } else {
         _playerEntity->teleportTo(_hexGrid->getCell({0, 0}));
 
-        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::ATK, 100.0F),
-                                     5, 5);
+        patternComponent->addPattern(
+            game::HexPattern({{0, 0}}, game::HexPattern::Type::ATK, 100.0F), 5, 5);
         patternComponent->addPattern(
             game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 150.0F), 5, 5);
         patternComponent->addPattern(
@@ -889,16 +908,18 @@ void Game::setupPlayer() {
             game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {0, 1}}, game::HexPattern::Type::ATK, 25.0F),
             5, 5);
 
-        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::DEF, 10.0F), 5, 5);
+        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::DEF, 10.0F),
+                                     5, 5);
         patternComponent->addPattern(
             game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::DEF, 15.0F), 5, 5);
         patternComponent->addPattern(
             game::HexPattern({{0, 0}, {1, -1}, {2, -2}}, game::HexPattern::Type::DEF, 20.0F), 5, 5);
-        patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {2, -1}}, game::HexPattern::Type::DEF, 25.0F),
-            5, 5);
+        patternComponent->addPattern(game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {2, -1}},
+                                                      game::HexPattern::Type::DEF, 25.0F),
+                                     5, 5);
 
-        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL, 5.0F), 5, 5);
+        patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL, 5.0F),
+                                     5, 5);
         patternComponent->addPattern(
             game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 8.0F), 5, 5);
         patternComponent->addPattern(
@@ -1105,7 +1126,6 @@ void Game::setupEnemies() {
     combatEnamyPanel->setHideEmptyPatterns(true);
     combatEnamyPanel->setEngine(_engine);
 
-
     auto* enemyHealthGO = _mainScene.get()
                               ->findGameObjectByName("Enemy_Avatar_Panel")
                               ->findDescendantByName("Health_Holder");
@@ -1117,7 +1137,6 @@ void Game::setupEnemies() {
     enemyHealthSystem->setSlider(
         enemyHealthGO->findChildByName("Slider")->getComponent<dzemikk::UISlider>());
 }
-
 
 void Game::setupItems() {
     if (_worldGO == nullptr || _worldGO->getComponent<game::World>() == nullptr) {
@@ -1150,7 +1169,7 @@ void Game::setupItems() {
         manager->loadState(worldData["items"]);
     } else {
         // Heal Item setup
-        auto healChunks = {"chunkMain2Sub1", "chunkMain3",  "chunkMain3Sub1",   "chunkMain4Sub1",
+        auto healChunks = {"chunkMain2Sub1", "chunkMain3",     "chunkMain3Sub1", "chunkMain4Sub1",
                            "chunkMain7",     "chunkMain7Sub2", "chunkMain9"};
         for (const auto& name : healChunks) {
             manager->addItem(world->getGrid()->getChunkByName(name)->getPersistantId(),
@@ -1159,10 +1178,8 @@ void Game::setupItems() {
 
         // Reveal Pattern Item setup
         auto revealPatternChunks = {
-            "chunkMain2Sub1", "chunkMain3Sub1",
-                                    "chunkMain4",     "chunkMain4Sub1", "chunkMain5",
-                                    "chunkMain6",     "chunkMain7",     "chunkMain7Sub1",
-                                    "chunkMain7Sub3", "chunkMain9"};
+            "chunkMain2Sub1", "chunkMain3Sub1", "chunkMain4",     "chunkMain4Sub1", "chunkMain5",
+            "chunkMain6",     "chunkMain7",     "chunkMain7Sub1", "chunkMain7Sub3", "chunkMain9"};
         for (const auto& name : revealPatternChunks) {
             manager->addItem(world->getGrid()->getChunkByName(name)->getPersistantId(),
                              {.type = game::ItemEntity::ItemType::RevealPattern});
@@ -1170,7 +1187,7 @@ void Game::setupItems() {
 
         // Reveal Hex Item setup
         auto revealHexChunks = {"chunkMain2Sub1", "chunkMain4",     "chunkMain3Sub1",
-                                "chunkMain6", "chunkMain7Sub1", "chunkMain7Sub2"};
+                                "chunkMain6",     "chunkMain7Sub1", "chunkMain7Sub2"};
         for (const auto& name : revealHexChunks) {
             manager->addItem(world->getGrid()->getChunkByName(name)->getPersistantId(),
                              {.type = game::ItemEntity::ItemType::RevealHex});
@@ -1178,8 +1195,8 @@ void Game::setupItems() {
 
         // Bonus Hex Item Setup
         game::HexPattern pat = game::HexPattern({{0, 0}}, game::HexPattern::Type::BONUSHEX);
-        auto bonusHex = {"chunkMain2Sub1", "chunkMain4Sub1", "chunkMain3Sub1",
-                         "chunkMain7",     "chunkMain7Sub1", "chunkMain7Sub3", "chunkMain7Sub3"};
+        auto bonusHex = {"chunkMain2Sub1", "chunkMain4Sub1", "chunkMain3Sub1", "chunkMain7",
+                         "chunkMain7Sub1", "chunkMain7Sub3", "chunkMain7Sub3"};
         for (const auto& name : bonusHex) {
             manager->addItem(world->getGrid()->getChunkByName(name)->getPersistantId(),
                              {.type = game::ItemEntity::ItemType::BonusHex, .bonusPattern = pat});
@@ -1347,9 +1364,10 @@ void Game::setupDialogs() {
         return;
     }
 
-    auto prefab = _engine->getAssetManager()->get<nlohmann::json>("prefabs/totem/totem_dialog.prefab");
-    auto totem = dzemikk::PrefabSerializer::instantiate(
-        *_mainScene.get(), *prefab.get(), _engine->getAssetManager());
+    auto prefab =
+        _engine->getAssetManager()->get<nlohmann::json>("prefabs/totem/totem_dialog.prefab");
+    auto totem = dzemikk::PrefabSerializer::instantiate(*_mainScene.get(), *prefab.get(),
+                                                        _engine->getAssetManager());
 
     auto* rendererTotemGO =
         totem->findChildByName("platform")->getComponent<dzemikk::MeshRenderer>();
@@ -1361,11 +1379,9 @@ void Game::setupDialogs() {
 
     rendererTotemGO = totem->findDescendantByName("Totem3")->getComponent<dzemikk::MeshRenderer>();
     rendererTotemGO->setCullingRadius(60.0F);
-    rendererTotemGO =
-        totem->findDescendantByName("Totem5")->getComponent<dzemikk::MeshRenderer>();
+    rendererTotemGO = totem->findDescendantByName("Totem5")->getComponent<dzemikk::MeshRenderer>();
     rendererTotemGO->setCullingRadius(60.0F);
-    rendererTotemGO =
-        totem->findDescendantByName("Totem6")->getComponent<dzemikk::MeshRenderer>();
+    rendererTotemGO = totem->findDescendantByName("Totem6")->getComponent<dzemikk::MeshRenderer>();
     rendererTotemGO->setCullingRadius(60.0F);
 
     auto entity = totem->addComponent<game::TotemDialogEntity>();
@@ -1384,23 +1400,22 @@ void Game::setupDialogs() {
         manager->addDialog({
             .targetEntityId = totem->getComponent<game::TotemDialogEntity>()->getId(),
             .entries =
-                {
-                    {.speaker = "Mother", .text = "Where am I? Where is my son?!"},
-                    {.speaker = "Totem",
-                     .text = "You stand upon a land of runes, spirits, and blood offered\n"
-                             "to the gods. The shamans have taken your son. They will\n"
-                             "sacrifice him in the heart of the volcano."},
-                    {.speaker = "Mother", .text = "I would rather die than let them hurt my child!"},
-                    {.speaker = "Totem",
-                      .text =
-                          "The shamans rule these islands, and their servants will \nstand in your way. "
+                {{.speaker = "Mother", .text = "Where am I? Where is my son?!"},
+                 {.speaker = "Totem",
+                  .text = "You stand upon a land of runes, spirits, and blood offered\n"
+                          "to the gods. The shamans have taken your son. They will\n"
+                          "sacrifice him in the heart of the volcano."},
+                 {.speaker = "Mother", .text = "I would rather die than let them hurt my child!"},
+                 {.speaker = "Totem",
+                  .text = "The shamans rule these islands, and their servants will \nstand in your "
+                          "way. "
                           "Every step will bring you closer \nto your son... or closer to death."},
-                     {.speaker = "Mother", .text = "I am not afraid. I will fight them!"},
-                     {.speaker = "Totem",
-                      .text = "Take these runes. Their power will allow you to \nattack, shield yourself "
-                              "from harm, and heal your wounds. \nLearn to wield them, and you may reach "
-                              "your son \nbefore the volcano's flames consume him."}
-                },
+                 {.speaker = "Mother", .text = "I am not afraid. I will fight them!"},
+                 {.speaker = "Totem",
+                  .text =
+                      "Take these runes. Their power will allow you to \nattack, shield yourself "
+                      "from harm, and heal your wounds. \nLearn to wield them, and you may reach "
+                      "your son \nbefore the volcano's flames consume him."}},
         });
     }
 }
@@ -1428,6 +1443,8 @@ void Game::restartGame() {
 
     auto* dialogManagerGO = scene->findGameObjectByTag("DialogManager");
     auto* dialogManager = dialogManagerGO->getComponent<game::DialogManager>();
+
+    world->loadDiff(checkpoint);
 
     auto currentState = world->save();
 
@@ -1565,5 +1582,4 @@ void Game::restartGame() {
     }
 
     _stateMachine->setState(std::make_unique<game::ExplorationState>(this));
-
 }

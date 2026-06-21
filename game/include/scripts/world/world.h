@@ -93,6 +93,7 @@ class World : public dzemikk::MonoBehaviour {
     nlohmann::json save();
     void saveToFile(const std::string& filename);
     void load(const nlohmann::json& def);
+    void loadDiff(const nlohmann::json& def);
 
     void registerGenerator(const std::string& id,
                            std::function<float(int step, int maxSteps)> generator) {
@@ -130,6 +131,7 @@ class World : public dzemikk::MonoBehaviour {
 
   private:
     void spawnHexVisual(const std::shared_ptr<HexCell>& cell);
+    void despawnHexVisual(const HexCoord& coord);
 
     std::unordered_map<std::string, std::function<float(int step, int maxSteps)>> _generators;
 
