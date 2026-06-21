@@ -34,10 +34,8 @@ void PlayerCombatAnimationController::update(double deltaTime) {
 
     if (auto* combat = _gameStateMachine->getCurrentStateAs<ExplorationState>()) {
         _playerAnimator->setBool("isFinished", true);
+        canPlay = true;
 
-        if (_enemyAnimator != nullptr) {
-            _enemyAnimator = nullptr;
-        }
     }
 
 
@@ -49,12 +47,18 @@ void PlayerCombatAnimationController::update(double deltaTime) {
 
 
 }
+void PlayerCombatAnimationController::setEnemies(const std::vector<game::EnemyEntity*>& enemies) {
+    _enemies = enemies;
+}
 void PlayerCombatAnimationController::setPlayerAnimator(dzemikk::Animator* animator) {
     _playerAnimator = animator;
 }
 
 dzemikk::Animator* PlayerCombatAnimationController::getPlayerAnimator() const {
     return _playerAnimator;
+}
+void PlayerCombatAnimationController::setEnemyAnimator(dzemikk::Animator* animator) {
+    _enemyAnimator = animator;
 }
 void PlayerCombatAnimationController::setHealthSystem(HealthSystem* healthSystem) {
     _playerHealthSystem = healthSystem;
@@ -74,11 +78,9 @@ void PlayerCombatAnimationController::playConfirmRoundAttack() {
         _playerAnimator->play("Attack1");
     }
 
-    if (_gameStateMachine) {
-        if (auto* combat = _gameStateMachine->getCurrentStateAs<CombatState>()) {
-            EnemyEntity* enemy = combat->getCurrentEnemy();
-            _enemyAnimator = enemy->getOwner()->getComponent<dzemikk::Animator>();
-            _enemyAnimator->play("Attack");
+    for (auto* enemy : _enemies) {
+        if (enemy->getOwner()->getName() == _gameStateMachine->getCurrentStateAs<CombatState>()->getCurrentEnemy()->getOwner()->getName()){
+            enemy->getOwner()->getComponent<dzemikk::Animator>()->play("Attack");
         }
     }
 

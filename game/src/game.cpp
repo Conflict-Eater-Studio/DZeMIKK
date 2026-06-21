@@ -171,6 +171,21 @@ void Game::startGame() {
     setupPlayer();
     registerDefaultTerritories();
     setupEnemies();
+
+    auto* enemyManager =
+        _mainScene.get()->findGameObjectByName("EnemyManager")->getComponent<game::EnemyManager>();
+
+    const auto& enemiesByChunk = enemyManager->getEnemies();
+    std::vector<game::EnemyEntity*> _enemies;
+    for (auto chunk : enemiesByChunk) {
+        for (auto enemy : chunk.second) {
+            _enemies.push_back(enemy);
+        }
+    }
+
+    _playerGO->getComponent<game::PlayerCombatAnimationController>()->setEnemies(_enemies);
+
+
     // Setup Items and Totems ALWAYS after Enemies
     setupItems();
     setupTotems();

@@ -2,8 +2,11 @@
 #define DZEMIKK_PLAYER_COMBAT_ANIMATION_CONTROLLER_H
 
 #include "ecs/components/monobehaviour.h"
+#include "enemySystem/enemyEntity.h"
 #include "gameStateMachine.h"
 #include "healthSystem.h"
+
+#include <complex.h>
 
 namespace dzemikk {
 class Animator;
@@ -15,6 +18,7 @@ class PlayerCombatAnimationController : public dzemikk::MonoBehaviour {
   public:
     void start() override;
     void update(double deltaTime) override;
+    void setEnemies(const std::vector<game::EnemyEntity*>& vector);
     using Base = dzemikk::MonoBehaviour;
 
     [[nodiscard]] std::string typeName() const override {
@@ -23,6 +27,8 @@ class PlayerCombatAnimationController : public dzemikk::MonoBehaviour {
 
     void setPlayerAnimator(dzemikk::Animator* animator);
     [[nodiscard]] dzemikk::Animator* getPlayerAnimator() const;
+
+    void setEnemyAnimator(dzemikk::Animator* animator);
 
     void setHealthSystem(HealthSystem* healthSystem);
     [[nodiscard]] HealthSystem* getHealthSystem() const;
@@ -37,6 +43,7 @@ class PlayerCombatAnimationController : public dzemikk::MonoBehaviour {
     HealthSystem* _playerHealthSystem = nullptr;
     GameStateMachine* _gameStateMachine = nullptr;
     dzemikk::Animator* _enemyAnimator = nullptr;
+    std::vector<game::EnemyEntity*> _enemies;
     bool canPlay = true;
 };
 
