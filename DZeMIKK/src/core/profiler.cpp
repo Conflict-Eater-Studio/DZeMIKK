@@ -30,7 +30,7 @@ void Profiler::initialize() {
     _recordFrameIndex = 0;
     _isRecording = false;
 
-    for (int i = 0; i < FRAME_HISTORY_COUNT; ++i) {
+    for (int i = 0; i < MAX_FRAME_HISTORY_COUNT; ++i) {
         frameTimeHistory[i] = 0.0f;
         _rollingAverageHistory[i] = 0.0f;
     }
@@ -51,19 +51,19 @@ void Profiler::BeginFrame(float deltaTime) {
 
     int writeIndex = frameHistoryOffset;
     frameTimeHistory[writeIndex] = deltaTime;
-    if (_validHistorySamples < FRAME_HISTORY_COUNT) {
+    if (_validHistorySamples < MAX_FRAME_HISTORY_COUNT) {
         ++_validHistorySamples;
     }
 
-    int window = std::min(_rollingAverageWindow, _validHistorySamples);
+    int window = std::min(_frameHistoryCount, _validHistorySamples);
     float sum = 0.0f;
     for (int i = 0; i < window; ++i) {
-        int idx = (writeIndex - i + FRAME_HISTORY_COUNT) % FRAME_HISTORY_COUNT;
+        int idx = (writeIndex - i + MAX_FRAME_HISTORY_COUNT) % MAX_FRAME_HISTORY_COUNT;
         sum += frameTimeHistory[idx];
     }
     _rollingAverageHistory[writeIndex] = (window > 0) ? (sum / static_cast<float>(window)) : deltaTime;
 
-    frameHistoryOffset = (frameHistoryOffset + 1) % FRAME_HISTORY_COUNT;
+    frameHistoryOffset = (frameHistoryOffset + 1) % MAX_FRAME_HISTORY_COUNT;
 
     stats.reset();
     _cpuTimes.clear();
@@ -155,10 +155,11 @@ Profiler::FrameTimeStats Profiler::_ComputeFrameStats() const {
         return result;
     }
 
+    int sampleCount = std::min(_frameHistoryCount, _validHistorySamples);
     std::vector<float> samples;
-    samples.reserve(_validHistorySamples);
-    for (int i = 0; i < _validHistorySamples; ++i) {
-        int idx = (frameHistoryOffset - _validHistorySamples + i + FRAME_HISTORY_COUNT) % FRAME_HISTORY_COUNT;
+    samples.reserve(sampleCount);
+    for (int i = 0; i < sampleCount; ++i) {
+        int idx = (frameHistoryOffset - sampleCount + i + MAX_FRAME_HISTORY_COUNT) % MAX_FRAME_HISTORY_COUNT;
         samples.push_back(frameTimeHistory[idx]);
     }
 
@@ -233,22 +234,25 @@ void Profiler::DrawImGui() {
 
     ImGui::Separator();
 
-    ImGui::SliderInt("Rolling Window", &_rollingAverageWindow, 1, FRAME_HISTORY_COUNT, "%d frames");
+    ImGui::SliderInt("Frame History / Rolling Avg", &_frameHistoryCount, 1, MAX_FRAME_HISTORY_COUNT, "%d frames");
 
     char overlayText[32];
     snprintf(overlayText, sizeof(overlayText), "%.1f FPS", 1.0f / currentDeltaTime);
 
-    float frameTimeMs[FRAME_HISTORY_COUNT];
-    float rollingAvgMs[FRAME_HISTORY_COUNT];
-    for (int i = 0; i < FRAME_HISTORY_COUNT; ++i) {
-        frameTimeMs[i] = frameTimeHistory[i] * 1000.0f;
-        rollingAvgMs[i] = _rollingAverageHistory[i] * 1000.0f;
+    float frameTimeMs[MAX_FRAME_HISTORY_COUNT] = {0.0f};
+    float rollingAvgMs[MAX_FRAME_HISTORY_COUNT] = {0.0f};
+
+    int displayStart = (frameHistoryOffset - _frameHistoryCount + MAX_FRAME_HISTORY_COUNT) % MAX_FRAME_HISTORY_COUNT;
+    for (int i = 0; i < _frameHistoryCount; ++i) {
+        int idx = (displayStart + i) % MAX_FRAME_HISTORY_COUNT;
+        frameTimeMs[i] = frameTimeHistory[idx] * 1000.0f;
+        rollingAvgMs[i] = _rollingAverageHistory[idx] * 1000.0f;
     }
 
-    ImGui::PlotLines("Frame Time (ms)", frameTimeMs, FRAME_HISTORY_COUNT, frameHistoryOffset, overlayText, 0.0f,
-                     FLT_MAX, ImVec2(0, 80));
-    ImGui::PlotLines("Rolling Average (ms)", rollingAvgMs, FRAME_HISTORY_COUNT, frameHistoryOffset, nullptr, 0.0f,
-                     FLT_MAX, ImVec2(0, 60));
+    ImGui::PlotLines("Frame Time (ms)", frameTimeMs, _frameHistoryCount, 0, overlayText, 0.0f, FLT_MAX,
+                     ImVec2(0, 80));
+    ImGui::PlotLines("Rolling Average (ms)", rollingAvgMs, _frameHistoryCount, 0, nullptr, 0.0f, FLT_MAX,
+                     ImVec2(0, 60));
 
     ImGui::Separator();
 

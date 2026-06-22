@@ -51,8 +51,8 @@ class Profiler : public IEngineModule {
     RendererStats stats;
     float currentDeltaTime = 0.0f;
 
-    static const int FRAME_HISTORY_COUNT = 2500;
-    float frameTimeHistory[FRAME_HISTORY_COUNT] = {0.0f};
+    static const int MAX_FRAME_HISTORY_COUNT = 2500;
+    float frameTimeHistory[MAX_FRAME_HISTORY_COUNT] = {0.0f};
     int frameHistoryOffset = 0;
 
   private:
@@ -83,9 +83,9 @@ class Profiler : public IEngineModule {
     };
     std::map<std::string, GPUQueryData> _gpuQueries;
 
-    float _rollingAverageHistory[FRAME_HISTORY_COUNT] = {0.0f};
+    float _rollingAverageHistory[MAX_FRAME_HISTORY_COUNT] = {0.0f};
     int _validHistorySamples = 0;
-    int _rollingAverageWindow = 30;
+    int _frameHistoryCount = 30;
 
     bool _isRecording = false;
     std::ofstream _recordStream;
