@@ -84,7 +84,7 @@ void game::CinematicState::onUpdate(float dt) {
 
         if (_fadeAlpha >= 1.0f) {
             _phase = CinematicPhase::Text1;
-            _currentText = "You have defeated the Boss";
+            _currentText = "You have defeated KAHUN";
             _textRenderer->text.clear();
             _textTimer = 0.0f;
         }

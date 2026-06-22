@@ -32,7 +32,7 @@ void game::EnemyEntity::onEnter(HexCellPtr cell) {
         break;
 
     case EnemyPersonality::Defensive:
-        setActionWeights({0.2F, 0.6F, 0.2F});
+        setActionWeights({0.3F, 0.5F, 0.2F});
         break;
 
     case EnemyPersonality::Balanced:

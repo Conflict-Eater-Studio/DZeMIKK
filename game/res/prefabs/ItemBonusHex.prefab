@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "e05e558b-fe0f-4d9b-a462-daf225a870a1",
+                        "id": "59e01096-2b5c-4b85-9e42-48ccd3efeceb",
                         "position": [
                             0.30000001192092896,
                             0.0,
@@ -28,23 +28,23 @@
                         "castsShadows": false,
                         "color": [
                             1.0,
-                            0.47058820724487305,
+                            0.5588235259056091,
                             0.0
                         ],
-                        "intensity": 4.506999969482422,
+                        "intensity": 4.89300012588501,
                         "range": 10.0,
                         "type": "PointLight"
                     }
                 ],
                 "enabled": true,
-                "id": "8069a401-46e1-4874-b3a2-d8cc810a8118",
+                "id": "7d95373e-e06e-466f-b180-ed23fd64a49a",
                 "name": "Empty",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "5fdb2ab7-ca47-467a-ba1f-ebaaf7f6c1a2",
+                "id": "051d6662-a7b4-470e-852e-63869c4747f1",
                 "position": [
                     0.0,
                     0.0,
@@ -64,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "efb30d28-e7c5-4d93-a578-2bf83d38b10e",
+                "id": "da39f3be-8526-4bd3-9b25-36ba4eac1a6e",
                 "materials": [
                     {
                         "pbr": {
@@ -99,7 +99,7 @@
             }
         ],
         "enabled": true,
-        "id": "c4acd807-7726-4d0e-b9f7-62c2eb8a9b4b",
+        "id": "c778b950-bd36-4c3d-b880-a02b99a66d98",
         "name": "ItemBonusHex",
         "tags": []
     }

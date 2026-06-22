@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "1edaedde-bdcc-44f0-a909-9ca0654785c4",
+                        "id": "f11ae7f9-fa4f-4721-b42b-efdae16da0b9",
                         "position": [
                             0.0,
                             -0.10000000149011612,
@@ -27,7 +27,7 @@
                     {
                         "castsShadows": false,
                         "color": [
-                            0.058823466300964355,
+                            0.3235294818878174,
                             1.0,
                             0.0
                         ],
@@ -37,14 +37,14 @@
                     }
                 ],
                 "enabled": true,
-                "id": "172b7ecc-1191-458a-b2dd-2b12e46a5c01",
+                "id": "ec51d3f1-3ea1-49d9-b842-d454f235c946",
                 "name": "Empty",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "0a323b8d-a072-4844-8dec-fe29fd38332e",
+                "id": "e6933435-ef58-48f0-872e-06aabdcab131",
                 "position": [
                     0.0,
                     0.0,
@@ -64,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "ba596b3c-67b5-4575-afec-62e571dce4b7",
+                "id": "a78f53d2-c131-48dd-8524-af93f5244a77",
                 "materials": [
                     {
                         "pbr": {
@@ -99,7 +99,7 @@
             }
         ],
         "enabled": true,
-        "id": "3a91469c-7bb9-4807-b9b2-469cddc16996",
+        "id": "dd485f23-1115-41b9-8210-e1c99dd8b943",
         "name": "ItemHeal",
         "tags": []
     }
