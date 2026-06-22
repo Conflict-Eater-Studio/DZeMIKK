@@ -8,6 +8,8 @@
 #include <glm/ext/quaternion_geometric.hpp>
 #include <glm/ext/vector_float3.hpp>
 
+#include <utility>
+
 namespace dzemikk {
 /**
  * @brief Component responsible for rendering skinned (skeletal animated) meshes.
@@ -27,6 +29,14 @@ class SkinnedMeshRenderer : public Component {
      */
     [[nodiscard]] AssetHandle<Model> getModel() const {
         return _model;
+    }
+
+    [[nodiscard]] std::shared_ptr<Skeleton> getSkeleton() const {
+        if (_skeletonOverride) {
+            return _skeletonOverride;
+        }
+
+        return _model.get() ? _model.get()->getSkeleton() : nullptr;
     }
 
     /**
@@ -79,6 +89,10 @@ class SkinnedMeshRenderer : public Component {
      */
     void setModel(AssetHandle<Model> model) {
         _model = model;
+    }
+
+    void setSkeletonOverride(std::shared_ptr<Skeleton> skeleton) {
+        _skeletonOverride = std::move(skeleton);
     }
 
     /**
@@ -159,6 +173,7 @@ class SkinnedMeshRenderer : public Component {
 
   private:
     AssetHandle<Model> _model;                   
+    std::shared_ptr<Skeleton> _skeletonOverride;
     std::vector<std::shared_ptr<Material>> _materials;         
     Transform* _transform = nullptr;           
     std::vector<glm::mat4> _finalBoneMatrices;

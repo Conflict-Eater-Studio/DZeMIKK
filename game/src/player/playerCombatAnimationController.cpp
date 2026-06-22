@@ -20,11 +20,14 @@ void PlayerCombatAnimationController::start() {
             canPlay = false;
         }
     }, "Confirm_Round_AttackAnim");
+    std::string t = _playerAnimator->getCurrentState()->getName();
+
 }
 
 void PlayerCombatAnimationController::update(double deltaTime) {
     if (_playerAnimator) {
         if (_playerAnimator->getCurrentState()->getName() == "Attack1" && _playerAnimator->getCurrentState()->getClip()->isFinished()) {
+            _playerAnimator->play("Idle");
             _playerAnimator->setBool("isFinished", true);
             canPlay = true;
         }else {
@@ -33,6 +36,7 @@ void PlayerCombatAnimationController::update(double deltaTime) {
     }
     if (_playerAnimator) {
         if (_playerAnimator->getCurrentState()->getName() == "Attack2" && _playerAnimator->getCurrentState()->getClip()->isFinished()) {
+            _playerAnimator->play("Idle");
             _playerAnimator->setBool("isFinished", true);
             canPlay = true;
         }else {
@@ -43,12 +47,12 @@ void PlayerCombatAnimationController::update(double deltaTime) {
     if (auto* combat = _gameStateMachine->getCurrentStateAs<ExplorationState>()) {
         _playerAnimator->setBool("isFinished", true);
         canPlay = true;
+        _enemyAnimator = nullptr;
+
     }
 
     if (_enemyAnimator != nullptr && _enemyAnimator->getCurrentState()->getName() == "Attack" && _enemyAnimator->getCurrentState()->getClip()->isFinished()) {
         _enemyAnimator->play("Idle");
-        _enemyAnimator = nullptr;
-
     }
 
 
@@ -96,16 +100,25 @@ void PlayerCombatAnimationController::playConfirmRoundAttack() {
 
         }
     }
-    if (_enemyAnimator) {
-        _enemyAnimator->play("Attack");
+
+    if (!_gameStateMachine) {
         return;
     }
-    for (auto* enemy : _enemies) {
-        if (enemy->getOwner()->getName() == _gameStateMachine->getCurrentStateAs<CombatState>()->getCurrentEnemy()->getOwner()->getName()){
-            _enemyAnimator = enemy->getOwner()->getComponent<dzemikk::Animator>();
-            _enemyAnimator->setBool("isFinished",0);
-            _enemyAnimator->play("Attack");
-        }
+
+    auto* combatState = _gameStateMachine->getCurrentStateAs<CombatState>();
+    if (!combatState || !combatState->getCurrentEnemy()) {
+        return;
+    }
+
+    auto* enemyOwner = combatState->getCurrentEnemy()->getOwner();
+    if (!enemyOwner) {
+        return;
+    }
+
+    _enemyAnimator = enemyOwner->getComponent<dzemikk::Animator>();
+    if (_enemyAnimator) {
+        _enemyAnimator->setBool("isFinished", false);
+        _enemyAnimator->play("Attack");
     }
 
 }

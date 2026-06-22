@@ -158,8 +158,11 @@ void game::EnemyManager::spawnEnemy(const boost::uuids::uuid& chunkId,
     dzemikk::AnimationClip* deathClip = nullptr;
     dzemikk::AnimationClip* attackClip = nullptr;
 
-    auto skeleton =
-        enemyGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
+    auto* skinnedMeshRenderer = enemyGO->getComponent<dzemikk::SkinnedMeshRenderer>();
+    auto sourceSkeleton = skinnedMeshRenderer->getModel().get()->getSkeleton();
+    auto skeleton = sourceSkeleton->clone();
+    skinnedMeshRenderer->setSkeletonOverride(skeleton);
+
     clip = skeleton->getClip("idle");
     deathClip = skeleton->getClip("death");
     deathClip->setLoop(false);
@@ -168,6 +171,7 @@ void game::EnemyManager::spawnEnemy(const boost::uuids::uuid& chunkId,
     attackClip->setLoop(false);
 
     auto* animator = enemyGO->getComponent<dzemikk::Animator>();
+    animator->setSkeleton(skeleton.get());
     animator->getStateMachine()->getState("Idle")->setClip(clip);
     animator->getStateMachine()->getState("Attack")->setClip(attackClip);
     animator->getStateMachine()->getState("Death")->setClip(deathClip);
