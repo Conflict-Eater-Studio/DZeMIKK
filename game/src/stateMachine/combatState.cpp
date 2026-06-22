@@ -1,6 +1,7 @@
 #include "stateMachine/combatState.h"
 
 #include "camera/cameraController.h"
+#include "ecs/components/animator.h"
 #include "enemySystem/combatArenaBuilder.h"
 #include "enemySystem/enemyEntity.h"
 #include "enemySystem/enemyManager.h"
@@ -59,6 +60,7 @@ void game::CombatState::onEnter() {
 
     _game->getCameraController()->setMode(CameraController::Mode::Combat);
     _game->enableCombatUI(true);
+
 
     initializeCombat();
 
@@ -590,6 +592,9 @@ void game::CombatState::initializeCombat() {
 
     _currentEnemy = enemyManager->getEnemyByCell(playerCell.get());
 
+    _player->getOwner()->transform()->setEulerAngles(glm::vec3(0.0F, -30.0F, 0.0F));
+    _currentEnemy->getOwner()->transform()->setEulerAngles(glm::vec3(0.0F, -210.0F, 0.0F));
+
     auto arena = CombatArenaBuilder::build(_currentEnemy, _player, _game->getHexGrid(), world);
 
     _arenaCenterCell = arena.centerCell.get();
@@ -843,6 +848,10 @@ void game::CombatState::showCellColor(HexCell* cell, HexPattern::Type type) {
     }
 
     mesh->setMaterial(0, getPatternMaterial(type));
+}
+
+game::EnemyEntity* game::CombatState::getCurrentEnemy() const {
+    return _currentEnemy;
 }
 
 void game::CombatState::removeHiddenHex(HexCell* cell) {

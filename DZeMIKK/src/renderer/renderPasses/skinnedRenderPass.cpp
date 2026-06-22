@@ -24,7 +24,7 @@ void dzemikk::SkinnedRenderPass::execute(RenderContext& ctx) {
             if (!model || !transform)
                 continue;
 
-            auto skeleton = model->getSkeleton();
+            auto skeleton = r->getSkeleton();
             if (!skeleton)
                 continue;
 

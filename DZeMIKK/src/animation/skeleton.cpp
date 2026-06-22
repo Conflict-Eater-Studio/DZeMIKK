@@ -67,6 +67,22 @@ dzemikk::AnimationClip* dzemikk::Skeleton::getClip(const std::string& name) {
     return it != _clips.end() ? it->second.get() : nullptr;
 }
 
+std::shared_ptr<dzemikk::Skeleton> dzemikk::Skeleton::clone() const {
+    auto result = std::make_shared<Skeleton>();
+
+    result->_bones = _bones;
+    result->_boneMap = _boneMap;
+    result->_globalInverseTransform = _globalInverseTransform;
+
+    for (const auto& [name, clip] : _clips) {
+        if (clip) {
+            result->_clips[name] = clip->cloneForSkeleton(result.get());
+        }
+    }
+
+    return result;
+}
+
 glm::mat4 dzemikk::Skeleton::computeBoneWorldTransform(int boneIndex) const {
     if (boneIndex < 0 || boneIndex >= static_cast<int>(_bones.size())) {
         return glm::mat4(1.0f);

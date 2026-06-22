@@ -2,7 +2,12 @@
 
 void dzemikk::SkinnedMeshRenderer::calculateBoneMatrices(int index,
                                                          const glm::mat4& parentTransform) {
-    const Bone* bone = _model.get()->getSkeleton()->getBone(index);
+    auto skeleton = getSkeleton();
+    if (!skeleton) {
+        return;
+    }
+
+    const Bone* bone = skeleton->getBone(index);
 
     glm::mat4 local = bone->getLocalTransform();
 

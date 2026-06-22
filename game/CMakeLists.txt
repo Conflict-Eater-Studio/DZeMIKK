@@ -14,6 +14,7 @@ set(GAME_SOURCES
     ${SRC_DIR}/scripts/world/worldVisualManager.cpp
     ${SRC_DIR}/game.cpp
     ${SRC_DIR}/player/playerMovement.cpp
+    ${SRC_DIR}/player/playerCombatAnimationController.cpp
     ${SRC_DIR}/camera/cameraController.cpp
     ${SRC_DIR}/stateMachine/gameStateMachine.cpp
     ${SRC_DIR}/stateMachine/explorationState.cpp
@@ -68,6 +69,7 @@ set(GAME_HEADERS
     ${INC_DIR}/utils/perlin.h
     ${INC_DIR}/game.h
     ${INC_DIR}/player/playerMovement.h
+    ${INC_DIR}/player/playerCombatAnimationController.h
     ${INC_DIR}/spriteupdater.h
     ${INC_DIR}/textupdater.h
     ${INC_DIR}/camera/cameraController.h

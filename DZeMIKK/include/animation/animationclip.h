@@ -16,6 +16,7 @@ class FloatTrack;
 class VectorTrack;
 class QuaternionTrack;
 class BoneTrack;
+class Skeleton;
 class Transform;
 
 /**
@@ -88,6 +89,7 @@ public:
     void setFinished(bool finished);
     void setRootMotionMode(RootMotionMode mode);
     [[nodiscard]] RootMotionMode getRootMotionMode() const;
+    [[nodiscard]] std::shared_ptr<AnimationClip> cloneForSkeleton(Skeleton* skeleton) const;
   private:
     std::vector<std::unique_ptr<IAnimationTrack>> _tracks;
     float _durationInTicks = 0;

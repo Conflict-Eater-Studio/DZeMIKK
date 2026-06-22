@@ -59,6 +59,7 @@
 #include "enemySystem/enemyPatternComponent.h"
 #include "enemySystem/territoryPatternRegistry.h"
 #include "item/itemManager.h"
+#include "player/playerCombatAnimationController.h"
 #include "player/playerPatternComponent.h"
 #include "player/playerPatternStatsComponent.h"
 #include "scripts/world/worldVisualManager.h"
@@ -186,6 +187,7 @@ void Game::startGame() {
     setupPlayer();
     registerDefaultTerritories();
     setupEnemies();
+
     // Setup Items and Totems ALWAYS after Enemies
     setupItems();
     setupTotems();
@@ -360,6 +362,8 @@ void Game::startGame() {
             h->enabled(false);
         },
         "item.panel.exit");
+
+    _playerGO->getComponent<game::PlayerCombatAnimationController>()->setGameStateMachine(_stateMachine);
     setupInputCallbacks();
 }
 
@@ -923,9 +927,10 @@ void Game::setupPlayer() {
     auto* inventory = playerGO->addComponent<game::Inventory>();
     inventory->setGame(this);
 
-    auto skeleton =
-        playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
     auto* animator = playerGO->getComponent<dzemikk::Animator>();
+    auto* playerCombatAnimationController = playerGO->addComponent<game::PlayerCombatAnimationController>();
+    playerCombatAnimationController->setPlayerAnimator(animator);
+    auto skeleton = playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
 
     dzemikk::AnimationClip* idleClip = nullptr;
     dzemikk::AnimationClip* forward30Clip = nullptr;
@@ -934,35 +939,62 @@ void Game::setupPlayer() {
     dzemikk::AnimationClip* forward210Clip = nullptr;
     dzemikk::AnimationClip* forward270Clip = nullptr;
     dzemikk::AnimationClip* forward330Clip = nullptr;
+    dzemikk::AnimationClip* attackClip1 = nullptr;
+    dzemikk::AnimationClip* attackClip2 = nullptr;
+    dzemikk::AnimationClip* pickupClip = nullptr;
+    dzemikk::AnimationClip* deathClip = nullptr;
 
     float animSpeed = 15.0F;
+
+    animator->setApplyRootMotion(true);
 
     idleClip = skeleton->getClip("idle");
     idleClip->setLoop(true);
 
     forward30Clip = skeleton->getClip("300");
     forward30Clip->setLoop(false);
-    forward30Clip->setPlaybackSpeed(animSpeed);
+    forward30Clip->setPlaybackSpeed(10.0f);
+    forward30Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
 
     forward90Clip = skeleton->getClip("0");
     forward90Clip->setLoop(false);
-    forward90Clip->setPlaybackSpeed(animSpeed);
+    forward90Clip->setPlaybackSpeed(10.0f);
+    forward90Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
+
 
     forward150Clip = skeleton->getClip("60");
     forward150Clip->setLoop(false);
-    forward150Clip->setPlaybackSpeed(animSpeed);
+    forward150Clip->setPlaybackSpeed(10.0f);
+    forward150Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
 
     forward210Clip = skeleton->getClip("120");
     forward210Clip->setLoop(false);
-    forward210Clip->setPlaybackSpeed(animSpeed);
+    forward210Clip->setPlaybackSpeed(10.0f);
+    forward210Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
 
     forward270Clip = skeleton->getClip("180");
     forward270Clip->setLoop(false);
-    forward270Clip->setPlaybackSpeed(animSpeed);
+    forward270Clip->setPlaybackSpeed(10.0f);
+    forward270Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
 
     forward330Clip = skeleton->getClip("240");
     forward330Clip->setLoop(false);
-    forward330Clip->setPlaybackSpeed(animSpeed);
+    forward330Clip->setPlaybackSpeed(10.0f);
+    forward330Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
+
+    attackClip1 = skeleton->getClip("attack1");
+    attackClip1->setPlaybackSpeed(2.0f);
+    attackClip1->setLoop(false);
+
+    attackClip2 = skeleton->getClip("attack2");
+    attackClip2->setPlaybackSpeed(2.0f);
+    attackClip2->setLoop(false);
+
+    pickupClip = skeleton->getClip("pickup");
+    pickupClip->setLoop(false);
+
+    deathClip = skeleton->getClip("death");
+    deathClip->setLoop(false);
 
     animator->getStateMachine()->getState("Idle")->setClip(idleClip);
     animator->getStateMachine()->getState("R30")->setClip(forward30Clip);
@@ -971,6 +1003,10 @@ void Game::setupPlayer() {
     animator->getStateMachine()->getState("R210")->setClip(forward210Clip);
     animator->getStateMachine()->getState("R270")->setClip(forward270Clip);
     animator->getStateMachine()->getState("R330")->setClip(forward330Clip);
+    animator->getStateMachine()->getState("Attack1")->setClip(attackClip1);
+    animator->getStateMachine()->getState("Attack2")->setClip(attackClip2);
+    animator->getStateMachine()->getState("Pickup")->setClip(pickupClip);
+    animator->getStateMachine()->getState("Death")->setClip(deathClip);
 
     playerGO->transform()->rotateAround(-90.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     playerGO->transform()->setScale(glm::vec3(0.015f, 0.015f, 0.015f));
@@ -1011,6 +1047,7 @@ void Game::setupPlayer() {
     playerHealthGO->addTag("PlayerHealthSystem");
 
     auto* playerHealthSystem = playerHealthGO->addComponent<game::HealthSystem>();
+    playerCombatAnimationController->setHealthSystem(playerHealthSystem);
     playerHealthSystem->setOwner(playerHealthGO);
     playerHealthSystem->setHealth(300.0F);
     playerHealthSystem->setMaxHealth(300.0F);

@@ -480,15 +480,26 @@
                                             ]
                                         },
                                         {
-                                            "name": "R90",
-                                            "transitions": []
-                                        },
-                                        {
                                             "name": "R210",
                                             "transitions": []
                                         },
                                         {
-                                            "name": "R150",
+                                            "name": "Attack1",
+                                            "transitions": [
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "isFinished",
+                                                        "type": 2,
+                                                        "value": 1.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "Idle"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "R90",
                                             "transitions": []
                                         },
                                         {
@@ -496,7 +507,34 @@
                                             "transitions": []
                                         },
                                         {
+                                            "name": "R150",
+                                            "transitions": []
+                                        },
+                                        {
                                             "name": "R270",
+                                            "transitions": []
+                                        },
+                                        {
+                                            "name": "Attack2",
+                                            "transitions": [
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "isFinished",
+                                                        "type": 2,
+                                                        "value": 1.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "Idle"
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "Pickup",
+                                            "transitions": []
+                                        },
+                                        {
+                                            "name": "Death",
                                             "transitions": []
                                         }
                                     ],
@@ -5736,7 +5774,8 @@
                                     ],
                                     "events": {
                                         "click": [
-                                            "Confirm_Round"
+                                            "Confirm_Round",
+                                            "Confirm_Round_AttackAnim"
                                         ]
                                     },
                                     "hoverColor": [

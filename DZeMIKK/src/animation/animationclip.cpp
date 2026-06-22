@@ -113,5 +113,37 @@ void AnimationClip::setRootMotionMode(RootMotionMode mode) {
 RootMotionMode AnimationClip::getRootMotionMode() const {
     return _rootMotionMode;
 }
+
+std::shared_ptr<AnimationClip> AnimationClip::cloneForSkeleton(Skeleton* skeleton) const {
+    auto result = std::make_shared<AnimationClip>(_durationInTicks, _ticksPerSecond);
+
+    result->_playbackSpeed = _playbackSpeed;
+    result->_loop = _loop;
+    result->_nameInSkeleton = _nameInSkeleton;
+    result->_isFinished = _isFinished;
+    result->_rootMotionMode = _rootMotionMode;
+
+    for (const auto& track : _tracks) {
+        const auto* boneTrack = dynamic_cast<const BoneTrack*>(track.get());
+        if (!boneTrack) {
+            continue;
+        }
+
+        auto* clonedTrack = result->addBoneTrack();
+        clonedTrack->bindBone(skeleton, boneTrack->getBone());
+
+        for (const auto& key : boneTrack->getPositionKeys()) {
+            clonedTrack->addPositionKey(key);
+        }
+        for (const auto& key : boneTrack->getRotationKeys()) {
+            clonedTrack->addRotationKey(key);
+        }
+        for (const auto& key : boneTrack->getScaleKeys()) {
+            clonedTrack->addScaleKey(key);
+        }
+    }
+
+    return result;
+}
 }
 

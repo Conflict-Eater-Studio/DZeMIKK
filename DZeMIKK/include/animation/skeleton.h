@@ -92,6 +92,8 @@ class Skeleton {
 
     AnimationClip* getClip(const std::string& name);
 
+    [[nodiscard]] std::shared_ptr<Skeleton> clone() const;
+
 #pragma endregion
 
   private:

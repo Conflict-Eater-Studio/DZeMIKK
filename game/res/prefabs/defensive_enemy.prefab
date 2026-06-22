@@ -205,7 +205,7 @@
                         "shader": "shaders/skinned"
                     }
                 ],
-                "model": "models/Orc Idle.fbx",
+                "model": "models/TankDefensive.fbx",
                 "type": "SkinnedMeshRenderer"
             },
             {
@@ -216,6 +216,25 @@
                 "stateMachine": [
                     {
                         "name": "Idle",
+                        "transitions": []
+                    },
+                    {
+                        "name": "Attack",
+                        "transitions": [
+                               {
+                               "condition": {
+                                    "op": 2,
+                                    "parameter": "isFinished",
+                                    "type": 2,
+                                    "value": 1.0
+                               },
+                               "duration": 0.25,
+                               "to": "Idle"
+                           }
+                        ]
+                    },
+                    {
+                        "name": "Death",
                         "transitions": []
                     }
                 ],

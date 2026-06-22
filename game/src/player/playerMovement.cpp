@@ -29,16 +29,34 @@ void PlayerMovement::start() {
 
 void PlayerMovement::update(double deltaTime) {
     if (!_animator) return;
-    updateCellLerps(deltaTime);
-
-
-    if (_path.empty() || _step >= _path.size()) {
+    if (_path.empty()) {
         _animator->setInt("isMoving", 0);
         return;
     }
 
-    _moveTimer += deltaTime;
+    updateCellLerps(deltaTime);
+
+    if (_step >= _path.size()) {
+        _animator->setInt("isMoving", 0);
+        HexGrid::HexCellPtr currentCell = _path[_step - 1];
+
+
+        return;
+    }
+
     HexGrid::HexCellPtr currentTargetCell = _path[_step % _path.size()];
+
+        if (currentTargetCell->getState() == HexCell::State::Item) {
+            spdlog::info("[PlayerMovement] Player stepped on item");
+            if (_animator->getCurrentState()->getName() != "Pickup") {
+                _animator->play("Pickup");
+            }
+        };
+
+    if (_animator->getCurrentState()->getName() == "Pickup" && !_animator->getCurrentState()->getClip()->isFinished()) {
+        return;
+    }
+
     _animator->setInt("isMoving", 1);
 
     if (isFallingFinished) {
@@ -69,7 +87,7 @@ void PlayerMovement::update(double deltaTime) {
     }
 
 
-    if (_step < _path.size() && _moveTimer >= _moveDelay) {
+    if (_step < _path.size()) {
         auto dir = HexCoord::dir(currentTargetCell->getCoord() - _playerEntity->getCell()->getCoord());
         if (dir.has_value()) {
             int hexDir = static_cast<int>(dir.value());
@@ -83,7 +101,6 @@ void PlayerMovement::update(double deltaTime) {
             }
 
             _playerDir = hexDir;
-            _moveTimer = 0.0f;
         }
     }
 

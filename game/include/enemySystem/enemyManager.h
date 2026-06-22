@@ -102,6 +102,9 @@ class EnemyManager : public dzemikk::MonoBehaviour {
         return "EnemyManager";
     }
 
+    std::unordered_map<boost::uuids::uuid, std::vector<EnemyEntity*>> getEnemies() {
+        return _spawnedEnemies;
+    }
   private:
 #pragma region Spawning
 
