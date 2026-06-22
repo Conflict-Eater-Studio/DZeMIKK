@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "88a6bf11-d28d-4bdd-84c1-a3aad5a7fef5",
+                        "id": "a076cbd4-b32b-4a0a-8754-e8459a4caff5",
                         "position": [
                             0.0,
                             17.0,
@@ -37,16 +37,16 @@
                     }
                 ],
                 "enabled": true,
-                "id": "196452df-05fa-46eb-8f78-ce35f4234df0",
+                "id": "bae28df1-2304-46bf-95cf-6d0141e0e65c",
                 "name": "Light",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "b3454c2f-8773-4cef-8c7b-2b01649e3dce",
+                "id": "50175d75-9698-4473-a4b2-59347593335a",
                 "position": [
-                    66.19999694824219,
+                    0.0,
                     -0.5,
                     0.0
                 ],
@@ -64,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "281b7f3f-9fae-45de-aa71-860ea1f5ddcd",
+                "id": "e3b19090-0ac2-44ba-9061-ae400357aea6",
                 "materials": [
                     {
                         "albedoColor": [
@@ -274,17 +274,25 @@
                         "shader": "shaders/skinned"
                     }
                 ],
-                "model": "models/Pivot.fbx",
+                "model": "models/characters/NormalHybrid.fbx",
                 "type": "SkinnedMeshRenderer"
             },
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "a386b8b2-326e-4d81-af34-4f7c0382ba55",
+                "id": "94e72050-78ce-49df-aba3-b77f6f63a3ea",
                 "parameters": {},
                 "stateMachine": [
                     {
                         "name": "Idle",
+                        "transitions": []
+                    },
+                    {
+                        "name": "Death",
+                        "transitions": []
+                    },
+                    {
+                        "name": "Attack",
                         "transitions": []
                     }
                 ],
@@ -292,7 +300,7 @@
             }
         ],
         "enabled": true,
-        "id": "9f9eca3d-e728-426c-944d-22e8bbb19aef",
+        "id": "0a3a3c65-9d84-4e26-a014-1f0323398ef6",
         "name": "Aggressive",
         "tags": []
     }

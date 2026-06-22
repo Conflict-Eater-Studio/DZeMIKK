@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "6099fe13-d692-4f50-a2ea-f5aac8c1f605",
+                        "id": "840874e3-b5d1-4438-9cba-87733ae60701",
                         "position": [
                             0.0,
                             17.0,
@@ -37,16 +37,16 @@
                     }
                 ],
                 "enabled": true,
-                "id": "0817cffe-8506-4e70-a1b0-0eec632f7d01",
+                "id": "0a99e1cf-5097-417d-bcc3-753213ad6640",
                 "name": "Light",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "188e57a2-9ca0-449c-8da8-a5fb5f421459",
+                "id": "f9a3797f-29cc-4d48-843a-2bb5d9369c8d",
                 "position": [
-                    70.5999984741211,
+                    0.0,
                     0.0,
                     0.6000000238418579
                 ],
@@ -64,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "9952e082-d98e-4893-aedd-87c680ff9e8c",
+                "id": "3e1519b7-da4a-4644-aafe-630674c7701a",
                 "materials": [
                     {
                         "albedoColor": [
@@ -205,13 +205,13 @@
                         "shader": "shaders/skinned"
                     }
                 ],
-                "model": "models/TankDefensive.fbx",
+                "model": "models/characters/TankDefensive.fbx",
                 "type": "SkinnedMeshRenderer"
             },
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "b5726606-84fd-4c38-bc36-a8da3e8e6c7b",
+                "id": "e742a2d4-a8db-4621-8d75-06e2d7e9bd53",
                 "parameters": {},
                 "stateMachine": [
                     {
@@ -219,30 +219,30 @@
                         "transitions": []
                     },
                     {
+                        "name": "Death",
+                        "transitions": []
+                    },
+                    {
                         "name": "Attack",
                         "transitions": [
-                               {
-                               "condition": {
+                            {
+                                "condition": {
                                     "op": 2,
                                     "parameter": "isFinished",
                                     "type": 2,
                                     "value": 1.0
-                               },
-                               "duration": 0.25,
-                               "to": "Idle"
-                           }
+                                },
+                                "duration": 0.25,
+                                "to": "Idle"
+                            }
                         ]
-                    },
-                    {
-                        "name": "Death",
-                        "transitions": []
                     }
                 ],
                 "type": "Animator"
             }
         ],
         "enabled": true,
-        "id": "7a4ee770-4fd2-453c-b087-216556690e8e",
+        "id": "62804433-7cf9-429d-bf85-1f17de3cebe8",
         "name": "Defensive",
         "tags": []
     }

@@ -149,6 +149,7 @@ void game::EnemyManager::spawnEnemy(const boost::uuids::uuid& chunkId,
         dzemikk::PrefabSerializer::instantiate(*scene, *enemyPrefab.get(), _assetManager);
     enemyGO->addTag("Enemy");
     enemyGO->setParent(getOwner());
+    enemyGO->enabled(true);
 
     enemyGO->transform()->setPosition(
         cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
