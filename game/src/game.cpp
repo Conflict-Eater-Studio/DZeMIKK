@@ -177,6 +177,9 @@ void Game::startGame() {
     auto logo = _menuScene.get()->findGameObjectByName("Logo");
     logo->addComponent<game::LogoComponent>();
 
+    _mainScene.get()->findGameObjectByName("UI_RevealPatternBtn")->addComponent<UIPulseEffect>();
+    _mainScene.get()->findGameObjectByName("UI_RevealHexBtn")->addComponent<UIPulseEffect>();
+
     setupMainCamera();
     setupUICamera();
     setupWorld();
@@ -357,9 +360,6 @@ void Game::startGame() {
             h->enabled(false);
         },
         "item.panel.exit");
-
-    _mainScene.get()->findGameObjectByName("UI_RevealPatternBtn")->addComponent<UIPulseEffect>();
-    _mainScene.get()->findGameObjectByName("UI_RevealHexBtn")->addComponent<UIPulseEffect>();
     setupInputCallbacks();
 }
 
