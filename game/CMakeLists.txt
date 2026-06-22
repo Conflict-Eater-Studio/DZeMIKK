@@ -44,6 +44,7 @@ set(GAME_SOURCES
     ${SRC_DIR}/item/itemManager.cpp
     ${SRC_DIR}/dialog/dialogManager.cpp
     ${SRC_DIR}/dialog/dialog.cpp
+    ${SRC_DIR}/visuals/depthOfFieldEffect.cpp
 )
 
 set(GAME_HEADERS
@@ -103,6 +104,7 @@ set(GAME_HEADERS
     ${INC_DIR}/dialog/dialogManager.h
     ${INC_DIR}/dialog/dialog.h
     ${INC_DIR}/dialog/dialogEntity.h
+    ${INC_DIR}/visuals/depthOfFieldEffect.h
 )
 
 add_executable(game

@@ -101,6 +101,7 @@ void dzemikk::Renderer::render() {
     }
 
     _context.sceneTexture = _sceneFramebuffer->getColorAttachmentRendererID();
+    _context.depthTexture = _sceneFramebuffer->getDepthAttachmentRendererID();
 
     _sceneFramebuffer->unbind();
 

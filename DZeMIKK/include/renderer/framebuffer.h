@@ -23,6 +23,7 @@ class Framebuffer {
 
     [[nodiscard]] uint32_t getRendererID() const;
     [[nodiscard]] uint32_t getColorAttachmentRendererID() const;
+    [[nodiscard]] uint32_t getDepthAttachmentRendererID() const;
 
     [[nodiscard]] uint32_t getWidth() const;
     [[nodiscard]] uint32_t getHeight() const;
@@ -34,7 +35,7 @@ class Framebuffer {
     uint32_t _rendererID = 0;
 
     uint32_t _colorAttachment = 0;
-    uint32_t _depthAttachment = 0;
+    uint32_t _depthAttachment = 0; 
 
     uint32_t _width = 0;
     uint32_t _height = 0;

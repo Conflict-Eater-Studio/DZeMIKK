@@ -81,11 +81,9 @@
 #include <healthSystem.h>
 #include <iostream>
 #include <random>
-
-#include "ui/logoComponent.h"
-#include "ui/uIPulseEffect.h"
-#include "totem/totemDialogEntity.h"
 #include "scripts/world/worldVisualManager.h"
+
+#include "visuals/depthOfFieldEffect.h"
 
 static std::mt19937 rng{std::random_device{}()};
 
@@ -434,12 +432,17 @@ void Game::setupMainCamera() {
     antiAliasing->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/fxaa"));
     antiAliasing->setPriority(10);
 
-    _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
+    auto postProccessDoF = cameraGO->addComponent<dzemikk::DepthOfFieldEffect>();
+    postProccessDoF->setEnabled(false);
+    postProccessDoF->setShader(
+        _engine->getAssetManager()->get<dzemikk::Shader>("shaders/dof"));
+    postProccessDoF->setPriority(8);
+    
     auto postProccessEffect = cameraGO->addComponent<dzemikk::PostProcessEffect>();
     postProccessEffect->setEnabled(true);
     postProccessEffect->setShader(
         _engine->getAssetManager()->get<dzemikk::Shader>("shaders/vignette"));
-    postProccessEffect->setPriority(5);
+    postProccessEffect->setPriority(9);
 
     _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(_mainCamera);
 }

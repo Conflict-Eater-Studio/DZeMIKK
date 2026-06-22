@@ -90,6 +90,11 @@ void dzemikk::PostProcessRenderPass::execute(RenderContext& ctx) {
 
         shader->setSampler("screenTexture", 0);
 
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, ctx.depthTexture);
+
+        shader->setSampler("uDepth", 1);
+
         shader->setVec2("uScreenSize", glm::vec2(target->getWidth(), target->getHeight()));
         shader->setVec2("uInverseScreenSize", glm::vec2(1.0f / target->getWidth(), 1.0f / target->getHeight()));
 
