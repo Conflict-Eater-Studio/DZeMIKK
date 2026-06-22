@@ -16,10 +16,10 @@ namespace game {
 
 class PlayerCombatAnimationController : public dzemikk::MonoBehaviour {
   public:
+    using Base = dzemikk::MonoBehaviour;
+
     void start() override;
     void update(double deltaTime) override;
-    void setEnemies(const std::vector<game::EnemyEntity*>& vector);
-    using Base = dzemikk::MonoBehaviour;
 
     [[nodiscard]] std::string typeName() const override {
         return "PlayerCombatAnimationController";
@@ -43,7 +43,6 @@ class PlayerCombatAnimationController : public dzemikk::MonoBehaviour {
     HealthSystem* _playerHealthSystem = nullptr;
     GameStateMachine* _gameStateMachine = nullptr;
     dzemikk::Animator* _enemyAnimator = nullptr;
-    std::vector<game::EnemyEntity*> _enemies;
     bool canPlay = true;
     bool animationAttackOne = true;
 };

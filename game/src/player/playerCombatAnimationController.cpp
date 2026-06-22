@@ -63,9 +63,7 @@ void PlayerCombatAnimationController::update(double deltaTime) {
 
 
 }
-void PlayerCombatAnimationController::setEnemies(const std::vector<game::EnemyEntity*>& enemies) {
-    _enemies = enemies;
-}
+
 void PlayerCombatAnimationController::setPlayerAnimator(dzemikk::Animator* animator) {
     _playerAnimator = animator;
 }
