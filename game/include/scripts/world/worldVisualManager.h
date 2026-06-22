@@ -52,6 +52,8 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
     void generatePathBetweenChunks(const std::string& chunkA, const std::string& chunkB,
                                    HexCell::Type chunkAtype, HexCell::Type chunkBtype);
     void spawnSignToChunk(const std::string& sourceChunk, const std::string& targetChunk);
+
+    void spawnCampChunk(const std::string& chunkName);
   private:
     struct ForestCluster {
         glm::vec3 center;

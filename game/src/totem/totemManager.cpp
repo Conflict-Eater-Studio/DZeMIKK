@@ -107,7 +107,7 @@ void game::TotemManager::spawnTotem(const boost::uuids::uuid& chunkId,
 
     totemGO->transform()->setPosition(
         cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
-        glm::vec3(0.F, 1.25F, 0.F));
+        glm::vec3(0.F, 0.9F, 0.F));
 
     totemGO->transform()->setScale({0.8, 0.8, 0.8});
 

@@ -1,3 +1,5 @@
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include "scripts/world/worldVisualManager.h"
 #include "game.h"
 
@@ -8,6 +10,7 @@
 #include <ecs/components/meshRenderer.h>
 
 #include <glm/glm.hpp>
+#include <glm/gtx/norm.hpp>
 
 void game::WorldVisualManager::start() {
 
@@ -692,4 +695,170 @@ void game::WorldVisualManager::spawnRockCluster(dzemikk::Scene* scene, const std
 
         go->transform()->setRotation(rot);
     }
+}
+
+void game::WorldVisualManager::spawnCampChunk(const std::string& chunkName) {
+    if (!_world)
+        return;
+
+    auto chunks = _world->getVisualHexesByChunk();
+    auto chunkIt = chunks.find(chunkName);
+    if (chunkIt == chunks.end())
+        return;
+
+    auto* scene = _world->getOwner()->getScene();
+    const auto& hexes = chunkIt->second;
+
+    std::vector<HexCell*> freeHexes;
+    freeHexes.reserve(hexes.size());
+
+    for (auto& hexPtr : hexes) {
+        if (!hexPtr)
+            continue;
+
+        HexCell* hex = hexPtr.get();
+
+        if (!isHexFree(hex))
+            continue;
+
+        auto* t = _world->getHexTransformByCell(*hex);
+        if (!t)
+            continue;
+
+        freeHexes.push_back(hex);
+    }
+
+    if (freeHexes.size() < 3)
+        return;
+
+    glm::vec3 center(0.f);
+    int count = 0;
+
+    for (auto* hex : freeHexes) {
+        auto* t = _world->getHexTransformByCell(*hex);
+        if (!t)
+            continue;
+
+        center += t->getPosition();
+        count++;
+    }
+
+    if (count == 0)
+        return;
+
+    center /= static_cast<float>(count);
+
+    std::sort(freeHexes.begin(), freeHexes.end(), [&](HexCell* a, HexCell* b) {
+        auto* ta = _world->getHexTransformByCell(*a);
+        auto* tb = _world->getHexTransformByCell(*b);
+
+        if (!ta || !tb)
+            return false;
+
+        float da = glm::length2(ta->getPosition() - center);
+        float db = glm::length2(tb->getPosition() - center);
+
+        return da < db;
+    });
+
+    HexCell* centerHex = freeHexes[0];
+    auto* centerT = _world->getHexTransformByCell(*centerHex);
+
+    if (!centerT)
+        return;
+
+    glm::vec3 centerPos = centerT->getPosition();
+
+    auto* fire =
+        dzemikk::PrefabSerializer::instantiate(*scene, *_cache["Camp_fire"].get(), _assetManager);
+
+    if (fire) {
+        fire->transform()->setPosition(centerPos);
+        fire->setName("CampFire_" + chunkName);
+        centerHex->setState(HexCell::State::Prop);
+    }
+
+    std::vector<HexCell*> ringHexes;
+
+    HexCoord centerCoord = centerHex->getCoord();
+
+    constexpr int minRing = 3;
+    constexpr int maxRing = 3;
+
+    for (HexCell* hex : freeHexes) {
+
+        int dist = HexCoord::distance(centerCoord, hex->getCoord());
+
+        if (dist < minRing || dist > maxRing)
+            continue;
+
+        ringHexes.push_back(hex);
+    }
+
+    if (ringHexes.size() < 3)
+        ringHexes = freeHexes;
+
+    std::shuffle(ringHexes.begin(), ringHexes.end(), std::mt19937(std::random_device{}()));
+
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    std::uniform_real_distribution<float> rotOffsetDist(-20.0f, 20.0f);
+
+    int tipiCount = 1 + rand() % 3;
+    int spawned = 0;
+
+    std::vector<HexCell*> selectedHexes;
+
+    for (HexCell* hex : ringHexes) {
+
+        if (spawned >= tipiCount)
+            break;
+
+        if (!hex)
+            continue;
+
+        bool isNeighbour = false;
+
+        for (auto* selected : selectedHexes) {
+            if (HexCoord::distance(selected->getCoord(), hex->getCoord()) <= 1) {
+                isNeighbour = true;
+                break;
+            }
+        }
+
+        if (isNeighbour)
+            continue;
+
+        auto* t = _world->getHexTransformByCell(*hex);
+        if (!t)
+            continue;
+
+        glm::vec3 pos = t->getPosition();
+
+        auto* tipi =
+            dzemikk::PrefabSerializer::instantiate(*scene, *_cache["Tipi"].get(), _assetManager);
+
+        if (!tipi)
+            continue;
+
+        tipi->transform()->setPosition(pos);
+
+        glm::vec3 dir = glm::normalize(centerPos - pos);
+
+        float yaw = std::atan2(dir.x, dir.z);
+
+        glm::quat rotY = glm::angleAxis(yaw + 90, glm::vec3(0, 1, 0));
+        glm::quat rotX = glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0));
+
+        tipi->transform()->setRotation(rotY * rotX);
+
+        hex->setState(HexCell::State::Prop);
+
+        selectedHexes.push_back(hex);
+        spawned++;
+    }
+
+    spdlog::info(
+        "[WorldVisualManager] Camp spawned in chunk '{}' (tipis: {}, spawned: {}, ring: {}-{})",
+        chunkName, tipiCount, spawned, minRing, maxRing);
 }

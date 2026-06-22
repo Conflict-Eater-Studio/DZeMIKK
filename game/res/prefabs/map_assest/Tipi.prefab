@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "b89dd4c9-ffe3-47a2-9c25-4ac257e762d8",
+                        "id": "c601845e-d17e-4db9-9211-a3c6afd88fe7",
                         "position": [
                             -0.4000000059604645,
                             0.0,
@@ -37,14 +37,14 @@
                     }
                 ],
                 "enabled": true,
-                "id": "197da887-b658-4202-bd98-d03446967dcf",
+                "id": "f6c5348c-fe3f-4eef-9f10-578fa671d128",
                 "name": "Empty",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "e7eb53e8-f190-4824-b5bb-84c1271c8006",
+                "id": "06b26e4a-e783-4da5-9561-554a8037e94b",
                 "position": [
                     0.0,
                     0.0,
@@ -57,14 +57,14 @@
                     0.4999028742313385
                 ],
                 "scale": [
-                    1.0,
-                    1.0,
-                    1.0
+                    2.0,
+                    2.0,
+                    2.0
                 ],
                 "type": "Transform"
             },
             {
-                "id": "3adb5a81-848d-4478-ad0b-f7da4dea5f98",
+                "id": "a7468e91-303d-40bd-a658-c34201e5c47f",
                 "materials": [
                     {
                         "pbr": {
@@ -99,7 +99,7 @@
             }
         ],
         "enabled": true,
-        "id": "75a1b0af-190c-4bb2-8947-95b867759b8c",
+        "id": "5d754161-89a0-4ec5-aeeb-9001dd096a34",
         "name": "Tipi1",
         "tags": []
     }

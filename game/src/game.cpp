@@ -590,6 +590,13 @@ void Game::setupWorldVisuals() {
     worldVisualManager->spawnSignToChunk("chunkMain8", "chunkMain9");
     worldVisualManager->spawnSignToChunk("chunkMain9", "chunkMain10");
 
+    worldVisualManager->spawnCampChunk("chunkMain2Sub1");
+    worldVisualManager->spawnCampChunk("chunkMain3Sub1");
+    worldVisualManager->spawnCampChunk("chunkMain4Sub1");
+    worldVisualManager->spawnCampChunk("chunkMain7Sub1");
+    worldVisualManager->spawnCampChunk("chunkMain7Sub2");
+    worldVisualManager->spawnCampChunk("chunkMain7Sub3");
+
     worldVisualManager->spawnForestChunk("chunkMain0");
     worldVisualManager->spawnForestChunk("chunkMain1");
     worldVisualManager->spawnForestChunk("chunkMain2");
@@ -710,20 +717,22 @@ void Game::setupInputCallbacks() {
             lastHighlightedEnemy = currentEnemy;
         }
 
-        if (currentEnemy != requestedEnemy) {
-            clearAnim();
+        if (currentEnemy && requestedEnemy) {
+            if (currentEnemy != requestedEnemy) {
+                clearAnim();
 
-            requestedEnemy = currentEnemy;
+                requestedEnemy = currentEnemy;
 
-            if (currentEnemy) {
-                animEnemy = currentEnemy;
+                if (currentEnemy) {
+                    animEnemy = currentEnemy;
 
-                animCells.clear();
-                animIndex = 0;
-                animFrameCounter = 0;
+                    animCells.clear();
+                    animIndex = 0;
+                    animFrameCounter = 0;
 
-                for (auto* c : currentEnemy->getTerritory()) {
-                    animCells.push_back(c);
+                    for (auto* c : currentEnemy->getTerritory()) {
+                        animCells.push_back(c);
+                    }
                 }
             }
         }
@@ -1263,7 +1272,7 @@ void Game::setupItems() {
                            "chunkMain7",     "chunkMain7Sub2", "chunkMain9"};
         for (const auto& name : healChunks) {
             manager->addItem(world->getGrid()->getChunkByName(name)->getPersistantId(),
-                             {.type = game::ItemEntity::ItemType::Heal, .healAmount = 10.0F});
+                             {.type = game::ItemEntity::ItemType::Heal, .healAmount = 100.0F});
         }
 
         // Reveal Pattern Item setup
