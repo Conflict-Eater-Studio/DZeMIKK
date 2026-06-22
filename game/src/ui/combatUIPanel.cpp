@@ -209,9 +209,8 @@ void game::CombatUIPanel::createPatternPreview(game::CombatUIPanel::PatternPoolO
 }
 
 void game::CombatUIPanel::refreshCounts() {
-    auto active = _patternPool | std::ranges::views::filter([](const PatternPoolObject& obj) {
-                      return obj.root->isEnabled();
-                  });
+    auto active = _patternPool |
+                  std::ranges::views::filter([](const PatternPoolObject& obj) { return obj.used; });
 
     for (auto& entry : active) {
         if (!entry.countText) {
@@ -387,8 +386,8 @@ void game::CombatUIPanel::setupButtonActions(game::CombatUIPanel::PatternPoolObj
             auto* iconGO = patternTooltip->findChildByName("Icon");
             auto* iconRenderer = iconGO->getComponent<dzemikk::ImageRenderer>();
 
-            auto* name = patternTooltip->findChildByName("Name")
-                             ->getComponent<dzemikk::UITextRenderer>();
+            auto* name =
+                patternTooltip->findChildByName("Name")->getComponent<dzemikk::UITextRenderer>();
 
             auto* leftHexGO = patternTooltip->findChildByName("Left")->findChildByName("Hex_UI");
             auto* leftHexIconGO = leftHexGO->findChildByName("Empty");
@@ -495,9 +494,9 @@ void game::CombatUIPanel::setupButtonActions(game::CombatUIPanel::PatternPoolObj
                 patternTooltip->enabled(true);
                 break;
             case HexPattern::Type::BONUSHEX:
-                bonusTooltipTextRenderer->text = std::format(
-                    "Expands your territory by {} tile",
-                    _patterns->getPattern(obj.patternIndex)->pattern.getHexes().size());
+                bonusTooltipTextRenderer->text =
+                    std::format("Expands your territory by {} tile",
+                                _patterns->getPattern(obj.patternIndex)->pattern.getHexes().size());
 
                 bonusTooltip->enabled(true);
                 break;
