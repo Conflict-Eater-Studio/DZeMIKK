@@ -8,6 +8,13 @@
 #include <imgui.h>
 #endif
 
+#include <algorithm>
+#include <cfloat>
+#include <cmath>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
+
 namespace dzemikk {
 
 Profiler& Profiler::Get() {
@@ -18,9 +25,20 @@ Profiler& Profiler::Get() {
 void Profiler::initialize() {
     _cpuTimes.clear();
     _gpuQueries.clear();
+
+    _validHistorySamples = 0;
+    _recordFrameIndex = 0;
+    _isRecording = false;
+
+    for (int i = 0; i < FRAME_HISTORY_COUNT; ++i) {
+        frameTimeHistory[i] = 0.0f;
+        _rollingAverageHistory[i] = 0.0f;
+    }
 }
 
 void Profiler::uninitialize() {
+    StopRecording();
+
     for (auto& pair : _gpuQueries) {
         if (pair.second.queryID != 0) {
             glDeleteQueries(1, &pair.second.queryID);
@@ -31,11 +49,32 @@ void Profiler::uninitialize() {
 void Profiler::BeginFrame(float deltaTime) {
     currentDeltaTime = deltaTime;
 
-    frameTimeHistory[frameHistoryOffset] = deltaTime;
+    int writeIndex = frameHistoryOffset;
+    frameTimeHistory[writeIndex] = deltaTime;
+    if (_validHistorySamples < FRAME_HISTORY_COUNT) {
+        ++_validHistorySamples;
+    }
+
+    int window = std::min(_rollingAverageWindow, _validHistorySamples);
+    float sum = 0.0f;
+    for (int i = 0; i < window; ++i) {
+        int idx = (writeIndex - i + FRAME_HISTORY_COUNT) % FRAME_HISTORY_COUNT;
+        sum += frameTimeHistory[idx];
+    }
+    _rollingAverageHistory[writeIndex] = (window > 0) ? (sum / static_cast<float>(window)) : deltaTime;
+
     frameHistoryOffset = (frameHistoryOffset + 1) % FRAME_HISTORY_COUNT;
 
     stats.reset();
     _cpuTimes.clear();
+
+    if (_isRecording && _recordStream.is_open()) {
+        float fps = (deltaTime > 0.0f) ? (1.0f / deltaTime) : 0.0f;
+        _recordStream << _recordFrameIndex << ',' << std::fixed << std::setprecision(6) << deltaTime << ','
+                      << std::fixed << std::setprecision(3) << (deltaTime * 1000.0f) << ','
+                      << std::fixed << std::setprecision(2) << fps << '\n';
+        ++_recordFrameIndex;
+    }
 }
 
 void Profiler::EndFrame() {
@@ -74,6 +113,94 @@ void Profiler::EndGPUQuery(const std::string& name) {
     }
 }
 
+void Profiler::StartRecording(const std::string& filename) {
+    if (_isRecording) {
+        return;
+    }
+
+    _recordFilename = filename;
+    if (_recordFilename.empty()) {
+        std::time_t now = std::time(nullptr);
+        std::tm localTime{};
+#if defined(_WIN32)
+        localtime_s(&localTime, &now);
+#else
+        localtime_r(&now, &localTime);
+#endif
+        std::ostringstream oss;
+        oss << "fps_capture_" << std::put_time(&localTime, "%Y%m%d_%H%M%S") << ".csv";
+        _recordFilename = oss.str();
+    }
+
+    _recordStream.open(_recordFilename, std::ios::out | std::ios::trunc);
+    if (_recordStream.is_open()) {
+        _recordStream << "FrameIndex,DeltaTime(s),FrameTime(ms),FPS\n";
+        _recordFrameIndex = 0;
+        _isRecording = true;
+    }
+}
+
+void Profiler::StopRecording() {
+    if (_recordStream.is_open()) {
+        _recordStream.close();
+    }
+    _isRecording = false;
+    _recordFrameIndex = 0;
+    _recordFilename.clear();
+}
+
+Profiler::FrameTimeStats Profiler::_ComputeFrameStats() const {
+    FrameTimeStats result;
+    if (_validHistorySamples <= 0) {
+        return result;
+    }
+
+    std::vector<float> samples;
+    samples.reserve(_validHistorySamples);
+    for (int i = 0; i < _validHistorySamples; ++i) {
+        int idx = (frameHistoryOffset - _validHistorySamples + i + FRAME_HISTORY_COUNT) % FRAME_HISTORY_COUNT;
+        samples.push_back(frameTimeHistory[idx]);
+    }
+
+    float sum = 0.0f;
+    float minDt = samples[0];
+    float maxDt = samples[0];
+    for (float dt : samples) {
+        sum += dt;
+        minDt = std::min(minDt, dt);
+        maxDt = std::max(maxDt, dt);
+    }
+    float avgDt = sum / static_cast<float>(samples.size());
+
+    std::vector<float> sorted = samples;
+    std::sort(sorted.begin(), sorted.end());
+
+    auto percentile = [&](float p) -> float {
+        size_t idx = static_cast<size_t>(std::ceil(p * static_cast<float>(sorted.size()))) - 1;
+        if (idx >= sorted.size()) {
+            idx = sorted.size() - 1;
+        }
+        return sorted[idx];
+    };
+
+    float p99 = percentile(0.99f);
+    float p999 = percentile(0.999f);
+
+    result.avgMs = avgDt * 1000.0f;
+    result.minMs = minDt * 1000.0f;
+    result.maxMs = maxDt * 1000.0f;
+    result.percentile1LowMs = p99 * 1000.0f;
+    result.percentile01LowMs = p999 * 1000.0f;
+
+    result.avgFps = (avgDt > 0.0f) ? (1.0f / avgDt) : 0.0f;
+    result.minFps = (maxDt > 0.0f) ? (1.0f / maxDt) : 0.0f;
+    result.maxFps = (minDt > 0.0f) ? (1.0f / minDt) : 0.0f;
+    result.onePercentLowFps = (p99 > 0.0f) ? (1.0f / p99) : 0.0f;
+    result.zeroOnePercentLowFps = (p999 > 0.0f) ? (1.0f / p999) : 0.0f;
+
+    return result;
+}
+
 void Profiler::DrawImGui() {
 #if DZEMIKK_DEV_TOOLS
     ImGui::Begin("Performance Profiler");
@@ -81,10 +208,47 @@ void Profiler::DrawImGui() {
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", currentDeltaTime * 1000.0f,
                 1.0f / currentDeltaTime);
 
+    if (_isRecording) {
+        if (ImGui::Button("Stop Recording", ImVec2(150, 0))) {
+            StopRecording();
+        }
+        ImGui::SameLine();
+        ImGui::Text("Recording %llu frames to %s", static_cast<unsigned long long>(_recordFrameIndex),
+                    _recordFilename.c_str());
+    } else {
+        if (ImGui::Button("Start Recording", ImVec2(150, 0))) {
+            StartRecording();
+        }
+    }
+
+    ImGui::Separator();
+
+    FrameTimeStats frameStats = _ComputeFrameStats();
+    ImGui::Text("Frame Time (ms)  Avg: %.3f  Min: %.3f  Max: %.3f  1%% Low: %.3f  0.1%% Low: %.3f",
+                frameStats.avgMs, frameStats.minMs, frameStats.maxMs, frameStats.percentile1LowMs,
+                frameStats.percentile01LowMs);
+    ImGui::Text("FPS            Avg: %.1f  Min: %.1f  Max: %.1f  1%% Low: %.1f  0.1%% Low: %.1f",
+                frameStats.avgFps, frameStats.minFps, frameStats.maxFps, frameStats.onePercentLowFps,
+                frameStats.zeroOnePercentLowFps);
+
+    ImGui::Separator();
+
+    ImGui::SliderInt("Rolling Window", &_rollingAverageWindow, 1, FRAME_HISTORY_COUNT, "%d frames");
+
     char overlayText[32];
     snprintf(overlayText, sizeof(overlayText), "%.1f FPS", 1.0f / currentDeltaTime);
-    ImGui::PlotLines("##FrameTime", frameTimeHistory, FRAME_HISTORY_COUNT, frameHistoryOffset,
-                     overlayText, 0.0f, FLT_MAX, ImVec2(0, 50));
+
+    float frameTimeMs[FRAME_HISTORY_COUNT];
+    float rollingAvgMs[FRAME_HISTORY_COUNT];
+    for (int i = 0; i < FRAME_HISTORY_COUNT; ++i) {
+        frameTimeMs[i] = frameTimeHistory[i] * 1000.0f;
+        rollingAvgMs[i] = _rollingAverageHistory[i] * 1000.0f;
+    }
+
+    ImGui::PlotLines("Frame Time (ms)", frameTimeMs, FRAME_HISTORY_COUNT, frameHistoryOffset, overlayText, 0.0f,
+                     FLT_MAX, ImVec2(0, 80));
+    ImGui::PlotLines("Rolling Average (ms)", rollingAvgMs, FRAME_HISTORY_COUNT, frameHistoryOffset, nullptr, 0.0f,
+                     FLT_MAX, ImVec2(0, 60));
 
     ImGui::Separator();
 
