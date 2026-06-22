@@ -746,9 +746,11 @@ void Game::setupPlayer() {
     forward330Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
 
     attackClip1 = skeleton->getClip("attack1");
+    attackClip1->setPlaybackSpeed(2.0f);
     attackClip1->setLoop(false);
 
     attackClip2 = skeleton->getClip("attack2");
+    attackClip2->setPlaybackSpeed(2.0f);
     attackClip2->setLoop(false);
 
     pickupClip = skeleton->getClip("pickup");

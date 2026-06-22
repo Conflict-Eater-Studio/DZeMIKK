@@ -45,6 +45,7 @@ class PlayerCombatAnimationController : public dzemikk::MonoBehaviour {
     dzemikk::Animator* _enemyAnimator = nullptr;
     std::vector<game::EnemyEntity*> _enemies;
     bool canPlay = true;
+    bool animationAttackOne = true;
 };
 
 } // namespace game

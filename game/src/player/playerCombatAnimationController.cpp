@@ -31,6 +31,14 @@ void PlayerCombatAnimationController::update(double deltaTime) {
             _playerAnimator->setBool("isFinished", false);
         }
     }
+    if (_playerAnimator) {
+        if (_playerAnimator->getCurrentState()->getName() == "Attack2" && _playerAnimator->getCurrentState()->getClip()->isFinished()) {
+            _playerAnimator->setBool("isFinished", true);
+            canPlay = true;
+        }else {
+            _playerAnimator->setBool("isFinished", false);
+        }
+    }
 
     if (auto* combat = _gameStateMachine->getCurrentStateAs<ExplorationState>()) {
         _playerAnimator->setBool("isFinished", true);
@@ -38,12 +46,11 @@ void PlayerCombatAnimationController::update(double deltaTime) {
     }
 
     if (_enemyAnimator != nullptr && _enemyAnimator->getCurrentState()->getName() == "Attack" && _enemyAnimator->getCurrentState()->getClip()->isFinished()) {
-        _enemyAnimator->setBool("isFinished",true);
         _enemyAnimator->play("Idle");
-        spdlog::info("isAttacking: {}",_enemyAnimator->getInt("isAttacking"));
         _enemyAnimator = nullptr;
 
     }
+
 
     if (_playerHealthSystem->getCurrentHealth() <= 0.0f) {
         //_playerAnimator->play("Death");
@@ -80,7 +87,14 @@ GameStateMachine* PlayerCombatAnimationController::getGameStateMachine() const {
 
 void PlayerCombatAnimationController::playConfirmRoundAttack() {
     if (_playerAnimator) {
-        _playerAnimator->play("Attack1");
+        if (animationAttackOne) {
+            _playerAnimator->play("Attack1");
+            animationAttackOne = false;
+        }else {
+            _playerAnimator->play("Attack2");
+            animationAttackOne = true;
+
+        }
     }
     if (_enemyAnimator) {
         _enemyAnimator->play("Attack");
