@@ -50,6 +50,8 @@ class Game {
 
     void startGame();
     void restartGame();
+    [[nodiscard]] bool isPendingRestart() const;
+    void markPendingRestart();
 
   private:
     void setupSkybox();
@@ -86,6 +88,7 @@ class Game {
     std::unordered_map<dzemikk::MeshRenderer*, glm::vec4> _lastHitBaseColors;
 
     bool _gameStarted = false;
+    bool _pendingRestart = false;
 };
 
 #endif

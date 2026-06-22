@@ -1421,6 +1421,8 @@ void Game::setupDialogs() {
 }
 
 void Game::restartGame() {
+    _pendingRestart = false;
+
     if (!std::filesystem::exists("./world.json")) {
         spdlog::warn("[Game] No world.json file found. Cannot restart.");
         throw std::runtime_error("No world.json file found. Cannot restart.");
@@ -1590,4 +1592,12 @@ void Game::restartGame() {
     }
 
     _stateMachine->setState(std::make_unique<game::ExplorationState>(this));
+}
+
+bool Game::isPendingRestart() const {
+    return _pendingRestart;
+}
+
+void Game::markPendingRestart() {
+    _pendingRestart = true;
 }

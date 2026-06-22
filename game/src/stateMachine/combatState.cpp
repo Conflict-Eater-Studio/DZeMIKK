@@ -22,10 +22,10 @@
 #include <audio/audioManager.h>
 #include <ecs/components/meshRenderer.h>
 #include <ecs/components/transform.h>
+#include <ecs/components/ui/imageRenderer.h>
 #include <ecs/gameobject.h>
 #include <ecs/scene.h>
 #include <enemySystem/enemyPatternComponent.h>
-#include <ecs/components/ui/imageRenderer.h>
 #include <iostream>
 #include <renderer/shader.h>
 
@@ -118,7 +118,7 @@ void game::CombatState::onEnter() {
                               ->findDescendantByName("Avatar");
     auto enemyAvatarRenderer = enemyAvatarGO->getComponent<dzemikk::ImageRenderer>();
 
-    switch (_currentEnemy->getEnemyPersonality()) { 
+    switch (_currentEnemy->getEnemyPersonality()) {
     case EnemyPersonality::Aggressive:
         enemyAvatarRenderer->setTexture(
             _game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
@@ -139,7 +139,6 @@ void game::CombatState::onEnter() {
             _game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
                 "textures/ui grafiki/avatary/avatar4.png"));
         break;
-
     }
 
     startNewTurn();
@@ -244,7 +243,8 @@ void game::CombatState::onUpdate(float dt) {
             _exitAnimation = false;
 
             if (_playerDied) {
-                _game->restartGame();
+                _game->markPendingRestart();
+                _game->setExplorationState();
             } else {
 
                 if (_currentEnemy->getEnemyType() == EnemyType::Boss) {
@@ -481,19 +481,19 @@ void game::CombatState::resolveConflict() {
         auto enemyConfig = _currentEnemy->getConfig();
         auto enemyId = _currentEnemy->getId();
 #if DZEMIKK_DEV_TOOLS
-        spdlog::info("[CombatState] Enemy defeated. ID: {}, Chunk: {}", 
+        spdlog::info("[CombatState] Enemy defeated. ID: {}, Chunk: {}",
                      boost::uuids::to_string(enemyId), boost::uuids::to_string(enemyChunkId));
 #endif
         for (const auto& childChunk : enemyConfig.blocksChunks) {
             HexGrid::BridgeId bridgeId{enemyChunkId, childChunk};
 #if DZEMIKK_DEV_TOOLS
             bool bridgeExists = grid->getBridges().contains(bridgeId);
-            spdlog::info("[CombatState] Unlocking bridge {{ {}, {} }} - exists: {}", 
-                         boost::uuids::to_string(enemyChunkId), 
-                         boost::uuids::to_string(childChunk), bridgeExists);
+            spdlog::info("[CombatState] Unlocking bridge {{ {}, {} }} - exists: {}",
+                         boost::uuids::to_string(enemyChunkId), boost::uuids::to_string(childChunk),
+                         bridgeExists);
             if (bridgeExists) {
                 const auto& bridge = grid->getBridges().at(bridgeId);
-                spdlog::info("[CombatState] Bridge has {} blocking enemies, {} hexes", 
+                spdlog::info("[CombatState] Bridge has {} blocking enemies, {} hexes",
                              bridge.blockingEnemies.size(), bridge.hexes.size());
             }
 #endif
