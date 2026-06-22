@@ -108,6 +108,8 @@ void game::CombatState::onEnter() {
 
     _emptyEnemyBattleHexMaterial = material->clone();
     _emptyEnemyBattleHexMaterial->setAlbedoColor({1.0F, 1.0F, 1.0F});
+    _emptyEnemyBattleHexMaterial->setAlbedoTexture(
+        _game->getEngine()->getAssetManager()->get<dzemikk::Texture>("models/assets/hexy/hex_wypukly/hex_wypukly_BaseColor_unactive.png"));
 
     _showedPatternMaterial = material->clone();
     _showedPatternMaterial->setAlbedoColor({0.25F, 0.25F, 0.25F});
