@@ -293,9 +293,9 @@
                              {
                                 "condition": {
                                     "op": 2,
-                                    "parameter": "isAttacking",
-                                    "type": 1,
-                                    "value": 0.0
+                                    "parameter": "isFinished",
+                                    "type": 2,
+                                    "value": 1.0
                                 },
                                 "duration": 0.25,
                                 "to": "Idle"

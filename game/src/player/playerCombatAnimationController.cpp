@@ -38,8 +38,11 @@ void PlayerCombatAnimationController::update(double deltaTime) {
     }
 
     if (_enemyAnimator != nullptr && _enemyAnimator->getCurrentState()->getName() == "Attack" && _enemyAnimator->getCurrentState()->getClip()->isFinished()) {
-        _enemyAnimator->setInt("isAttacking",0);
+        _enemyAnimator->setBool("isFinished",true);
+        _enemyAnimator->play("Idle");
+        spdlog::info("isAttacking: {}",_enemyAnimator->getInt("isAttacking"));
         _enemyAnimator = nullptr;
+
     }
 
     if (_playerHealthSystem->getCurrentHealth() <= 0.0f) {
@@ -86,7 +89,7 @@ void PlayerCombatAnimationController::playConfirmRoundAttack() {
     for (auto* enemy : _enemies) {
         if (enemy->getOwner()->getName() == _gameStateMachine->getCurrentStateAs<CombatState>()->getCurrentEnemy()->getOwner()->getName()){
             _enemyAnimator = enemy->getOwner()->getComponent<dzemikk::Animator>();
-            _enemyAnimator->setInt("isAttacking",1);
+            _enemyAnimator->setBool("isFinished",0);
             _enemyAnimator->play("Attack");
         }
     }

@@ -164,6 +164,7 @@ void game::EnemyManager::spawnEnemy(const boost::uuids::uuid& chunkId,
     deathClip = skeleton->getClip("death");
     deathClip->setLoop(false);
     attackClip = skeleton->getClip("attack");
+    attackClip->setPlaybackSpeed(2.0f);
     attackClip->setLoop(false);
 
     auto* animator = enemyGO->getComponent<dzemikk::Animator>();
