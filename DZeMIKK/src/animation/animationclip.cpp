@@ -55,7 +55,7 @@ void AnimationClip::apply(float timeInSeconds) const {
 
     if (_tracks.empty()) {
 #if DZEMIKK_DEV_TOOLS
-        spdlog::warn("[AnimationClip] AnimationClip has no tracks!");
+        //spdlog::warn("[AnimationClip] AnimationClip has no tracks!");
 #endif
         return;
     }

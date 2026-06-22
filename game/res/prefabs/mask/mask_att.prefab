@@ -1,0 +1,160 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [],
+                "components": [
+                    {
+                        "id": "86c3e2ad-9440-4126-879e-99351b5c959f",
+                        "position": [
+                            0.0,
+                            -0.10000000149011612,
+                            -0.10000000149011612
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "type": "Transform"
+                    },
+                    {
+                        "castsShadows": false,
+                        "color": [
+                            1.0,
+                            0.0,
+                            0.0
+                        ],
+                        "intensity": 1.4160000085830688,
+                        "range": 10.0,
+                        "type": "PointLight"
+                    }
+                ],
+                "enabled": true,
+                "id": "7b1da23d-4be0-4618-b0af-80cd8fb099a7",
+                "name": "Empty",
+                "tags": []
+            }
+        ],
+        "components": [
+            {
+                "id": "f54a664c-ca20-4554-a49c-3f88d313739e",
+                "position": [
+                    0.0,
+                    0.0,
+                    0.30000001192092896
+                ],
+                "rotation": [
+                    3.913314117198752e-11,
+                    6.804947361160885e-08,
+                    0.642787754535675,
+                    -0.7660443186759949
+                ],
+                "scale": [
+                    2.0,
+                    2.0,
+                    2.0
+                ],
+                "type": "Transform"
+            },
+            {
+                "id": "a95b10d0-2874-48d6-bc39-5593dd38b2ab",
+                "materials": [
+                    {
+                        "pbr": {
+                            "albedo": [
+                                0.24019604921340942,
+                                0.15265053510665894,
+                                0.054161857813596725
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "",
+                            "normal": "",
+                            "roughness": ""
+                        }
+                    },
+                    {
+                        "pbr": {
+                            "albedo": [
+                                0.49803921580314636,
+                                0.0,
+                                0.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                1.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.42899999022483826,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "",
+                            "normal": "",
+                            "roughness": ""
+                        }
+                    },
+                    {
+                        "pbr": {
+                            "albedo": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "ao": 1.0,
+                            "emissive": [
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "emissiveStrength": 0.0,
+                            "metallic": 0.0,
+                            "roughness": 0.5
+                        },
+                        "shader": "shaders/tile1",
+                        "textures": {
+                            "albedo": "",
+                            "ao": "",
+                            "emissive": "",
+                            "metallic": "",
+                            "normal": "",
+                            "roughness": ""
+                        }
+                    }
+                ],
+                "model": "models/characters/maskAtt.fbx",
+                "type": "MeshRenderer"
+            }
+        ],
+        "enabled": true,
+        "id": "d03a61ab-e60e-431d-b1b7-34d59e904a68",
+        "name": "MaskAtt",
+        "tags": []
+    }
+}

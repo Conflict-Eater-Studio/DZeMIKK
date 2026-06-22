@@ -14,20 +14,20 @@ namespace dzemikk {
     void Animator::update(float deltaTime) {
         if (_stateMachine == nullptr) {
 #if DZEMIKK_DEV_TOOLS
-            spdlog::warn("[Animator] Animator has no state machine!");
+            //spdlog::warn("[Animator] Animator has no state machine!");
 #endif
             return;
         }
         if (_currentState == nullptr) {
 #if DZEMIKK_DEV_TOOLS
-            spdlog::warn("[Animator] Animator has no current state!");
+            //spdlog::warn("[Animator] Animator has no current state!");
 #endif
             return;
         }
         AnimationClip* clip = _currentState->getClip();
         if (clip == nullptr) {
 #if DZEMIKK_DEV_TOOLS
-            spdlog::warn("[Animator] Current state has no clip!");
+            //spdlog::warn("[Animator] Current state has no clip!");
 #endif
             return;
         }

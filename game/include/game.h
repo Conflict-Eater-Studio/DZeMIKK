@@ -53,6 +53,7 @@ class Game {
     void restartGame();
     [[nodiscard]] bool isPendingRestart() const;
     void markPendingRestart();
+    void resetExplorationInputState();
 
   private:
     void setupSkybox();
@@ -90,6 +91,19 @@ class Game {
 
     bool _gameStarted = false;
     bool _pendingRestart = false;
+
+    dzemikk::MeshRenderer* lastHitRenderer = nullptr;
+
+    std::unordered_map<dzemikk::MeshRenderer*, std::shared_ptr<dzemikk::Material>> baseMaterials;
+
+    game::EnemyEntity* lastHighlightedEnemy = nullptr;
+    game::EnemyEntity* animEnemy = nullptr;
+    game::EnemyEntity* requestedEnemy = nullptr;
+
+    std::vector<game::HexCell*> animCells;
+    size_t animIndex = 0;
+    int animFrameCounter = 0;
+    static constexpr int animFrameDelay = 2;
 };
 
 #endif

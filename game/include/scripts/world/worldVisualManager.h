@@ -2,6 +2,9 @@
 
 #include "ecs/components/monobehaviour.h"
 #include "scripts/world/world.h"
+#include "enemySystem/enemyTypes.h"
+
+#include <string>
 
 class Game;
 
@@ -11,7 +14,7 @@ class Transform;
 }
 
 namespace game {
-
+class EnemyManager;
 class WorldVisualManager : public dzemikk::MonoBehaviour {
   public:
     struct SpawnPrefabDef {
@@ -54,6 +57,9 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
     void spawnSignToChunk(const std::string& sourceChunk, const std::string& targetChunk);
 
     void spawnCampChunk(const std::string& chunkName);
+    void showChunkBlockers(const std::string& blockedChunkName,
+                                                     const std::string& targetChunkName,
+                                                     EnemyManager* enemyManager);
   private:
     struct ForestCluster {
         glm::vec3 center;
@@ -84,6 +90,9 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
                                             HexCell::Type type, bool top);
     void generatePath(const HexCoord& start, const HexCoord& end);
     std::vector<HexCoord> findPath(const HexCoord& start, const HexCoord& goal);
+
+
+    static const char* personalityToString(EnemyPersonality p);
 };
 
 } // namespace game

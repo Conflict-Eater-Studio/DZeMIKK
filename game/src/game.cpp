@@ -656,6 +656,24 @@ void Game::setupWorldVisuals() {
     worldVisualManager->spawnForestChunk("chunkMain8");
     worldVisualManager->spawnForestChunk("chunkMain9");
     worldVisualManager->spawnForestChunk("chunkMain10");
+
+    auto* enemyManagerGO = _mainScene.get()->findGameObjectByName("EnemyManager");
+    auto* manager = enemyManagerGO->getComponent<game::EnemyManager>();
+    //worldVisualManager->showChunkBlockers("chunkMain2", "chunkMain1", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain2Sub1", "chunkMain2", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain3", "chunkMain2", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain3Sub1", "chunkMain3", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain4", "chunkMain3", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain5", "chunkMain4", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain6", "chunkMain5", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain7", "chunkMain6", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain4Sub1", "chunkMain4", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain7Sub1", "chunkMain7", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain7Sub2", "chunkMain7Sub1", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain7Sub3", "chunkMain7Sub2", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain8", "chunkMain7", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain9", "chunkMain8", manager);
+    //worldVisualManager->showChunkBlockers("chunkMain10", "chunkMain9", manager);
 }
 
 void Game::setupUICamera() {
@@ -667,19 +685,6 @@ void Game::setupUICamera() {
 }
 
 void Game::setupInputCallbacks() {
-    static dzemikk::MeshRenderer* lastHitRenderer = nullptr;
-
-    static std::unordered_map<dzemikk::MeshRenderer*, std::shared_ptr<dzemikk::Material>>
-        baseMaterials;
-
-    static game::EnemyEntity* lastHighlightedEnemy = nullptr;
-    static game::EnemyEntity* animEnemy = nullptr;
-    static std::vector<game::HexCell*> animCells;
-    static size_t animIndex = 0;
-    static int animFrameCounter = 0;
-    static const int animFrameDelay = 2; 
-    static game::EnemyEntity* requestedEnemy = nullptr;
-
     _engine->SetUserUpdateCallback([this]() {
         if (!_engine || !_engine->getInput() ||
             !_stateMachine->getCurrentStateAs<game::ExplorationState>()) {
@@ -731,6 +736,10 @@ void Game::setupInputCallbacks() {
                         animCells.clear();
                         animIndex = 0;
                         animFrameCounter = 0;
+
+                        if (!currentEnemy) {
+                            return;
+                        }
 
                         for (auto* c : currentEnemy->getTerritory()) {
                             animCells.push_back(c);
@@ -917,6 +926,33 @@ void Game::setupInputCallbacks() {
                 }
             }
         });
+}
+
+void Game::resetExplorationInputState() {
+    if (lastHitRenderer && lastHitRenderer->isValid()) {
+        auto it = baseMaterials.find(lastHitRenderer);
+        if (it != baseMaterials.end()) {
+            lastHitRenderer->setMaterial(0, it->second);
+        }
+    }
+
+    lastHitRenderer = nullptr;
+    baseMaterials.clear();
+
+    lastHighlightedEnemy = nullptr;
+    animEnemy = nullptr;
+    requestedEnemy = nullptr;
+
+    for (auto* c : animCells) {
+        if (c) {
+            c->setVisualState(game::HexCell::VisualState::None);
+            c->setDirty(true);
+        }
+    }
+
+    animCells.clear();
+    animIndex = 0;
+    animFrameCounter = 0;
 }
 
 void Game::setupPlayer() {

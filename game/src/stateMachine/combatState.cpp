@@ -50,6 +50,8 @@ void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitConte
 } // namespace combatSound
 
 void game::CombatState::onEnter() {
+    _game->resetExplorationInputState();
+
     combatSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
     dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS;
     taskS.context = sCtx;

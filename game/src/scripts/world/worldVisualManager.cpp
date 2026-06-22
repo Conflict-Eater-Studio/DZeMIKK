@@ -11,6 +11,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
+#include <enemySystem/enemyManager.h>
 
 void game::WorldVisualManager::start() {
 
@@ -47,6 +48,10 @@ void game::WorldVisualManager::init() {
     _cache["Tree_smal"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Tree_smal.prefab");
     _cache["Grass1"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Grass1.prefab");
     _cache["Signpost"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Signpost.prefab");
+    
+    _cache["mask_att"] = _assetManager->get<nlohmann::json>("prefabs/mask/mask_att.prefab");
+    _cache["mask_bal"] = _assetManager->get<nlohmann::json>("prefabs/mask/mask_bal.prefab");
+    _cache["mask_deff"] = _assetManager->get<nlohmann::json>("prefabs/mask/mask_deff.prefab");
 }
 
 void game::WorldVisualManager::spawnPrefabOnChunk(const std::string& chunkName,
@@ -861,4 +866,183 @@ void game::WorldVisualManager::spawnCampChunk(const std::string& chunkName) {
     spdlog::info(
         "[WorldVisualManager] Camp spawned in chunk '{}' (tipis: {}, spawned: {}, ring: {}-{})",
         chunkName, tipiCount, spawned, minRing, maxRing);
+}
+
+void game::WorldVisualManager::showChunkBlockers(const std::string& blockedChunkName,
+                                                 const std::string& targetChunkName,
+                                                 EnemyManager* enemyManager) {
+    if (!_world || !enemyManager)
+        return;
+
+    auto chunks = _world->getVisualHexesByChunk();
+
+    auto blockedIt = chunks.find(blockedChunkName);
+    auto targetIt = chunks.find(targetChunkName);
+
+    if (blockedIt == chunks.end() || targetIt == chunks.end())
+        return;
+
+    std::vector<HexCell*> blockingBridges;
+
+    for (const auto& hex : blockedIt->second) {
+        if (!hex)
+            continue;
+
+        if (hex->getType() == HexCell::Type::BlockingBridge)
+            blockingBridges.push_back(hex.get());
+    }
+
+    if (blockingBridges.empty())
+        return;
+
+    // ===== target center =====
+    glm::vec3 targetCenter(0.f);
+    int targetCount = 0;
+
+    for (const auto& hex : targetIt->second) {
+        if (!hex)
+            continue;
+
+        auto* t = _world->getHexTransformByCell(*hex);
+        if (!t)
+            continue;
+
+        targetCenter += t->getPosition();
+        targetCount++;
+    }
+
+    if (targetCount == 0)
+        return;
+
+    targetCenter /= (float)targetCount;
+
+    // ===== source center (blocked chunk) =====
+    glm::vec3 sourceCenter(0.f);
+    int sourceCount = 0;
+
+    for (const auto& hex : blockedIt->second) {
+        if (!hex)
+            continue;
+
+        auto* t = _world->getHexTransformByCell(*hex);
+        if (!t)
+            continue;
+
+        sourceCenter += t->getPosition();
+        sourceCount++;
+    }
+
+    if (sourceCount == 0)
+        return;
+
+    sourceCenter /= (float)sourceCount;
+
+    glm::vec3 dir = glm::normalize(targetCenter - sourceCenter);
+
+    // ===== filtr: tylko mosty "w stronê target chunk" =====
+    std::vector<HexCell*> validBridges;
+
+    for (auto* bridge : blockingBridges) {
+        auto* t = _world->getHexTransformByCell(*bridge);
+        if (!t)
+            continue;
+
+        glm::vec3 toBridge = glm::normalize(t->getPosition() - sourceCenter);
+
+        // tylko mosty w kierunku target chunk
+        if (glm::dot(toBridge, dir) > 0.0f)
+            validBridges.push_back(bridge);
+    }
+
+    if (validBridges.empty())
+        validBridges = blockingBridges; // fallback
+
+    // sort po dystansie do target
+    std::sort(validBridges.begin(), validBridges.end(),
+              [this, &targetCenter](HexCell* a, HexCell* b) {
+                  auto* ta = _world->getHexTransformByCell(*a);
+                  auto* tb = _world->getHexTransformByCell(*b);
+
+                  if (!ta || !tb)
+                      return false;
+
+                  return glm::distance2(ta->getPosition(), targetCenter) <
+                         glm::distance2(tb->getPosition(), targetCenter);
+              });
+
+    auto* grid = _world->getGrid();
+    auto* chunk = grid->getChunkByName(blockedChunkName);
+
+    if (!chunk)
+        return;
+
+    auto chunkId = chunk->getPersistantId();
+
+    size_t bridgeIndex = 0;
+
+    for (const auto& [enemyChunkId, enemies] : enemyManager->getSpawnedEnemies()) {
+        for (auto* enemy : enemies) {
+            if (!enemy)
+                continue;
+
+            const auto& cfg = enemy->getConfig();
+
+            if (std::find(cfg.blocksChunks.begin(), cfg.blocksChunks.end(), chunkId) ==
+                cfg.blocksChunks.end())
+                continue;
+
+            if (bridgeIndex >= validBridges.size())
+                return;
+
+            HexCell* bridgeHex = validBridges[bridgeIndex++];
+            auto* bridgeTransform = _world->getHexTransformByCell(*bridgeHex);
+
+            if (!bridgeTransform)
+                continue;
+
+            std::string maskPrefab;
+
+            switch (cfg.personality) {
+            case EnemyPersonality::Aggressive:
+                maskPrefab = "mask_att";
+                break;
+            case EnemyPersonality::Balanced:
+                maskPrefab = "mask_bal";
+                break;
+            case EnemyPersonality::Defensive:
+                maskPrefab = "mask_deff";
+                break;
+            default:
+                continue;
+            }
+
+            auto prefabIt = _cache.find(maskPrefab);
+            if (prefabIt == _cache.end())
+                continue;
+
+            auto* scene = _world->getOwner()->getScene();
+
+            auto* mask = dzemikk::PrefabSerializer::instantiate(
+                *scene, *prefabIt->second.get(), _assetManager, bridgeTransform->getOwner());
+
+            if (!mask)
+                continue;
+
+            mask->transform()->setPosition(glm::vec3(0.f));
+            mask->setName("EnemyMask_" + boost::uuids::to_string(enemy->getId()));
+        }
+    }
+}
+
+const char* game::WorldVisualManager::personalityToString(EnemyPersonality p) {
+    switch (p) {
+    case EnemyPersonality::Aggressive:
+        return "Aggressive";
+    case EnemyPersonality::Defensive:
+        return "Defensive";
+    case EnemyPersonality::Balanced:
+        return "Balanced";
+    }
+
+    return "Unknown";
 }
