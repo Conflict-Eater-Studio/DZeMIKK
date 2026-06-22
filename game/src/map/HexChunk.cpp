@@ -64,6 +64,7 @@ HexChunk::HexChunk(HexChunk::Config config, std::vector<HexCellPtr> cells, HexCo
     }
 
     for (auto& cell : cells) {
+        cell->setParentChunk(this);
         _hexes[cell->getCoord()] = std::move(cell);
     }
 }
@@ -115,9 +116,10 @@ void HexChunk::generateHexes() {
 }
 
 void HexChunk::generateHexCells() {
-    _hexes.insert(
-        {_origin, std::make_shared<HexCell>(_origin, HexCell::State::Empty, HexCell::Type::Normal,
-                                            HexCell::GenState::Protected)});
+    auto originCell = std::make_shared<HexCell>(
+        _origin, HexCell::State::Empty, HexCell::Type::Normal, HexCell::GenState::Protected);
+    originCell->setParentChunk(this);
+    _hexes.insert({_origin, originCell});
 
     std::set<HexCoord> visited{_origin};
     std::set<HexCoord> frontier{_origin};
@@ -131,9 +133,10 @@ void HexChunk::generateHexCells() {
                 visited.insert(neighbor);
                 if (_chanceDist(_rng) < _config.generator(i + 1, _config.steps)) {
                     nextFrontier.insert(neighbor);
-                    _hexes.insert(
-                        {neighbor, std::make_shared<HexCell>(neighbor, HexCell::State::Empty,
-                                                             HexCell::Type::Normal)});
+                    auto cell = std::make_shared<HexCell>(neighbor, HexCell::State::Empty,
+                                                          HexCell::Type::Normal);
+                    cell->setParentChunk(this);
+                    _hexes.insert({neighbor, cell});
                 }
             }
         }
@@ -205,9 +208,11 @@ void HexChunk::fillBlockedHexes(int minQ, int maxQ, int minR, int maxR, int minS
             }
             HexCoord coord(q, r);
             if (!_hexes.contains(coord)) {
-                _hexes.insert({coord, std::make_shared<HexCell>(coord, HexCell::State::Empty,
-                                                                HexCell::Type::Normal,
-                                                                HexCell::GenState::Blocked)});
+                auto cell =
+                    std::make_shared<HexCell>(coord, HexCell::State::Empty, HexCell::Type::Normal,
+                                              HexCell::GenState::Blocked);
+                cell->setParentChunk(this);
+                _hexes.insert({coord, cell});
             }
         }
     }
@@ -290,6 +295,9 @@ void HexChunk::clean() {
     for (const auto& cell : toRemove) {
         _hexes.erase(cell->getCoord());
     }
+
+    _saveDirty = true;
+    _dirty = true;
 }
 
 HexChunk::HexCellPtr HexChunk::getCell(const HexCoord& coord) const {
@@ -312,6 +320,8 @@ HexChunk::HexCellPtr HexChunk::extractCell(const HexCoord& coord) {
 
     auto cell = std::move(it->second);
     _hexes.erase(it);
+    _saveDirty = true;
+    _dirty = true;
     return cell;
 }
 
@@ -321,7 +331,10 @@ bool HexChunk::insertCell(const HexCoord& coord, HexCellPtr cell) {
     }
 
     cell->setCoord(coord);
+    cell->setParentChunk(this);
     _hexes.emplace(coord, std::move(cell));
+    _saveDirty = true;
+    _dirty = true;
     return true;
 }
 
@@ -334,6 +347,8 @@ void HexChunk::remove(const std::vector<HexCoord>& hexes) {
     std::erase_if(_hexes, [&removeSet](const auto& entry) {
         return removeSet.contains(entry.second->getCoord());
     });
+    _saveDirty = true;
+    _dirty = true;
 }
 
 std::vector<HexCoord> HexChunk::intersection(const HexChunk& other, bool withBlocked) const {
@@ -376,10 +391,18 @@ void HexChunk::shift(HexCoord::Direction dir, int times) {
     for (const auto& cell : shifted) {
         _hexes.emplace(cell->getCoord(), cell);
     }
+
+    _saveDirty = true;
+    _dirty = true;
 }
 
 void HexChunk::assignCell(HexCellPtr cell) {
+    cell->setParentChunk(this);
     _hexes[cell->getCoord()] = std::move(cell);
+
+    _saveDirty = true;
+    _dirty = true;
+    cell->markSaveDirty();
 }
 
 bool HexChunk::setEntity(const HexCoord& coord, HexCell::Type entityType, Entity* entity) {
@@ -399,5 +422,25 @@ const boost::uuids::uuid& HexChunk::getPersistantId() const {
 
 HexCoord HexChunk::getOrigin() const {
     return _origin;
+}
+
+bool HexChunk::isSaveDirty() const {
+    return _saveDirty;
+}
+
+void HexChunk::clearSaveDirty() {
+    _saveDirty = false;
+}
+
+void HexChunk::markSaveDirty() {
+    _saveDirty = true;
+}
+
+bool HexChunk::isDirty() const {
+    return _dirty;
+}
+
+void HexChunk::clearDirty() {
+    _dirty = false;
 }
 } // namespace game

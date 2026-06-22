@@ -41,6 +41,8 @@ class ItemManager : public dzemikk::MonoBehaviour {
     void loadState(const nlohmann::json& j);
     void clear();
 
+    [[nodiscard]] std::vector<boost::uuids::uuid> getAndClearConsumedItemIds();
+
   private:
     void spawnItem(const boost::uuids::uuid& chunkId, const HexChunk::HexCellPtr& cell,
                    const ItemSpawnConfig& cfg);
@@ -55,6 +57,7 @@ class ItemManager : public dzemikk::MonoBehaviour {
 
     std::unordered_map<boost::uuids::uuid, std::vector<ItemSpawnConfig>> _spawnRules;
     std::unordered_map<boost::uuids::uuid, std::vector<ItemEntity*>> _spawnedItems;
+    std::vector<boost::uuids::uuid> _consumedItemIds;
 };
 
 } // namespace game

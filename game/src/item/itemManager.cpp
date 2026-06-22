@@ -175,6 +175,7 @@ void ItemManager::update(double dt) {
         for (auto it = itemEntities.begin(); it != itemEntities.end();) {
             auto* item = *it;
             if (item->isConsumed()) {
+                _consumedItemIds.push_back(item->getConfig().persistantId);
                 auto& rules = _spawnRules[uuid];
                 const auto& itemCfg = item->getConfig();
                 std::erase_if(rules, [&](const ItemSpawnConfig& cfg) { return cfg == itemCfg; });
@@ -227,6 +228,13 @@ void ItemManager::clear() {
     }
     _spawnedItems.clear();
     _spawnRules.clear();
+    _consumedItemIds.clear();
+}
+
+std::vector<boost::uuids::uuid> ItemManager::getAndClearConsumedItemIds() {
+    auto result = std::move(_consumedItemIds);
+    _consumedItemIds.clear();
+    return result;
 }
 
 } // namespace game

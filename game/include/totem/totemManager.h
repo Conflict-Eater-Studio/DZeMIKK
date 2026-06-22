@@ -78,6 +78,8 @@ class TotemManager : public dzemikk::MonoBehaviour {
     void markTotemUsed(const boost::uuids::uuid& persistantId);
     void markTotemUnused(const boost::uuids::uuid& persistantId);
 
+    [[nodiscard]] std::vector<std::pair<boost::uuids::uuid, bool>> getAndClearChangedTotemIds();
+
     [[nodiscard]]
     std::string typeName() const override {
         return "TotemManager";
@@ -132,6 +134,7 @@ class TotemManager : public dzemikk::MonoBehaviour {
      * @brief Spawned totem entities lookup by chunk.
      */
     std::unordered_map<boost::uuids::uuid, std::vector<TotemEntity*>> _spawnedTotems;
+    std::vector<std::pair<boost::uuids::uuid, bool>> _changedTotemIds;
 };
 
 } // namespace game

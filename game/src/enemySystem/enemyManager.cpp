@@ -82,7 +82,7 @@ void game::EnemyManager::addEnemy(const boost::uuids::uuid& chunkId, EnemySpawnC
     }
 
     auto cellPtr = chunk->second->getCell(coord);
-    spawnEnemy(chunkId, cellPtr, config);
+    spawnEnemy(chunkId, cellPtr, config, true);
 }
 
 std::vector<game::HexChunk::HexCellPtr> game::EnemyManager::collectAvailableCells(HexChunk* chunk) {
@@ -182,8 +182,23 @@ void game::EnemyManager::spawnEnemy(const boost::uuids::uuid& chunkId,
         assignTerritory(enemy, cell, *pattern);
     }
 
+#if DZEMIKK_DEV_TOOLS
+    spdlog::info("[EnemyManager::spawnEnemy] Enemy {} on chunk {} blocks {} chunks", 
+                 boost::uuids::to_string(enemy->getId()),
+                 boost::uuids::to_string(chunkId),
+                 config.blocksChunks.size());
+#endif
+
     for (const auto& blockedChunkId : config.blocksChunks) {
-        _world->getGrid()->lockBridge({chunkId, blockedChunkId}, enemy->getId());
+        HexGrid::BridgeId bridgeId{chunkId, blockedChunkId};
+#if DZEMIKK_DEV_TOOLS
+        bool bridgeExists = _world->getGrid()->getBridges().contains(bridgeId);
+        spdlog::info("[EnemyManager::spawnEnemy] Locking bridge {{ {}, {} }} - exists: {}", 
+                     boost::uuids::to_string(chunkId), 
+                     boost::uuids::to_string(blockedChunkId),
+                     bridgeExists);
+#endif
+        _world->getGrid()->lockBridge(bridgeId, enemy->getId());
     }
 }
 
@@ -328,6 +343,27 @@ void game::EnemyManager::loadState(const nlohmann::json& j) {
     }
 }
 
+void game::EnemyManager::relockBridges() {
+    if (!_world || !_world->getGrid()) {
+        return;
+    }
+
+    auto* grid = _world->getGrid();
+    for (const auto& [chunkId, enemies] : _spawnedEnemies) {
+        for (const auto* enemy : enemies) {
+            if (!enemy) {
+                continue;
+            }
+
+            const auto& config = enemy->getConfig();
+            for (const auto& blockedChunkId : config.blocksChunks) {
+                HexGrid::BridgeId bridgeId{config.chunkId, blockedChunkId};
+                grid->lockBridge(bridgeId, enemy->getId());
+            }
+        }
+    }
+}
+
 void game::EnemyManager::clear() {
     for (auto& [chunkId, enemies] : _spawnedEnemies) {
         for (auto* enemy : enemies) {
@@ -343,12 +379,22 @@ void game::EnemyManager::clear() {
     _spawnedEnemies.clear();
     _spawnRules.clear();
     _cellToEnemy.clear();
+    _removedEnemyIds.clear();
+}
+
+std::vector<boost::uuids::uuid> game::EnemyManager::getAndClearRemovedEnemyIds() {
+    auto result = std::move(_removedEnemyIds);
+    _removedEnemyIds.clear();
+    return result;
 }
 
 void game::EnemyManager::removeEnemy(game::EnemyEntity* enemy) {
     if (!enemy) {
         return;
     }
+
+    auto enemyRuntimeId = enemy->getId();
+    _removedEnemyIds.push_back(enemy->getConfig().persistantId);
 
     auto chunkId = enemy->getConfig().chunkId;
 
@@ -368,5 +414,18 @@ void game::EnemyManager::removeEnemy(game::EnemyEntity* enemy) {
         _spawnedEnemies[chunkId].end());
     if (_spawnedEnemies[chunkId].empty()) {
         _spawnedEnemies.erase(chunkId);
+    }
+
+    if (_world && _world->getGrid()) {
+        auto* grid = _world->getGrid();
+        std::vector<HexGrid::BridgeId> bridgesToUnlock;
+        for (const auto& [bridgeId, bridgeInfo] : grid->getBridges()) {
+            if (bridgeInfo.blockingEnemies.contains(enemyRuntimeId)) {
+                bridgesToUnlock.push_back(bridgeId);
+            }
+        }
+        for (const auto& bridgeId : bridgesToUnlock) {
+            grid->unlockBridge(bridgeId, enemyRuntimeId);
+        }
     }
 }

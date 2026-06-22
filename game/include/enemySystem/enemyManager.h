@@ -92,6 +92,10 @@ class EnemyManager : public dzemikk::MonoBehaviour {
     void loadState(const nlohmann::json& j);
     void clear();
 
+    void relockBridges();
+
+    [[nodiscard]] std::vector<boost::uuids::uuid> getAndClearRemovedEnemyIds();
+
 #pragma endregion
 
     [[nodiscard]] std::string typeName() const override {
@@ -141,6 +145,7 @@ class EnemyManager : public dzemikk::MonoBehaviour {
 
     std::unordered_map<HexCoord, EnemyEntity*> _cellToEnemy;
     std::unordered_map<boost::uuids::uuid, std::vector<EnemyEntity*>> _spawnedEnemies;
+    std::vector<boost::uuids::uuid> _removedEnemyIds;
 
 #pragma endregion
 };

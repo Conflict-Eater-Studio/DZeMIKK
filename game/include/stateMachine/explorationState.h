@@ -9,7 +9,7 @@ namespace game {
 
 class ExplorationState : public IGameState {
   public:
-    ExplorationState(Game* game) : _game(game) {}
+    ExplorationState(Game* game);
 
     void onEnter() override;
 

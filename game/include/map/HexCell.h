@@ -12,13 +12,14 @@ namespace game {
 
 class Entity;
 class EnemyEntity;
+class HexChunk;
 
 class HexCell {
 
   public:
     friend class HexChunk;
 
-    enum class State : uint8_t { Prop, Item, Player, Enemy, Empty, Totem, TotemDialog};
+    enum class State : uint8_t { Prop, Item, Player, Enemy, Empty, Totem, TotemDialog };
     enum class Type : uint8_t {
         Normal,
         PlayerBattleHex,
@@ -33,8 +34,7 @@ class HexCell {
     HexCell() : _coord(0, 0) {}
     HexCell(HexCoord coord, State state, Type type, GenState genState = GenState::Normal,
             Entity* entity = nullptr)
-        : _coord(coord),
-          _flags(pack(state, type, genState, false, false, false)),
+        : _coord(coord), _flags(pack(state, type, genState, false, false, false, true)),
           _entity(entity) {}
 
     [[nodiscard]] const HexCoord& getCoord() const {
@@ -72,20 +72,26 @@ class HexCell {
     [[nodiscard]] bool isCheckpointUsed() const {
         return (_flags >> 26) & 1;
     }
+    [[nodiscard]] bool isSaveDirty() const {
+        return (_flags >> 27) & 1;
+    }
 
     void setState(State state) {
         _flags = (_flags & ~static_cast<uint32_t>(0xFF)) | static_cast<uint8_t>(state);
         _flags |= kDirty;
+        markSaveDirty();
     }
     void setType(Type type) {
         _flags = (_flags & ~static_cast<uint32_t>(0xFF00)) |
                  (static_cast<uint32_t>(static_cast<uint8_t>(type)) << 8);
         _flags |= kDirty;
+        markSaveDirty();
     }
     void setGenState(GenState genState) {
         _flags = (_flags & ~static_cast<uint32_t>(0xFF0000)) |
                  (static_cast<uint32_t>(static_cast<uint8_t>(genState)) << 16);
         _flags |= kDirty;
+        markSaveDirty();
     }
     void setEntity(Entity* entity) {
         _entity = entity;
@@ -94,6 +100,7 @@ class HexCell {
     void setHeight(float height) {
         _height = height;
         _flags |= kDirty;
+        markSaveDirty();
     }
     void setDirty(bool dirty) {
         if (dirty) {
@@ -112,6 +119,7 @@ class HexCell {
             _flags &= ~kCheckpoint;
         }
         _flags |= kDirty;
+        markSaveDirty();
     }
     void setCheckpointUsed(bool used) {
         if (used) {
@@ -120,10 +128,23 @@ class HexCell {
             _flags &= ~kCheckpointUsed;
         }
         _flags |= kDirty;
+        markSaveDirty();
     }
 
     void resetGenState() {
         _flags &= ~static_cast<uint32_t>(0xFF0000);
+    }
+
+    void setParentChunk(HexChunk* chunk) {
+        _parentChunk = chunk;
+    }
+
+    [[nodiscard]] HexChunk* getParentChunk() const {
+        return _parentChunk;
+    }
+
+    void clearSaveDirty() {
+        _flags &= ~kSaveDirty;
     }
 
     [[nodiscard]] uint32_t getFlags() const {
@@ -143,13 +164,19 @@ class HexCell {
     static constexpr uint32_t kDirty = 1U << 24;
     static constexpr uint32_t kCheckpoint = 1U << 25;
     static constexpr uint32_t kCheckpointUsed = 1U << 26;
+    static constexpr uint32_t kSaveDirty = 1U << 27;
 
     static constexpr uint32_t pack(State s, Type t, GenState g, bool dirty, bool checkpoint,
-                                   bool checkpointUsed) {
+                                   bool checkpointUsed, bool saveDirty) {
         return static_cast<uint32_t>(static_cast<uint8_t>(s)) |
                (static_cast<uint32_t>(static_cast<uint8_t>(t)) << 8) |
                (static_cast<uint32_t>(static_cast<uint8_t>(g)) << 16) | (dirty ? kDirty : 0) |
-               (checkpoint ? kCheckpoint : 0) | (checkpointUsed ? kCheckpointUsed : 0);
+               (checkpoint ? kCheckpoint : 0) | (checkpointUsed ? kCheckpointUsed : 0) |
+               (saveDirty ? kSaveDirty : 0);
+    }
+
+    void markSaveDirty() {
+        _flags |= kSaveDirty;
     }
 
     void setCoord(const HexCoord& coord) {
@@ -157,10 +184,12 @@ class HexCell {
     }
 
     HexCoord _coord{0, 0};
-    // 0-7: State, 8-15: Type, 16-23: GenState, 24: Dirty, 25: Checkpoint, 26: CheckpointUsed
+    // 0-7: State, 8-15: Type, 16-23: GenState, 24: Dirty, 25: Checkpoint, 26: CheckpointUsed, 27:
+    // SaveDirty
     uint32_t _flags{0};
     Entity* _entity = nullptr;
     VisualState _visualState = VisualState::None;
+    HexChunk* _parentChunk = nullptr;
 
     float _height{0.0F};
 };

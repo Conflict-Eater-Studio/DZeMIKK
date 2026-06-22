@@ -1,7 +1,7 @@
 #include "stateMachine/explorationState.h"
 
-#include "game.h"
 #include "camera/cameraController.h"
+#include "game.h"
 
 #include <assetManager/assetmanager.h>
 #include <assetManager/soundHandler.h>
@@ -16,12 +16,20 @@ struct SoundInitContext {
 };
 
 void onSoundLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
-    FMODChannel = ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::Music, true);
+    FMODChannel =
+        ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::Music, true);
     ctx.audioManager->getMusicGroup()->setVolume(0.1F);
 }
-}
+} // namespace explorationStateSound
+
+game::ExplorationState::ExplorationState(Game* game) : _game(game) {}
 
 void game::ExplorationState::onEnter() {
+    if (_game && _game->isPendingRestart()) {
+        _game->restartGame();
+        return;
+    }
+
     _game->getCameraController()->setMode(game::CameraController::Mode::Exploration);
 
     explorationStateSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
@@ -29,8 +37,7 @@ void game::ExplorationState::onEnter() {
     taskS.context = sCtx;
     taskS.onLoad = explorationStateSound::onSoundLoad;
     _game->getEngine()->getAssetManager()->getAsync(
-        "audio/prime_przygodowka (loop, ale przyjemny).wav",
-    taskS);
+        "audio/prime_przygodowka (loop, ale przyjemny).wav", taskS);
 }
 
 void game::ExplorationState::onExit() {
