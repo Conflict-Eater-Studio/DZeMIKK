@@ -52,6 +52,21 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                 taskS.onLoad = playerEntitySound::onSFXLoad;
                 _game->getEngine()->getAssetManager()->getAsync("audio/prime_uzycie_itemu-Fmin.wav",
                                                                 taskS);
+
+                if (!_hasSeenHealingItem) {
+                    auto rp = _game->getCurrentScene().get()->findGameObjectByName("Reveal_Pattern_Found");
+                    auto rh = _game->getCurrentScene().get()->findGameObjectByName("Reveal_Hex_Found");
+                    auto bh = _game->getCurrentScene().get()->findGameObjectByName("Bonus_Hex_Found");
+                    auto h = _game->getCurrentScene().get()->findGameObjectByName("Heal_Found");
+
+                    rp->enabled(false);
+                    rh->enabled(false);
+                    bh->enabled(false);
+                    h->enabled(true);
+
+                    _hasSeenHealingItem = true;
+                }
+
                 break;
             }
             case ItemEntity::ItemType::RevealPattern: {
@@ -65,7 +80,24 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                 taskS.context = sCtx;
                 taskS.onLoad = playerEntitySound::onSFXLoad;
                 _game->getEngine()->getAssetManager()->getAsync("audio/prime_uzycie_itemu-Fmin.wav",
-                                                                taskS);
+                    taskS);
+
+                if (!_hasSeenRevealPatternItem) {
+                    auto rp = _game->getCurrentScene().get()->findGameObjectByName(
+                        "Reveal_Pattern_Found");
+                    auto rh =
+                        _game->getCurrentScene().get()->findGameObjectByName("Reveal_Hex_Found");
+                    auto bh =
+                        _game->getCurrentScene().get()->findGameObjectByName("Bonus_Hex_Found");
+                    auto h = _game->getCurrentScene().get()->findGameObjectByName("Heal_Found");
+
+                    rp->enabled(true);
+                    rh->enabled(false);
+                    bh->enabled(false);
+                    h->enabled(false);
+
+                    _hasSeenRevealPatternItem = true;
+                }
                 break;
             }
             case ItemEntity::ItemType::RevealHex: {
@@ -80,6 +112,23 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                 taskS.onLoad = playerEntitySound::onSFXLoad;
                 _game->getEngine()->getAssetManager()->getAsync("audio/prime_uzycie_itemu-Fmin.wav",
                                                                 taskS);
+
+                if (!_hasSeenRevealHexItem) {
+                    auto rp = _game->getCurrentScene().get()->findGameObjectByName(
+                        "Reveal_Pattern_Found");
+                    auto rh =
+                        _game->getCurrentScene().get()->findGameObjectByName("Reveal_Hex_Found");
+                    auto bh =
+                        _game->getCurrentScene().get()->findGameObjectByName("Bonus_Hex_Found");
+                    auto h = _game->getCurrentScene().get()->findGameObjectByName("Heal_Found");
+
+                    rp->enabled(false);
+                    rh->enabled(true);
+                    bh->enabled(false);
+                    h->enabled(false);
+
+                    _hasSeenRevealHexItem = true;
+                }
                 break;
             }
             case ItemEntity::ItemType::BonusHex:
@@ -105,6 +154,24 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                     _game->getEngine()->getAssetManager()->getAsync(
                         "audio/prime_uzycie_itemu-Fmin.wav", taskS);
                 }
+
+                if (!_hasSeeBonusHexItem) {
+                    auto rp = _game->getCurrentScene().get()->findGameObjectByName(
+                        "Reveal_Pattern_Found");
+                    auto rh =
+                        _game->getCurrentScene().get()->findGameObjectByName("Reveal_Hex_Found");
+                    auto bh =
+                        _game->getCurrentScene().get()->findGameObjectByName("Bonus_Hex_Found");
+                    auto h = _game->getCurrentScene().get()->findGameObjectByName("Heal_Found");
+
+                    rp->enabled(false);
+                    rh->enabled(false);
+                    bh->enabled(true);
+                    h->enabled(false);
+
+                    _hasSeeBonusHexItem = true;
+                }
+
                 break;
             }
         }

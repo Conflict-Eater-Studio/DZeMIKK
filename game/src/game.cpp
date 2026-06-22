@@ -345,6 +345,20 @@ void Game::startGame() {
         },
         "cinematic.endscreen.no");
 
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent&) {
+            auto rp = getCurrentScene().get()->findGameObjectByName("Reveal_Pattern_Found");
+            auto rh = getCurrentScene().get()->findGameObjectByName("Reveal_Hex_Found");
+            auto bh = getCurrentScene().get()->findGameObjectByName("Bonus_Hex_Found");
+            auto h = getCurrentScene().get()->findGameObjectByName("Heal_Found");
+
+            rp->enabled(false);
+            rh->enabled(false);
+            bh->enabled(false);
+            h->enabled(false);
+        },
+        "item.panel.exit");
+
     _mainScene.get()->findGameObjectByName("UI_RevealPatternBtn")->addComponent<UIPulseEffect>();
     _mainScene.get()->findGameObjectByName("UI_RevealHexBtn")->addComponent<UIPulseEffect>();
     setupInputCallbacks();
@@ -644,6 +658,15 @@ void Game::setupInputCallbacks() {
             return;
         }
 
+        auto rp = getCurrentScene().get()->findGameObjectByName("Reveal_Pattern_Found");
+        auto rh = getCurrentScene().get()->findGameObjectByName("Reveal_Hex_Found");
+        auto bh = getCurrentScene().get()->findGameObjectByName("Bonus_Hex_Found");
+        auto h = getCurrentScene().get()->findGameObjectByName("Heal_Found");
+
+        if (rp->isEnabled() || rh->isEnabled() || bh->isEnabled() || h->isEnabled()) {
+            return;
+        }
+
         int windowWidth = 0;
         int windowHeight = 0;
 
@@ -789,6 +812,15 @@ void Game::setupInputCallbacks() {
         auto* dialogManagerGo = _mainScene.get()->findGameObjectByTag("DialogManager");
         auto* dialogManager = dialogManagerGo->getComponent<game::DialogManager>();
 
+        auto rp = getCurrentScene().get()->findGameObjectByName("Reveal_Pattern_Found");
+        auto rh = getCurrentScene().get()->findGameObjectByName("Reveal_Hex_Found");
+        auto bh = getCurrentScene().get()->findGameObjectByName("Bonus_Hex_Found");
+        auto h = getCurrentScene().get()->findGameObjectByName("Heal_Found");
+
+        if (rp->isEnabled() || rh->isEnabled() || bh->isEnabled() || h->isEnabled()) {
+            return;
+        }
+
         if (event.GetKeyCode() == GLFW_KEY_ESCAPE &&
             _stateMachine->getCurrentStateAs<game::ExplorationState>() &&
             !dialogManager->isInDialog()) {
@@ -819,6 +851,15 @@ void Game::setupInputCallbacks() {
 
     _engine->getInput()->OnMouseButtonPressed.addListener(
         [this](dzemikk::MouseButtonPressedEvent& event) {
+            auto rp = getCurrentScene().get()->findGameObjectByName("Reveal_Pattern_Found");
+            auto rh = getCurrentScene().get()->findGameObjectByName("Reveal_Hex_Found");
+            auto bh = getCurrentScene().get()->findGameObjectByName("Bonus_Hex_Found");
+            auto h = getCurrentScene().get()->findGameObjectByName("Heal_Found");
+
+            if (rp->isEnabled() || rh->isEnabled() || bh->isEnabled() || h->isEnabled()) {
+                return;
+            }
+
             auto* dialogManagerGo = _mainScene.get()->findGameObjectByTag("DialogManager");
             auto* dialogManager = dialogManagerGo->getComponent<game::DialogManager>();
 

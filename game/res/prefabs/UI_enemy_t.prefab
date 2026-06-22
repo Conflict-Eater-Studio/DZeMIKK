@@ -1,0 +1,629 @@
+{
+    "root": {
+        "children": [
+            {
+                "children": [
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "db88f4b0-1025-41bc-8997-9f71abb9795e",
+                                "offsetMax": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "offsetMin": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    0.0,
+                                    60.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    60.0,
+                                    60.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 3
+                            },
+                            {
+                                "color": [
+                                    0.4950980544090271,
+                                    0.4950980544090271,
+                                    0.4950980544090271,
+                                    1.0
+                                ],
+                                "id": "ba21a56a-d052-4c41-84f3-ccb6041498a3",
+                                "materialPath": "shaders/quad",
+                                "texture": "textures/hex.png",
+                                "type": "ImageRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "ed1bc708-4262-466c-86bf-d089cb4ff50f",
+                        "name": "Hex_UI",
+                        "tags": []
+                    },
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "11991dc6-9c82-4fdc-8524-f1fa9246a6e5",
+                                "offsetMax": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "offsetMin": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    0.0,
+                                    120.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    60.0,
+                                    60.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 3
+                            },
+                            {
+                                "color": [
+                                    0.20000000298023224,
+                                    0.09019608050584793,
+                                    0.3294117748737335,
+                                    1.0
+                                ],
+                                "id": "c681d37b-fa2b-43f2-b2b9-54bd5d0b02b4",
+                                "materialPath": "shaders/quad",
+                                "texture": "textures/hex.png",
+                                "type": "ImageRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "d319fce3-662e-493c-b894-1fb7cd210b71",
+                        "name": "Hex_UI",
+                        "tags": []
+                    },
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "c96f883a-792d-4d18-8784-49980fff9650",
+                                "offsetMax": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "offsetMin": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    60.0,
+                                    60.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 3
+                            },
+                            {
+                                "color": [
+                                    0.20000000298023224,
+                                    0.09019608050584793,
+                                    0.3294117748737335,
+                                    1.0
+                                ],
+                                "id": "82f37cf1-2546-40b6-8e7a-c64cab3a15fc",
+                                "materialPath": "shaders/quad",
+                                "texture": "textures/hex.png",
+                                "type": "ImageRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "d4a9f373-bcf6-46bd-8989-3021a4ff947b",
+                        "name": "Hex_UI",
+                        "tags": []
+                    },
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "1e44df52-a965-4151-8d21-52fac97288a9",
+                                "offsetMax": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "offsetMin": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    50.0,
+                                    90.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    60.0,
+                                    60.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 3
+                            },
+                            {
+                                "color": [
+                                    0.20000000298023224,
+                                    0.09019608050584793,
+                                    0.3294117748737335,
+                                    1.0
+                                ],
+                                "id": "e15fa966-c0bc-424a-ac8c-97474d7b0b6b",
+                                "materialPath": "shaders/quad",
+                                "texture": "textures/hex.png",
+                                "type": "ImageRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "d55a9506-b693-413b-b85e-e1eb333c970c",
+                        "name": "Hex_UI",
+                        "tags": []
+                    },
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "ceef3f4f-5f6f-470c-9994-1e5c0854d8fc",
+                                "offsetMax": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "offsetMin": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    50.0,
+                                    30.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    60.0,
+                                    60.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 3
+                            },
+                            {
+                                "color": [
+                                    0.20000000298023224,
+                                    0.09019608050584793,
+                                    0.3294117748737335,
+                                    1.0
+                                ],
+                                "id": "3f4a88cf-619b-4b2e-b7eb-ecd7c9c4c9cb",
+                                "materialPath": "shaders/quad",
+                                "texture": "textures/hex.png",
+                                "type": "ImageRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "e0b2d3fc-bad3-4241-94a6-8a7eed4d46f5",
+                        "name": "Hex_UI",
+                        "tags": []
+                    },
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "16ea8596-fbd0-4817-b672-40dc7d5e0456",
+                                "offsetMax": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "offsetMin": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    100.0,
+                                    60.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    60.0,
+                                    60.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 3
+                            },
+                            {
+                                "color": [
+                                    0.4941176474094391,
+                                    0.4941176474094391,
+                                    0.4941176474094391,
+                                    1.0
+                                ],
+                                "id": "ce0f632f-8e50-4697-b5ad-ad77ec46b3a8",
+                                "materialPath": "shaders/quad",
+                                "texture": "textures/hex.png",
+                                "type": "ImageRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "7ec481d6-a4ab-4017-a468-bd8bfaa2a581",
+                        "name": "Hex_UI",
+                        "tags": []
+                    },
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "793ab8c4-eb22-4d46-b1ac-55b3642a2819",
+                                "offsetMax": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "offsetMin": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    -50.0,
+                                    90.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    60.0,
+                                    60.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 3
+                            },
+                            {
+                                "color": [
+                                    0.4941176474094391,
+                                    0.4941176474094391,
+                                    0.4941176474094391,
+                                    1.0
+                                ],
+                                "id": "8f244926-668e-4c69-899e-30e6787e2a32",
+                                "materialPath": "shaders/quad",
+                                "texture": "textures/hex.png",
+                                "type": "ImageRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "0ea29f00-3ec5-4b37-b51c-f7fae806440f",
+                        "name": "Hex_UI",
+                        "tags": []
+                    },
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "b18864cd-4531-4a38-b6de-8c8732bc4f8f",
+                                "offsetMax": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "offsetMin": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    -50.0,
+                                    30.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    60.0,
+                                    60.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 3
+                            },
+                            {
+                                "color": [
+                                    0.20000000298023224,
+                                    0.09019608050584793,
+                                    0.3294117748737335,
+                                    1.0
+                                ],
+                                "id": "de2dd43f-57d7-4a5a-9cee-5a81620f1148",
+                                "materialPath": "shaders/quad",
+                                "texture": "textures/hex.png",
+                                "type": "ImageRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "45d79076-6550-4cc5-a94e-8c502e216a6b",
+                        "name": "Hex_UI",
+                        "tags": []
+                    },
+                    {
+                        "children": [],
+                        "components": [
+                            {
+                                "anchorMax": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "anchorMin": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "id": "0ba17da4-929c-45ab-81e0-3491e5194a69",
+                                "offsetMax": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "offsetMin": [
+                                    0.0,
+                                    0.0
+                                ],
+                                "pivot": [
+                                    0.5,
+                                    0.5
+                                ],
+                                "position": [
+                                    -100.0,
+                                    60.0
+                                ],
+                                "rotation": 0.0,
+                                "scale": [
+                                    1.0,
+                                    1.0
+                                ],
+                                "size": [
+                                    60.0,
+                                    60.0
+                                ],
+                                "type": "RectTransform",
+                                "zIndex": 3
+                            },
+                            {
+                                "color": [
+                                    0.20000000298023224,
+                                    0.09019608050584793,
+                                    0.3294117748737335,
+                                    1.0
+                                ],
+                                "id": "b755e7ed-402b-48eb-8557-05c44f2dede5",
+                                "materialPath": "shaders/quad",
+                                "texture": "textures/hex.png",
+                                "type": "ImageRenderer"
+                            }
+                        ],
+                        "enabled": true,
+                        "id": "1db82252-c1a8-44dd-897c-9b3bb2cfb924",
+                        "name": "Hex_UI",
+                        "tags": []
+                    }
+                ],
+                "components": [
+                    {
+                        "anchorMax": [
+                            0.5,
+                            0.5
+                        ],
+                        "anchorMin": [
+                            0.5,
+                            0.5
+                        ],
+                        "id": "ca291c71-fd2e-4c5e-bbdc-5a80ec176688",
+                        "offsetMax": [
+                            0.0,
+                            0.0
+                        ],
+                        "offsetMin": [
+                            0.0,
+                            0.0
+                        ],
+                        "pivot": [
+                            0.5,
+                            0.5
+                        ],
+                        "position": [
+                            0.0,
+                            -245.89999389648438
+                        ],
+                        "rotation": 0.0,
+                        "scale": [
+                            1.0,
+                            1.0
+                        ],
+                        "size": [
+                            0.0,
+                            0.0
+                        ],
+                        "type": "RectTransform",
+                        "zIndex": 0
+                    }
+                ],
+                "enabled": true,
+                "id": "56d9f0c9-eea6-40bc-b42a-b7bdeb4297c7",
+                "name": "Hexes",
+                "tags": []
+            }
+        ],
+        "components": [
+            {
+                "anchorMax": [
+                    0.5,
+                    0.5
+                ],
+                "anchorMin": [
+                    0.5,
+                    0.5
+                ],
+                "id": "6813a6e6-dc14-4d4a-b33e-717ee1bc8bd6",
+                "offsetMax": [
+                    0.0,
+                    0.0
+                ],
+                "offsetMin": [
+                    0.0,
+                    0.0
+                ],
+                "pivot": [
+                    0.5,
+                    0.5
+                ],
+                "position": [
+                    -200.0,
+                    0.0
+                ],
+                "rotation": 0.0,
+                "scale": [
+                    1.0,
+                    1.0
+                ],
+                "size": [
+                    0.0,
+                    0.0
+                ],
+                "type": "RectTransform",
+                "zIndex": 0
+            }
+        ],
+        "enabled": true,
+        "id": "b46b116d-dbf9-4c43-ae74-d27ff4f96d61",
+        "name": "Left",
+        "tags": []
+    }
+}

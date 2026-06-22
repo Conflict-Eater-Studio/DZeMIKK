@@ -49,6 +49,11 @@ class PlayerEntity : public Entity {
   private:
     Game* _game = nullptr;
     std::unordered_set<HexCell*> _territory;
+
+    bool _hasSeenRevealPatternItem = false;
+    bool _hasSeenRevealHexItem = false;
+    bool _hasSeeBonusHexItem = false;
+    bool _hasSeenHealingItem = false;
 };
 } // namespace game
 
