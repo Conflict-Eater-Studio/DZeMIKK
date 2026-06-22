@@ -204,6 +204,7 @@ class PlayerPatternComponent : public PatternComponent {
     void updatePreviewVisuals(dzemikk::Collider* collider, const glm::vec4& color);
 
     void createPreviewFromPattern(const HexPattern& pattern);
+    void updatePreviewPositions(const std::vector<HexCoord>& hexes);
     WorldHex* getWorldHexUnderCursor();
 };
 

@@ -1,6 +1,7 @@
 #include "map/HexPattern.h"
 
 #include <algorithm>
+#include <chrono>
 
 namespace game {
 HexPattern::HexPattern(std::vector<HexCoord> hexes, Type type, float effectStrength)
@@ -32,11 +33,14 @@ const std::vector<HexCoord>& HexPattern::rotate(Rotation rotation) {
         }
     }
     _hexes = std::move(rotatedHexes);
+
     return _hexes;
 }
+
 const game::HexPattern::Type HexPattern::getType() const {
     return _type;
 }
+
 bool game::HexPattern::operator==(const HexPattern& other) const {
     return _hexes == other._hexes && _type == other._type &&
            _effectStrength == other._effectStrength;
