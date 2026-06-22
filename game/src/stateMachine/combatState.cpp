@@ -61,6 +61,7 @@ void game::CombatState::onEnter() {
     _game->getCameraController()->setMode(CameraController::Mode::Combat);
     _game->enableCombatUI(true);
 
+
     initializeCombat();
 
     if (!_arenaCenterCell) {
@@ -546,7 +547,7 @@ void game::CombatState::initializeCombat() {
 
     _player->getOwner()->transform()->setEulerAngles(glm::vec3(0.0F, -30.0F, 0.0F));
     _currentEnemy->getOwner()->transform()->setEulerAngles(glm::vec3(0.0F, -210.0F, 0.0F));
-    
+
     auto arena = CombatArenaBuilder::build(_currentEnemy, _player, _game->getHexGrid(), world);
 
     _arenaCenterCell = arena.centerCell.get();

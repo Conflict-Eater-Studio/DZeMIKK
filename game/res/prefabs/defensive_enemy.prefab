@@ -185,7 +185,18 @@
                     },
                     {
                         "name": "Attack",
-                        "transitions": []
+                        "transitions": [
+                               {
+                               "condition": {
+                                   "op": 2,
+                                   "parameter": "isAttacking",
+                                   "type": 1,
+                                   "value": 0.0
+                               },
+                               "duration": 0.25,
+                               "to": "Idle"
+                           }
+                        ]
                     },
                     {
                         "name": "Death",

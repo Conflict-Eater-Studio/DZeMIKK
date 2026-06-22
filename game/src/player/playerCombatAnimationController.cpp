@@ -35,14 +35,16 @@ void PlayerCombatAnimationController::update(double deltaTime) {
     if (auto* combat = _gameStateMachine->getCurrentStateAs<ExplorationState>()) {
         _playerAnimator->setBool("isFinished", true);
         canPlay = true;
-
     }
 
+    if (_enemyAnimator != nullptr && _enemyAnimator->getCurrentState()->getName() == "Attack" && _enemyAnimator->getCurrentState()->getClip()->isFinished()) {
+        _enemyAnimator->setInt("isAttacking",0);
+        _enemyAnimator = nullptr;
+    }
 
-    // if (_playerHealthSystem->getCurrentHealth() <= 0.0f) {
-    //     _playerAnimator->play("Death");
-    //     return;
-    // }
+    if (_playerHealthSystem->getCurrentHealth() <= 0.0f) {
+        //_playerAnimator->play("Death");
+    }
 
 
 
@@ -77,10 +79,15 @@ void PlayerCombatAnimationController::playConfirmRoundAttack() {
     if (_playerAnimator) {
         _playerAnimator->play("Attack1");
     }
-
+    if (_enemyAnimator) {
+        _enemyAnimator->play("Attack");
+        return;
+    }
     for (auto* enemy : _enemies) {
         if (enemy->getOwner()->getName() == _gameStateMachine->getCurrentStateAs<CombatState>()->getCurrentEnemy()->getOwner()->getName()){
-            enemy->getOwner()->getComponent<dzemikk::Animator>()->play("Attack");
+            _enemyAnimator = enemy->getOwner()->getComponent<dzemikk::Animator>();
+            _enemyAnimator->setInt("isAttacking",1);
+            _enemyAnimator->play("Attack");
         }
     }
 

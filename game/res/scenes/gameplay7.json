@@ -480,10 +480,6 @@
                                             ]
                                         },
                                         {
-                                            "name": "R90",
-                                            "transitions": []
-                                        },
-                                        {
                                             "name": "R210",
                                             "transitions": []
                                         },
@@ -503,11 +499,15 @@
                                             ]
                                         },
                                         {
-                                            "name": "R150",
+                                            "name": "R90",
                                             "transitions": []
                                         },
                                         {
                                             "name": "R330",
+                                            "transitions": []
+                                        },
+                                        {
+                                            "name": "R150",
                                             "transitions": []
                                         },
                                         {
@@ -520,7 +520,68 @@
                                         },
                                         {
                                             "name": "Pickup",
-                                            "transitions": []
+                                            "transitions": [
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "isMoving",
+                                                        "type": 1,
+                                                        "value": 1.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "R30"
+                                                },
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "isMoving",
+                                                        "type": 1,
+                                                        "value": 3.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "R90"
+                                                },
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "isMoving",
+                                                        "type": 1,
+                                                        "value": 5.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "R150"
+                                                },
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "isMoving",
+                                                        "type": 1,
+                                                        "value": 7.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "R210"
+                                                },
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "isMoving",
+                                                        "type": 1,
+                                                        "value": 11.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "R330"
+                                                },
+                                                {
+                                                    "condition": {
+                                                        "op": 2,
+                                                        "parameter": "isMoving",
+                                                        "type": 1,
+                                                        "value": 9.0
+                                                    },
+                                                    "duration": 0.25,
+                                                    "to": "R270"
+                                                }
+                                            ]
                                         },
                                         {
                                             "name": "Death",

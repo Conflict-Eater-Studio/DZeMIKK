@@ -285,18 +285,7 @@
                 "stateMachine": [
                     {
                         "name": "Idle",
-                        "transitions": [
-                            {
-                                "condition": {
-                                    "op": 2,
-                                    "parameter": "Attack",
-                                    "type": 2,
-                                    "value": 1.0
-                                },
-                                "duration": 0.25,
-                                "to": "Attack"
-                            }
-                        ]
+                        "transitions": [  ]
                     },
                     {
                         "name": "Death",
@@ -304,7 +293,18 @@
                     },
                     {
                         "name": "Attack",
-                        "transitions": []
+                        "transitions": [
+                             {
+                                "condition": {
+                                    "op": 2,
+                                    "parameter": "isAttacking",
+                                    "type": 1,
+                                    "value": 0.0
+                                },
+                                "duration": 0.25,
+                                "to": "Idle"
+                            }
+                        ]
                     }
                 ],
                 "type": "Animator"
