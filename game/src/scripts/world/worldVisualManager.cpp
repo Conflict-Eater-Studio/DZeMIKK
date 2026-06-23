@@ -846,110 +846,47 @@ void game::WorldVisualManager::spawnCampChunk(const std::string& chunkName) {
     }
 }
 
-void game::WorldVisualManager::showChunkBlockers(const std::string& blockedChunkName,
-                                                 const std::string& targetChunkName,
+void game::WorldVisualManager::showChunkBlockers(const std::string& enemyChunkName,
+                                                 const std::string& blockedChunkName,
                                                  EnemyManager* enemyManager) {
     if (!_world || !enemyManager)
         return;
 
-    auto chunks = _world->getVisualHexesByChunk();
-
-    auto blockedIt = chunks.find(blockedChunkName);
-    auto targetIt = chunks.find(targetChunkName);
-
-    if (blockedIt == chunks.end() || targetIt == chunks.end())
-        return;
-
-    std::vector<HexCell*> blockingBridges;
-
-    for (const auto& hex : blockedIt->second) {
-        if (!hex)
-            continue;
-
-        if (hex->getType() == HexCell::Type::BlockingBridge)
-            blockingBridges.push_back(hex.get());
-    }
-
-    if (blockingBridges.empty())
-        return;
-
-    glm::vec3 targetCenter(0.f);
-    int targetCount = 0;
-
-    for (const auto& hex : targetIt->second) {
-        if (!hex)
-            continue;
-
-        auto* t = _world->getHexTransformByCell(*hex);
-        if (!t)
-            continue;
-
-        targetCenter += t->getPosition();
-        targetCount++;
-    }
-
-    if (targetCount == 0)
-        return;
-
-    targetCenter /= (float)targetCount;
-
-    glm::vec3 sourceCenter(0.f);
-    int sourceCount = 0;
-
-    for (const auto& hex : blockedIt->second) {
-        if (!hex)
-            continue;
-
-        auto* t = _world->getHexTransformByCell(*hex);
-        if (!t)
-            continue;
-
-        sourceCenter += t->getPosition();
-        sourceCount++;
-    }
-
-    if (sourceCount == 0)
-        return;
-
-    sourceCenter /= (float)sourceCount;
-
-    glm::vec3 dir = glm::normalize(targetCenter - sourceCenter);
-
-    std::vector<HexCell*> validBridges;
-
-    for (auto* bridge : blockingBridges) {
-        auto* t = _world->getHexTransformByCell(*bridge);
-        if (!t)
-            continue;
-
-        glm::vec3 toBridge = glm::normalize(t->getPosition() - sourceCenter);
-
-        if (glm::dot(toBridge, dir) > 0.0f)
-            validBridges.push_back(bridge);
-    }
-
-    if (validBridges.empty())
-        validBridges = blockingBridges;
-
-    std::sort(validBridges.begin(), validBridges.end(),
-              [this, &targetCenter](HexCell* a, HexCell* b) {
-                  auto* ta = _world->getHexTransformByCell(*a);
-                  auto* tb = _world->getHexTransformByCell(*b);
-
-                  if (!ta || !tb)
-                      return false;
-
-                  return glm::distance2(ta->getPosition(), targetCenter) <
-                         glm::distance2(tb->getPosition(), targetCenter);
-              });
-
     auto* grid = _world->getGrid();
-    auto* chunk = grid->getChunkByName(blockedChunkName);
 
-    if (!chunk)
+    if (!grid)
         return;
 
-    auto chunkId = chunk->getPersistantId();
+    auto* enemyChunk = grid->getChunkByName(enemyChunkName);
+    auto* blockedChunk = grid->getChunkByName(blockedChunkName);
+
+    if (!enemyChunk || !blockedChunk)
+        return;
+
+    auto bridgeCells =
+        grid->getBridgeCells(enemyChunk->getPersistantId(), blockedChunk->getPersistantId());
+
+    std::erase_if(bridgeCells, [this](HexCell* cell) {
+        if (!cell)
+            return true;
+
+        if (cell->getType() != HexCell::Type::BlockingBridge)
+            return true;
+
+        return _world->getHexTransformByCell(*cell) == nullptr;
+    });
+
+    if (bridgeCells.empty())
+        return;
+
+    std::sort(bridgeCells.begin(), bridgeCells.end(), [this](HexCell* a, HexCell* b) {
+        auto* ta = _world->getHexTransformByCell(*a);
+        auto* tb = _world->getHexTransformByCell(*b);
+
+        return ta->getPosition().y < tb->getPosition().y;
+    });
+
+    const auto blockedChunkId = blockedChunk->getPersistantId();
 
     size_t bridgeIndex = 0;
 
@@ -960,18 +897,24 @@ void game::WorldVisualManager::showChunkBlockers(const std::string& blockedChunk
 
             const auto& cfg = enemy->getConfig();
 
-            if (std::find(cfg.blocksChunks.begin(), cfg.blocksChunks.end(), chunkId) ==
-                cfg.blocksChunks.end())
+            if (enemy->getMask()) {
                 continue;
+            }
 
-            if (bridgeIndex >= validBridges.size())
+            if (std::find(cfg.blocksChunks.begin(), cfg.blocksChunks.end(), blockedChunkId) ==
+                cfg.blocksChunks.end()) {
+                continue;
+            }
+
+            if (bridgeIndex >= bridgeCells.size()) {
+                spdlog::warn("Not enough valid bridge cells. blockers={} bridges={}", bridgeIndex,
+                             bridgeCells.size());
                 return;
+            }
 
-            HexCell* bridgeHex = validBridges[bridgeIndex++];
+            HexCell* bridgeHex = bridgeCells[bridgeIndex++];
+
             auto* bridgeTransform = _world->getHexTransformByCell(*bridgeHex);
-
-            if (!bridgeTransform)
-                continue;
 
             std::string maskPrefab;
 
@@ -979,17 +922,21 @@ void game::WorldVisualManager::showChunkBlockers(const std::string& blockedChunk
             case EnemyPersonality::Aggressive:
                 maskPrefab = "mask_att";
                 break;
+
             case EnemyPersonality::Balanced:
                 maskPrefab = "mask_bal";
                 break;
+
             case EnemyPersonality::Defensive:
                 maskPrefab = "mask_deff";
                 break;
+
             default:
                 continue;
             }
 
             auto prefabIt = _cache.find(maskPrefab);
+
             if (prefabIt == _cache.end())
                 continue;
 
@@ -1001,7 +948,28 @@ void game::WorldVisualManager::showChunkBlockers(const std::string& blockedChunk
             if (!mask)
                 continue;
 
-            mask->transform()->setPosition(glm::vec3(0.f));
+            auto renderer = mask->getComponent<dzemikk::MeshRenderer>();
+            renderer->setCullingRadius(100.0F);
+
+            enemy->setMask(mask);
+
+            switch (cfg.personality) {
+            case EnemyPersonality::Aggressive:
+                mask->transform()->setPosition(glm::vec3(0.0F, 0.0F, 0.3F));
+                break;
+
+            case EnemyPersonality::Balanced:
+                mask->transform()->setPosition(glm::vec3(0.0F, 0.0F, 0.2F));
+                break;
+
+            case EnemyPersonality::Defensive:
+                mask->transform()->setPosition(glm::vec3(0.0F, 3.4F, -1.1F));
+                break;
+
+            default:
+                continue;
+            }
+
             mask->setName("EnemyMask_" + boost::uuids::to_string(enemy->getId()));
         }
     }

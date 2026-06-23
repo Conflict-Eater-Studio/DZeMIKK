@@ -5,6 +5,10 @@
 #include "enemySystem/enemyTypes.h"
 #include "map/Entity.h"
 
+namespace dzemikk {
+class GameObject;
+}
+
 namespace game {
 
 /**
@@ -30,6 +34,24 @@ class EnemyEntity : public Entity {
      * @brief Removes the enemy from its current cell.
      */
     void onExit() override;
+
+#pragma endregion
+
+    #pragma region Mask
+
+    void setMask(dzemikk::GameObject* mask) {
+        _mask = mask;
+    }
+
+    [[nodiscard]] dzemikk::GameObject* getMask() const {
+        return _mask;
+    }
+
+    void clearMask() {
+        _mask = nullptr;
+    }
+
+    void destroyMask();
 
 #pragma endregion
 
@@ -160,6 +182,8 @@ class EnemyEntity : public Entity {
 
 #pragma endregion
     EnemySpawnConfig _config;
+
+    dzemikk::GameObject* _mask = nullptr;
 };
 
 } // namespace game

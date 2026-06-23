@@ -219,6 +219,7 @@ void game::CombatState::onExit() {
         em && !_playerDied) {
         em->removeEnemy(_currentEnemy);
         auto* enemyGO = _currentEnemy->getOwner();
+        _currentEnemy->destroyMask();
         _game->getCurrentScene().get()->destroyGameObject(enemyGO);
     }
 

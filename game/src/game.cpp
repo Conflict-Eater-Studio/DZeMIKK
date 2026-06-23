@@ -659,21 +659,20 @@ void Game::setupWorldVisuals() {
 
     auto* enemyManagerGO = _mainScene.get()->findGameObjectByName("EnemyManager");
     auto* manager = enemyManagerGO->getComponent<game::EnemyManager>();
-    //worldVisualManager->showChunkBlockers("chunkMain2", "chunkMain1", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain2Sub1", "chunkMain2", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain3", "chunkMain2", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain3Sub1", "chunkMain3", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain4", "chunkMain3", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain5", "chunkMain4", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain6", "chunkMain5", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain7", "chunkMain6", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain4Sub1", "chunkMain4", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain7Sub1", "chunkMain7", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain7Sub2", "chunkMain7Sub1", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain7Sub3", "chunkMain7Sub2", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain8", "chunkMain7", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain9", "chunkMain8", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain10", "chunkMain9", manager);
+
+
+    worldVisualManager->showChunkBlockers("chunkMain1", "chunkMain2", manager);
+    worldVisualManager->showChunkBlockers("chunkMain2", "chunkMain3", manager);
+    worldVisualManager->showChunkBlockers("chunkMain3", "chunkMain4", manager);
+    worldVisualManager->showChunkBlockers("chunkMain4", "chunkMain5", manager);
+    worldVisualManager->showChunkBlockers("chunkMain5", "chunkMain6", manager);
+    worldVisualManager->showChunkBlockers("chunkMain6", "chunkMain7", manager);
+    worldVisualManager->showChunkBlockers("chunkMain7", "chunkMain8", manager);
+    worldVisualManager->showChunkBlockers("chunkMain8", "chunkMain9", manager);
+    worldVisualManager->showChunkBlockers("chunkMain9", "chunkMain10", manager);
+    worldVisualManager->showChunkBlockers("chunkMain7Sub1", "chunkMain7Sub2", manager);
+    worldVisualManager->showChunkBlockers("chunkMain3", "chunkMain3Sub1", manager);
+    worldVisualManager->showChunkBlockers("chunkMain7Sub2", "chunkMain7Sub3", manager);
 }
 
 void Game::setupUICamera() {
@@ -1270,7 +1269,7 @@ void Game::setupEnemies() {
             .territoryPattern = "3",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain8")->getPersistantId()}};
         game::EnemySpawnConfig chunkMain7Config2 = {
-            .personality = game::EnemyPersonality::Defensive,
+            .personality = game::EnemyPersonality::Balanced,
             .type = game::EnemyType::Normal,
             .hp = 300,
             .territoryPattern = "3",
@@ -1290,7 +1289,7 @@ void Game::setupEnemies() {
                           chunkMain7Sub1Config);
 
         game::EnemySpawnConfig chunkMain7Sub2Config = {
-            .personality = game::EnemyPersonality::Defensive,
+            .personality = game::EnemyPersonality::Aggressive,
             .type = game::EnemyType::Normal,
             .hp = 350,
             .territoryPattern = "4",
@@ -1822,6 +1821,22 @@ void Game::restartGame() {
     }
 
     _stateMachine->setState(std::make_unique<game::ExplorationState>(this));
+
+    auto worldVisualManager = _worldGO->getComponent<game::WorldVisualManager>();
+    auto* manager = enemyManagerGO->getComponent<game::EnemyManager>();
+
+    worldVisualManager->showChunkBlockers("chunkMain1", "chunkMain2", manager);
+    worldVisualManager->showChunkBlockers("chunkMain2", "chunkMain3", manager);
+    worldVisualManager->showChunkBlockers("chunkMain3", "chunkMain4", manager);
+    worldVisualManager->showChunkBlockers("chunkMain4", "chunkMain5", manager);
+    worldVisualManager->showChunkBlockers("chunkMain5", "chunkMain6", manager);
+    worldVisualManager->showChunkBlockers("chunkMain6", "chunkMain7", manager);
+    worldVisualManager->showChunkBlockers("chunkMain7", "chunkMain8", manager);
+    worldVisualManager->showChunkBlockers("chunkMain8", "chunkMain9", manager);
+    worldVisualManager->showChunkBlockers("chunkMain9", "chunkMain10", manager);
+    worldVisualManager->showChunkBlockers("chunkMain7Sub1", "chunkMain7Sub2", manager);
+    worldVisualManager->showChunkBlockers("chunkMain3", "chunkMain3Sub1", manager);
+    worldVisualManager->showChunkBlockers("chunkMain7Sub2", "chunkMain7Sub3", manager);
 }
 
 bool Game::isPendingRestart() const {
