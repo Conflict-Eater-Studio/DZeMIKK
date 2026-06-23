@@ -815,19 +815,22 @@ void World::update(double dt) {
             if (cell->getHexCell()->getType() == HexCell::Type::BlockingPattern) {
                 cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
                     0, _hexMaterials[HexCell::Type::BlockingPattern]);
-                color = glm::vec4(0.0F, 1.0F, 0.0F, 1.0F);
+                //color = glm::vec4(0.0F, 1.0F, 0.0F, 1.0F);
+                color = glm::vec4(0.0078f, 0.0196f, 0.0392f, 1.0F);
             }
 
             if (cell->getHexCell()->getType() == HexCell::Type::Bridge) {
                 cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
                     0, _hexMaterials[HexCell::Type::Bridge]);
-                color = glm::vec4(0.0F, 1.0F, 1.0F, 1.0F);
+                //color = glm::vec4(0.0F, 1.0F, 1.0F, 1.0F);
+                color = glm::vec4(1.000, 0.875, 0.580, 1.0F);
             }
 
             if (cell->getHexCell()->getType() == HexCell::Type::BlockingBridge) {
                 cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
                     0, _hexMaterials[HexCell::Type::BlockingBridge]);
-                color = glm::vec4(1.0F, 1.0F, 0.0F, 1.0F);
+                //color = glm::vec4(1.0F, 1.0F, 0.0F, 1.0F);
+                color = glm::vec4(0.0078f, 0.0196f, 0.0392f, 1.0F);
             }
 
             cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->getMaterial(0)->setAlbedoColor(

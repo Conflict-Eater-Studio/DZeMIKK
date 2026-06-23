@@ -149,11 +149,22 @@ void game::EnemyManager::spawnEnemy(const boost::uuids::uuid& chunkId,
         dzemikk::PrefabSerializer::instantiate(*scene, *enemyPrefab.get(), _assetManager);
     enemyGO->addTag("Enemy");
     enemyGO->setParent(getOwner());
-    enemyGO->enabled(true);
 
     enemyGO->transform()->setPosition(
         cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
-        glm::vec3(0.0F, 0.4F, 0.0F));
+        glm::vec3(0.0F, 0.0F, 0.0F));
+
+    if (config.personality == EnemyPersonality::Balanced) {
+        enemyGO->transform()->setPosition(
+            cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
+            glm::vec3(0.0F, -0.1F, 0.0F));
+    }
+
+    if (config.personality == EnemyPersonality::Defensive) {
+        enemyGO->transform()->setPosition(
+            cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight()) +
+            glm::vec3(0.8F, -0.2F, -0.4F));
+    }
     
     dzemikk::AnimationClip* clip = nullptr;
     dzemikk::AnimationClip* deathClip = nullptr;

@@ -110,6 +110,9 @@ class HexGrid {
         return _rng;
     }
 
+    [[nodiscard]] std::vector<HexCell*> getBridgeCells(const boost::uuids::uuid& parentId,
+                                                       const boost::uuids::uuid& childId) const;
+
   private:
     // --- Generation helpers ---
     static bool isBlockedCell(const HexCellPtr& cell);

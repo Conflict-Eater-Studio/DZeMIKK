@@ -57,9 +57,8 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
     void spawnSignToChunk(const std::string& sourceChunk, const std::string& targetChunk);
 
     void spawnCampChunk(const std::string& chunkName);
-    void showChunkBlockers(const std::string& blockedChunkName,
-                                                     const std::string& targetChunkName,
-                                                     EnemyManager* enemyManager);
+    void showChunkBlockers(const std::string& enemyChunkName, const std::string& blockedChunkName,
+                           EnemyManager* enemyManager);
   private:
     struct ForestCluster {
         glm::vec3 center;

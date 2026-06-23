@@ -25,6 +25,19 @@ HexGrid::~HexGrid() {
     _chunks.clear();
 }
 
+std::vector<HexCell*> HexGrid::getBridgeCells(const boost::uuids::uuid& parentId,
+                                              const boost::uuids::uuid& childId) const {
+
+    BridgeId bridgeId{parentId, childId};
+
+    auto it = _bridges.find(bridgeId);
+    if (it == _bridges.end()) {
+        return {};
+    }
+
+    return {it->second.hexes.begin(), it->second.hexes.end()};
+}
+
 bool HexGrid::isBlockedCell(const HexGrid::HexCellPtr& cell) {
     return cell != nullptr && cell->getGenState() == HexCell::GenState::Blocked;
 }

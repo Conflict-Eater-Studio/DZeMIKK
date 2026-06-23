@@ -17,9 +17,13 @@ void editor::UITextRendererInspector::draw(dzemikk::UITextRenderer* textRenderer
 
         auto& textBuffer = textBuffers[textRenderer];
 
-        std::snprintf(textBuffer.data(), textBuffer.size(), "%s", textRenderer->text.c_str());
+        if (textBuffer[0] == '\0') {
+            std::strncpy(textBuffer.data(), textRenderer->text.c_str(), textBuffer.size() - 1);
+            textBuffer.back() = '\0';
+        }
 
-        if (ImGui::InputTextMultiline("Text", textBuffer.data(), textBuffer.size())) {
+        if (ImGui::InputTextMultiline("Text", textBuffer.data(), textBuffer.size(), ImVec2(0, 0),
+                                      ImGuiInputTextFlags_AllowTabInput)) {
             textRenderer->text = textBuffer.data();
         }
 

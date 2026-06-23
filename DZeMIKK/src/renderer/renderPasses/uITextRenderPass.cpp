@@ -21,6 +21,7 @@ void dzemikk::UITextRenderPass::execute(RenderContext& ctx) {
     DZ_PROFILE_GPU("UI Text Rendering");
 
     for (auto* t : _texts) {
+
         if (!t->isValid())
             continue;
 
@@ -40,6 +41,9 @@ void dzemikk::UITextRenderPass::execute(RenderContext& ctx) {
 
         const glm::vec2 rectSize = rect->getSize();
 
+        float x = originX;
+        float y = originY;
+
         float penX = 0.0f;
         float penY = 0.0f;
 
@@ -48,13 +52,16 @@ void dzemikk::UITextRenderPass::execute(RenderContext& ctx) {
 
         const float lineHeight = t->font->lineHeight * t->scale;
 
-        // fallback glyph for spacing metrics
         auto fallbackIt = t->font->characters.find('H');
         float fallbackAdvance =
             (fallbackIt != t->font->characters.end()) ? (fallbackIt->second.advance >> 6) : 10.0f;
 
-        // ---------------- PREPASS
-        for (char c : t->text) {
+        // =========================
+        // PREPASS (UTF-8)
+        // =========================
+        for (size_t i = 0; i < t->text.size();) {
+
+            unsigned int c = decodeUTF8(t->text, i);
 
             if (c == '\r')
                 continue;
@@ -70,15 +77,14 @@ void dzemikk::UITextRenderPass::execute(RenderContext& ctx) {
                 continue;
             }
 
-            auto glyphIt = t->font->characters.find(c);
-            if (glyphIt == t->font->characters.end()) {
+            auto it = t->font->characters.find(c);
+            if (it == t->font->characters.end())
                 continue;
-            }
 
-            const Character& ch = glyphIt->second;
+            const Character& ch = it->second;
 
-            const float ypos = penY - (ch.size.y - ch.bearing.y) * t->scale;
-            const float h = ch.size.y * t->scale;
+            float ypos = penY - (ch.size.y - ch.bearing.y) * t->scale;
+            float h = ch.size.y * t->scale;
 
             minY = std::min(minY, ypos);
             maxY = std::max(maxY, ypos + h);
@@ -126,14 +132,18 @@ void dzemikk::UITextRenderPass::execute(RenderContext& ctx) {
         shader->setMat4("projection", ctx.uiProjection);
         shader->setVec3("textColor", t->color);
 
-        float x = originX + offsetX;
-        float y = originY + offsetY;
+        x = originX + offsetX;
+        y = originY + offsetY;
 
         glBindVertexArray(_textVAO);
 
-        // ---------------- RENDER
-        for (char c : t->text) {
-            
+        // =========================
+        // RENDER (UTF-8)
+        // =========================
+        for (size_t i = 0; i < t->text.size();) {
+
+            unsigned int c = decodeUTF8(t->text, i);
+
             if (c == '\r')
                 continue;
 
@@ -148,12 +158,11 @@ void dzemikk::UITextRenderPass::execute(RenderContext& ctx) {
                 continue;
             }
 
-            auto glyphIt = t->font->characters.find(c);
-            if (glyphIt == t->font->characters.end()) {
+            auto it = t->font->characters.find(c);
+            if (it == t->font->characters.end())
                 continue;
-            }
 
-            const Character& ch = glyphIt->second;
+            const Character& ch = it->second;
 
             float xpos = x + ch.bearing.x * t->scale;
             float ypos = y - (ch.size.y - ch.bearing.y) * t->scale;
@@ -172,11 +181,6 @@ void dzemikk::UITextRenderPass::execute(RenderContext& ctx) {
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 
             glDrawArrays(GL_TRIANGLES, 0, 6);
-
-            Profiler::Get().stats.drawCalls++;
-            Profiler::Get().stats.renderedObjects++;
-            Profiler::Get().stats.vertexCount += 6;
-            Profiler::Get().stats.triangleCount += 2;
 
             x += (ch.advance >> 6) * t->scale;
         }
@@ -228,4 +232,27 @@ void dzemikk::UITextRenderPass::initTextShader() {
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 
     glBindVertexArray(0);
+}
+
+unsigned int dzemikk::UITextRenderPass::decodeUTF8(const std::string& s, size_t& i) {
+    unsigned char c = s[i];
+
+    if (c < 0x80) {
+        return s[i++];
+    }
+
+    if ((c >> 5) == 0x6) {
+        unsigned int cp = ((s[i] & 0x1F) << 6) | (s[i + 1] & 0x3F);
+        i += 2;
+        return cp;
+    }
+
+    if ((c >> 4) == 0xE) {
+        unsigned int cp = ((s[i] & 0x0F) << 12) | ((s[i + 1] & 0x3F) << 6) | (s[i + 2] & 0x3F);
+        i += 3;
+        return cp;
+    }
+
+    i++;
+    return 0xFFFD;
 }

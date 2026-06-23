@@ -1,5 +1,8 @@
 #include "enemySystem/enemyEntity.h"
 
+#include <ecs/gameobject.h>
+#include <ecs/scene.h>
+
 void game::EnemyEntity::addTerritoryCell(HexCell* cell) {
     if (!cell) {
         return;
@@ -50,6 +53,18 @@ void game::EnemyEntity::onExit() {
     getCell()->setState(HexCell::State::Empty);
 
     setCell(nullptr);
+}
+
+void game::EnemyEntity::destroyMask() {
+    if (_mask) {
+        if (auto* scene = _mask->getScene()) {
+            scene->destroyGameObject(_mask);
+        } else {
+            delete _mask;
+        }
+
+        _mask = nullptr;
+    }
 }
 
 void game::EnemyEntity::setHp(double hp) {
