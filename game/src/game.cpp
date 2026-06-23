@@ -180,6 +180,17 @@ void Game::startGame() {
              settingsShared->findGameObjectByName("SFXSlider")->getComponent<dzemikk::UISlider>(),
          .uiVolume =
              settingsShared->findGameObjectByName("UISlider")->getComponent<dzemikk::UISlider>()});
+    game::Settings::get().setColorGradingSliders(
+        {.exposure = settingsShared->findGameObjectByName("ExposureSlider")
+                         ->getComponent<dzemikk::UISlider>(),
+         .contrast = settingsShared->findGameObjectByName("ContrastSlider")
+                         ->getComponent<dzemikk::UISlider>(),
+         .saturation = settingsShared->findGameObjectByName("SaturationSlider")
+                           ->getComponent<dzemikk::UISlider>(),
+         .temperature = settingsShared->findGameObjectByName("TemperatureSlider")
+                            ->getComponent<dzemikk::UISlider>(),
+         .tint = settingsShared->findGameObjectByName("TintSlider")
+                     ->getComponent<dzemikk::UISlider>()});
 
     const auto applyAudioVolumes = [this]() {
         auto* audioManager = _engine->getAudioManager();

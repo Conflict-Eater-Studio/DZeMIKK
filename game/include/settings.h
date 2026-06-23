@@ -88,6 +88,14 @@ class Settings {
         glm::vec3 colorFilter{1.0F};
     };
 
+    struct ColorGradingSliders {
+        dzemikk::UISlider* exposure{nullptr};
+        dzemikk::UISlider* contrast{nullptr};
+        dzemikk::UISlider* saturation{nullptr};
+        dzemikk::UISlider* temperature{nullptr};
+        dzemikk::UISlider* tint{nullptr};
+    };
+
     Settings(const Settings&) = delete;
     Settings& operator=(const Settings&) = delete;
     Settings(Settings&&) = delete;
@@ -128,6 +136,11 @@ class Settings {
         updateColorGrading();
     }
 
+    void setColorGradingSliders(const ColorGradingSliders& sliders) {
+        _colorGradingSliders = sliders;
+        updateColorGradingSliders();
+    }
+
     void updateAudioSliders() const {
         if (_audioSliders.masterVolume) {
             _audioSliders.masterVolume->onValueChanged(_audio.masterVolume);
@@ -158,6 +171,24 @@ class Settings {
         _colorGradingEffect->setColorFilter(_colorGrading.colorFilter);
     }
 
+    void updateColorGradingSliders() const {
+        if (_colorGradingSliders.exposure) {
+            _colorGradingSliders.exposure->onValueChanged(_colorGrading.exposure);
+        }
+        if (_colorGradingSliders.contrast) {
+            _colorGradingSliders.contrast->onValueChanged(_colorGrading.contrast);
+        }
+        if (_colorGradingSliders.saturation) {
+            _colorGradingSliders.saturation->onValueChanged(_colorGrading.saturation);
+        }
+        if (_colorGradingSliders.temperature) {
+            _colorGradingSliders.temperature->onValueChanged(_colorGrading.temperature);
+        }
+        if (_colorGradingSliders.tint) {
+            _colorGradingSliders.tint->onValueChanged(_colorGrading.tint);
+        }
+    }
+
     void saveDefaults() {
         _audio.masterVolume = 1.0F;
         _audio.musicVolume = 1.0F;
@@ -174,6 +205,7 @@ class Settings {
 
         updateAudioSliders();
         updateColorGrading();
+        updateColorGradingSliders();
         save();
     }
 
@@ -195,11 +227,11 @@ class Settings {
 
         if (s.contains("colorGrading")) {
             const auto& cg = s["colorGrading"];
-            _colorGrading.exposure = cg.value("exposure", 0.1F);
-            _colorGrading.contrast = cg.value("contrast", 1.1F);
-            _colorGrading.saturation = cg.value("saturation", 1.15F);
-            _colorGrading.temperature = cg.value("temperature", 0.1F);
-            _colorGrading.tint = cg.value("tint", -0.05F);
+            _colorGrading.exposure = cg.value("exposure", 0.0F);
+            _colorGrading.contrast = cg.value("contrast", 1.0F);
+            _colorGrading.saturation = cg.value("saturation", 1.0F);
+            _colorGrading.temperature = cg.value("temperature", 0.0F);
+            _colorGrading.tint = cg.value("tint", 0.0F);
             if (cg.contains("colorFilter")) {
                 _colorGrading.colorFilter =
                     glm::vec3(cg["colorFilter"][0].get<float>(), cg["colorFilter"][1].get<float>(),
@@ -209,6 +241,7 @@ class Settings {
 
         updateAudioSliders();
         updateColorGrading();
+        updateColorGradingSliders();
     };
 
     void save() const {
@@ -253,7 +286,10 @@ class Settings {
         _audio.sfxVolume.setCallback(onChanged);
         _audio.uiVolume.setCallback(onChanged);
 
-        auto onColorGradingChanged = [this](float) { updateColorGrading(); };
+        auto onColorGradingChanged = [this](float) {
+            updateColorGrading();
+            updateColorGradingSliders();
+        };
         _colorGrading.exposure.setCallback(onColorGradingChanged);
         _colorGrading.contrast.setCallback(onColorGradingChanged);
         _colorGrading.saturation.setCallback(onColorGradingChanged);
@@ -272,6 +308,7 @@ class Settings {
     Audio _audio;
     AudioSliders _audioSliders;
     ColorGrading _colorGrading;
+    ColorGradingSliders _colorGradingSliders;
     dzemikk::ColorGradingEffect* _colorGradingEffect{nullptr};
     std::function<void()> _onAudioChanged;
 };
