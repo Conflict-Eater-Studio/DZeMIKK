@@ -22,6 +22,23 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <assetManager/assetmanager.h>
+#include <assetManager/assetHandle.h>
+#include <assetManager/soundHandler.h>
+#include <audio/audioManager.h>
+
+namespace walkSound {
+
+struct SoundInitContext {
+    dzemikk::AudioManager* audioManager;
+};
+
+void onMoveSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
+    ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
+    ctx.audioManager->getSFXGroup()->setVolume(0.5F);
+}
+}
+
 namespace game {
 
 void PlayerMovement::start() {
@@ -79,6 +96,15 @@ void PlayerMovement::update(double deltaTime) {
                 _step = 1;
             }
         }
+
+        walkSound::SoundInitContext sCtx{
+            _game->getEngine()->getAudioManager()
+        };
+        dzemikk::AssetManager::AssetTask<dzemikk::Sound, walkSound::SoundInitContext> taskS;
+        taskS.context = sCtx;
+        taskS.onLoad = walkSound::onMoveSFXLoad;
+        _game->getEngine()->getAssetManager()->getAsync("audio/chod_v1_krotki.wav", taskS);
+
         rotateToDirection(_playerDir);
         _playerEntity->tryMove(currentTargetCell);
         _animator->setInt("direction", -1);
