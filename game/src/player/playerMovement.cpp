@@ -150,9 +150,9 @@ void PlayerMovement::setHexGrid(HexGrid* hexGrid) {
 }
 void PlayerMovement::moveTo(HexGrid::HexCellPtr cell) {
     std::vector<HexGrid::HexCellPtr> path = findPath(_playerEntity->getCell(), cell);
-    if (!_animator->getCurrentState()->getClip()->isFinished()){
-        _cachedPath = path;
-    }
+    // if (!_animator->getCurrentState()->getClip()->isFinished()){
+    //     _cachedPath = path;
+    // }
     if (_animator->getCurrentState()->getName() == "Idle") {
         _path = path;
         _step = 1;
