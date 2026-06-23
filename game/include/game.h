@@ -103,7 +103,7 @@ class Game {
     std::vector<game::HexCell*> animCells;
     size_t animIndex = 0;
     int animFrameCounter = 0;
-    static constexpr int animFrameDelay = 10;
+    static constexpr int animFrameDelay = 7;
 };
 
 #endif
