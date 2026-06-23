@@ -519,7 +519,7 @@ glm::vec4 game::PlayerPatternComponent::getPatternPreviewColor() const {
     const bool canPlace = _currentPreviewValid && _activePatternIndex >= 0 &&
                           _patterns[_activePatternIndex].count > 0;
 
-    auto pattern = _patterns[_activePatternIndex].pattern;
+    const auto& pattern = _patterns[_activePatternIndex].pattern;
 
     switch (pattern.getType()) {
 
@@ -576,6 +576,16 @@ void game::PlayerPatternComponent::createPreviewFromPattern(const HexPattern& pa
     }
 }
 
+void game::PlayerPatternComponent::updatePreviewPositions(const std::vector<HexCoord>& hexes) {
+    if (_previewHexes.size() != hexes.size()) {
+        return;
+    }
+
+    for (size_t i = 0; i < hexes.size(); ++i) {
+        _previewHexes[i]->transform()->setPosition(axialToWorld(hexes[i], 1.0F));
+    }
+}
+
 game::WorldHex* game::PlayerPatternComponent::getWorldHexUnderCursor() {
     int windowWidth = 0;
     int windowHeight = 0;
@@ -611,9 +621,8 @@ void game::PlayerPatternComponent::onMouseScrolled(dzemikk::MouseScrolledEvent& 
     auto rotation = e.GetYOffset() > 0 ? HexPattern::Rotation::Clockwise
                                        : HexPattern::Rotation::CounterClockwise;
 
-    pattern.rotate(rotation);
+    const auto& rotatedHexes = pattern.rotate(rotation);
 
-    destroyPreview();
-    createPreviewFromPattern(pattern);
+    updatePreviewPositions(rotatedHexes);
 }
 

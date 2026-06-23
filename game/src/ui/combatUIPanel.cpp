@@ -1,47 +1,81 @@
 #include "ui/combatUIPanel.h"
 
+#include "ecs/components/ui/uiTextRenderer.h"
 #include "enemySystem/enemyPatternComponent.h"
 #include "player/playerPatternComponent.h"
 
+#include <GLFW/glfw3.h>
+#include <chrono>
+#include <collisions/collisions.h>
+#include <core/engine.h>
+#include <core/window.h>
+#include <ecs/components/collider.h>
 #include <ecs/components/ui/gridLayout.h>
 #include <ecs/components/ui/imageRenderer.h>
 #include <ecs/components/ui/uiActionRegistry.h>
 #include <ecs/gameobject.h>
 #include <ecs/scene.h>
 #include <ecs/serialize/prefabSerializer.h>
-#include <iostream>
-#include <renderer/texture.h>
-#include <core/engine.h>
-#include <GLFW/glfw3.h>
-#include <core/window.h>
-#include <collisions/collisions.h>
 #include <renderer/renderer.h>
-#include <ecs/components/collider.h>
+#include <renderer/texture.h>
 
 void game::CombatUIPanel::start() {
     _patternSlotPrefab = _assetManager->get<nlohmann::json>("prefabs/pattern_ui.prefab");
-
     _hexUIPrefab = _assetManager->get<nlohmann::json>("prefabs/hex_ui.prefab");
-
     _patternsContainer = _canvas->findDescendantByName("Patterns");
-
     _scrollListenerId = _engine->getInput()->OnMouseScrolled.addListener(
         [this](dzemikk::MouseScrolledEvent& e) { onMouseScrolled(e); });
-
     _scrollHandle = getOwner()->getScene()->findGameObjectByName("Scroll");
+    _patternPool.reserve(kMaxVisiblePatterns);
+
+    for (int i = 0; i < kMaxVisiblePatterns; i++) {
+        auto* obj = createPatternSlotObject();
+        PatternPoolObject poolObj{
+            .button = obj->getComponent<dzemikk::UIButton>(),
+            .root = obj,
+            .countText =
+                obj->findDescendantByName("Text_Count")->getComponent<dzemikk::UITextRenderer>(),
+            .nameText =
+                obj->findDescendantByName("Button_Text")->getComponent<dzemikk::UITextRenderer>(),
+            .previewContainer = obj->findDescendantByName("HexHolder"),
+            .borderRenderer =
+                obj->findDescendantByName("Empty")->getComponent<dzemikk::ImageRenderer>(),
+        };
+
+        for (int j = 0; j < 8; j++) {
+            auto* hexGO = dzemikk::PrefabSerializer::instantiate(
+                *getOwner()->getScene(), *_hexUIPrefab.get(), _assetManager);
+            hexGO->enabled(false);
+            hexGO->setParent(poolObj.previewContainer);
+            poolObj.hexPool.emplace_back(hexGO, false);
+        }
+
+        obj->enabled(false);
+        _patternPool.emplace_back(poolObj);
+        setupButtonActions(_patternPool.back(), i);
+    }
 
     refresh();
 }
 
-void game::CombatUIPanel::update(double deltaTime) {}
+void game::CombatUIPanel::update(double deltaTime) {
+    std::ranges::for_each(_patternPool, [](PatternPoolObject& obj) {
+        if (!obj.used && obj.root->isEnabled()) {
+            obj.root->enabled(false);
+        }
+        std::ranges::for_each(obj.hexPool, [](std::pair<dzemikk::GameObject*, bool>& hexPair) {
+            if (!hexPair.second && hexPair.first->isEnabled()) {
+                hexPair.first->enabled(false);
+            }
+        });
+    });
+}
 
 void game::CombatUIPanel::onDestroy() {
     _engine->getInput()->OnMouseScrolled.removeListener(_scrollListenerId);
 }
 
 void game::CombatUIPanel::refresh(bool enableChildren) {
-    clear();
-
     if (!_patterns) {
         return;
     }
@@ -56,47 +90,34 @@ void game::CombatUIPanel::refresh(bool enableChildren) {
     }
 }
 
-void game::CombatUIPanel::clear() {
-    if (_uiEntries.empty()) {
-        return;
-    }
-    _uiEntries.at(0).root->getParent()->detachChildren();
-    for (auto& entry : _uiEntries) {
-        if (entry.root) {
-            entry.root->getScene()->destroyGameObject(entry.root);
-        }
-    }
-
-    _uiEntries.clear();
-}
-
 void game::CombatUIPanel::buildUI() {
     if (!_patterns || !_patternsContainer) {
         return;
     }
 
+    std::ranges::for_each(_patternPool, [](PatternPoolObject& obj) {
+        obj.root->enabled(false);
+        obj.used = false;
+        std::ranges::for_each(obj.hexPool, [](std::pair<dzemikk::GameObject*, bool>& hexPair) {
+            hexPair.second = false;
+        });
+    });
+
     if (_hideEmptyPatterns) {
-
         const auto indices = getAvailablePatternIndices();
-
         for (size_t patternIndex : indices) {
             createPatternSlot(_patterns->getPatterns()[patternIndex], patternIndex);
         }
-
     } else {
-
         const auto& patterns = _patterns->getPatterns();
-
         const size_t start = _firstVisiblePatternIndex;
-        const size_t end = std::min(start + MAX_VISIBLE_PATTERNS, patterns.size());
-
+        const size_t end = std::min(start + kMaxVisiblePatterns, patterns.size());
         for (size_t i = start; i < end; ++i) {
             createPatternSlot(patterns[i], i);
         }
     }
 
     auto* grid = _patternsContainer->getComponent<dzemikk::GridLayout>();
-
     if (grid) {
         grid->rebuild();
     }
@@ -104,37 +125,36 @@ void game::CombatUIPanel::buildUI() {
 
 void game::CombatUIPanel::createPatternSlot(const PatternComponent::PatternEntry& entry,
                                             size_t index) {
+#if DZEMIKK_DEV_TOOLS
+    auto tStart = std::chrono::steady_clock::now();
+    auto tPhaseStart = tStart;
+#endif
 
-    auto* patternGO = createPatternSlotObject();
-
-    PatternUIEntry uiEntry;
-    uiEntry.patternIndex = index;
-    uiEntry.root = patternGO;
-    uiEntry.button = patternGO->getComponent<dzemikk::UIButton>();
+    auto poolObjIt =
+        std::ranges::find_if(_patternPool, [](const PatternPoolObject& obj) { return !obj.used; });
+    if (poolObjIt == _patternPool.end()) {
+        return;
+    }
+    poolObjIt->used = true;
+    poolObjIt->patternIndex = index;
 
     const uint32_t usageCount = getPatternCount(entry);
-
     const auto color = applyUsageTint(getPatternBaseColor(entry.pattern.getType()), usageCount);
 
-    const std::string actionId = "pattern_" + std::to_string(index);
-
-    setupButton(uiEntry.button, index, actionId, color);
-
-    setupPatternSlotContent(patternGO, uiEntry, entry.pattern, usageCount);
-
-    _uiEntries.push_back(uiEntry);
+    setupButton(*poolObjIt, color);
+    setupPatternSlotContent(*poolObjIt, entry.pattern, usageCount);
 }
 
-void game::CombatUIPanel::createPatternPreview(dzemikk::GameObject* parent,
+void game::CombatUIPanel::createPatternPreview(game::CombatUIPanel::PatternPoolObject& obj,
                                                const HexPattern& pattern) {
-    constexpr float HEX_SIZE = 15.0F;
+    constexpr float hexSize = 15.0F;
 
     std::vector<glm::vec2> positions;
 
     for (const auto& hex : pattern.getHexes()) {
         float x =
-            HEX_SIZE * std::numbers::sqrt3_v<float> * ((float)hex.q() + (float)hex.r() * 0.5F);
-        float y = HEX_SIZE * 1.5F * (float)hex.r();
+            hexSize * std::numbers::sqrt3_v<float> * ((float)hex.q() + ((float)hex.r() * 0.5F));
+        float y = hexSize * 1.5F * (float)hex.r();
         positions.emplace_back(-y, x);
     }
 
@@ -152,7 +172,7 @@ void game::CombatUIPanel::createPatternPreview(dzemikk::GameObject* parent,
 
     glm::vec2 center = (minPos + maxPos) * 0.5F;
 
-    std::string texturePath = "";
+    std::string texturePath;
     if (pattern.getType() == HexPattern::Type::ATK) {
         texturePath = "textures/ui grafiki/ui patterns/atak.png";
     } else if (pattern.getType() == HexPattern::Type::DEF) {
@@ -163,21 +183,21 @@ void game::CombatUIPanel::createPatternPreview(dzemikk::GameObject* parent,
         texturePath = "textures/ui grafiki/ui patterns/dodatkowy_hex.png";
     }
 
-    for (size_t i = 0; i < positions.size(); ++i) {
+    for (size_t i = 0; i < obj.hexPool.size(); ++i) {
+        if (i >= positions.size()) {
+            obj.hexPool[i].second = false;
+            continue;
+        }
+        obj.hexPool[i].second = true;
 
-        auto* hexGO = dzemikk::PrefabSerializer::instantiate(*getOwner()->getScene(),
-                                                             *_hexUIPrefab.get(), _assetManager);
-        hexGO->setParent(parent);
-        hexGO->enabled(false);
-
-        auto* transform = hexGO->rectTransform();
+        auto* transform = obj.hexPool[i].first->rectTransform();
         transform->setPosition(glm::vec3(positions[i] - center, 0.0F));
 
-        auto* renderer = hexGO->getComponent<dzemikk::ImageRenderer>();
+        auto* renderer = obj.hexPool[i].first->getComponent<dzemikk::ImageRenderer>();
         glm::vec4 color = getPatternBaseColor(pattern.getType());
         renderer->setColor({color.r, color.g, color.b, 1.0F});
 
-        auto* hexChild = hexGO->findChildByName("Empty");
+        auto* hexChild = obj.hexPool[i].first->findChildByName("Empty");
         auto* hexChildRenderer = hexChild->getComponent<dzemikk::ImageRenderer>();
 
         if (texturePath != "") {
@@ -189,7 +209,10 @@ void game::CombatUIPanel::createPatternPreview(dzemikk::GameObject* parent,
 }
 
 void game::CombatUIPanel::refreshCounts() {
-    for (auto& entry : _uiEntries) {
+    auto active = _patternPool |
+                  std::ranges::views::filter([](const PatternPoolObject& obj) { return obj.used; });
+
+    for (auto& entry : active) {
         if (!entry.countText) {
             continue;
         }
@@ -302,54 +325,6 @@ int32_t game::CombatUIPanel::getPatternCount(const PatternComponent::PatternEntr
     return (int32_t)it->second;
 }
 
-void game::CombatUIPanel::refreshVisuals() {
-    if (!_patterns) {
-        return;
-    }
-
-    const bool isEnemy = (dynamic_cast<EnemyPatternComponent*>(_patterns) != nullptr);
-
-    for (auto& ui : _uiEntries) {
-        if (ui.patternIndex >= _patterns->getPatterns().size()) {
-            continue;
-        }
-
-        const auto& entry = _patterns->getPatterns()[ui.patternIndex];
-
-        uint32_t count = 0;
-
-        if (isEnemy) {
-            auto* enemy = dynamic_cast<EnemyPatternComponent*>(_patterns);
-
-            const auto& usage = enemy->getPatternUsage();
-
-            auto it = usage.find(&entry.pattern);
-            if (it != usage.end()) {
-                count = it->second;
-            }
-        } else {
-            count = entry.count;
-        }
-
-        glm::vec4 baseColor = getPatternBaseColor(entry.pattern.getType());
-        glm::vec4 color = applyUsageTint(baseColor, count);
-
-        if (ui.button) {
-            if (_isClickable) {
-                ui.button->setStyle({color, color * 0.75F, color * 0.5F});
-            } else {
-                ui.button->setStyle({color, color, color});
-            }
-
-            ui.button->applyVisualState();
-        }
-
-        if (ui.countText) {
-            ui.countText->text = "0/" + std::to_string(count);
-        }
-    }
-}
-
 dzemikk::GameObject* game::CombatUIPanel::createPatternSlotObject() {
     auto* patternGO = dzemikk::PrefabSerializer::instantiate(
         *getOwner()->getScene(), *_patternSlotPrefab.get(), _assetManager);
@@ -378,229 +353,206 @@ uint32_t game::CombatUIPanel::getUsageCount(const PatternComponent::PatternEntry
     return it != usage.end() ? it->second : 0;
 }
 
-void game::CombatUIPanel::setupButton(dzemikk::UIButton* button, size_t index,
-                                      const std::string& actionId, const glm::vec4& color) {
-    if (!button) {
+void game::CombatUIPanel::setupButtonActions(game::CombatUIPanel::PatternPoolObject& obj,
+                                             size_t poolIndex) {
+    if (!obj.button || !_isClickable) {
+        return;
+    }
+
+    const std::string actionId = "pattern_pool_" + std::to_string(poolIndex);
+    const std::string hoverAction = actionId + "_hover";
+    const std::string unhoverAction = actionId + "_unhover";
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this, &obj](const dzemikk::UIEvent&) {
+            if (!_patterns) {
+                return;
+            }
+            _patterns->usePattern(obj.patternIndex);
+            refreshCounts();
+        },
+        actionId);
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this, &obj](const dzemikk::UIEvent&) {
+            if (!_patterns) {
+                return;
+            }
+
+            auto* tooltipsGO = getOwner()->getScene()->findGameObjectByName("Tooltips_Panel");
+            auto* patternTooltip = tooltipsGO->findDescendantByName("Pattern");
+            auto* bonusTooltip = tooltipsGO->findDescendantByName("BonusHex");
+
+            auto* iconGO = patternTooltip->findChildByName("Icon");
+            auto* iconRenderer = iconGO->getComponent<dzemikk::ImageRenderer>();
+
+            auto* name =
+                patternTooltip->findChildByName("Name")->getComponent<dzemikk::UITextRenderer>();
+
+            auto* leftHexGO = patternTooltip->findChildByName("Left")->findChildByName("Hex_UI");
+            auto* leftHexIconGO = leftHexGO->findChildByName("Empty");
+
+            auto* leftTextGo = patternTooltip->findChildByName("Left")->findChildByName("T1");
+            auto* leftTextRenderer = leftTextGo->getComponent<dzemikk::UITextRenderer>();
+
+            auto* rightHexGO = patternTooltip->findChildByName("Right")->findChildByName("Hex_UI");
+            auto* rightHexIconGO = rightHexGO->findChildByName("Empty");
+
+            auto* rightTextGo = patternTooltip->findChildByName("Right")->findChildByName("T1");
+            auto* rightTextRenderer = rightTextGo->getComponent<dzemikk::UITextRenderer>();
+
+            auto* bonusTooltipTextGO = bonusTooltip->findChildByName("Text");
+            auto* bonusTooltipTextRenderer =
+                bonusTooltipTextGO->getComponent<dzemikk::UITextRenderer>();
+
+            switch (_patterns->getPattern(obj.patternIndex)->pattern.getType()) {
+            case HexPattern::Type::ATK:
+                iconRenderer->setTexture(_assetManager->get<dzemikk::Texture>(
+                    "textures/ui grafiki/ui patterns/atak.png"));
+
+                name->text = "ATTACK";
+                name->color = glm::vec3(1.0F, 0.0F, 0.0F);
+
+                leftHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
+                    {1.0F, 0.0F, 0.0F, 1.0F});
+                leftHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
+                    _assetManager->get<dzemikk::Texture>(
+                        "textures/ui grafiki/ui patterns/atak.png"));
+
+                leftTextRenderer->text = std::format(
+                    "Deals {:.1f} Damage",
+                    _patterns->getPattern(obj.patternIndex)->pattern.getEffectStrength());
+
+                rightHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
+                    {1.0F, 0.0F, 0.0F, 1.0F});
+                rightHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
+                    _assetManager->get<dzemikk::Texture>(
+                        "textures/ui grafiki/ui patterns/atak.png"));
+
+                rightTextRenderer->text = std::format(
+                    "{:.1f} Damage total",
+                    _patterns->getPattern(obj.patternIndex)->pattern.getEffectStrength() *
+                        _patterns->getPattern(obj.patternIndex)->pattern.getHexes().size());
+                patternTooltip->enabled(true);
+                break;
+            case HexPattern::Type::DEF:
+                iconRenderer->setTexture(_assetManager->get<dzemikk::Texture>(
+                    "textures/ui grafiki/ui patterns/tarcza.png"));
+
+                name->text = "DEFENSE";
+                name->color = glm::vec3(0.0F, 0.0F, 1.0F);
+
+                leftHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
+                    {0.0F, 0.0F, 1.0F, 1.0F});
+                leftHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
+                    _assetManager->get<dzemikk::Texture>(
+                        "textures/ui grafiki/ui patterns/tarcza.png"));
+
+                leftTextRenderer->text = std::format(
+                    "Grants {:.1f} Armor",
+                    _patterns->getPattern(obj.patternIndex)->pattern.getEffectStrength());
+
+                rightHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
+                    {0.0F, 0.0F, 1.0F, 1.0F});
+                rightHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
+                    _assetManager->get<dzemikk::Texture>(
+                        "textures/ui grafiki/ui patterns/tarcza.png"));
+
+                rightTextRenderer->text = std::format(
+                    "{:.1f} Armor total",
+                    _patterns->getPattern(obj.patternIndex)->pattern.getEffectStrength() *
+                        _patterns->getPattern(obj.patternIndex)->pattern.getHexes().size());
+                patternTooltip->enabled(true);
+                break;
+            case HexPattern::Type::HEAL:
+                iconRenderer->setTexture(_assetManager->get<dzemikk::Texture>(
+                    "textures/ui grafiki/ui patterns/leczenie.png"));
+
+                name->text = "HEAL";
+                name->color = glm::vec3(0.0F, 1.0F, 0.0F);
+
+                leftHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
+                    {0.0F, 1.0F, 0.0F, 1.0F});
+                leftHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
+                    _assetManager->get<dzemikk::Texture>(
+                        "textures/ui grafiki/ui patterns/leczenie.png"));
+
+                leftTextRenderer->text = std::format(
+                    "Restores {:.1f} Health",
+                    _patterns->getPattern(obj.patternIndex)->pattern.getEffectStrength());
+
+                rightHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
+                    {0.0F, 1.0F, 0.0F, 1.0F});
+                rightHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
+                    _assetManager->get<dzemikk::Texture>(
+                        "textures/ui grafiki/ui patterns/leczenie.png"));
+
+                rightTextRenderer->text = std::format(
+                    "{:.1f} Health total",
+                    _patterns->getPattern(obj.patternIndex)->pattern.getEffectStrength() *
+                        _patterns->getPattern(obj.patternIndex)->pattern.getHexes().size());
+                patternTooltip->enabled(true);
+                break;
+            case HexPattern::Type::BONUSHEX:
+                bonusTooltipTextRenderer->text =
+                    std::format("Expands your territory by {} tile",
+                                _patterns->getPattern(obj.patternIndex)->pattern.getHexes().size());
+
+                bonusTooltip->enabled(true);
+                break;
+            default:
+                break;
+            }
+        },
+        hoverAction);
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent&) {
+            auto* tooltipsGO = getOwner()->getScene()->findGameObjectByName("Tooltips_Panel");
+            auto* patternTooltip = tooltipsGO->findDescendantByName("Pattern");
+            patternTooltip->enabled(false);
+
+            auto* bonusTooltip = tooltipsGO->findDescendantByName("BonusHex");
+            bonusTooltip->enabled(false);
+        },
+        unhoverAction);
+
+    obj.button->addEventListener(dzemikk::UIEventType::Click, actionId);
+    obj.button->addEventListener(dzemikk::UIEventType::Enter, hoverAction);
+    obj.button->addEventListener(dzemikk::UIEventType::Exit, unhoverAction);
+}
+
+void game::CombatUIPanel::setupButton(game::CombatUIPanel::PatternPoolObject& obj,
+                                      const glm::vec4& color) {
+    if (!obj.button) {
         return;
     }
 
     if (_isClickable) {
-
-        dzemikk::UIActionRegistry::get().registerAction(
-            [this, index, actionId](const dzemikk::UIEvent&) {
-                if (!_patterns) {
-                    return;
-                }
-
-                _patterns->usePattern(index);
-
-                refreshCounts();
-            },
-            actionId);
-
-            const std::string hoverAction = actionId + "_hover";
-        const std::string unhoverAction = actionId + "_unhover";
-
-        dzemikk::UIActionRegistry::get().registerAction(
-            [this, index](const dzemikk::UIEvent&) {
-                auto tooltipsGO =
-                    getOwner()->getScene()->findGameObjectByName("Tooltips_Panel");
-                auto patternTooltip = tooltipsGO->findDescendantByName("Pattern");
-                auto bonusTooltip = tooltipsGO->findDescendantByName("BonusHex");
-
-                auto iconGO = patternTooltip->findChildByName("Icon");
-                auto iconRenderer = iconGO->getComponent<dzemikk::ImageRenderer>();
-
-                auto name = patternTooltip->findChildByName("Name")
-                                ->getComponent<dzemikk::UITextRenderer>();
-
-                auto leftHexGO = patternTooltip->findChildByName("Left")->findChildByName("Hex_UI");
-                auto leftHexIconGO = leftHexGO->findChildByName("Empty");
-
-                auto leftTextGo = patternTooltip->findChildByName("Left")->findChildByName("T1");
-                auto leftTextRenderer = leftTextGo->getComponent<dzemikk::UITextRenderer>();
-
-                auto rightHexGO = patternTooltip->findChildByName("Right")->findChildByName("Hex_UI");
-                auto rightHexIconGO = rightHexGO->findChildByName("Empty");
-
-                auto rightTextGo = patternTooltip->findChildByName("Right")->findChildByName("T1");
-                auto rightTextRenderer = rightTextGo->getComponent<dzemikk::UITextRenderer>();
-
-                auto bonusTooltipTextGO = bonusTooltip->findChildByName("Text");
-                auto bonusTooltipTextRenderer =
-                    bonusTooltipTextGO->getComponent<dzemikk::UITextRenderer>();
-
-                switch (_patterns->getPattern(index)->pattern.getType()) {
-                case HexPattern::Type::ATK:
-                    iconRenderer->setTexture(_assetManager->get<dzemikk::Texture>(
-                        "textures/ui grafiki/ui patterns/atak.png"));
-
-                    name->text = "ATTACK";
-                    name->color = glm::vec3(1.0F, 0.0F, 0.0F);
-
-                    leftHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
-                        {1.0F, 0.0F, 0.0F, 1.0F});
-                    leftHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
-                        _assetManager->get<dzemikk::Texture>(
-                            "textures/ui grafiki/ui patterns/atak.png"));
-
-                    leftTextRenderer->text =
-                        std::format("Deals {:.1f} Damage",
-                                    _patterns->getPattern(index)->pattern.getEffectStrength());
-
-                    rightHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
-                        {1.0F, 0.0F, 0.0F, 1.0F});
-                    rightHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
-                        _assetManager->get<dzemikk::Texture>(
-                            "textures/ui grafiki/ui patterns/atak.png"));
-
-                    rightTextRenderer->text =
-                        std::format("{:.1f} Damage total",
-                                    _patterns->getPattern(index)->pattern.getEffectStrength() *
-                                        _patterns->getPattern(index)->pattern.getHexes().size());
-                    patternTooltip->enabled(true);
-                    break;
-                case HexPattern::Type::DEF:
-                    iconRenderer->setTexture(_assetManager->get<dzemikk::Texture>(
-                        "textures/ui grafiki/ui patterns/tarcza.png"));
-
-                    name->text = "DEFENSE";
-                    name->color = glm::vec3(0.0F, 0.0F, 1.0F);
-
-                    leftHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
-                        {0.0F, 0.0F, 1.0F, 1.0F});
-                    leftHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
-                        _assetManager->get<dzemikk::Texture>(
-                            "textures/ui grafiki/ui patterns/tarcza.png"));
-
-                    leftTextRenderer->text =
-                        std::format("Grants {:.1f} Armor",
-                                    _patterns->getPattern(index)->pattern.getEffectStrength());
-
-                    rightHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
-                        {0.0F, 0.0F, 1.0F, 1.0F});
-                    rightHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
-                        _assetManager->get<dzemikk::Texture>(
-                            "textures/ui grafiki/ui patterns/tarcza.png"));
-
-                    rightTextRenderer->text =
-                        std::format("{:.1f} Armor total",
-                                    _patterns->getPattern(index)->pattern.getEffectStrength() *
-                                        _patterns->getPattern(index)->pattern.getHexes().size());
-                    patternTooltip->enabled(true);
-                    break;
-                case HexPattern::Type::HEAL:
-                    iconRenderer->setTexture(_assetManager->get<dzemikk::Texture>(
-                        "textures/ui grafiki/ui patterns/leczenie.png"));
-
-                    name->text = "HEAL";
-                    name->color = glm::vec3(0.0F, 1.0F, 0.0F);
-
-                    leftHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
-                        {0.0F, 1.0F, 0.0F, 1.0F});
-                    leftHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
-                        _assetManager->get<dzemikk::Texture>(
-                            "textures/ui grafiki/ui patterns/leczenie.png"));
-                    
-                    leftTextRenderer->text =
-                        std::format("Restores {:.1f} Health",
-                                    _patterns->getPattern(index)->pattern.getEffectStrength());
-
-                    rightHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
-                        {0.0F, 1.0F, 0.0F, 1.0F});
-                    rightHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
-                        _assetManager->get<dzemikk::Texture>(
-                            "textures/ui grafiki/ui patterns/leczenie.png"));
-
-                    rightTextRenderer->text =
-                        std::format("{:.1f} Health total",
-                                    _patterns->getPattern(index)->pattern.getEffectStrength() *
-                                        _patterns->getPattern(index)->pattern.getHexes().size());
-                    patternTooltip->enabled(true);
-                    break;
-                case HexPattern::Type::BONUSHEX:
-                    bonusTooltipTextRenderer->text =
-                        std::format("Expands your territory by {} tile",
-                                        _patterns->getPattern(index)->pattern.getHexes().size());
-
-                    bonusTooltip->enabled(true);
-                    break;
-                default:
-                    break;
-                }
-            },
-            hoverAction);
-
-        dzemikk::UIActionRegistry::get().registerAction(
-            [this, index](const dzemikk::UIEvent&) {
-                auto tooltipsGO = getOwner()->getScene()->findGameObjectByName("Tooltips_Panel");
-                auto patternTooltip = tooltipsGO->findDescendantByName("Pattern");
-                patternTooltip->enabled(false);
-
-                auto bonusTooltip = tooltipsGO->findDescendantByName("BonusHex");
-                bonusTooltip->enabled(false);
-            },
-            unhoverAction);
-
-        button->addEventListener(dzemikk::UIEventType::Click, actionId);
-        button->addEventListener(dzemikk::UIEventType::Enter, hoverAction);
-        button->addEventListener(dzemikk::UIEventType::Exit, unhoverAction);
-
-        button->setStyle({color, color * 0.75F, color * 0.5F});
+        obj.button->setStyle({
+            .normalColor = color,
+            .hoverColor = color * 0.75F,
+            .pressedColor = color * 0.5F,
+        });
     } else {
-        button->setStyle({color, color, color});
+        obj.button->setStyle({
+            .normalColor = color,
+            .hoverColor = color,
+            .pressedColor = color,
+        });
     }
 
-    button->applyVisualState();
+    obj.button->applyVisualState();
 }
 
-void game::CombatUIPanel::setupPatternSlotContent(dzemikk::GameObject* patternGO,
-                                                  PatternUIEntry& uiEntry,
+void game::CombatUIPanel::setupPatternSlotContent(game::CombatUIPanel::PatternPoolObject& obj,
                                                   const HexPattern& pattern, uint32_t usageCount) {
     const std::string patternName = buildPatternName(pattern);
-
-    for (auto* child : patternGO->getChildren()) {
-
-        if (child->getName() == "Button_Text") {
-            setupPatternName(child, patternName);
-        } else if (child->getName() == "Count") {
-            setupCountText(child, usageCount, uiEntry);
-        } else if (child->getName() == "HexHolder") {
-            createPatternPreview(child, pattern);
-        } else if (child->getName() == "Empty") {
-            auto* renderer = child->getComponent<dzemikk::ImageRenderer>();
-            glm::vec4 color = getPatternBaseColor(pattern.getType());
-            renderer->setColor({color.r, color.g, color.b, 1.0F});
-        }
-    }
-}
-
-void game::CombatUIPanel::setupPatternName(dzemikk::GameObject* object,
-                                           const std::string& patternName) {
-    auto* text = object->getComponent<dzemikk::UITextRenderer>();
-
-    if (text) {
-        text->text = patternName;
-    }
-}
-
-void game::CombatUIPanel::setupCountText(dzemikk::GameObject* countRoot, uint32_t usageCount,
-                                         PatternUIEntry& uiEntry) {
-    for (auto* child : countRoot->getChildren()) {
-
-        if (child->getName() != "Text_Count") {
-            continue;
-        }
-
-        auto* text = child->getComponent<dzemikk::UITextRenderer>();
-
-        if (!text) {
-            continue;
-        }
-
-        text->text = std::to_string(usageCount);
-        uiEntry.countText = text;
-    }
+    obj.nameText->text = patternName;
+    obj.countText->text = std::to_string(usageCount);
+    createPatternPreview(obj, pattern);
+    glm::vec4 color = getPatternBaseColor(pattern.getType());
+    obj.borderRenderer->setColor({color.r, color.g, color.b, 1.0F});
 }
 
 std::vector<size_t> game::CombatUIPanel::getAvailablePatternIndices() const {
@@ -615,48 +567,44 @@ std::vector<size_t> game::CombatUIPanel::getAvailablePatternIndices() const {
     return result;
 }
 
-void game::CombatUIPanel::addPatternSlot(const PatternComponent::PatternEntry& entry) {
-    const size_t index = _uiEntries.size();
-    createPatternSlot(entry, index);
-
-    if (auto* grid = _patternsContainer->getComponent<dzemikk::GridLayout>()) {
-        grid->rebuild();
-    }
-}
-
 void game::CombatUIPanel::setEngine(dzemikk::Engine* engine) {
     _engine = engine;
 }
 
 void game::CombatUIPanel::onMouseScrolled(dzemikk::MouseScrolledEvent& e) {
-    if (_mode != Mode::AvailablePatterns)
+    if (_mode != Mode::AvailablePatterns) {
         return;
+    }
 
-    if (!isMouseOverPanel())
+    if (!isMouseOverPanel()) {
         return;
+    }
 
-    if (!_patterns)
+    if (!_patterns) {
         return;
+    }
 
     const auto& patterns = _patterns->getPatterns();
     const size_t total = patterns.size();
 
-    if (total <= MAX_VISIBLE_PATTERNS)
+    if (total <= kMaxVisiblePatterns) {
         return;
-
-    constexpr size_t SCROLL_STEP = 2;
-
-    if (e.GetYOffset() < 0) {
-        _firstVisiblePatternIndex += SCROLL_STEP;
-    } else if (e.GetYOffset() > 0) {
-        if (_firstVisiblePatternIndex >= SCROLL_STEP)
-            _firstVisiblePatternIndex -= SCROLL_STEP;
-        else
-            _firstVisiblePatternIndex = 0;
     }
 
-    // ?? KLUCZ: clamp tylko do realnego koñca listy
-    const size_t maxStartIndex = total > 0 ? total - 1 : 0;
+    constexpr size_t scrollStep = 2;
+
+    if (e.GetYOffset() < 0) {
+        _firstVisiblePatternIndex += scrollStep;
+    } else if (e.GetYOffset() > 0) {
+        if (_firstVisiblePatternIndex >= scrollStep) {
+            _firstVisiblePatternIndex -= scrollStep;
+        } else {
+            _firstVisiblePatternIndex = 0;
+        }
+    }
+
+    // ?? KLUCZ: clamp tylko do realnego koï¿½ca listy
+    const size_t maxStartIndex = total > 0 ? total - kMaxVisiblePatterns : 0;
 
     _firstVisiblePatternIndex = std::clamp(_firstVisiblePatternIndex, size_t(0), maxStartIndex);
 
@@ -668,23 +616,25 @@ float game::CombatUIPanel::calculateScrollHandleY() const {
     const auto& patterns = _patterns->getPatterns();
 
     const int total = static_cast<int>(patterns.size());
-    const int visible = MAX_VISIBLE_PATTERNS;
+    const int visible = kMaxVisiblePatterns;
 
-    if (total <= visible)
+    if (total <= visible) {
         return _scrollHandleMaxY;
+    }
 
     const int maxStart = total - visible;
 
     float t = static_cast<float>(_firstVisiblePatternIndex) / static_cast<float>(maxStart);
 
-    t = std::clamp(t, 0.0f, 1.0f);
+    t = std::clamp(t, 0.0F, 1.0F);
 
-    return _scrollHandleMaxY + t * (_scrollHandleMinY - _scrollHandleMaxY);
+    return _scrollHandleMaxY + (t * (_scrollHandleMinY - _scrollHandleMaxY));
 }
 
 void game::CombatUIPanel::updateScrollHandle() {
-    if (!_scrollHandle)
+    if (!_scrollHandle) {
         return;
+    }
 
     auto* rt = _scrollHandle->rectTransform();
     auto pos = rt->getPosition();
@@ -696,11 +646,11 @@ void game::CombatUIPanel::updateScrollHandle() {
 bool game::CombatUIPanel::isMouseOverPanel() const {
     const glm::vec2 mouse = _engine->getInput()->GetMousePosition();
 
-    constexpr float minX = 20.0f;
-    constexpr float maxX = 320.0f;
+    constexpr float minX = 20.0F;
+    constexpr float maxX = 320.0F;
 
-    constexpr float minY = 250.0f;
-    constexpr float maxY = 900.0f;
+    constexpr float minY = 250.0F;
+    constexpr float maxY = 900.0F;
 
     return (mouse.x >= minX && mouse.x <= maxX && mouse.y >= minY && mouse.y <= maxY);
 }

@@ -1,6 +1,8 @@
 #ifndef GAME_COMBAT_UI_PANEL_H
 #define GAME_COMBAT_UI_PANEL_H
 
+#include "ecs/components/ui/uiTextRenderer.h"
+#include "ecs/gameobject.h"
 #include "enemySystem/patternComponent.h"
 
 #include <assetManager/assetmanager.h>
@@ -14,7 +16,6 @@ class Engine;
 }
 
 namespace game {
-
 /**
  * @brief UI panel used to display combat patterns.
  *
@@ -25,21 +26,21 @@ namespace game {
 class CombatUIPanel : public dzemikk::MonoBehaviour {
   public:
     /**
-     * @brief UI elements associated with a single pattern.
+     * @brief UI elements associated with a pooled pattern slot.
+     *
+     * Used to store references to UI components of a pattern slot
+     * for later reuse when refreshing the panel.
      */
-    struct PatternUIEntry {
-
-        /** Index of the represented pattern. */
-        size_t patternIndex = 0;
-
-        /** Root object of the UI entry. */
-        dzemikk::GameObject* root = nullptr;
-
-        /** Button used to select the pattern. */
+    struct PatternPoolObject {
         dzemikk::UIButton* button = nullptr;
-
-        /** Text displaying remaining count or usage information. */
+        dzemikk::GameObject* root = nullptr;
         dzemikk::UITextRenderer* countText = nullptr;
+        dzemikk::UITextRenderer* nameText = nullptr;
+        dzemikk::GameObject* previewContainer = nullptr;
+        dzemikk::ImageRenderer* borderRenderer = nullptr;
+        size_t patternIndex = 0;
+        bool used = false;
+        std::vector<std::pair<dzemikk::GameObject* /*hex preview*/, bool /*used*/>> hexPool;
     };
 
     /**
@@ -63,45 +64,27 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
      * @brief Rebuilds the panel contents.
      */
     void refresh(bool enableChildren = false);
-
-    /**
-     * @brief Removes all generated UI entries.
-     */
-    void clear();
-
     /**
      * @brief Sets the source of pattern data.
      */
     void setPatternsComponent(PatternComponent* patterns);
-
     /**
      * @brief Sets the asset manager used for prefab loading.
      */
     void setAssetManager(dzemikk::AssetManager* assetManager);
-
     /**
      * @brief Sets the parent canvas for generated UI.
      */
     void setCanvas(dzemikk::GameObject* canvas);
-
     /**
      * @brief Updates visual state of all entries.
      */
-    void refreshVisuals();
-    /**
-     * @brief Creates the panel UI hierarchy.
-     */
     void buildUI();
-
-    void addPatternSlot(const PatternComponent::PatternEntry& entry);
-
     /**
      * @brief Refreshes displayed counts.
      */
     void refreshCounts();
-
     void setHideEmptyPatterns(bool value);
-
     void setEngine(dzemikk::Engine* engine);
 
   private:
@@ -109,48 +92,45 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
      * @brief Creates a UI slot for a pattern.
      */
     void createPatternSlot(const PatternComponent::PatternEntry& entry, size_t index);
-
     /**
      * @brief Creates a visual preview of a hex pattern.
      */
-    void createPatternPreview(dzemikk::GameObject* parent, const HexPattern& pattern);
-
+    void createPatternPreview(PatternPoolObject& obj, const HexPattern& pattern);
     /**
      * @brief Builds a user-friendly pattern name.
      */
     static std::string buildPatternName(const HexPattern& pattern);
-
     /**
      * @brief Returns the base color associated with a pattern type.
      */
     static glm::vec4 getPatternBaseColor(HexPattern::Type type);
-
     [[nodiscard]] std::string typeName() const override;
-
     /**
      * @brief Changes panel display mode.
      */
     void setMode(Mode mode);
-
     /**
      * @brief Returns the displayed count for a pattern entry.
      */
     [[nodiscard]] int32_t getPatternCount(const PatternComponent::PatternEntry& entry) const;
-
     /**
      * @brief Applies usage-based tinting to a color.
      */
     static glm::vec4 applyUsageTint(glm::vec4 base, uint32_t count);
+    /**
+     * @brief Registers button click/hover/unhover actions once per pooled slot.
+     *
+     * Actions are bound to a fixed pool slot and read patternIndex at click time,
+     * so they stay correct when the slot is reused for different patterns.
+     */
+    void setupButtonActions(PatternPoolObject& obj, size_t poolIndex);
 
     /**
-     * @brief Configures button behavior and visual style.
+     * @brief Configures button visual style.
      *
-     * Registers click actions when the panel is interactive and
-     * applies the appropriate visual state colors.
+     * Applies the appropriate visual state colors. Does not register actions.
      */
-    void setupButton(dzemikk::UIButton* button, size_t index, const std::string& actionId,
-                     const glm::vec4& color);
-
+    void setupButton(PatternPoolObject& obj, const glm::vec4& color);
     /**
      * @brief Creates a pattern slot instance from the slot prefab.
      *
@@ -160,7 +140,6 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
      * @return Root object of the created slot.
      */
     dzemikk::GameObject* createPatternSlotObject();
-
     /**
      * @brief Returns enemy usage count for a pattern.
      *
@@ -171,87 +150,53 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
      * @return Number of times the pattern has been used.
      */
     [[nodiscard]] uint32_t getUsageCount(const PatternComponent::PatternEntry& entry) const;
-
     /**
      * @brief Populates a pattern slot with texts and preview visuals.
      *
      * Updates the pattern name, usage/count display and creates
      * the hex preview representation.
      */
-    void setupPatternSlotContent(dzemikk::GameObject* patternGO, PatternUIEntry& uiEntry,
-                                 const HexPattern& pattern, uint32_t usageCount);
-
-    /**
-     * @brief Sets the display name of a pattern slot.
-     *
-     * @param object UI object containing the text renderer.
-     * @param patternName Human-readable pattern name.
-     */
-    static void setupPatternName(dzemikk::GameObject* object, const std::string& patternName);
-
-    /**
-     * @brief Updates the usage/count text of a pattern slot.
-     *
-     * Stores the discovered text renderer inside the UI entry
-     * for later updates.
-     *
-     * @param countRoot Parent object containing the count text.
-     * @param usageCount Value to display.
-     * @param uiEntry Associated UI entry.
-     */
-    static void setupCountText(dzemikk::GameObject* countRoot, uint32_t usageCount,
-                               PatternUIEntry& uiEntry);
+    void setupPatternSlotContent(PatternPoolObject& obj, const HexPattern& pattern,
+                                 uint32_t usageCount);
 
     [[nodiscard]] std::vector<size_t> getAvailablePatternIndices() const;
 
     void onMouseScrolled(dzemikk::MouseScrolledEvent& e);
-    float calculateScrollHandleY() const;
+    [[nodiscard]] float calculateScrollHandleY() const;
     void updateScrollHandle();
-    bool isMouseOverPanel() const;
+    [[nodiscard]] bool isMouseOverPanel() const;
 
     /** Source of pattern data. */
     PatternComponent* _patterns = nullptr;
-
     /** Asset manager used for prefab loading. */
     dzemikk::AssetManager* _assetManager = nullptr;
-
     /** Parent canvas. */
     dzemikk::GameObject* _canvas = nullptr;
-
     /** Container holding generated entries. */
     dzemikk::GameObject* _patternsContainer = nullptr;
-
     /** Current panel mode. */
     Mode _mode = Mode::AvailablePatterns;
-
     /** Pattern slot prefab. */
     dzemikk::AssetHandle<nlohmann::json> _patternSlotPrefab;
-
     /** Hex preview prefab. */
     dzemikk::AssetHandle<nlohmann::json> _hexUIPrefab;
-
-    /** Generated UI entries. */
-    std::vector<PatternUIEntry> _uiEntries;
-
     /** Whether pattern buttons can be interacted with. */
     bool _isClickable = false;
-
     bool _hideEmptyPatterns = false;
 
-    size_t _firstVisiblePatternIndex = 0;
+    // --- Pooling ---
+    std::vector<PatternPoolObject> _patternPool;
 
-    uint64_t _scrollListenerId = 0;
-
-    static constexpr size_t PATTERNS_PER_ROW = 2;
-    static constexpr size_t MAX_VISIBLE_PATTERNS = 8;
+    static constexpr size_t kPatternsPerRow = 2;
+    static constexpr size_t kMaxVisiblePatterns = 8;
 
     dzemikk::Engine* _engine = nullptr;
 
+    size_t _firstVisiblePatternIndex = 0;
+    uint64_t _scrollListenerId = 0;
     dzemikk::GameObject* _scrollHandle = nullptr;
-    float _scrollHandleMinY = -240.0f;
-    float _scrollHandleMaxY = 240.0f;
+    float _scrollHandleMinY = -240.0F;
+    float _scrollHandleMaxY = 240.0F;
 };
-
 } // namespace game
-
 #endif
