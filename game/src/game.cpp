@@ -366,10 +366,16 @@ void Game::startGame() {
         "ui.menu.fromcheckpoint");
 
     dzemikk::UIActionRegistry::get().registerAction(
+        [sceneManager, creditsShared](const dzemikk::UIEvent&) {
+            sceneManager->setActiveScene(creditsShared);
+        },
+        "ui.menu.credits");
+
+    dzemikk::UIActionRegistry::get().registerAction(
         [sceneManager, settingsShared](const dzemikk::UIEvent&) {
             sceneManager->setActiveScene(settingsShared);
         },
-        "ui.menu.credits");
+        "ui.menu.settings");
 
     dzemikk::UIActionRegistry::get().registerAction(
         [this](const dzemikk::UIEvent&) { _engine->exit(); }, "ui.menu.exit");

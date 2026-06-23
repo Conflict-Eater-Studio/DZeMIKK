@@ -88,7 +88,67 @@
         {
             "children": [
                 {
-                    "children": [],
+                    "children": [
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "817301f0-0d2d-4693-9227-00f8f2ce627f",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        1880.0,
+                                        1040.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        0.0,
+                                        0.1411764770746231,
+                                        0.2549019753932953,
+                                        0.5882353186607361
+                                    ],
+                                    "id": "769f4a33-09ac-407a-abeb-c24e212ed16b",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "d8bc6280-f6bb-4486-80aa-4f3bd7d203d0",
+                            "name": "Empty",
+                            "tags": []
+                        }
+                    ],
                     "components": [
                         {
                             "anchorMax": [
@@ -130,14 +190,14 @@
                         },
                         {
                             "color": [
-                                0.0,
-                                0.0,
-                                0.0,
+                                1.0,
+                                1.0,
+                                1.0,
                                 1.0
                             ],
                             "id": "66cea5db-ba42-40a2-96ec-b60884a680fa",
                             "materialPath": "shaders/quad",
-                            "texture": "",
+                            "texture": "textures/Menu wirtualnej rzeczywistosci.png",
                             "type": "ImageRenderer"
                         }
                     ],
@@ -1717,8 +1777,8 @@
                                 {
                                     "color": [
                                         0.0,
-                                        0.0,
-                                        0.0
+                                        0.1411764770746231,
+                                        0.2549019753932953
                                     ],
                                     "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                     "horizontalAlign": 1,
@@ -1872,8 +1932,8 @@
                                 {
                                     "color": [
                                         0.0,
-                                        0.0,
-                                        0.0
+                                        0.1411764770746231,
+                                        0.2549019753932953
                                     ],
                                     "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                     "horizontalAlign": 1,
@@ -2027,8 +2087,8 @@
                                 {
                                     "color": [
                                         0.0,
-                                        0.0,
-                                        0.0
+                                        0.1411764770746231,
+                                        0.2549019753932953
                                     ],
                                     "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                     "horizontalAlign": 1,

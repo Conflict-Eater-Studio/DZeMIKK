@@ -270,6 +270,7 @@
                                         1.0
                                     ],
                                     "id": "8528741f-6fee-4bb7-a955-e68f12c4e103",
+                                    "interactable": true,
                                     "normalColor": [
                                         1.0,
                                         1.0,
@@ -424,6 +425,7 @@
                                         1.0
                                     ],
                                     "id": "4ef4cec5-3687-473f-b09e-7b079d99b1f5",
+                                    "interactable": true,
                                     "normalColor": [
                                         1.0,
                                         1.0,
@@ -578,6 +580,7 @@
                                         1.0
                                     ],
                                     "id": "7c7db54f-a5ac-46f8-8107-5ce3cc6645d7",
+                                    "interactable": true,
                                     "normalColor": [
                                         1.0,
                                         1.0,
@@ -732,6 +735,7 @@
                                         1.0
                                     ],
                                     "id": "00757974-d924-438b-8da0-7647f4e1f44e",
+                                    "interactable": true,
                                     "normalColor": [
                                         1.0,
                                         1.0,
@@ -763,6 +767,161 @@
                             "id": "0cd6a0d9-186d-47a4-bc77-3cfe160de153",
                             "name": "ExitButton",
                             "tags": []
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "anchorMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "id": "f4512430-63fd-4770-95af-2d0b98f0b4df",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 2
+                                        },
+                                        {
+                                            "color": [
+                                                0.0,
+                                                0.24705882370471954,
+                                                0.4431372582912445
+                                            ],
+                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                            "horizontalAlign": 1,
+                                            "id": "92ad67ba-d6f3-441f-a21b-b6e2d775f0a2",
+                                            "scale": 0.75,
+                                            "text": "SETTINGS",
+                                            "type": "UITextRenderer",
+                                            "verticalAlign": 1
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "ecea4e0e-b09c-4d8e-8f62-1b790295b788",
+                                    "name": "Button_Text",
+                                    "tags": []
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "b776aaa7-2150-42f4-aa6f-6cfeb29767d2",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        390.0,
+                                        -226.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        256.0,
+                                        256.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "disabledColor": [
+                                        0.501960813999176,
+                                        0.501960813999176,
+                                        0.501960813999176,
+                                        1.0
+                                    ],
+                                    "events": {
+                                        "click": [
+                                            "ui.menu.settings"
+                                        ]
+                                    },
+                                    "hoverColor": [
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        1.0
+                                    ],
+                                    "id": "8a86b703-e8f0-4cf5-9b1a-49b96481102b",
+                                    "interactable": true,
+                                    "normalColor": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "pressedColor": [
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        1.0
+                                    ],
+                                    "type": "UIButton"
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "id": "4b02aea8-99f2-443f-b768-ec52f04b2712",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "textures/hex-large.png",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "7ddd734d-9290-4dd1-b4b3-709d62bfc835",
+                            "name": "SettingsButton",
+                            "tags": []
                         }
                     ],
                     "components": [
@@ -789,8 +948,8 @@
                                 0.5
                             ],
                             "position": [
-                                250.0,
-                                117.0
+                                140.1999969482422,
+                                58.5
                             ],
                             "rotation": 0.0,
                             "scale": [
@@ -836,8 +995,8 @@
                                 0.5
                             ],
                             "position": [
-                                250.0,
-                                0.0
+                                141.5,
+                                190.89999389648438
                             ],
                             "rotation": 0.0,
                             "scale": [
@@ -845,8 +1004,8 @@
                                 1.0
                             ],
                             "size": [
-                                960.0,
-                                540.0
+                                1440.0,
+                                810.0
                             ],
                             "type": "RectTransform",
                             "zIndex": 0

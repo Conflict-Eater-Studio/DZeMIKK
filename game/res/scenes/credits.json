@@ -503,7 +503,7 @@
                                     "horizontalAlign": 1,
                                     "id": "e8d88ccc-74a8-4188-830c-1d5173f61975",
                                     "scale": 0.800000011920929,
-                                    "text": "Jakub Bukowski - Graphic Designer",
+                                    "text": "Jakub Bukowski - Graphic and Audio Designer",
                                     "type": "UITextRenderer",
                                     "verticalAlign": 1
                                 }
@@ -810,6 +810,7 @@
                                 1.0
                             ],
                             "id": "320a9982-05ad-49a6-bafc-20c8a0c26ec6",
+                            "interactable": true,
                             "normalColor": [
                                 1.0,
                                 1.0,
