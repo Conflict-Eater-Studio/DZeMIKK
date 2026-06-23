@@ -932,7 +932,7 @@ void Game::resetExplorationInputState() {
     if (lastHitRenderer && lastHitRenderer->isValid()) {
         auto it = baseMaterials.find(lastHitRenderer);
         if (it != baseMaterials.end()) {
-            lastHitRenderer->setMaterial(0, it->second);
+            //lastHitRenderer->setMaterial(0, it->second);
         }
     }
 
