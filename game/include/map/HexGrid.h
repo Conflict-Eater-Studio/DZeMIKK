@@ -128,6 +128,9 @@ class HexGrid {
                               const boost::uuids::uuid& chunkId, const HexPattern& pattern);
     void cleanChunkBorders(const boost::uuids::uuid& chunkId);
     void removeUnreachableHexes();
+    [[nodiscard]] HexChunk* findBridgeHexOwningChunk(const boost::uuids::uuid& parentChunkId,
+                                                     const boost::uuids::uuid& chunkId,
+                                                     const HexCoord& hex);
 
     // --- Data ---
     unsigned int _seed;
