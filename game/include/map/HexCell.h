@@ -1,6 +1,7 @@
 #ifndef GAME_GRIDCELL_H
 #define GAME_GRIDCELL_H
 
+#include "boost/uuid/detail/nil_uuid.hpp"
 #include "map/HexCoord.h"
 
 #include <boost/uuid.hpp>
@@ -29,7 +30,7 @@ class HexCell {
         BlockingBridge
     };
     enum class GenState : uint8_t { Normal, Blocked, Protected };
-    enum class VisualState : uint8_t { None, Path, Signpost, LightUpEnemyBattleHex};
+    enum class VisualState : uint8_t { None, Path, Signpost, LightUpEnemyBattleHex };
 
     HexCell() : _coord(0, 0) {}
     HexCell(HexCoord coord, State state, Type type, GenState genState = GenState::Normal,
@@ -184,8 +185,13 @@ class HexCell {
     }
 
     HexCoord _coord{0, 0};
-    // 0-7: State, 8-15: Type, 16-23: GenState, 24: Dirty, 25: Checkpoint, 26: CheckpointUsed, 27:
-    // SaveDirty
+    // 0-7: State,
+    // 8-15: Type,
+    // 16-23: GenState,
+    // 24: Dirty,
+    // 25: Checkpoint,
+    // 26: CheckpointUsed,
+    // 27: SaveDirty
     uint32_t _flags{0};
     Entity* _entity = nullptr;
     VisualState _visualState = VisualState::None;
@@ -196,13 +202,15 @@ class HexCell {
 
 // NOLINTBEGIN(readability-identifier-naming)
 inline void to_json(nlohmann::json& j, const game::HexCell& cell) {
-    j = nlohmann::json{{"coord", cell.getCoord()},
-                       {"state", static_cast<uint8_t>(cell.getState())},
-                       {"type", static_cast<uint8_t>(cell.getType())},
-                       {"height", cell.getHeight()},
-                       {"checkpoint", cell.isCheckpoint()},
-                       {"checkpointUsed", cell.isCheckpointUsed()}};
-}
+    j = nlohmann::json{
+        {"coord", cell.getCoord()},
+        {"state", static_cast<uint8_t>(cell.getState())},
+        {"type", static_cast<uint8_t>(cell.getType())},
+        {"height", cell.getHeight()},
+        {"checkpoint", cell.isCheckpoint()},
+        {"checkpointUsed", cell.isCheckpointUsed()},
+    };
+};
 
 inline void from_json(const nlohmann::json& j, game::HexCell& cell) {
     cell = game::HexCell(j.at("coord").get<game::HexCoord>(),

@@ -13,10 +13,10 @@
 #include "player/inventory.h"
 #include "player/playerPatternComponent.h"
 #include "stateMachine/combatState.h"
-#include <totem/totemDialogEntity.h>
 
 #include <audio/audioManager.h>
 #include <audio/sound.h>
+#include <totem/totemDialogEntity.h>
 #include <totem/totemEntity.h>
 #include <ui/combatUIPanel.h>
 
@@ -54,9 +54,12 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                                                                 taskS);
 
                 if (!_hasSeenHealingItem) {
-                    auto rp = _game->getCurrentScene().get()->findGameObjectByName("Reveal_Pattern_Found");
-                    auto rh = _game->getCurrentScene().get()->findGameObjectByName("Reveal_Hex_Found");
-                    auto bh = _game->getCurrentScene().get()->findGameObjectByName("Bonus_Hex_Found");
+                    auto rp = _game->getCurrentScene().get()->findGameObjectByName(
+                        "Reveal_Pattern_Found");
+                    auto rh =
+                        _game->getCurrentScene().get()->findGameObjectByName("Reveal_Hex_Found");
+                    auto bh =
+                        _game->getCurrentScene().get()->findGameObjectByName("Bonus_Hex_Found");
                     auto h = _game->getCurrentScene().get()->findGameObjectByName("Heal_Found");
 
                     rp->enabled(false);
@@ -70,7 +73,8 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                 break;
             }
             case ItemEntity::ItemType::RevealPattern: {
-                getOwner()->getComponent<Inventory>()->addItem(ItemEntity::ItemType::RevealPattern, 5);
+                getOwner()->getComponent<Inventory>()->addItem(ItemEntity::ItemType::RevealPattern,
+                                                               5);
                 ent->consume();
 
                 playerEntitySound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
@@ -80,7 +84,7 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                 taskS.context = sCtx;
                 taskS.onLoad = playerEntitySound::onSFXLoad;
                 _game->getEngine()->getAssetManager()->getAsync("audio/prime_uzycie_itemu-Fmin.wav",
-                    taskS);
+                                                                taskS);
 
                 if (!_hasSeenRevealPatternItem) {
                     auto rp = _game->getCurrentScene().get()->findGameObjectByName(
@@ -143,7 +147,7 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
                         this->getOwner()->getScene()->findGameObjectByName("Player_Panel");
                     auto* combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
                     combatPlayerPanel->refresh();
-                    //combatPlayerPanel->addPatternSlot(*pattern);
+                    // combatPlayerPanel->addPatternSlot(*pattern);
 
                     playerEntitySound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
                     dzemikk::AssetManager::AssetTask<dzemikk::Sound,
@@ -220,27 +224,42 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
         getCell()->getCoord().toWorldPosition(1.0F, 0.1F, getCell()->getHeight()) +
         glm::vec3(0.0F, 0.4F, 0.0F));
 
-    if (getCell()->isCheckpoint() && !getCell()->isCheckpointUsed()) {
-        auto* worldGo = _game->getCurrentScene().get()->findGameObjectByTag("World");
-        if (worldGo) {
-            auto* world = worldGo->getComponent<World>();
-            if (world) {
-                getCell()->setCheckpointUsed(true);
-                world->saveToFile("./world.json");
+    auto bridges = _game->getHexGrid()->getBridges();
+    auto bridge = std::ranges::find_if(bridges.begin(), bridges.end(), [this](const auto& pair) {
+        const auto& bridgeInfo = pair.second;
+        return bridgeInfo.hexes.contains(getCell().get());
+    });
+
+    bool isCheckpoint = getCell()->isCheckpoint();
+
+    if (isCheckpoint && bridge != bridges.end()) {
+        bool bridgeCheckpointUsed = std::ranges::any_of(
+            bridge->second.hexes, [](const auto& hex) { return hex->isCheckpointUsed(); });
+
+        if (!bridgeCheckpointUsed) {
+            std::ranges::for_each(bridge->second.hexes,
+                                  [](const auto& hex) { hex->setCheckpointUsed(true); });
+
+            auto* worldGo = _game->getCurrentScene().get()->findGameObjectByTag("World");
+            if (worldGo) {
+                auto* world = worldGo->getComponent<World>();
+                if (world) {
+                    world->saveToFile("./world.json");
 #if DZEMIKK_DEV_TOOLS
-                spdlog::info("[PlayerEntity] Checkpoint reached. Saved world data");
+                    spdlog::info("[PlayerEntity] Checkpoint reached. Saved world data");
 #endif
+                } else {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::warn("[PlayerEntity] World GameObject found, but World component is not. "
+                                 "Cannot save");
+#endif
+                }
             } else {
 #if DZEMIKK_DEV_TOOLS
-                spdlog::warn("[PlayerEntity] World GameObject found, but World component is not. "
-                             "Cannot save");
+                spdlog::warn("[PlayerEntity] Checkpoint reached but World GameObject is not found. "
+                             "Cannot save.");
 #endif
             }
-        } else {
-#if DZEMIKK_DEV_TOOLS
-            spdlog::warn("[PlayerEntity] Checkpoint reached but World GameObject is not found. "
-                         "Cannot save.");
-#endif
         }
     }
 }

@@ -118,47 +118,42 @@ void HexGrid::removeOverlaps(HexChunk& chunk) const {
     }
 }
 
+HexChunk* HexGrid::findBridgeHexOwningChunk(const boost::uuids::uuid& parentChunkId,
+                                            const boost::uuids::uuid& chunkId,
+                                            const HexCoord& hex) {
+    if (_chunks[parentChunkId]->contains(hex)) {
+        return _chunks[parentChunkId].get();
+    }
+    if (_chunks[chunkId]->contains(hex)) {
+        return _chunks[chunkId].get();
+    }
+    for (const auto& [otherId, otherChunk] : _chunks) {
+        if (otherId == parentChunkId || otherId == chunkId) {
+            continue;
+        }
+        if (otherChunk->contains(hex)) {
+            return otherChunk.get();
+        }
+    }
+    return nullptr;
+}
+
 void HexGrid::makeBridge(const boost::uuids::uuid& parentChunkId, const boost::uuids::uuid& chunkId,
                          const std::pair<HexCoord, HexCoord>& closest) {
     auto hexes = HexCoord::hexesOnLine(closest.first, closest.second);
 
     BridgeInfo bridgeInfo{.parentId = parentChunkId, .childId = chunkId, .hexes = {}};
 
-    bool addCheckpoint = true;
     for (const auto& hex : hexes) {
-        HexChunk* owningChunk = nullptr;
-
-        if (_chunks[parentChunkId]->contains(hex)) {
-            owningChunk = _chunks[parentChunkId].get();
-        } else if (_chunks[chunkId]->contains(hex)) {
-            owningChunk = _chunks[chunkId].get();
-        } else {
-            for (const auto& [otherId, otherChunk] : _chunks) {
-                if (otherId == parentChunkId || otherId == chunkId) {
-                    continue;
-                }
-                if (otherChunk->contains(hex)) {
-                    owningChunk = otherChunk.get();
-                    break;
-                }
-            }
-        }
-
-        if (owningChunk != nullptr) {
+        if (auto* owningChunk = findBridgeHexOwningChunk(parentChunkId, chunkId, hex)) {
             owningChunk->getCell(hex)->setGenState(HexCell::GenState::Protected);
             owningChunk->getCell(hex)->setType(HexCell::Type::Bridge);
-            if (addCheckpoint) {
-                owningChunk->getCell(hex)->setCheckpoint(true);
-                addCheckpoint = false;
-            }
+            owningChunk->getCell(hex)->setCheckpoint(true);
             bridgeInfo.hexes.insert(owningChunk->getCell(hex).get());
         } else {
             auto cell = std::make_shared<HexCell>(hex, HexCell::State::Empty, HexCell::Type::Bridge,
                                                   HexCell::GenState::Protected);
-            if (addCheckpoint) {
-                cell->setCheckpoint(true);
-                addCheckpoint = false;
-            }
+            cell->setCheckpoint(true);
             bridgeInfo.hexes.insert(cell.get());
             _chunks[chunkId]->assignCell(cell);
         }
@@ -200,24 +195,7 @@ void HexGrid::placeBlockingPattern(const boost::uuids::uuid& parentChunkId,
             continue;
         }
 
-        HexChunk* owningChunk = nullptr;
-        if (_chunks[parentChunkId]->contains(hex)) {
-            owningChunk = _chunks[parentChunkId].get();
-        } else if (_chunks[chunkId]->contains(hex)) {
-            owningChunk = _chunks[chunkId].get();
-        } else {
-            for (const auto& [otherId, otherChunk] : _chunks) {
-                if (otherId == parentChunkId || otherId == chunkId) {
-                    continue;
-                }
-                if (otherChunk->contains(hex)) {
-                    owningChunk = otherChunk.get();
-                    break;
-                }
-            }
-        }
-
-        if (owningChunk != nullptr) {
+        if (auto* owningChunk = findBridgeHexOwningChunk(parentChunkId, chunkId, hex)) {
             owningChunk->getCell(hex)->setGenState(HexCell::GenState::Protected);
             owningChunk->getCell(hex)->setType(HexCell::Type::Bridge);
         } else {
@@ -225,6 +203,15 @@ void HexGrid::placeBlockingPattern(const boost::uuids::uuid& parentChunkId,
                 hex, HexCell::State::Empty, HexCell::Type::Bridge, HexCell::GenState::Protected));
         }
     }
+
+    BridgeInfo bridgeInfo{.parentId = parentChunkId, .childId = chunkId, .hexes = {}};
+    for (const auto& hex : bridgeLine) {
+        if (auto cell = getCell(hex)) {
+            cell->setCheckpoint(true);
+            bridgeInfo.hexes.insert(cell.get());
+        }
+    }
+    _bridges[{parentChunkId, chunkId}] = std::move(bridgeInfo);
 
     _blockingPatterns.emplace(chunkId, BlockingPatternInfo{.pattern = pattern,
                                                            .blockedChunkId = chunkId,
@@ -540,9 +527,8 @@ const std::unordered_map<HexGrid::BridgeId, HexGrid::BridgeInfo>& HexGrid::getBr
 
 void HexGrid::lockBridge(const BridgeId& bridgeId, const boost::uuids::uuid& enemyId) {
 #if DZEMIKK_DEV_TOOLS
-    spdlog::info("[HexGrid::lockBridge] Bridge {{ {}, {} }}, enemy {}", 
-                 boost::uuids::to_string(bridgeId.first), 
-                 boost::uuids::to_string(bridgeId.second),
+    spdlog::info("[HexGrid::lockBridge] Bridge {{ {}, {} }}, enemy {}",
+                 boost::uuids::to_string(bridgeId.first), boost::uuids::to_string(bridgeId.second),
                  boost::uuids::to_string(enemyId));
     bool bridgeExists = _bridges.contains(bridgeId);
     spdlog::info("[HexGrid::lockBridge] Bridge exists: {}", bridgeExists);
@@ -550,7 +536,8 @@ void HexGrid::lockBridge(const BridgeId& bridgeId, const boost::uuids::uuid& ene
     if (_bridges.contains(bridgeId)) {
 #if DZEMIKK_DEV_TOOLS
         size_t currentBlockingCount = _bridges[bridgeId].blockingEnemies.size();
-        spdlog::info("[HexGrid::lockBridge] Current blocking enemies count: {}", currentBlockingCount);
+        spdlog::info("[HexGrid::lockBridge] Current blocking enemies count: {}",
+                     currentBlockingCount);
 #endif
         if (_bridges[bridgeId].blockingEnemies.empty()) {
 #if DZEMIKK_DEV_TOOLS
@@ -568,19 +555,20 @@ void HexGrid::lockBridge(const BridgeId& bridgeId, const boost::uuids::uuid& ene
                 }
             }
 #if DZEMIKK_DEV_TOOLS
-            spdlog::info("[HexGrid::lockBridge] Changed {} hexes from Bridge to BlockingBridge", changedCount);
+            spdlog::info("[HexGrid::lockBridge] Changed {} hexes from Bridge to BlockingBridge",
+                         changedCount);
 #endif
         }
 
         _bridges[bridgeId].blockingEnemies.insert(enemyId);
 #if DZEMIKK_DEV_TOOLS
-        spdlog::info("[HexGrid::lockBridge] After insert, blocking enemies count: {}", 
+        spdlog::info("[HexGrid::lockBridge] After insert, blocking enemies count: {}",
                      _bridges[bridgeId].blockingEnemies.size());
 #endif
     } else {
 #if DZEMIKK_DEV_TOOLS
-        spdlog::warn("[HexGrid::lockBridge] Bridge {{ {}, {} }} not found!", 
-                     boost::uuids::to_string(bridgeId.first), 
+        spdlog::warn("[HexGrid::lockBridge] Bridge {{ {}, {} }} not found!",
+                     boost::uuids::to_string(bridgeId.first),
                      boost::uuids::to_string(bridgeId.second));
 #endif
     }
@@ -588,9 +576,8 @@ void HexGrid::lockBridge(const BridgeId& bridgeId, const boost::uuids::uuid& ene
 
 void HexGrid::unlockBridge(const BridgeId& bridgeId, const boost::uuids::uuid& enemyId) {
 #if DZEMIKK_DEV_TOOLS
-    spdlog::info("[HexGrid::unlockBridge] Bridge {{ {}, {} }}, enemy {}", 
-                 boost::uuids::to_string(bridgeId.first), 
-                 boost::uuids::to_string(bridgeId.second),
+    spdlog::info("[HexGrid::unlockBridge] Bridge {{ {}, {} }}, enemy {}",
+                 boost::uuids::to_string(bridgeId.first), boost::uuids::to_string(bridgeId.second),
                  boost::uuids::to_string(enemyId));
 #endif
     if (_bridges.contains(bridgeId) && _bridges[bridgeId].blockingEnemies.contains(enemyId)) {
@@ -598,7 +585,8 @@ void HexGrid::unlockBridge(const BridgeId& bridgeId, const boost::uuids::uuid& e
 
         if (_bridges[bridgeId].blockingEnemies.empty()) {
 #if DZEMIKK_DEV_TOOLS
-            spdlog::info("[HexGrid::unlockBridge] No more blocking enemies, changing {} hexes from BlockingBridge to Bridge", 
+            spdlog::info("[HexGrid::unlockBridge] No more blocking enemies, changing {} hexes from "
+                         "BlockingBridge to Bridge",
                          _bridges[bridgeId].hexes.size());
 #endif
             for (const auto& cell : _bridges[bridgeId].hexes) {
@@ -614,8 +602,8 @@ void HexGrid::unlockBridge(const BridgeId& bridgeId, const boost::uuids::uuid& e
 #if DZEMIKK_DEV_TOOLS
         bool bridgeExists = _bridges.contains(bridgeId);
         bool enemyInSet = bridgeExists && _bridges[bridgeId].blockingEnemies.contains(enemyId);
-        spdlog::info("[HexGrid::unlockBridge] Bridge exists: {}, enemy in set: {}", 
-                     bridgeExists, enemyInSet);
+        spdlog::info("[HexGrid::unlockBridge] Bridge exists: {}, enemy in set: {}", bridgeExists,
+                     enemyInSet);
 #endif
     }
 }
