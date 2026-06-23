@@ -5760,7 +5760,8 @@
                                     ],
                                     "events": {
                                         "click": [
-                                            "Confirm_Round"
+                                            "Confirm_Round",
+                                            "Confirm_Round_AttackAnim"
                                         ]
                                     },
                                     "hoverColor": [
