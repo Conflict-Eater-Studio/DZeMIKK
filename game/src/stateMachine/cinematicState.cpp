@@ -1,17 +1,17 @@
 #include "stateMachine/cinematicState.h"
-#include <iostream>
 
-#include "game.h"
 #include "camera/cameraController.h"
+#include "game.h"
 
-#include <ecs/gameobject.h>
-#include <ecs/scene.h>
-#include <ecs/components/ui/imageRenderer.h>
-#include <ecs/components/ui/uiTextRenderer.h>
-#include <fmod/fmod.hpp>
+#include <assetManager/assetmanager.h>
 #include <assetManager/soundHandler.h>
 #include <audio/audioManager.h>
-#include <assetManager/assetmanager.h>
+#include <ecs/components/ui/imageRenderer.h>
+#include <ecs/components/ui/uiTextRenderer.h>
+#include <ecs/gameobject.h>
+#include <ecs/scene.h>
+#include <fmod/fmod.hpp>
+#include <iostream>
 
 namespace cinematicSound {
 FMOD::Channel* combatFMODChannel = nullptr;
@@ -23,15 +23,12 @@ struct SoundInitContext {
 void onMusicLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
     combatFMODChannel =
         ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::Music, true);
-    ctx.audioManager->getMusicGroup()->setVolume(0.1F);
 }
 
 void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
     ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
-    ctx.audioManager->getSFXGroup()->setVolume(0.5F);
 }
-} // namespace combatSound
-
+} // namespace cinematicSound
 
 void game::CinematicState::onEnter() {
     _game->resetExplorationInputState();
@@ -145,7 +142,8 @@ void game::CinematicState::onUpdate(float dt) {
             _game->getCurrentScene()
                 .get()
                 ->findGameObjectByName("Cinematic")
-                ->findChildByName("Text")->enabled(false);
+                ->findChildByName("Text")
+                ->enabled(false);
         }
         break;
     }
@@ -180,8 +178,7 @@ void game::CinematicState::onUpdate(float dt) {
                 return;
 
             auto* img = go->getComponent<dzemikk::ImageRenderer>();
-            img->setColor({0.0F, 0.0F, 0.0F, 0.0F
-        });
+            img->setColor({0.0F, 0.0F, 0.0F, 0.0F});
             _game->getCurrentScene().get()->findGameObjectByName("Cinematic")->enabled(true);
             _game->getCurrentScene()
                 .get()
@@ -227,7 +224,8 @@ void game::CinematicState::onUpdate(float dt) {
 }
 
 void game::CinematicState::applyFade(float alpha) {
-    auto* go = _game->getCurrentScene().get()->findGameObjectByName("Cinematic")->findChildByName("BG");
+    auto* go =
+        _game->getCurrentScene().get()->findGameObjectByName("Cinematic")->findChildByName("BG");
 
     if (!go)
         return;
@@ -253,4 +251,3 @@ void game::CinematicState::typeText(float dt) {
         }
     }
 }
-

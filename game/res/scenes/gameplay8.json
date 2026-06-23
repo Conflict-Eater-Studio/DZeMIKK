@@ -847,6 +847,7 @@
                                 1.0
                             ],
                             "id": "7d14ee30-4e29-41eb-b58e-a3199cdad351",
+                            "interactable": true,
                             "normalColor": [
                                 1.0,
                                 1.0,
@@ -1001,6 +1002,7 @@
                                 1.0
                             ],
                             "id": "4829c27f-2901-4383-adb0-2c57489f043f",
+                            "interactable": true,
                             "normalColor": [
                                 1.0,
                                 1.0,
@@ -3114,6 +3116,7 @@
                                                                 1.0
                                                             ],
                                                             "id": "09f6470f-a3a0-43fd-b7d3-e1f5c3e1046b",
+                                                            "interactable": false,
                                                             "maxValue": 1.0,
                                                             "minValue": 0.0,
                                                             "step": 0.009999999776482582,
@@ -5485,6 +5488,7 @@
                                         1.0
                                     ],
                                     "id": "755d619f-0160-4f6d-87b0-cbe1fc681604",
+                                    "interactable": true,
                                     "normalColor": [
                                         0.9372549057006836,
                                         0.7490196228027344,
@@ -5883,6 +5887,7 @@
                                                         1.0
                                                     ],
                                                     "id": "8a65400b-0564-4d6d-baf2-6251cad60076",
+                                                    "interactable": false,
                                                     "maxValue": 1.0,
                                                     "minValue": 0.0,
                                                     "step": 0.009999999776482582,
@@ -6381,6 +6386,7 @@
                                                         0.7843137383460999
                                                     ],
                                                     "id": "fbdcbdbb-c166-4ea6-9271-9acddf16b679",
+                                                    "interactable": true,
                                                     "normalColor": [
                                                         0.5686274766921997,
                                                         0.5686274766921997,
@@ -6778,6 +6784,7 @@
                                                         0.7843137383460999
                                                     ],
                                                     "id": "8e6a8f9e-25ec-4aa2-98f9-03f8fc156407",
+                                                    "interactable": true,
                                                     "normalColor": [
                                                         0.5686274766921997,
                                                         0.5686274766921997,
@@ -7817,6 +7824,7 @@
                                                 1.0
                                             ],
                                             "id": "efe16f50-c55e-4c67-b3c4-746b95e90133",
+                                            "interactable": true,
                                             "normalColor": [
                                                 1.0,
                                                 1.0,
@@ -8032,6 +8040,7 @@
                                                 1.0
                                             ],
                                             "id": "2b834145-aa82-45ae-be74-8cda32cc4462",
+                                            "interactable": true,
                                             "normalColor": [
                                                 1.0,
                                                 1.0,
@@ -10443,6 +10452,7 @@
                                         1.0
                                     ],
                                     "id": "b01eed12-68b0-408b-b768-3f09a4df165c",
+                                    "interactable": true,
                                     "normalColor": [
                                         0.9372549057006836,
                                         0.7490196228027344,
@@ -12808,6 +12818,7 @@
                                         1.0
                                     ],
                                     "id": "19f6311e-d926-4067-a53a-12b8c164e435",
+                                    "interactable": true,
                                     "normalColor": [
                                         0.9372549057006836,
                                         0.7490196228027344,
@@ -15232,6 +15243,7 @@
                                         1.0
                                     ],
                                     "id": "b74a3d4d-48a3-49cc-a7e9-55ec4d7767e3",
+                                    "interactable": true,
                                     "normalColor": [
                                         0.9372549057006836,
                                         0.7490196228027344,
@@ -16740,6 +16752,7 @@
                                         1.0
                                     ],
                                     "id": "8fbb8be0-326d-4d66-9597-5a4169598398",
+                                    "interactable": true,
                                     "normalColor": [
                                         0.9372549057006836,
                                         0.7490196228027344,

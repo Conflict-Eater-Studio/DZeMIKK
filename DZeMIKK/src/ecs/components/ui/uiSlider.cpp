@@ -42,7 +42,10 @@ constexpr float kValueEpsilon = 1e-6F;
 
 void UISlider::processPointer(const glm::vec2& point, bool isDown, bool pressedThisFrame,
                               bool releasedThisFrame, double scrollDelta) {
-    if (!_isInteractable) return;
+    if (!isInteractable()) {
+        return;
+    }
+
     setPointerDown(isDown);
 
     setPointerInside(getHandleSpriteRenderer()->getRectTransform() != nullptr
@@ -135,9 +138,8 @@ void UISlider::onValueChanged(float newValue) {
 
     auto* fillRect = _fillSpriteRenderer->getRectTransform();
     fillRect->setPivot({0.0f, 0.5f});
-    fillRect->setPosition(
-        {-_backgroundSpriteRenderer->getOwner()->rectTransform()->getSize().x / 2,
-         fillRect->getPosition().y});
+    fillRect->setPosition({-_backgroundSpriteRenderer->getOwner()->rectTransform()->getSize().x / 2,
+                           fillRect->getPosition().y});
 
     if (fillRect != nullptr) {
         float t = (_value - _minValue) / (_maxValue - _minValue);

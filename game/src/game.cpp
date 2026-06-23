@@ -36,6 +36,7 @@
 #include "renderer/shader.h"
 #include "scripts/world/world.h"
 #include "scripts/world/worldHex.h"
+#include "settings.h"
 #include "utils/perlin.h"
 
 #include <GLFW/glfw3.h>
@@ -44,6 +45,7 @@
 #include <memory>
 #include <unordered_set>
 #include <utility>
+#include <variant>
 
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
@@ -72,6 +74,7 @@
 #include "ui/combatUIPanel.h"
 #include "ui/logoComponent.h"
 #include "ui/uIPulseEffect.h"
+#include "visuals/depthOfFieldEffect.h"
 
 #include <animation/animationstatemachine.h>
 #include <audio/audioManager.h>
@@ -83,9 +86,6 @@
 #include <healthSystem.h>
 #include <iostream>
 #include <random>
-#include "scripts/world/worldVisualManager.h"
-#include "visuals/depthOfFieldEffect.h"
-
 
 static std::mt19937 rng{std::random_device{}()};
 
@@ -157,14 +157,56 @@ void Game::startGame() {
     _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay8.json");
     _menuScene = assetManager->get<dzemikk::Scene>("scenes/menu3.json");
     _creditsScene = assetManager->get<dzemikk::Scene>("scenes/credits.json");
+    _settingsScene = assetManager->get<dzemikk::Scene>("scenes/settings.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     std::shared_ptr<dzemikk::Scene> menuShared(_menuScene.get(), [](dzemikk::Scene*) {});
     std::shared_ptr<dzemikk::Scene> creditsShared(_creditsScene.get(), [](dzemikk::Scene*) {});
+    std::shared_ptr<dzemikk::Scene> settingsShared(_settingsScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
     sceneManager->loadScene(menuShared);
     sceneManager->loadScene(creditsShared);
+    sceneManager->loadScene(settingsShared);
     sceneManager->setActiveScene(menuShared);
+
+    game::Settings::get().setAudioSliders(
+        {.masterVolume = settingsShared->findGameObjectByName("MasterSlider")
+                             ->getComponent<dzemikk::UISlider>(),
+         .musicVolume =
+             settingsShared->findGameObjectByName("MusicSlider")->getComponent<dzemikk::UISlider>(),
+         .ambientVolume = settingsShared->findGameObjectByName("AmbientSlider")
+                              ->getComponent<dzemikk::UISlider>(),
+         .sfxVolume =
+             settingsShared->findGameObjectByName("SFXSlider")->getComponent<dzemikk::UISlider>(),
+         .uiVolume =
+             settingsShared->findGameObjectByName("UISlider")->getComponent<dzemikk::UISlider>()});
+    game::Settings::get().setColorGradingSliders(
+        {.exposure = settingsShared->findGameObjectByName("ExposureSlider")
+                         ->getComponent<dzemikk::UISlider>(),
+         .contrast = settingsShared->findGameObjectByName("ContrastSlider")
+                         ->getComponent<dzemikk::UISlider>(),
+         .saturation = settingsShared->findGameObjectByName("SaturationSlider")
+                           ->getComponent<dzemikk::UISlider>(),
+         .temperature = settingsShared->findGameObjectByName("TemperatureSlider")
+                            ->getComponent<dzemikk::UISlider>(),
+         .tint = settingsShared->findGameObjectByName("TintSlider")
+                     ->getComponent<dzemikk::UISlider>()});
+
+    const auto applyAudioVolumes = [this]() {
+        auto* audioManager = _engine->getAudioManager();
+        if (audioManager == nullptr) {
+            return;
+        }
+        const auto& audio = game::Settings::get().audio();
+        audioManager->getMasterGroup()->setVolume(audio.masterVolume);
+        audioManager->getMusicGroup()->setVolume(audio.musicVolume);
+        audioManager->getAmbientGroup()->setVolume(audio.ambientVolume);
+        audioManager->getSFXGroup()->setVolume(audio.sfxVolume);
+        audioManager->getUIGroup()->setVolume(audio.uiVolume);
+    };
+    game::Settings::get().setOnAudioChanged(applyAudioVolumes);
+    game::Settings::get().read();
+    applyAudioVolumes();
 
     auto* btnResetInteractable = _menuScene.get()
                                      ->findGameObjectByName("ResetButton")
@@ -175,7 +217,7 @@ void Game::startGame() {
         btnResetInteractable->setInteractable(true);
     }
 
-    auto logo = _menuScene.get()->findGameObjectByName("Logo");
+    auto* logo = _menuScene.get()->findGameObjectByName("Logo");
     logo->addComponent<game::LogoComponent>();
 
     _mainScene.get()->findGameObjectByName("UI_RevealPatternBtn")->addComponent<UIPulseEffect>();
@@ -324,8 +366,8 @@ void Game::startGame() {
         "ui.menu.fromcheckpoint");
 
     dzemikk::UIActionRegistry::get().registerAction(
-        [sceneManager, creditsShared](const dzemikk::UIEvent&) {
-            sceneManager->setActiveScene(creditsShared);
+        [sceneManager, settingsShared](const dzemikk::UIEvent&) {
+            sceneManager->setActiveScene(settingsShared);
         },
         "ui.menu.credits");
 
@@ -363,7 +405,185 @@ void Game::startGame() {
         },
         "item.panel.exit");
 
-    _playerGO->getComponent<game::PlayerCombatAnimationController>()->setGameStateMachine(_stateMachine);
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().audio().masterVolume = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical(
+                        "[Game] Bad variant access in master volume slider callback: {}",
+                        err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.volume.master");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().audio().musicVolume = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical(
+                        "[Game] Bad variant access in music volume slider callback: {}",
+                        err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.volume.music");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().audio().ambientVolume = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical(
+                        "[Game] Bad variant access in ambient volume slider callback: {}",
+                        err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.volume.ambient");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().audio().sfxVolume = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in sfx volume slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.volume.sfx");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().audio().uiVolume = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in ui volume slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.volume.ui");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().colorGrading().exposure = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in exposure slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.cg.exposure");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().colorGrading().contrast = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in contrast slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.cg.contrast");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().colorGrading().saturation = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in saturation slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.cg.saturation");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().colorGrading().temperature = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in temperature slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.cg.temperature");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().colorGrading().tint = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in tint slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.cg.tint");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) { game::Settings::get().save(); }, "settings.btn.save");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this, settingsShared](const dzemikk::UIEvent& e) { game::Settings::get().saveDefaults(); },
+        "settings.btn.defaults");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this, sceneManager, menuShared](const dzemikk::UIEvent& e) {
+            sceneManager->setActiveScene(menuShared);
+        },
+        "settings.btn.back");
+
+    _playerGO->getComponent<game::PlayerCombatAnimationController>()->setGameStateMachine(
+        _stateMachine);
+
     setupInputCallbacks();
 }
 
@@ -408,41 +628,17 @@ void Game::setupMainCamera() {
     auto* cameraGO = _mainScene.get()->createGameObject("Camera");
 
     _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
-    auto fxaaProcessEffect = cameraGO->addComponent<dzemikk::OutlinePostProcessEffect>();
-    fxaaProcessEffect->setEnabled(false);
-    fxaaProcessEffect->setShader(
-        _engine->getAssetManager()->get<dzemikk::Shader>("shaders/outline"));
-    fxaaProcessEffect->setPriority(1);
-    fxaaProcessEffect->setColor(glm::vec3(1.0F, 0.0F, 0.0F));
-    _engine->getInput()->OnKeyPressed.addListener(
-        [this, fxaaProcessEffect](dzemikk::KeyPressedEvent& event) {
-            if (event.GetKeyCode() == GLFW_KEY_F1) {
-                _engine->getAssetManager()->reload<dzemikk::Shader>("shaders/outline");
-                _engine->getAssetManager()->reload<dzemikk::Shader>("shaders/grain");
-            }
-            if (event.GetKeyCode() == GLFW_KEY_3) {
-                fxaaProcessEffect->setEnabled(false);
-            }
-            if (event.GetKeyCode() == GLFW_KEY_4) {
-                fxaaProcessEffect->setEnabled(false);
-            }
-        });
-    auto postProccessEffect2 = cameraGO->addComponent<dzemikk::PostProcessEffect>();
-    postProccessEffect2->setEnabled(false);
-    postProccessEffect2->setShader(
-        _engine->getAssetManager()->get<dzemikk::Shader>("shaders/grayscale"));
-    postProccessEffect2->setPriority(2);
-
-    auto colorGrading = cameraGO->addComponent<dzemikk::ColorGradingEffect>();
-    colorGrading->setEnabled(false);
+    auto* colorGrading = cameraGO->addComponent<dzemikk::ColorGradingEffect>();
+    colorGrading->setEnabled(true);
     colorGrading->setShader(
         _engine->getAssetManager()->get<dzemikk::Shader>("shaders/color_grading"));
     colorGrading->setPriority(0);
-    colorGrading->setExposure(0.1f);
-    colorGrading->setContrast(1.1f);
-    colorGrading->setSaturation(1.15f);
-    colorGrading->setTemperature(0.1f);
-    colorGrading->setTint(-0.05f);
+    colorGrading->setExposure(0.0F);
+    colorGrading->setContrast(1.0F);
+    colorGrading->setSaturation(1.0F);
+    colorGrading->setTemperature(0.0F);
+    colorGrading->setTint(0.0F);
+    game::Settings::get().setColorGradingEffect(colorGrading);
 
     auto antiAliasing = cameraGO->addComponent<dzemikk::AntiAliasingEffect>();
     antiAliasing->setEnabled(true);
@@ -451,10 +647,9 @@ void Game::setupMainCamera() {
 
     auto postProccessDoF = cameraGO->addComponent<dzemikk::DepthOfFieldEffect>();
     postProccessDoF->setEnabled(false);
-    postProccessDoF->setShader(
-        _engine->getAssetManager()->get<dzemikk::Shader>("shaders/dof"));
+    postProccessDoF->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/dof"));
     postProccessDoF->setPriority(8);
-    
+
     auto postProccessEffect = cameraGO->addComponent<dzemikk::PostProcessEffect>();
     postProccessEffect->setEnabled(true);
     postProccessEffect->setShader(
@@ -767,7 +962,7 @@ void Game::setupInputCallbacks() {
                 lastHighlightedEnemy = nullptr;
             }
 
-            clearAnim(); 
+            clearAnim();
         } else if (currentEnemy) {
             lastHighlightedEnemy = currentEnemy;
         }
@@ -812,7 +1007,7 @@ void Game::setupInputCallbacks() {
                 animEnemy = nullptr;
                 animCells.clear();
             }
-        }   
+        }
 
         constexpr float hoverStrength = 0.5F;
 
@@ -934,7 +1129,7 @@ void Game::resetExplorationInputState() {
     for (auto* c : animCells) {
         if (c) {
             c->setVisualState(game::HexCell::VisualState::None);
-            //c->setDirty(true);
+            // c->setDirty(true);
         }
     }
 
@@ -952,9 +1147,11 @@ void Game::setupPlayer() {
     inventory->setGame(this);
 
     auto* animator = playerGO->getComponent<dzemikk::Animator>();
-    auto* playerCombatAnimationController = playerGO->addComponent<game::PlayerCombatAnimationController>();
+    auto* playerCombatAnimationController =
+        playerGO->addComponent<game::PlayerCombatAnimationController>();
     playerCombatAnimationController->setPlayerAnimator(animator);
-    auto skeleton = playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
+    auto skeleton =
+        playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
 
     dzemikk::AnimationClip* idleClip = nullptr;
     dzemikk::AnimationClip* forward30Clip = nullptr;
@@ -984,7 +1181,6 @@ void Game::setupPlayer() {
     forward90Clip->setLoop(false);
     forward90Clip->setPlaybackSpeed(10.0f);
     forward90Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
-
 
     forward150Clip = skeleton->getClip("60");
     forward150Clip->setLoop(false);

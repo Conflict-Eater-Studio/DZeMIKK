@@ -11,6 +11,8 @@ const char* toString(dzemikk::UIEventType type) {
         return "Enter";
     case dzemikk::UIEventType::Exit:
         return "Exit";
+    case dzemikk::UIEventType::ValueChanged:
+        return "ValueChanged";
     default:
         return "Unknown";
     }
@@ -25,6 +27,8 @@ dzemikk::UIEventType fromIndex(int i) {
         return UIEventType::Enter;
     case 2:
         return UIEventType::Exit;
+    case 3:
+        return UIEventType::ValueChanged;
     default:
         return UIEventType::Click;
     }

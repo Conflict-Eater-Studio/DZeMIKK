@@ -7,13 +7,12 @@
 #include "gameStateMachine.h"
 #include "map/ItemEntity.h"
 #include "stateMachine/combatState.h"
+#include "ui/uIPulseEffect.h"
 
 #include <assetManager/assetmanager.h>
 #include <audio/audioManager.h>
 #include <audio/sound.h>
 #include <iostream>
-
-#include "ui/uIPulseEffect.h"
 
 namespace inventorySound {
 struct SoundInitContext {
@@ -22,7 +21,6 @@ struct SoundInitContext {
 
 void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
     ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
-    ctx.audioManager->getSFXGroup()->setVolume(0.5F);
 }
 } // namespace inventorySound
 

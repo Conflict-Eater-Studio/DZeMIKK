@@ -109,6 +109,7 @@ set(GAME_HEADERS
     ${INC_DIR}/dialog/dialog.h
     ${INC_DIR}/dialog/dialogEntity.h
     ${INC_DIR}/visuals/depthOfFieldEffect.h
+    ${INC_DIR}/settings.h
 )
 
 add_executable(game

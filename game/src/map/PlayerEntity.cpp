@@ -27,7 +27,6 @@ struct SoundInitContext {
 
 void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
     ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
-    ctx.audioManager->getSFXGroup()->setVolume(0.5F);
 }
 } // namespace playerEntitySound
 
@@ -250,8 +249,9 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
 #endif
                 } else {
 #if DZEMIKK_DEV_TOOLS
-                    spdlog::warn("[PlayerEntity] World GameObject found, but World component is not. "
-                                 "Cannot save");
+                    spdlog::warn(
+                        "[PlayerEntity] World GameObject found, but World component is not. "
+                        "Cannot save");
 #endif
                 }
             } else {

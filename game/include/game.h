@@ -74,6 +74,7 @@ class Game {
     dzemikk::AssetHandle<dzemikk::Scene> _mainScene;
     dzemikk::AssetHandle<dzemikk::Scene> _menuScene;
     dzemikk::AssetHandle<dzemikk::Scene> _creditsScene;
+    dzemikk::AssetHandle<dzemikk::Scene> _settingsScene;
     game::HexGrid* _hexGrid = nullptr;
     dzemikk::GameObject* _worldGO = nullptr;
     dzemikk::GameObject* _playerGO = nullptr;
