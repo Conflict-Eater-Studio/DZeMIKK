@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "c883bc2e-660c-4865-b21b-93002f3d6ebb",
+                        "id": "b4ab3ea3-08ba-41ba-985c-888d3a92b612",
                         "position": [
                             -1.2000000476837158,
                             17.0,
@@ -36,15 +36,15 @@
                         "type": "PointLight"
                     }
                 ],
-                "enabled": false,
-                "id": "0a2cf269-528c-4bd6-971d-79bd6906e3a6",
+                "enabled": true,
+                "id": "3e5c130b-a859-4ab2-9fbc-01b200464898",
                 "name": "Light",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "59cebaca-4425-44b6-8cdd-9a2f5eb6549d",
+                "id": "46ef203c-77fe-4740-a209-4100d6d69d6a",
                 "position": [
                     0.0,
                     0.30000001192092896,
@@ -64,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "cf07919a-8eec-4dcd-9f7c-ad477f94442a",
+                "id": "50a8d132-5f36-4bb1-81ae-08612c4180ca",
                 "materials": [
                     {
                         "albedoColor": [
@@ -280,7 +280,7 @@
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "3ae34759-b5ce-463b-b47c-4cb099695194",
+                "id": "0e417b58-0103-48d6-979d-1bdf949531b9",
                 "parameters": {},
                 "stateMachine": [
                     {
@@ -288,19 +288,19 @@
                         "transitions": []
                     },
                     {
-                        "name": "Death",
+                        "name": "Attack",
                         "transitions": []
                     },
                     {
-                        "name": "Attack",
+                        "name": "Death",
                         "transitions": []
                     }
                 ],
                 "type": "Animator"
             }
         ],
-        "enabled": false,
-        "id": "6c5ff0be-1fef-446d-a64a-3f7a344aec20",
+        "enabled": true,
+        "id": "59907e31-d673-487d-9bd8-cf3828bc006a",
         "name": "Balanced ",
         "tags": []
     }
