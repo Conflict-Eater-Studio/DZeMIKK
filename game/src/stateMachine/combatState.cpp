@@ -305,20 +305,6 @@ void game::CombatState::startNewTurn() {
     auto* worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
     auto* world = worldGO->getComponent<World>();
 
-    for (auto* cell : _currentEnemy->getTerritory()) {
-        auto* transform = world->getHexTransformByCell(*cell);
-        if (!transform) {
-            continue;
-        }
-
-        auto* mesh = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
-        if (!mesh) {
-            continue;
-        }
-
-        mesh->setMaterial(0, _enemyBattleHexMaterial);
-    }
-
     auto* enemyManagerGO = _game->getCurrentScene().get()->findGameObjectByName("EnemyManager");
     auto* patternComponent = enemyManagerGO->getComponent<EnemyPatternComponent>();
     patternComponent->clearUsage();
@@ -345,15 +331,23 @@ void game::CombatState::startNewTurn() {
         }
     }
 
+    std::unordered_set<HexCoord> usedCoords;
+
+    for (const auto& pattern : _plannedPatterns) {
+        for (auto* cell : pattern.cells) {
+            if (cell) {
+                usedCoords.insert(cell->getCoord());
+            }
+        }
+    }
+
     for (auto* cell : _currentEnemy->getTerritory()) {
 
         if (!cell) {
             continue;
         }
 
-        if (usedCells.contains(cell)) {
-            continue;
-        }
+        bool used = usedCoords.contains(cell->getCoord());
 
         auto* transform = world->getHexTransformByCell(*cell);
         if (!transform) {
@@ -365,7 +359,11 @@ void game::CombatState::startNewTurn() {
             continue;
         }
 
-        mesh->setMaterial(0, _emptyEnemyBattleHexMaterial);
+        if (used) {
+            mesh->setMaterial(0, _enemyBattleHexMaterial);
+        } else {
+            mesh->setMaterial(0, _emptyEnemyBattleHexMaterial);
+        }
     }
 
     auto* enemyPanel = _game->getCurrentScene().get()->findGameObjectByName("Enemy_Panel");

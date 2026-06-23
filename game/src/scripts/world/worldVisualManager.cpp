@@ -18,20 +18,11 @@ void game::WorldVisualManager::start() {
 }
 
 void game::WorldVisualManager::init() {
-    spdlog::warn("[WorldVisualManager] start() called");
-
     if (_world == nullptr) {
-        spdlog::error("[WorldVisualManager] World is nullptr");
         return;
     }
 
     auto chunks = _world->getVisualHexesByChunk();
-
-    for (const auto& [chunkId, hexes] : chunks) {
-
-        spdlog::info("Chunk {} has {} visual hexes", chunkId,
-                     hexes.size());
-    }
 
     _cache["Tree_big"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Tree_big.prefab");
     _cache["Tree_big_with_branches"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Tree_big_with_branches.prefab");
@@ -57,13 +48,11 @@ void game::WorldVisualManager::init() {
 void game::WorldVisualManager::spawnPrefabOnChunk(const std::string& chunkName,
                                                   const std::string& prefabKey) {
     if (!_world) {
-        spdlog::error("[WorldVisualManager] World is nullptr");
         return;
     }
 
     auto prefabIt = _cache.find(prefabKey);
     if (prefabIt == _cache.end()) {
-        spdlog::error("[WorldVisualManager] Prefab not found: {}", prefabKey);
         return;
     }
 
@@ -71,7 +60,6 @@ void game::WorldVisualManager::spawnPrefabOnChunk(const std::string& chunkName,
 
     auto chunkIt = chunks.find(chunkName);
     if (chunkIt == chunks.end()) {
-        spdlog::error("[WorldVisualManager] Chunk not found: {}", chunkName);
         return;
     }
 
@@ -118,9 +106,6 @@ void game::WorldVisualManager::spawnPrefabOnChunk(const std::string& chunkName,
         go->setName("ChunkSpawn_" + chunkName);        
         hex->setState(HexCell::State::Prop);
     }
-
-    spdlog::info("[WorldVisualManager] Spawned '{}' on chunk '{}' ({} hexes)", prefabKey, chunkName,
-                 hexes.size());
 }
 
 void game::WorldVisualManager::spawnForestChunk(const std::string& chunkName) {
@@ -278,9 +263,6 @@ void game::WorldVisualManager::spawnForestChunk(const std::string& chunkName) {
             spawned++;
         }
     }
-
-    spdlog::info("[WorldVisualManager] Forest chunk '{}' spawned -> {} objects", chunkName,
-                 spawned);
 }
 
 void game::WorldVisualManager::generatePathBetweenChunks(const std::string& chunkA,
@@ -862,10 +844,6 @@ void game::WorldVisualManager::spawnCampChunk(const std::string& chunkName) {
         selectedHexes.push_back(hex);
         spawned++;
     }
-
-    spdlog::info(
-        "[WorldVisualManager] Camp spawned in chunk '{}' (tipis: {}, spawned: {}, ring: {}-{})",
-        chunkName, tipiCount, spawned, minRing, maxRing);
 }
 
 void game::WorldVisualManager::showChunkBlockers(const std::string& blockedChunkName,
@@ -895,7 +873,6 @@ void game::WorldVisualManager::showChunkBlockers(const std::string& blockedChunk
     if (blockingBridges.empty())
         return;
 
-    // ===== target center =====
     glm::vec3 targetCenter(0.f);
     int targetCount = 0;
 
@@ -916,7 +893,6 @@ void game::WorldVisualManager::showChunkBlockers(const std::string& blockedChunk
 
     targetCenter /= (float)targetCount;
 
-    // ===== source center (blocked chunk) =====
     glm::vec3 sourceCenter(0.f);
     int sourceCount = 0;
 
@@ -939,7 +915,6 @@ void game::WorldVisualManager::showChunkBlockers(const std::string& blockedChunk
 
     glm::vec3 dir = glm::normalize(targetCenter - sourceCenter);
 
-    // ===== filtr: tylko mosty "w stronê target chunk" =====
     std::vector<HexCell*> validBridges;
 
     for (auto* bridge : blockingBridges) {
@@ -949,15 +924,13 @@ void game::WorldVisualManager::showChunkBlockers(const std::string& blockedChunk
 
         glm::vec3 toBridge = glm::normalize(t->getPosition() - sourceCenter);
 
-        // tylko mosty w kierunku target chunk
         if (glm::dot(toBridge, dir) > 0.0f)
             validBridges.push_back(bridge);
     }
 
     if (validBridges.empty())
-        validBridges = blockingBridges; // fallback
+        validBridges = blockingBridges;
 
-    // sort po dystansie do target
     std::sort(validBridges.begin(), validBridges.end(),
               [this, &targetCenter](HexCell* a, HexCell* b) {
                   auto* ta = _world->getHexTransformByCell(*a);

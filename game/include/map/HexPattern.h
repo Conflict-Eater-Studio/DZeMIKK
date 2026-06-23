@@ -51,9 +51,6 @@ inline void from_json(const nlohmann::json& j, HexPattern& pat) {
         throw std::runtime_error("Invalid JSON");
     }
 
-    spdlog::info("[HexPatterm] Deserializing pattern with type {} and effect strength {}",
-                 j["type"].get<uint8_t>(), j["effectStrenght"].get<float>());
-
     std::vector<HexCoord> hexes = j["hexes"].get<std::vector<HexCoord>>();
     pat = HexPattern(hexes, static_cast<HexPattern::Type>(j["type"].get<uint8_t>()),
                      j["effectStrenght"].get<float>());

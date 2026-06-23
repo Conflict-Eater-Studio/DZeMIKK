@@ -1,6 +1,5 @@
 #include "assetManager/meshBuilder.h"
 #include <assimp/scene.h>
-#include <iostream>
 
 dzemikk::MeshBuilder::RawStaticMesh dzemikk::MeshBuilder::buildStaticMeshRaw(const aiMesh* mesh) {
 
@@ -13,15 +12,6 @@ dzemikk::MeshBuilder::RawStaticMesh dzemikk::MeshBuilder::buildStaticMeshRaw(con
     const auto* texCoords = mesh->mTextureCoords[0];
 
     bool hasUV = mesh->HasTextureCoords(0);
-    std::cout << "Mesh has UV: " << hasUV << std::endl;
-
-    std::cout << "[Mesh Debug] UV channels: " << mesh->GetNumUVChannels() << std::endl;
-
-    if (hasUV && mesh->mTextureCoords[0]) {
-        std::cout << "UV channel 0 exists\n";
-    } else {
-        std::cout << "NO UVs in mesh!\n";
-    }
 
     for (unsigned int v = 0; v < mesh->mNumVertices; ++v) {
 
@@ -134,15 +124,6 @@ std::shared_ptr<dzemikk::StaticMesh> dzemikk::MeshBuilder::buildStaticMesh(const
     const auto* texCoords = aiMesh->mTextureCoords[0];
 
     bool hasUV = aiMesh->HasTextureCoords(0);
-    std::cout << "Mesh has UV: " << hasUV << std::endl;
-
-    std::cout << "[Mesh Debug] UV channels: " << aiMesh->GetNumUVChannels() << std::endl;
-
-    if (hasUV && aiMesh->mTextureCoords[0]) {
-        std::cout << "UV channel 0 exists\n";
-    } else {
-        std::cout << "NO UVs in mesh!\n";
-    }
 
     for (unsigned int v = 0; v < aiMesh->mNumVertices; ++v) {
 
