@@ -939,7 +939,7 @@ void Game::resetExplorationInputState() {
     for (auto* c : animCells) {
         if (c) {
             c->setVisualState(game::HexCell::VisualState::None);
-            c->setDirty(true);
+            //c->setDirty(true);
         }
     }
 
