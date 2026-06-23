@@ -2,6 +2,7 @@
 #define GAME_SETTINGS_H
 
 #pragma once
+#include "ecs/components/colorGradingEffect.h"
 #include "ecs/components/ui/uiSlider.h"
 
 #include <filesystem>
@@ -78,6 +79,15 @@ class Settings {
         dzemikk::UISlider* uiVolume{nullptr};
     };
 
+    struct ColorGrading {
+        ObservableFloat exposure{0.0F};
+        ObservableFloat contrast{1.0F};
+        ObservableFloat saturation{1.0F};
+        ObservableFloat temperature{0.0F};
+        ObservableFloat tint{0.0F};
+        glm::vec3 colorFilter{1.0F};
+    };
+
     Settings(const Settings&) = delete;
     Settings& operator=(const Settings&) = delete;
     Settings(Settings&&) = delete;
@@ -96,6 +106,14 @@ class Settings {
         return _audio;
     }
 
+    [[nodiscard]] ColorGrading& colorGrading() {
+        return _colorGrading;
+    }
+
+    [[nodiscard]] const ColorGrading& colorGrading() const {
+        return _colorGrading;
+    }
+
     void setAudioSliders(const AudioSliders& sliders) {
         _audioSliders = sliders;
         updateAudioSliders();
@@ -103,6 +121,11 @@ class Settings {
 
     void setOnAudioChanged(const std::function<void()>& callback) {
         _onAudioChanged = callback;
+    }
+
+    void setColorGradingEffect(dzemikk::ColorGradingEffect* effect) {
+        _colorGradingEffect = effect;
+        updateColorGrading();
     }
 
     void updateAudioSliders() const {
@@ -123,6 +146,18 @@ class Settings {
         }
     }
 
+    void updateColorGrading() const {
+        if (_colorGradingEffect == nullptr) {
+            return;
+        }
+        _colorGradingEffect->setExposure(_colorGrading.exposure);
+        _colorGradingEffect->setContrast(_colorGrading.contrast);
+        _colorGradingEffect->setSaturation(_colorGrading.saturation);
+        _colorGradingEffect->setTemperature(_colorGrading.temperature);
+        _colorGradingEffect->setTint(_colorGrading.tint);
+        _colorGradingEffect->setColorFilter(_colorGrading.colorFilter);
+    }
+
     void saveDefaults() {
         _audio.masterVolume = 1.0F;
         _audio.musicVolume = 1.0F;
@@ -130,7 +165,15 @@ class Settings {
         _audio.sfxVolume = 1.0F;
         _audio.uiVolume = 1.0F;
 
+        _colorGrading.exposure = 0.0F;
+        _colorGrading.contrast = 1.0F;
+        _colorGrading.saturation = 1.0F;
+        _colorGrading.temperature = 0.0F;
+        _colorGrading.tint = 0.0F;
+        _colorGrading.colorFilter = glm::vec3(1.0F);
+
         updateAudioSliders();
+        updateColorGrading();
         save();
     }
 
@@ -150,7 +193,22 @@ class Settings {
         _audio.sfxVolume = s.value("sfxVolume", 1.0F);
         _audio.uiVolume = s.value("uiVolume", 1.0F);
 
+        if (s.contains("colorGrading")) {
+            const auto& cg = s["colorGrading"];
+            _colorGrading.exposure = cg.value("exposure", 0.1F);
+            _colorGrading.contrast = cg.value("contrast", 1.1F);
+            _colorGrading.saturation = cg.value("saturation", 1.15F);
+            _colorGrading.temperature = cg.value("temperature", 0.1F);
+            _colorGrading.tint = cg.value("tint", -0.05F);
+            if (cg.contains("colorFilter")) {
+                _colorGrading.colorFilter =
+                    glm::vec3(cg["colorFilter"][0].get<float>(), cg["colorFilter"][1].get<float>(),
+                              cg["colorFilter"][2].get<float>());
+            }
+        }
+
         updateAudioSliders();
+        updateColorGrading();
     };
 
     void save() const {
@@ -163,6 +221,17 @@ class Settings {
             {"ambientVolume", _audio.ambientVolume.get()},
             {"sfxVolume", _audio.sfxVolume.get()},
             {"uiVolume", _audio.uiVolume.get()},
+            {"colorGrading",
+             {
+                 {"exposure", _colorGrading.exposure.get()},
+                 {"contrast", _colorGrading.contrast.get()},
+                 {"saturation", _colorGrading.saturation.get()},
+                 {"temperature", _colorGrading.temperature.get()},
+                 {"tint", _colorGrading.tint.get()},
+                 {"colorFilter",
+                  {_colorGrading.colorFilter.x, _colorGrading.colorFilter.y,
+                   _colorGrading.colorFilter.z}},
+             }},
         };
 
         std::ofstream out("settings.json");
@@ -184,6 +253,13 @@ class Settings {
         _audio.sfxVolume.setCallback(onChanged);
         _audio.uiVolume.setCallback(onChanged);
 
+        auto onColorGradingChanged = [this](float) { updateColorGrading(); };
+        _colorGrading.exposure.setCallback(onColorGradingChanged);
+        _colorGrading.contrast.setCallback(onColorGradingChanged);
+        _colorGrading.saturation.setCallback(onColorGradingChanged);
+        _colorGrading.temperature.setCallback(onColorGradingChanged);
+        _colorGrading.tint.setCallback(onColorGradingChanged);
+
         if (!std::filesystem::exists("settings.json")) {
             saveDefaults();
             return;
@@ -195,6 +271,8 @@ class Settings {
 
     Audio _audio;
     AudioSliders _audioSliders;
+    ColorGrading _colorGrading;
+    dzemikk::ColorGradingEffect* _colorGradingEffect{nullptr};
     std::function<void()> _onAudioChanged;
 };
 } // namespace game

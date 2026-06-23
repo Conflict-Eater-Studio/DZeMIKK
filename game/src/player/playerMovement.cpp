@@ -1,8 +1,8 @@
 #include "player/playerMovement.h"
 
+#include "ecs/components/animator.h"
 #include "ecs/gameobject.h"
 #include "ecs/scene.h"
-#include "ecs/components/animator.h"
 #include "game.h"
 #include "gameStateMachine.h"
 #include "player/playerPatternComponent.h"
@@ -18,14 +18,13 @@
 #include "ecs/gameobject.h"
 
 #include <algorithm>
+#include <assetManager/assetHandle.h>
+#include <assetManager/assetmanager.h>
+#include <assetManager/soundHandler.h>
+#include <audio/audioManager.h>
 #include <queue>
 #include <unordered_map>
 #include <unordered_set>
-
-#include <assetManager/assetmanager.h>
-#include <assetManager/assetHandle.h>
-#include <assetManager/soundHandler.h>
-#include <audio/audioManager.h>
 
 namespace walkSound {
 
@@ -35,17 +34,16 @@ struct SoundInitContext {
 
 void onMoveSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
     ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
-    ctx.audioManager->getSFXGroup()->setVolume(0.5F);
 }
-}
+} // namespace walkSound
 
 namespace game {
 
-void PlayerMovement::start() {
-}
+void PlayerMovement::start() {}
 
 void PlayerMovement::update(double deltaTime) {
-    if (!_animator) return;
+    if (!_animator)
+        return;
     if (_path.empty()) {
         _animator->setInt("isMoving", 0);
         return;
@@ -57,38 +55,36 @@ void PlayerMovement::update(double deltaTime) {
         _animator->setInt("isMoving", 0);
         HexGrid::HexCellPtr currentCell = _path[_step - 1];
 
-
         return;
     }
 
     HexGrid::HexCellPtr currentTargetCell = _path[_step % _path.size()];
 
-        if (currentTargetCell->getState() == HexCell::State::Item) {
-            spdlog::info("[PlayerMovement] Player stepped on item");
-            if (_animator->getCurrentState()->getName() != "Pickup") {
-                _animator->play("Pickup");
-            }
-        };
+    if (currentTargetCell->getState() == HexCell::State::Item) {
+        spdlog::info("[PlayerMovement] Player stepped on item");
+        if (_animator->getCurrentState()->getName() != "Pickup") {
+            _animator->play("Pickup");
+        }
+    };
 
-    if (_animator->getCurrentState()->getName() == "Pickup" && !_animator->getCurrentState()->getClip()->isFinished()) {
+    if (_animator->getCurrentState()->getName() == "Pickup" &&
+        !_animator->getCurrentState()->getClip()->isFinished()) {
         return;
     }
 
     _animator->setInt("isMoving", 1);
 
     if (isFallingFinished) {
-        lerpCellTo(currentTargetCell, _playerEntity->getCell()->getHeight(), [this](float progress) {
-            isFallingFinished = false;
-        });
+        lerpCellTo(currentTargetCell, _playerEntity->getCell()->getHeight(),
+                   [this](float progress) { isFallingFinished = false; });
     }
 
     dzemikk::Transform* cellTransform = _world->getHexTransformByCell(*currentTargetCell);
 
     if (_animator->getCurrentState()->getClip()->isFinished()) {
         if (cellTransform) {
-            lerpCellTo(currentTargetCell, currentTargetCell->getHeight(), [this](float progress) {
-                isFallingFinished = true;
-            });
+            lerpCellTo(currentTargetCell, currentTargetCell->getHeight(),
+                       [this](float progress) { isFallingFinished = true; });
 
             if (!_cachedPath.empty()) {
                 _path = _cachedPath;
@@ -97,9 +93,7 @@ void PlayerMovement::update(double deltaTime) {
             }
         }
 
-        walkSound::SoundInitContext sCtx{
-            _game->getEngine()->getAudioManager()
-        };
+        walkSound::SoundInitContext sCtx{_game->getEngine()->getAudioManager()};
         dzemikk::AssetManager::AssetTask<dzemikk::Sound, walkSound::SoundInitContext> taskS;
         taskS.context = sCtx;
         taskS.onLoad = walkSound::onMoveSFXLoad;
@@ -112,18 +106,18 @@ void PlayerMovement::update(double deltaTime) {
         _step++;
     }
 
-
     if (_step < _path.size()) {
-        auto dir = HexCoord::dir(currentTargetCell->getCoord() - _playerEntity->getCell()->getCoord());
+        auto dir =
+            HexCoord::dir(currentTargetCell->getCoord() - _playerEntity->getCell()->getCoord());
         if (dir.has_value()) {
             int hexDir = static_cast<int>(dir.value());
             int relativeDir = 3;
             if (hexDir == _playerDir) {
-                _animator->setInt("direction",relativeDir);
-            }else {
+                _animator->setInt("direction", relativeDir);
+            } else {
                 int offset = hexDir - _playerDir;
                 int anim = (relativeDir + offset + 12) % 12;
-                _animator->setInt("direction",  anim);
+                _animator->setInt("direction", anim);
             }
 
             _playerDir = hexDir;
@@ -177,7 +171,8 @@ dzemikk::Animator* PlayerMovement::getAnimator() const {
 void PlayerMovement::setWorld(World* world) {
     _world = world;
 }
-void PlayerMovement::lerpCellTo(const HexGrid::HexCellPtr& cell, float targetY, LerpCallback callback)  {
+void PlayerMovement::lerpCellTo(const HexGrid::HexCellPtr& cell, float targetY,
+                                LerpCallback callback) {
     for (auto& lerp : _cellLerps) {
         if (lerp.cell == cell) {
             if (lerp.targetY == targetY) {

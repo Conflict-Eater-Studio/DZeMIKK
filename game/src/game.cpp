@@ -478,6 +478,86 @@ void Game::startGame() {
         "settings.volume.ui");
 
     dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().colorGrading().exposure = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in exposure slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.cg.exposure");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().colorGrading().contrast = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in contrast slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.cg.contrast");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().colorGrading().saturation = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in saturation slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.cg.saturation");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().colorGrading().temperature = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in temperature slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.cg.temperature");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().colorGrading().tint = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in tint slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.cg.tint");
+
+    dzemikk::UIActionRegistry::get().registerAction(
         [this](const dzemikk::UIEvent& e) { game::Settings::get().save(); }, "settings.btn.save");
 
     dzemikk::UIActionRegistry::get().registerAction(
@@ -537,41 +617,17 @@ void Game::setupMainCamera() {
     auto* cameraGO = _mainScene.get()->createGameObject("Camera");
 
     _mainCamera = cameraGO->addComponent<dzemikk::Camera>();
-    auto fxaaProcessEffect = cameraGO->addComponent<dzemikk::OutlinePostProcessEffect>();
-    fxaaProcessEffect->setEnabled(false);
-    fxaaProcessEffect->setShader(
-        _engine->getAssetManager()->get<dzemikk::Shader>("shaders/outline"));
-    fxaaProcessEffect->setPriority(1);
-    fxaaProcessEffect->setColor(glm::vec3(1.0F, 0.0F, 0.0F));
-    _engine->getInput()->OnKeyPressed.addListener(
-        [this, fxaaProcessEffect](dzemikk::KeyPressedEvent& event) {
-            if (event.GetKeyCode() == GLFW_KEY_F1) {
-                _engine->getAssetManager()->reload<dzemikk::Shader>("shaders/outline");
-                _engine->getAssetManager()->reload<dzemikk::Shader>("shaders/grain");
-            }
-            if (event.GetKeyCode() == GLFW_KEY_3) {
-                fxaaProcessEffect->setEnabled(false);
-            }
-            if (event.GetKeyCode() == GLFW_KEY_4) {
-                fxaaProcessEffect->setEnabled(false);
-            }
-        });
-    auto postProccessEffect2 = cameraGO->addComponent<dzemikk::PostProcessEffect>();
-    postProccessEffect2->setEnabled(false);
-    postProccessEffect2->setShader(
-        _engine->getAssetManager()->get<dzemikk::Shader>("shaders/grayscale"));
-    postProccessEffect2->setPriority(2);
-
-    auto colorGrading = cameraGO->addComponent<dzemikk::ColorGradingEffect>();
-    colorGrading->setEnabled(false);
+    auto* colorGrading = cameraGO->addComponent<dzemikk::ColorGradingEffect>();
+    colorGrading->setEnabled(true);
     colorGrading->setShader(
         _engine->getAssetManager()->get<dzemikk::Shader>("shaders/color_grading"));
     colorGrading->setPriority(0);
-    colorGrading->setExposure(0.1f);
-    colorGrading->setContrast(1.1f);
-    colorGrading->setSaturation(1.15f);
-    colorGrading->setTemperature(0.1f);
-    colorGrading->setTint(-0.05f);
+    colorGrading->setExposure(0.0F);
+    colorGrading->setContrast(1.0F);
+    colorGrading->setSaturation(1.0F);
+    colorGrading->setTemperature(0.0F);
+    colorGrading->setTint(0.0F);
+    game::Settings::get().setColorGradingEffect(colorGrading);
 
     auto antiAliasing = cameraGO->addComponent<dzemikk::AntiAliasingEffect>();
     antiAliasing->setEnabled(true);
