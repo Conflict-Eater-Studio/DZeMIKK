@@ -18,7 +18,6 @@ struct SoundInitContext {
 void onSoundLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
     FMODChannel =
         ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::Music, true);
-    ctx.audioManager->getMusicGroup()->setVolume(0.1F);
 }
 } // namespace explorationStateSound
 

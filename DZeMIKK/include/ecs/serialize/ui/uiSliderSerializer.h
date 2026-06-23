@@ -35,6 +35,7 @@ inline void to_json(nlohmann::json& json, const UISlider& slider) {
                                 style.handleHoverColor[2], style.handleHoverColor[3]};
     json["handlePressedColor"] = {style.handlePressedColor[0], style.handlePressedColor[1],
                                   style.handlePressedColor[2], style.handlePressedColor[3]};
+    json["interactable"] = slider.isInteractable();
 
     auto ea = slider.getEventActions();
     for (const auto& [eventType, actionIds] : ea) {
@@ -94,17 +95,23 @@ inline void from_json(const nlohmann::json& json, UISlider& slider, AssetManager
     style.handlePressedColor = {json["handlePressedColor"][0], json["handlePressedColor"][1],
                                 json["handlePressedColor"][2], json["handlePressedColor"][3]};
 
+    if (json.contains("interactable") && json["interactable"].is_boolean()) {
+        slider.setInteractable(json["interactable"].get<bool>());
+    } else {
+        slider.setInteractable(true);
+    }
+
     std::vector<std::pair<UIEventType, std::string>> events{};
     if (json.contains("events")) {
         for (const auto& [eventKey, actionIdsJson] : json["events"].items()) {
             UIEventType eventType = UIEventType::Click;
-            if (eventKey == "clickActions") {
+            if (eventKey == "click") {
                 eventType = UIEventType::Click;
-            } else if (eventKey == "enterActions") {
+            } else if (eventKey == "enter") {
                 eventType = UIEventType::Enter;
-            } else if (eventKey == "exitActions") {
+            } else if (eventKey == "exit") {
                 eventType = UIEventType::Exit;
-            } else if (eventKey == "valueChangedActions") {
+            } else if (eventKey == "valueChanged") {
                 eventType = UIEventType::ValueChanged;
             } else {
                 continue;

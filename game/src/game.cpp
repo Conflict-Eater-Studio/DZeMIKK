@@ -36,6 +36,7 @@
 #include "renderer/shader.h"
 #include "scripts/world/world.h"
 #include "scripts/world/worldHex.h"
+#include "settings.h"
 #include "utils/perlin.h"
 
 #include <GLFW/glfw3.h>
@@ -44,6 +45,7 @@
 #include <memory>
 #include <unordered_set>
 #include <utility>
+#include <variant>
 
 #if DZEMIKK_DEV_TOOLS
 #include <imgui.h>
@@ -72,6 +74,7 @@
 #include "ui/combatUIPanel.h"
 #include "ui/logoComponent.h"
 #include "ui/uIPulseEffect.h"
+#include "visuals/depthOfFieldEffect.h"
 
 #include <animation/animationstatemachine.h>
 #include <audio/audioManager.h>
@@ -83,9 +86,6 @@
 #include <healthSystem.h>
 #include <iostream>
 #include <random>
-#include "scripts/world/worldVisualManager.h"
-#include "visuals/depthOfFieldEffect.h"
-
 
 static std::mt19937 rng{std::random_device{}()};
 
@@ -157,14 +157,45 @@ void Game::startGame() {
     _mainScene = assetManager->get<dzemikk::Scene>("scenes/gameplay8.json");
     _menuScene = assetManager->get<dzemikk::Scene>("scenes/menu3.json");
     _creditsScene = assetManager->get<dzemikk::Scene>("scenes/credits.json");
+    _settingsScene = assetManager->get<dzemikk::Scene>("scenes/settings.json");
 
     std::shared_ptr<dzemikk::Scene> sceneShared(_mainScene.get(), [](dzemikk::Scene*) {});
     std::shared_ptr<dzemikk::Scene> menuShared(_menuScene.get(), [](dzemikk::Scene*) {});
     std::shared_ptr<dzemikk::Scene> creditsShared(_creditsScene.get(), [](dzemikk::Scene*) {});
+    std::shared_ptr<dzemikk::Scene> settingsShared(_settingsScene.get(), [](dzemikk::Scene*) {});
     sceneManager->loadScene(sceneShared);
     sceneManager->loadScene(menuShared);
     sceneManager->loadScene(creditsShared);
+    sceneManager->loadScene(settingsShared);
     sceneManager->setActiveScene(menuShared);
+
+    game::Settings::get().setAudioSliders(
+        {.masterVolume = settingsShared->findGameObjectByName("MasterSlider")
+                             ->getComponent<dzemikk::UISlider>(),
+         .musicVolume =
+             settingsShared->findGameObjectByName("MusicSlider")->getComponent<dzemikk::UISlider>(),
+         .ambientVolume = settingsShared->findGameObjectByName("AmbientSlider")
+                              ->getComponent<dzemikk::UISlider>(),
+         .sfxVolume =
+             settingsShared->findGameObjectByName("SFXSlider")->getComponent<dzemikk::UISlider>(),
+         .uiVolume =
+             settingsShared->findGameObjectByName("UISlider")->getComponent<dzemikk::UISlider>()});
+
+    const auto applyAudioVolumes = [this]() {
+        auto* audioManager = _engine->getAudioManager();
+        if (audioManager == nullptr) {
+            return;
+        }
+        const auto& audio = game::Settings::get().audio();
+        audioManager->getMasterGroup()->setVolume(audio.masterVolume);
+        audioManager->getMusicGroup()->setVolume(audio.musicVolume);
+        audioManager->getAmbientGroup()->setVolume(audio.ambientVolume);
+        audioManager->getSFXGroup()->setVolume(audio.sfxVolume);
+        audioManager->getUIGroup()->setVolume(audio.uiVolume);
+    };
+    game::Settings::get().setOnAudioChanged(applyAudioVolumes);
+    game::Settings::get().read();
+    applyAudioVolumes();
 
     auto* btnResetInteractable = _menuScene.get()
                                      ->findGameObjectByName("ResetButton")
@@ -175,7 +206,7 @@ void Game::startGame() {
         btnResetInteractable->setInteractable(true);
     }
 
-    auto logo = _menuScene.get()->findGameObjectByName("Logo");
+    auto* logo = _menuScene.get()->findGameObjectByName("Logo");
     logo->addComponent<game::LogoComponent>();
 
     _mainScene.get()->findGameObjectByName("UI_RevealPatternBtn")->addComponent<UIPulseEffect>();
@@ -324,8 +355,8 @@ void Game::startGame() {
         "ui.menu.fromcheckpoint");
 
     dzemikk::UIActionRegistry::get().registerAction(
-        [sceneManager, creditsShared](const dzemikk::UIEvent&) {
-            sceneManager->setActiveScene(creditsShared);
+        [sceneManager, settingsShared](const dzemikk::UIEvent&) {
+            sceneManager->setActiveScene(settingsShared);
         },
         "ui.menu.credits");
 
@@ -363,7 +394,105 @@ void Game::startGame() {
         },
         "item.panel.exit");
 
-    _playerGO->getComponent<game::PlayerCombatAnimationController>()->setGameStateMachine(_stateMachine);
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().audio().masterVolume = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical(
+                        "[Game] Bad variant access in master volume slider callback: {}",
+                        err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.volume.master");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().audio().musicVolume = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical(
+                        "[Game] Bad variant access in music volume slider callback: {}",
+                        err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.volume.music");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().audio().ambientVolume = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical(
+                        "[Game] Bad variant access in ambient volume slider callback: {}",
+                        err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.volume.ambient");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().audio().sfxVolume = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in sfx volume slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.volume.sfx");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) {
+            if (e.type == dzemikk::UIEventType::ValueChanged) {
+                try {
+                    game::Settings::get().audio().uiVolume = std::get<float>(e.payload);
+                } catch (const std::bad_variant_access& err) {
+#if DZEMIKK_DEV_TOOLS
+                    spdlog::critical("[Game] Bad variant access in ui volume slider callback: {}",
+                                     err.what());
+#endif
+                    return;
+                }
+            }
+        },
+        "settings.volume.ui");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent& e) { game::Settings::get().save(); }, "settings.btn.save");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this, settingsShared](const dzemikk::UIEvent& e) { game::Settings::get().saveDefaults(); },
+        "settings.btn.defaults");
+
+    dzemikk::UIActionRegistry::get().registerAction(
+        [this, sceneManager, menuShared](const dzemikk::UIEvent& e) {
+            sceneManager->setActiveScene(menuShared);
+        },
+        "settings.btn.back");
+
+    _playerGO->getComponent<game::PlayerCombatAnimationController>()->setGameStateMachine(
+        _stateMachine);
+
     setupInputCallbacks();
 }
 
@@ -451,10 +580,9 @@ void Game::setupMainCamera() {
 
     auto postProccessDoF = cameraGO->addComponent<dzemikk::DepthOfFieldEffect>();
     postProccessDoF->setEnabled(false);
-    postProccessDoF->setShader(
-        _engine->getAssetManager()->get<dzemikk::Shader>("shaders/dof"));
+    postProccessDoF->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/dof"));
     postProccessDoF->setPriority(8);
-    
+
     auto postProccessEffect = cameraGO->addComponent<dzemikk::PostProcessEffect>();
     postProccessEffect->setEnabled(true);
     postProccessEffect->setShader(
@@ -659,21 +787,21 @@ void Game::setupWorldVisuals() {
 
     auto* enemyManagerGO = _mainScene.get()->findGameObjectByName("EnemyManager");
     auto* manager = enemyManagerGO->getComponent<game::EnemyManager>();
-    //worldVisualManager->showChunkBlockers("chunkMain2", "chunkMain1", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain2Sub1", "chunkMain2", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain3", "chunkMain2", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain3Sub1", "chunkMain3", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain4", "chunkMain3", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain5", "chunkMain4", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain6", "chunkMain5", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain7", "chunkMain6", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain4Sub1", "chunkMain4", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain7Sub1", "chunkMain7", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain7Sub2", "chunkMain7Sub1", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain7Sub3", "chunkMain7Sub2", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain8", "chunkMain7", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain9", "chunkMain8", manager);
-    //worldVisualManager->showChunkBlockers("chunkMain10", "chunkMain9", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain2", "chunkMain1", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain2Sub1", "chunkMain2", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain3", "chunkMain2", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain3Sub1", "chunkMain3", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain4", "chunkMain3", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain5", "chunkMain4", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain6", "chunkMain5", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain7", "chunkMain6", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain4Sub1", "chunkMain4", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain7Sub1", "chunkMain7", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain7Sub2", "chunkMain7Sub1", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain7Sub3", "chunkMain7Sub2", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain8", "chunkMain7", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain9", "chunkMain8", manager);
+    // worldVisualManager->showChunkBlockers("chunkMain10", "chunkMain9", manager);
 }
 
 void Game::setupUICamera() {
@@ -772,7 +900,7 @@ void Game::setupInputCallbacks() {
                 lastHighlightedEnemy = nullptr;
             }
 
-            clearAnim(); 
+            clearAnim();
         } else if (currentEnemy) {
             lastHighlightedEnemy = currentEnemy;
         }
@@ -817,7 +945,7 @@ void Game::setupInputCallbacks() {
                 animEnemy = nullptr;
                 animCells.clear();
             }
-        }   
+        }
 
         constexpr float hoverStrength = 0.5F;
 
@@ -957,9 +1085,11 @@ void Game::setupPlayer() {
     inventory->setGame(this);
 
     auto* animator = playerGO->getComponent<dzemikk::Animator>();
-    auto* playerCombatAnimationController = playerGO->addComponent<game::PlayerCombatAnimationController>();
+    auto* playerCombatAnimationController =
+        playerGO->addComponent<game::PlayerCombatAnimationController>();
     playerCombatAnimationController->setPlayerAnimator(animator);
-    auto skeleton = playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
+    auto skeleton =
+        playerGO->getComponent<dzemikk::SkinnedMeshRenderer>()->getModel().get()->getSkeleton();
 
     dzemikk::AnimationClip* idleClip = nullptr;
     dzemikk::AnimationClip* forward30Clip = nullptr;
@@ -989,7 +1119,6 @@ void Game::setupPlayer() {
     forward90Clip->setLoop(false);
     forward90Clip->setPlaybackSpeed(10.0f);
     forward90Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
-
 
     forward150Clip = skeleton->getClip("60");
     forward150Clip->setLoop(false);

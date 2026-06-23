@@ -1,0 +1,2190 @@
+{
+    "id": "97e02499-727d-4861-a4ff-735f14784b43",
+    "roots": [
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "391ad0d9-9743-422b-96b8-c2f30aa20479",
+                    "position": [
+                        0.0,
+                        4.5,
+                        7.0
+                    ],
+                    "rotation": [
+                        0.9834831357002258,
+                        -0.18099981546401978,
+                        -5.267820207821572e-11,
+                        2.862330095165788e-10
+                    ],
+                    "scale": [
+                        2.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "aspect": 1.7699999809265137,
+                    "bottom": -1.0,
+                    "far": 1000.0,
+                    "fov": 60.0,
+                    "id": 0,
+                    "left": -1.0,
+                    "near": 0.10000000149011612,
+                    "projectionType": 0,
+                    "right": 1.0,
+                    "top": 1.0,
+                    "type": "Camera"
+                }
+            ],
+            "enabled": true,
+            "id": "f596f462-d3bf-40aa-bb65-9db746fb5a56",
+            "name": "Editor Camera",
+            "tags": []
+        },
+        {
+            "children": [],
+            "components": [
+                {
+                    "id": "22edec92-75a2-4d25-8988-08e7545e1df9",
+                    "position": [
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "rotation": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "type": "Transform"
+                },
+                {
+                    "aspect": 1.7699999809265137,
+                    "bottom": 0.0,
+                    "far": 1.0,
+                    "fov": 60.0,
+                    "id": 1,
+                    "left": 0.0,
+                    "near": -1.0,
+                    "projectionType": 1,
+                    "right": 1920.0,
+                    "top": 1080.0,
+                    "type": "Camera"
+                }
+            ],
+            "enabled": true,
+            "id": "1ba86b50-ba7c-4968-a838-fef96e8f472f",
+            "name": "UICamera",
+            "tags": []
+        },
+        {
+            "children": [
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                1.0,
+                                1.0
+                            ],
+                            "anchorMin": [
+                                0.0,
+                                0.0
+                            ],
+                            "id": "aacad21f-a357-4fb0-b98d-3f48b89c4cf2",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                0.0,
+                                0.0
+                            ],
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                0.0,
+                                0.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 0
+                        },
+                        {
+                            "color": [
+                                0.0,
+                                0.0,
+                                0.0,
+                                1.0
+                            ],
+                            "id": "ecd0ed2c-8cc5-429c-a15d-86bd82fd36b1",
+                            "materialPath": "shaders/quad",
+                            "texture": "",
+                            "type": "ImageRenderer"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "dc97672f-b7e0-4bde-a498-e7e129db6374",
+                    "name": "BG",
+                    "tags": []
+                },
+                {
+                    "children": [
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "anchorMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "id": "6ebc34c9-56a7-41a6-9313-b7df6a38e072",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.0,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                -352.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 2
+                                        },
+                                        {
+                                            "color": [
+                                                0.0,
+                                                1.0,
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "id": "b59c803f-d141-4e2f-8736-2cca6887d398",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "161b5f66-bb7f-473c-a6fe-69ea35e253a7",
+                                    "name": "Slider_Fill",
+                                    "tags": []
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "e7a81b95-5a07-4a32-91e6-fb410544f863",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                60.0,
+                                                60.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 3
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "id": "48dd18c9-115e-499f-b9a2-ed9b6da98297",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "753cbae9-84ae-4aab-8f22-d5cb8684d477",
+                                    "name": "Slider_Handle",
+                                    "tags": []
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "13543586-9001-488d-ae2f-1baefdf5dc8e",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        160.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        704.0,
+                                        40.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "backgroundColor": [
+                                        0.7490196228027344,
+                                        1.0,
+                                        0.7490196228027344,
+                                        1.0
+                                    ],
+                                    "events": {
+                                        "valueChanged": [
+                                            "settings.volume.master"
+                                        ]
+                                    },
+                                    "fillColor": [
+                                        0.0,
+                                        1.0,
+                                        0.0,
+                                        1.0
+                                    ],
+                                    "handleColor": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "handleHoverColor": [
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        1.0
+                                    ],
+                                    "handlePressedColor": [
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        1.0
+                                    ],
+                                    "id": "b5b272d8-5f04-4b81-9cf6-5a211216a3ba",
+                                    "interactable": true,
+                                    "maxValue": 1.0,
+                                    "minValue": 0.0,
+                                    "step": 0.009999999776482582,
+                                    "type": "UISlider",
+                                    "value": 0.0
+                                },
+                                {
+                                    "color": [
+                                        0.7490196228027344,
+                                        1.0,
+                                        0.7490196228027344,
+                                        1.0
+                                    ],
+                                    "id": "c6b8ad7b-5edb-40c0-9516-3cb8528867c0",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "76c6e500-929a-42c2-a181-5ec2a245ca24",
+                            "name": "MasterSlider",
+                            "tags": []
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "anchorMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "id": "7cbcf07f-1df0-4101-9b79-81c16ad3c8a4",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.0,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                -352.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 2
+                                        },
+                                        {
+                                            "color": [
+                                                0.0,
+                                                1.0,
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "id": "ad8a9844-2969-4f0e-bfcf-a292db6892bf",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "87484d05-1b8f-4fd8-8e01-d5273290429b",
+                                    "name": "Slider_Fill",
+                                    "tags": []
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "1a908cfb-7504-4bc6-b258-55adcb19b5ef",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                60.0,
+                                                60.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 3
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "id": "e617bc35-08a2-4a81-9c77-287169ab0312",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "ae2dbb9e-3241-46fc-ae3f-006d149e6ad2",
+                                    "name": "Slider_Handle",
+                                    "tags": []
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "d515d6a6-ed38-4379-9453-6e824c48117e",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        80.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        704.0,
+                                        40.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "backgroundColor": [
+                                        0.7490196228027344,
+                                        1.0,
+                                        0.7490196228027344,
+                                        1.0
+                                    ],
+                                    "events": {
+                                        "valueChanged": [
+                                            "settings.volume.music"
+                                        ]
+                                    },
+                                    "fillColor": [
+                                        0.0,
+                                        1.0,
+                                        0.0,
+                                        1.0
+                                    ],
+                                    "handleColor": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "handleHoverColor": [
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        1.0
+                                    ],
+                                    "handlePressedColor": [
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        1.0
+                                    ],
+                                    "id": "751f49c9-a4cf-40d9-9cae-85328d4876a1",
+                                    "interactable": true,
+                                    "maxValue": 1.0,
+                                    "minValue": 0.0,
+                                    "step": 0.009999999776482582,
+                                    "type": "UISlider",
+                                    "value": 0.0
+                                },
+                                {
+                                    "color": [
+                                        0.7490196228027344,
+                                        1.0,
+                                        0.7490196228027344,
+                                        1.0
+                                    ],
+                                    "id": "06a3398b-4b67-44e0-b11c-6797e0e313fc",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "d410e6a9-bba1-4132-9ab5-6a25086b596f",
+                            "name": "MusicSlider",
+                            "tags": []
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "anchorMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "id": "1e1b082a-c60e-4c96-a80b-ba508e83fe78",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.0,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                -352.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 2
+                                        },
+                                        {
+                                            "color": [
+                                                0.0,
+                                                1.0,
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "id": "dec9715d-ac3c-40fc-bac1-a87456a57561",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "d1ad539c-5f9f-4915-aa04-abaaf93f7eb5",
+                                    "name": "Slider_Fill",
+                                    "tags": []
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "d2519595-3116-4aa6-8a5c-95b237661e50",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                60.0,
+                                                60.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 3
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "id": "f7c3e4f9-fa51-4947-adc9-b1a1ab6bca2b",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "7e7fe5a0-f608-4e3b-a1a0-830065eed32e",
+                                    "name": "Slider_Handle",
+                                    "tags": []
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "c14502f3-ba06-4ade-a141-bb792d8d089b",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        704.0,
+                                        40.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "backgroundColor": [
+                                        0.7490196228027344,
+                                        1.0,
+                                        0.7490196228027344,
+                                        1.0
+                                    ],
+                                    "events": {
+                                        "valueChanged": [
+                                            "settings.volume.ambient"
+                                        ]
+                                    },
+                                    "fillColor": [
+                                        0.0,
+                                        1.0,
+                                        0.0,
+                                        1.0
+                                    ],
+                                    "handleColor": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "handleHoverColor": [
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        1.0
+                                    ],
+                                    "handlePressedColor": [
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        1.0
+                                    ],
+                                    "id": "b282de55-d571-4420-9133-392e0250578d",
+                                    "interactable": true,
+                                    "maxValue": 1.0,
+                                    "minValue": 0.0,
+                                    "step": 0.009999999776482582,
+                                    "type": "UISlider",
+                                    "value": 0.0
+                                },
+                                {
+                                    "color": [
+                                        0.7490196228027344,
+                                        1.0,
+                                        0.7490196228027344,
+                                        1.0
+                                    ],
+                                    "id": "0903e302-481f-456d-8344-87349ccb2c60",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "903c4e22-fdd8-42c9-a919-18566fba5dc2",
+                            "name": "AmbientSlider",
+                            "tags": []
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "anchorMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "id": "0669a06f-0c9e-4388-b084-784e97d6211b",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.0,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                -352.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 2
+                                        },
+                                        {
+                                            "color": [
+                                                0.0,
+                                                1.0,
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "id": "eecc5bd0-d9ae-4f86-98ba-6057cce1d15e",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "8c9ca1c9-e272-45e3-9750-d9d252aeb433",
+                                    "name": "Slider_Fill",
+                                    "tags": []
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "02af629b-2d6a-4e46-8369-d3ead3632670",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                60.0,
+                                                60.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 3
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "id": "f65da5bd-c2e0-4987-b9bd-e4ac53d0c92f",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "6678402d-ae98-45f2-8f12-e4a94a6e3d57",
+                                    "name": "Slider_Handle",
+                                    "tags": []
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "8058f7da-d39b-4015-bbe5-344f3c284dfb",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        -80.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        704.0,
+                                        40.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "backgroundColor": [
+                                        0.7490196228027344,
+                                        1.0,
+                                        0.7490196228027344,
+                                        1.0
+                                    ],
+                                    "events": {
+                                        "valueChanged": [
+                                            "settings.volume.sfx"
+                                        ]
+                                    },
+                                    "fillColor": [
+                                        0.0,
+                                        1.0,
+                                        0.0,
+                                        1.0
+                                    ],
+                                    "handleColor": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "handleHoverColor": [
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        1.0
+                                    ],
+                                    "handlePressedColor": [
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        1.0
+                                    ],
+                                    "id": "c165d0a6-e8ba-4a99-82a3-8538c82e8d18",
+                                    "interactable": true,
+                                    "maxValue": 1.0,
+                                    "minValue": 0.0,
+                                    "step": 0.009999999776482582,
+                                    "type": "UISlider",
+                                    "value": 0.0
+                                },
+                                {
+                                    "color": [
+                                        0.7490196228027344,
+                                        1.0,
+                                        0.7490196228027344,
+                                        1.0
+                                    ],
+                                    "id": "8e5925fd-c4d5-423d-8410-75c5d5501210",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "04c2b765-5c29-4bc2-b38a-a08bdd583721",
+                            "name": "SFXSlider",
+                            "tags": []
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "anchorMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "id": "71a96025-97fd-4d23-a5f5-02c386cbecaf",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.0,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                -352.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 2
+                                        },
+                                        {
+                                            "color": [
+                                                0.0,
+                                                1.0,
+                                                0.0,
+                                                1.0
+                                            ],
+                                            "id": "e3f42494-97e9-440b-b906-0c4461872630",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "55e8ced3-943e-467c-ac83-92d348d4d892",
+                                    "name": "Slider_Fill",
+                                    "tags": []
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "5221fecb-f2b9-4ddb-a6da-80987c47e93c",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                60.0,
+                                                60.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 3
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "id": "b348f1c5-a533-4fce-b1a5-d93e1b1a9ba9",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": true,
+                                    "id": "ee977604-820e-49f1-9c85-b6ddc2f779cd",
+                                    "name": "Slider_Handle",
+                                    "tags": []
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "f34cca6e-b5fc-402c-aa8c-83ed854af2d5",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        -160.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        704.0,
+                                        40.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "backgroundColor": [
+                                        0.7490196228027344,
+                                        1.0,
+                                        0.7490196228027344,
+                                        1.0
+                                    ],
+                                    "events": {
+                                        "valueChanged": [
+                                            "settings.volume.ui"
+                                        ]
+                                    },
+                                    "fillColor": [
+                                        0.0,
+                                        1.0,
+                                        0.0,
+                                        1.0
+                                    ],
+                                    "handleColor": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "handleHoverColor": [
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        0.800000011920929,
+                                        1.0
+                                    ],
+                                    "handlePressedColor": [
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        0.6000000238418579,
+                                        1.0
+                                    ],
+                                    "id": "4309fe7c-567b-45bb-9b63-56c0809bcd96",
+                                    "interactable": true,
+                                    "maxValue": 1.0,
+                                    "minValue": 0.0,
+                                    "step": 0.009999999776482582,
+                                    "type": "UISlider",
+                                    "value": 0.0
+                                },
+                                {
+                                    "color": [
+                                        0.7490196228027344,
+                                        1.0,
+                                        0.7490196228027344,
+                                        1.0
+                                    ],
+                                    "id": "ab8220fd-a668-4d9c-bf01-306f49c33588",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "5a434f96-86e7-49de-aeda-4e8810698827",
+                            "name": "UISlider",
+                            "tags": []
+                        }
+                    ],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                0.5
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                0.5
+                            ],
+                            "id": "8fe6c135-c345-41c8-9918-f6af29939f36",
+                            "offsetMax": [
+                                64.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                64.0,
+                                0.0
+                            ],
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                480.0,
+                                0.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                960.0,
+                                360.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 0
+                        },
+                        {
+                            "childForceExpandHeight": false,
+                            "childForceExpandWidth": true,
+                            "id": "9326e8f9-a33d-4bfb-ba0e-29ba5c9c4e33",
+                            "spacing": 40.0,
+                            "type": "VerticalLayout"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "76a8f1ab-4449-407a-8899-361fcc94f8f5",
+                    "name": "Container",
+                    "tags": []
+                },
+                {
+                    "children": [
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "54725a05-1746-42a9-90e8-7bfb6175b2b5",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        160.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        704.0,
+                                        40.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "a54915c6-c57d-4945-b647-9e7dfbe413bd",
+                                    "scale": 1.0,
+                                    "text": "Master",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "fbff4c7c-c160-4fb5-92ff-873b5dbc5eeb",
+                            "name": "Master",
+                            "tags": []
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "d8552a90-fad2-483e-bf46-c619b2c2041d",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        80.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        704.0,
+                                        40.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "c9e78f2f-87af-4102-b555-d8de6dc8f9dd",
+                                    "scale": 1.0,
+                                    "text": "Music",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "0c5ea5e2-80ae-4a18-8e63-4a2f2b4dd31e",
+                            "name": "Music",
+                            "tags": []
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "5ec8593e-92f2-404b-99b5-dfe3dcb09400",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        704.0,
+                                        40.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "8d93232a-be68-4add-ba0a-717b4d4314e8",
+                                    "scale": 1.0,
+                                    "text": "Ambient",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "c7ea546f-748e-4940-860c-aa532f45996f",
+                            "name": "Ambient",
+                            "tags": []
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "b3ee139c-6fc6-4c97-83b1-90e9394fe5e5",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        -80.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        704.0,
+                                        40.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "87d1c269-a96f-4419-9d23-49e2865baa83",
+                                    "scale": 1.0,
+                                    "text": "SFX",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "d11c4ae1-3b47-46ec-a320-2471586df483",
+                            "name": "SFX",
+                            "tags": []
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "4a2b9c45-66a2-47f8-b2c1-7ec7d52103d7",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        -160.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        704.0,
+                                        40.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "8f73b567-8598-4519-af48-f0b170c1fe8e",
+                                    "scale": 1.0,
+                                    "text": "UI",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "223db435-ba8b-4489-8248-cbd012c9e19b",
+                            "name": "UI",
+                            "tags": []
+                        }
+                    ],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                0.5
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                0.5
+                            ],
+                            "id": "7c7a025c-c844-4847-9540-e7d1bf6a959e",
+                            "offsetMax": [
+                                64.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                64.0,
+                                0.0
+                            ],
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                -480.0,
+                                0.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                960.0,
+                                360.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 0
+                        },
+                        {
+                            "childForceExpandHeight": false,
+                            "childForceExpandWidth": true,
+                            "id": "031715de-15e5-49fe-a73c-3600e5e746ee",
+                            "spacing": 40.0,
+                            "type": "VerticalLayout"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "a85df949-d351-4a0c-8178-6aedbc7c3947",
+                    "name": "Labels",
+                    "tags": []
+                },
+                {
+                    "children": [
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "anchorMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "id": "2549adff-4912-4e43-bf3b-882246dfda06",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 2
+                                },
+                                {
+                                    "color": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "b93726a6-c1a2-49de-9953-7891135cecf6",
+                                    "scale": 1.0,
+                                    "text": "Save",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "1eda2ff2-eba9-4bea-bd26-c776515c2335",
+                            "name": "Button_Text",
+                            "tags": []
+                        }
+                    ],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "anchorMin": [
+                                0.0,
+                                0.0
+                            ],
+                            "id": "8992fa23-fdae-4376-b842-2ae9f7167dc7",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                32.0,
+                                0.0
+                            ],
+                            "pivot": [
+                                0.0,
+                                0.0
+                            ],
+                            "position": [
+                                32.0,
+                                128.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                960.0,
+                                64.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 1
+                        },
+                        {
+                            "disabledColor": [
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "events": {
+                                "click": [
+                                    "settings.btn.save"
+                                ]
+                            },
+                            "hoverColor": [
+                                0.800000011920929,
+                                0.800000011920929,
+                                0.800000011920929,
+                                1.0
+                            ],
+                            "id": "bfbf5e7c-b1be-4907-a4a5-6002c0e30985",
+                            "interactable": true,
+                            "normalColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "pressedColor": [
+                                0.6000000238418579,
+                                0.6000000238418579,
+                                0.6000000238418579,
+                                1.0
+                            ],
+                            "type": "UIButton"
+                        },
+                        {
+                            "color": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "id": "a2cbeebd-8cef-4e7b-8bb3-1174d22ae921",
+                            "materialPath": "shaders/quad",
+                            "texture": "",
+                            "type": "ImageRenderer"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "7807f416-d416-49a8-8c24-db577130ea11",
+                    "name": "BtnSave",
+                    "tags": []
+                },
+                {
+                    "children": [
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "anchorMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "id": "78ade8d0-51e8-4297-af36-1b081f373abc",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 2
+                                },
+                                {
+                                    "color": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "aa458c64-ef3f-471d-82d4-eed8748f3f98",
+                                    "scale": 1.0,
+                                    "text": "Restore Defaults",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "a3442786-bcb1-49f0-a905-3f88de2acc1b",
+                            "name": "Button_Text",
+                            "tags": []
+                        }
+                    ],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                0.0
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                0.0
+                            ],
+                            "id": "5e6ad5ff-ec19-47a7-8b77-19eb5c087d2e",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                64.0,
+                                0.0
+                            ],
+                            "pivot": [
+                                0.0,
+                                0.0
+                            ],
+                            "position": [
+                                32.0,
+                                128.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                960.0,
+                                64.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 1
+                        },
+                        {
+                            "disabledColor": [
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "events": {
+                                "click": [
+                                    "settings.btn.defaults"
+                                ]
+                            },
+                            "hoverColor": [
+                                0.800000011920929,
+                                0.800000011920929,
+                                0.800000011920929,
+                                1.0
+                            ],
+                            "id": "cf35da11-afc4-4b7e-8234-142b2fb9b341",
+                            "interactable": true,
+                            "normalColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "pressedColor": [
+                                0.6000000238418579,
+                                0.6000000238418579,
+                                0.6000000238418579,
+                                1.0
+                            ],
+                            "type": "UIButton"
+                        },
+                        {
+                            "color": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "id": "5cf0365a-8ac1-4880-a9c1-4ce41ffecad1",
+                            "materialPath": "shaders/quad",
+                            "texture": "",
+                            "type": "ImageRenderer"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "efad20cd-4217-4c17-8e92-975c5897ca01",
+                    "name": "BtnDefaults",
+                    "tags": []
+                },
+                {
+                    "children": [
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "anchorMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "id": "213f8206-8f09-48ab-abf2-6ab19f08d8c5",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 2
+                                },
+                                {
+                                    "color": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "4b84f5c1-6282-41d7-a4ba-186b7aa5a502",
+                                    "scale": 1.0,
+                                    "text": "Back",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "378c0722-3e25-404f-905e-2a2b186de478",
+                            "name": "Button_Text",
+                            "tags": []
+                        }
+                    ],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "anchorMin": [
+                                0.0,
+                                0.0
+                            ],
+                            "id": "d0c48f38-f00a-4b8b-bbba-ad7357ab27b5",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                64.0,
+                                0.0
+                            ],
+                            "pivot": [
+                                0.0,
+                                0.0
+                            ],
+                            "position": [
+                                32.0,
+                                32.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                1920.0,
+                                64.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 1
+                        },
+                        {
+                            "disabledColor": [
+                                0.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "events": {
+                                "click": [
+                                    "settings.btn.back"
+                                ]
+                            },
+                            "hoverColor": [
+                                0.800000011920929,
+                                0.800000011920929,
+                                0.800000011920929,
+                                1.0
+                            ],
+                            "id": "aa2a2ff0-4cbe-445f-b258-5a82de674801",
+                            "interactable": true,
+                            "normalColor": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "pressedColor": [
+                                0.6000000238418579,
+                                0.6000000238418579,
+                                0.6000000238418579,
+                                1.0
+                            ],
+                            "type": "UIButton"
+                        },
+                        {
+                            "color": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "id": "abf26710-884c-42f8-beeb-860d2f0e7238",
+                            "materialPath": "shaders/quad",
+                            "texture": "",
+                            "type": "ImageRenderer"
+                        }
+                    ],
+                    "enabled": true,
+                    "id": "fef4605a-2a83-413c-afa6-e822777775b4",
+                    "name": "BtnBack",
+                    "tags": []
+                }
+            ],
+            "components": [
+                {
+                    "anchorMax": [
+                        0.5,
+                        0.5
+                    ],
+                    "anchorMin": [
+                        0.5,
+                        0.5
+                    ],
+                    "id": "4bf39ce1-b4c6-4565-9304-b1060a8639ef",
+                    "offsetMax": [
+                        0.0,
+                        0.0
+                    ],
+                    "offsetMin": [
+                        0.0,
+                        0.0
+                    ],
+                    "pivot": [
+                        0.5,
+                        0.5
+                    ],
+                    "position": [
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": 0.0,
+                    "scale": [
+                        1.0,
+                        1.0
+                    ],
+                    "size": [
+                        1920.0,
+                        1080.0
+                    ],
+                    "type": "RectTransform",
+                    "zIndex": 0
+                },
+                {
+                    "id": "0ff08d10-35db-4d98-b714-f30c104f1af9",
+                    "type": "Canvas"
+                }
+            ],
+            "enabled": true,
+            "id": "5c2c36a6-17ad-4a75-963e-f7362dfe4a4b",
+            "name": "Canvas",
+            "tags": []
+        }
+    ]
+}

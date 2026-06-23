@@ -1,9 +1,9 @@
 #include "inspectors/uiSliderInspector.h"
+
 #include "inspectors/inspectorRegistry.h"
 #include "ui/propertyDrawer.h"
 
 #include <ecs/components/ui/uiSlider.h>
-
 #include <imgui.h>
 
 void editor::UISliderInspector::draw(dzemikk::UISlider* slider, const InspectorContext& ctx) {
@@ -26,11 +26,13 @@ void editor::UISliderInspector::draw(dzemikk::UISlider* slider, const InspectorC
         float minValue = slider->getMinValue();
         float maxValue = slider->getMaxValue();
         float step = slider->getStep();
+        bool interactable = slider->isInteractable();
 
         changed |= ImGui::DragFloat("Value", &value, step, minValue, maxValue);
         changed |= ImGui::DragFloat("Min Value", &minValue, 0.1F);
         changed |= ImGui::DragFloat("Max Value", &maxValue, 0.1F);
         changed |= ImGui::DragFloat("Step", &step, 0.001F, 0.0001F, 1.0F);
+        changed |= ImGui::Checkbox("Interactable", &interactable);
 
         if (changed) {
             slider->setStyle(style);
@@ -38,12 +40,13 @@ void editor::UISliderInspector::draw(dzemikk::UISlider* slider, const InspectorC
             slider->setMinValue(minValue);
             slider->setMaxValue(maxValue);
             slider->setStep(step);
+            slider->setInteractable(interactable);
 
             slider->onValueChanged(value);
 
             slider->applyVisualState();
         }
-        
+
         ImGui::Spacing();
         ImGui::Separator();
 

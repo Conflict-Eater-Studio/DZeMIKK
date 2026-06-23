@@ -30,6 +30,7 @@ inline void to_json(nlohmann::json& json, const UIButton& button) {
     json["pressedColor"] = {pressedColor[0], pressedColor[1], pressedColor[2], pressedColor[3]};
     json["disabledColor"] = {disabledColor[0], disabledColor[1], disabledColor[2],
                              disabledColor[3]};
+    json["interactable"] = button.isInteractable();
 
     auto ea = button.getEventActions();
     for (const auto& [eventType, actionIds] : ea) {
@@ -97,6 +98,12 @@ inline void from_json(const nlohmann::json& json, UIButton& button, AssetManager
             json["disabledColor"][2].get<float>(), json["disabledColor"][3].get<float>()};
     } else {
         style.disabledColor = glm::vec4(0.5F, 0.5F, 0.5F, 1.0F);
+    }
+
+    if (json.contains("interactable")) {
+        button.setInteractable(json["interactable"].get<bool>());
+    } else {
+        button.setInteractable(true);
     }
 
     std::vector<std::pair<UIEventType, std::string>> events;

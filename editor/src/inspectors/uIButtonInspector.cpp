@@ -17,6 +17,7 @@ void editor::UIButtonInspector::draw(dzemikk::UIButton* uiButton, const Inspecto
         bool changed = false;
 
         auto style = uiButton->getStyle();
+        bool interactable = uiButton->isInteractable();
 
         ImGui::SeparatorText("Style");
 
@@ -24,9 +25,11 @@ void editor::UIButtonInspector::draw(dzemikk::UIButton* uiButton, const Inspecto
         changed |= editor::PropertyDrawer::drawColor("Hover Color", style.hoverColor);
         changed |= editor::PropertyDrawer::drawColor("Pressed Color", style.pressedColor);
         changed |= editor::PropertyDrawer::drawColor("Disabled Color", style.disabledColor);
+        changed |= ImGui::Checkbox("Interactable", &interactable);
 
         if (changed) {
             uiButton->setStyle(style);
+            uiButton->setInteractable(interactable);
         }
 
         ImGui::SeparatorText("References");

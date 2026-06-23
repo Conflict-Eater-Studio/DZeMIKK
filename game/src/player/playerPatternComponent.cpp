@@ -6,8 +6,8 @@
 #include "player/playerPatternStatsComponent.h"
 #include "scripts/world/worldHex.h"
 #include "stateMachine/combatState.h"
-
 #include "ui/combatUIPanel.h"
+
 #include <assetManager/assetmanager.h>
 #include <audio/audioManager.h>
 #include <audio/sound.h>
@@ -28,7 +28,6 @@ struct SoundInitContext {
 
 void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
     ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
-    ctx.audioManager->getSFXGroup()->setVolume(0.3F);
 }
 } // namespace playerPatternComponentSound
 
@@ -625,4 +624,3 @@ void game::PlayerPatternComponent::onMouseScrolled(dzemikk::MouseScrolledEvent& 
 
     updatePreviewPositions(rotatedHexes);
 }
-

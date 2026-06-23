@@ -40,12 +40,10 @@ struct SoundInitContext {
 void onMusicLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
     combatFMODChannel =
         ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::Music, true);
-    ctx.audioManager->getMusicGroup()->setVolume(0.1F);
 }
 
 void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitContext& ctx) {
     ctx.audioManager->play(*sound.get(), dzemikk::AudioManager::SoundType::SFX, false);
-    ctx.audioManager->getSFXGroup()->setVolume(0.5F);
 }
 } // namespace combatSound
 
@@ -62,7 +60,6 @@ void game::CombatState::onEnter() {
 
     _game->getCameraController()->setMode(CameraController::Mode::Combat);
     _game->enableCombatUI(true);
-
 
     initializeCombat();
 
@@ -113,7 +110,8 @@ void game::CombatState::onEnter() {
     _emptyEnemyBattleHexMaterial = material->clone();
     _emptyEnemyBattleHexMaterial->setAlbedoColor({1.0F, 1.0F, 1.0F});
     _emptyEnemyBattleHexMaterial->setAlbedoTexture(
-        _game->getEngine()->getAssetManager()->get<dzemikk::Texture>("models/assets/hexy/hex_wypukly/hex_wypukly_BaseColor_unactive.png"));
+        _game->getEngine()->getAssetManager()->get<dzemikk::Texture>(
+            "models/assets/hexy/hex_wypukly/hex_wypukly_BaseColor_unactive.png"));
 
     _showedPatternMaterial = material->clone();
     _showedPatternMaterial->setAlbedoColor({0.25F, 0.25F, 0.25F});
