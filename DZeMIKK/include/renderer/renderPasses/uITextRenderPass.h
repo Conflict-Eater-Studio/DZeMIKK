@@ -63,6 +63,8 @@ class UITextRenderPass : public IRenderPass {
      * @brief Initializes and compiles the UI text shader.
      */
     void initTextShader();
+
+    static unsigned int decodeUTF8(const std::string& s, size_t& i);
 };
 
 } // namespace dzemikk

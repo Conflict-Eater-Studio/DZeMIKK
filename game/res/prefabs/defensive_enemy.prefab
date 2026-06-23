@@ -5,7 +5,7 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "840874e3-b5d1-4438-9cba-87733ae60701",
+                        "id": "f9d3406e-2efb-4737-b51d-390476bc4756",
                         "position": [
                             0.0,
                             17.0,
@@ -37,24 +37,24 @@
                     }
                 ],
                 "enabled": true,
-                "id": "0a99e1cf-5097-417d-bcc3-753213ad6640",
+                "id": "e97128b0-7ff9-4375-8eeb-6e412b10dbd1",
                 "name": "Light",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "f9a3797f-29cc-4d48-843a-2bb5d9369c8d",
+                "id": "e7e0fdcc-5815-42d0-9e5b-24576d03e776",
                 "position": [
+                    0.800000011920929,
                     0.0,
-                    0.0,
-                    0.6000000238418579
+                    -0.30000001192092896
                 ],
                 "rotation": [
-                    1.0,
-                    -1.150718716921319e-15,
-                    -0.0,
-                    0.0
+                    -0.7071067690849304,
+                    -6.181723932741079e-08,
+                    0.7071067690849304,
+                    -6.181723932741079e-08
                 ],
                 "scale": [
                     0.012000000104308128,
@@ -64,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "3e1519b7-da4a-4644-aafe-630674c7701a",
+                "id": "8f4a746c-3c26-4604-bef6-ccd9d969806a",
                 "materials": [
                     {
                         "albedoColor": [
@@ -211,15 +211,11 @@
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "e742a2d4-a8db-4621-8d75-06e2d7e9bd53",
+                "id": "c67da1ee-8fb5-4afc-8abc-0371e79ac890",
                 "parameters": {},
                 "stateMachine": [
                     {
                         "name": "Idle",
-                        "transitions": []
-                    },
-                    {
-                        "name": "Death",
                         "transitions": []
                     },
                     {
@@ -236,13 +232,17 @@
                                 "to": "Idle"
                             }
                         ]
+                    },
+                    {
+                        "name": "Death",
+                        "transitions": []
                     }
                 ],
                 "type": "Animator"
             }
         ],
         "enabled": true,
-        "id": "62804433-7cf9-429d-bf85-1f17de3cebe8",
+        "id": "811fd4d9-26ca-4163-815e-3e0634d37e9b",
         "name": "Defensive",
         "tags": []
     }

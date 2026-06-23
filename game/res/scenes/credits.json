@@ -88,7 +88,67 @@
         {
             "children": [
                 {
-                    "children": [],
+                    "children": [
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "173c817b-09e6-41bb-bc13-6c23248d0d89",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        1820.0,
+                                        980.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "color": [
+                                        0.0,
+                                        0.1421135812997818,
+                                        0.2549019455909729,
+                                        0.5882353186607361
+                                    ],
+                                    "id": "76a60c9d-c2e4-4076-9595-fbfe667a2304",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": true,
+                            "id": "e657bd85-e8e7-41e1-9de9-02bf7e1bee75",
+                            "name": "Empty",
+                            "tags": []
+                        }
+                    ],
                     "components": [
                         {
                             "anchorMax": [
@@ -100,6 +160,14 @@
                                 0.0
                             ],
                             "id": "fcce3319-594c-4d59-96b2-83c62da1c690",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                0.0,
+                                0.0
+                            ],
                             "pivot": [
                                 0.5,
                                 0.5
@@ -122,14 +190,14 @@
                         },
                         {
                             "color": [
-                                0.0,
-                                0.0,
-                                0.0,
+                                1.0,
+                                1.0,
+                                1.0,
                                 1.0
                             ],
                             "id": "c19f1754-658f-4dcc-aea1-a07922cad501",
                             "materialPath": "shaders/quad",
-                            "texture": "",
+                            "texture": "textures/Menu wirtualnej rzeczywistosci.png",
                             "type": "ImageRenderer"
                         }
                     ],
@@ -153,6 +221,14 @@
                                         0.5
                                     ],
                                     "id": "14e694a1-006c-4021-95d8-1af5f78a1441",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
                                     "pivot": [
                                         0.5,
                                         0.5
@@ -179,11 +255,11 @@
                                         1.0,
                                         1.0
                                     ],
-                                    "font": "fonts/Lato-Regular.ttf",
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                     "horizontalAlign": 1,
                                     "id": "d123a641-e635-4acd-8d12-ca0426f658c9",
-                                    "scale": 1.0,
-                                    "text": "Zaneta Zuranska - Lead, Programmer",
+                                    "scale": 0.800000011920929,
+                                    "text": "Żaneta Żurańska - Lead, Programmer",
                                     "type": "UITextRenderer",
                                     "verticalAlign": 1
                                 }
@@ -206,6 +282,14 @@
                                         0.5
                                     ],
                                     "id": "0282c8de-b55b-47f3-9eec-120efa3a527f",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
                                     "pivot": [
                                         0.5,
                                         0.5
@@ -232,11 +316,11 @@
                                         1.0,
                                         1.0
                                     ],
-                                    "font": "fonts/Lato-Regular.ttf",
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                     "horizontalAlign": 1,
                                     "id": "48785a8d-5a5f-4da9-a0ff-a44d2cd24c62",
-                                    "scale": 1.0,
-                                    "text": "Mateusz Lipinski - Programmer",
+                                    "scale": 0.800000011920929,
+                                    "text": "Mateusz Lipiński - Programmer",
                                     "type": "UITextRenderer",
                                     "verticalAlign": 1
                                 }
@@ -259,6 +343,14 @@
                                         0.5
                                     ],
                                     "id": "e84b490b-9f32-49bd-871b-3a044831f1f5",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
                                     "pivot": [
                                         0.5,
                                         0.5
@@ -285,10 +377,10 @@
                                         1.0,
                                         1.0
                                     ],
-                                    "font": "fonts/Lato-Regular.ttf",
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                     "horizontalAlign": 1,
                                     "id": "2c78111c-9f0a-4c7c-9dd7-0f9e639e3c05",
-                                    "scale": 1.0,
+                                    "scale": 0.800000011920929,
                                     "text": "Damian Jasek - Programmer",
                                     "type": "UITextRenderer",
                                     "verticalAlign": 1
@@ -312,6 +404,14 @@
                                         0.5
                                     ],
                                     "id": "af7d1208-e4f2-488e-8a37-113245c40bb1",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
                                     "pivot": [
                                         0.5,
                                         0.5
@@ -338,10 +438,10 @@
                                         1.0,
                                         1.0
                                     ],
-                                    "font": "fonts/Lato-Regular.ttf",
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                     "horizontalAlign": 1,
                                     "id": "974dd45e-9daf-4f59-8a36-0bc6de756634",
-                                    "scale": 1.0,
+                                    "scale": 0.800000011920929,
                                     "text": "Konrad Kuberski - Programmer",
                                     "type": "UITextRenderer",
                                     "verticalAlign": 1
@@ -365,6 +465,14 @@
                                         0.5
                                     ],
                                     "id": "6f76b3be-1bea-4859-bee8-42e621340ebe",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
                                     "pivot": [
                                         0.5,
                                         0.5
@@ -391,10 +499,10 @@
                                         1.0,
                                         1.0
                                     ],
-                                    "font": "fonts/Lato-Regular.ttf",
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                     "horizontalAlign": 1,
                                     "id": "e8d88ccc-74a8-4188-830c-1d5173f61975",
-                                    "scale": 1.0,
+                                    "scale": 0.800000011920929,
                                     "text": "Jakub Bukowski - Graphic Designer",
                                     "type": "UITextRenderer",
                                     "verticalAlign": 1
@@ -418,6 +526,14 @@
                                         0.5
                                     ],
                                     "id": "e1f58894-2214-4f27-80e1-1201b36ac112",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
                                     "pivot": [
                                         0.5,
                                         0.5
@@ -444,11 +560,11 @@
                                         1.0,
                                         1.0
                                     ],
-                                    "font": "fonts/Lato-Regular.ttf",
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                     "horizontalAlign": 1,
                                     "id": "d1f5ccbb-479a-45a8-8c74-8cccb8ca0de8",
-                                    "scale": 1.0,
-                                    "text": "Igor Skwarczynski - Graphic Designer",
+                                    "scale": 0.800000011920929,
+                                    "text": "Igor Skwarczyński - Graphic Designer",
                                     "type": "UITextRenderer",
                                     "verticalAlign": 1
                                 }
@@ -470,6 +586,14 @@
                                 0.5
                             ],
                             "id": "56a5ed24-6db6-4399-b22c-4bc688b61986",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                0.0,
+                                0.0
+                            ],
                             "pivot": [
                                 0.5,
                                 0.5
@@ -516,13 +640,21 @@
                                 1.0
                             ],
                             "id": "a9ad9f1c-e27d-4f7a-b614-85ab94b9d733",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                0.0,
+                                0.0
+                            ],
                             "pivot": [
                                 0.5,
                                 0.0
                             ],
                             "position": [
                                 0.0,
-                                -96.0
+                                -230.0
                             ],
                             "rotation": 0.0,
                             "scale": [
@@ -542,10 +674,10 @@
                                 1.0,
                                 1.0
                             ],
-                            "font": "fonts/Lato-Regular.ttf",
+                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                             "horizontalAlign": 1,
                             "id": "0823bfcd-a9f5-4aad-addb-e8f33b15dd96",
-                            "scale": 3.0,
+                            "scale": 1.5,
                             "text": "Credits",
                             "type": "UITextRenderer",
                             "verticalAlign": 1
@@ -571,6 +703,14 @@
                                         0.0
                                     ],
                                     "id": "1be701f5-7ff2-4fe1-86ab-e2a0d0f8fd43",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
                                     "pivot": [
                                         0.5,
                                         0.5
@@ -594,13 +734,13 @@
                                 {
                                     "color": [
                                         0.0,
-                                        0.0,
-                                        0.0
+                                        0.24705882370471954,
+                                        0.4431372582912445
                                     ],
-                                    "font": "fonts/Lato-Regular.ttf",
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                     "horizontalAlign": 1,
                                     "id": "0c21f846-1180-4f9f-9cee-64a785bbb0b4",
-                                    "scale": 1.0,
+                                    "scale": 0.800000011920929,
                                     "text": "Back",
                                     "type": "UITextRenderer",
                                     "verticalAlign": 1
@@ -623,13 +763,21 @@
                                 0.0
                             ],
                             "id": "493dd362-7e32-436d-9e1d-8e23f68338cc",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                0.0,
+                                0.0
+                            ],
                             "pivot": [
                                 0.5,
                                 0.0
                             ],
                             "position": [
                                 0.0,
-                                16.0
+                                100.0
                             ],
                             "rotation": 0.0,
                             "scale": [
@@ -641,9 +789,15 @@
                                 64.0
                             ],
                             "type": "RectTransform",
-                            "zIndex": 1
+                            "zIndex": 3
                         },
                         {
+                            "disabledColor": [
+                                0.5,
+                                0.5,
+                                0.5,
+                                1.0
+                            ],
                             "events": {
                                 "click": [
                                     "ui.credits.back"
@@ -700,6 +854,14 @@
                         0.5
                     ],
                     "id": "08931297-b1ef-4e0f-af6e-d8540db5deb6",
+                    "offsetMax": [
+                        0.0,
+                        0.0
+                    ],
+                    "offsetMin": [
+                        0.0,
+                        0.0
+                    ],
                     "pivot": [
                         0.5,
                         0.5
