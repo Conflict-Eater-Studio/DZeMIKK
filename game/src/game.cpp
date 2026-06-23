@@ -1765,9 +1765,7 @@ void Game::setupTotems() {
         manager->loadState(worldData["totems"]);
     } else {
         manager->addTotem(_hexGrid->getChunkByName("chunkMain2")->getPersistantId(),
-                          {.persistantId = boost::uuids::string_generator()(
-                               "478657ac-c332-43a8-b9bb-3aca14c32662"),
-                           .pattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
+                          {.pattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
                                                        game::HexPattern::Type::ATK, 12.0F)});
     }
 }
@@ -1793,8 +1791,8 @@ void Game::setupDialogs() {
 
     auto prefab =
         _engine->getAssetManager()->get<nlohmann::json>("prefabs/totem/totem_dialog.prefab");
-    auto totem = dzemikk::PrefabSerializer::instantiate(*_mainScene.get(), *prefab.get(),
-                                                        _engine->getAssetManager());
+    auto* totem = dzemikk::PrefabSerializer::instantiate(*_mainScene.get(), *prefab.get(),
+                                                         _engine->getAssetManager());
 
     auto* rendererTotemGO =
         totem->findChildByName("platform")->getComponent<dzemikk::MeshRenderer>();
@@ -1811,7 +1809,9 @@ void Game::setupDialogs() {
     rendererTotemGO = totem->findDescendantByName("Totem6")->getComponent<dzemikk::MeshRenderer>();
     rendererTotemGO->setCullingRadius(60.0F);
 
-    auto entity = totem->addComponent<game::TotemDialogEntity>();
+    auto* entity = totem->addComponent<game::TotemDialogEntity>();
+    // HACK: Hard-coded UUID cuz i don't care
+    entity->setId(boost::uuids::string_generator()("697630a9-feec-4e01-980d-20c5b196647d"));
     entity->onEnter(world->getGrid()->getCell({5, 0}));
 
     nlohmann::json worldData;
@@ -1825,7 +1825,7 @@ void Game::setupDialogs() {
         manager->loadState(worldData["dialogs"]);
     } else {
         manager->addDialog({
-            .targetEntityId = totem->getComponent<game::TotemDialogEntity>()->getId(),
+            .targetEntityId = entity->getId(),
             .entries =
                 {{.speaker = "Mother", .text = "Where am I? Where is my son?!"},
                  {.speaker = "Totem",
