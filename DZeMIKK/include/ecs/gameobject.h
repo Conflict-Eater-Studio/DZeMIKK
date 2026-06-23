@@ -5,7 +5,7 @@
 
 #include <stdexcept>
 #include <unordered_set>
-#include <vcruntime_typeinfo.h>
+// #include <vcruntime_typeinfo.h>
 
 #pragma once
 #include "component.h"
