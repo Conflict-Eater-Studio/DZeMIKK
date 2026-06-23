@@ -480,10 +480,6 @@
                                             ]
                                         },
                                         {
-                                            "name": "R90",
-                                            "transitions": []
-                                        },
-                                        {
                                             "name": "R210",
                                             "transitions": []
                                         },
@@ -503,11 +499,15 @@
                                             ]
                                         },
                                         {
-                                            "name": "R150",
+                                            "name": "R90",
                                             "transitions": []
                                         },
                                         {
                                             "name": "R330",
+                                            "transitions": []
+                                        },
+                                        {
+                                            "name": "R150",
                                             "transitions": []
                                         },
                                         {
@@ -630,6 +630,69 @@
                     "enabled": true,
                     "id": "fb9f6901-0cf6-4648-9897-0efa03cc6f2a",
                     "name": "TotemManager",
+                    "tags": []
+                },
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "id": "87cfb428-c480-4d40-aaa6-a15bcc33a536",
+                            "position": [
+                                0.0,
+                                -2.9000000953674316,
+                                0.0
+                            ],
+                            "rotation": [
+                                1.0,
+                                0.0,
+                                0.0,
+                                0.0
+                            ],
+                            "scale": [
+                                -120.0,
+                                1.0,
+                                -120.0
+                            ],
+                            "type": "Transform"
+                        },
+                        {
+                            "id": "51c0ac48-c14c-4f37-9189-c6c11d9f72ea",
+                            "materials": [
+                                {
+                                    "pbr": {
+                                        "albedo": [
+                                            0.009803920984268188,
+                                            0.017825324088335037,
+                                            0.039215683937072754
+                                        ],
+                                        "ao": 1.0,
+                                        "emissive": [
+                                            0.0,
+                                            0.0,
+                                            0.0
+                                        ],
+                                        "emissiveStrength": 0.0,
+                                        "metallic": 0.0,
+                                        "roughness": 0.5
+                                    },
+                                    "shader": "shaders/PBRTransparent",
+                                    "textures": {
+                                        "albedo": "",
+                                        "ao": "",
+                                        "emissive": "",
+                                        "metallic": "",
+                                        "normal": "",
+                                        "roughness": ""
+                                    }
+                                }
+                            ],
+                            "model": "primitive/0",
+                            "type": "MeshRenderer"
+                        }
+                    ],
+                    "enabled": false,
+                    "id": "29e470de-d7e5-44c4-a042-aad96b592068",
+                    "name": "BattlefieldOverlay",
                     "tags": []
                 }
             ],
@@ -3798,7 +3861,7 @@
                                                                 0.5
                                                             ],
                                                             "position": [
-                                                                -70.0,
+                                                                0.0,
                                                                 -7.5
                                                             ],
                                                             "rotation": 0.0,
@@ -3822,7 +3885,7 @@
                                                             "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 1,
                                                             "id": "f1bb899e-773e-4e67-a847-edf9b55ad4fa",
-                                                            "scale": 0.20000000298023224,
+                                                            "scale": 0.30000001192092896,
                                                             "text": "PER HEX",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 1
@@ -3870,8 +3933,8 @@
                                                                         1.0
                                                                     ],
                                                                     "size": [
-                                                                        40.0,
-                                                                        40.0
+                                                                        50.0,
+                                                                        50.0
                                                                     ],
                                                                     "type": "RectTransform",
                                                                     "zIndex": 4
@@ -3919,8 +3982,8 @@
                                                                 0.5
                                                             ],
                                                             "position": [
-                                                                -126.0,
-                                                                -32.0
+                                                                -112.19999694824219,
+                                                                -22.799999237060547
                                                             ],
                                                             "rotation": 0.0,
                                                             "scale": [
@@ -3928,8 +3991,8 @@
                                                                 1.0
                                                             ],
                                                             "size": [
-                                                                30.0,
-                                                                30.0
+                                                                40.0,
+                                                                40.0
                                                             ],
                                                             "type": "RectTransform",
                                                             "zIndex": 3
@@ -3978,7 +4041,7 @@
                                                                 0.5
                                                             ],
                                                             "position": [
-                                                                -57.0,
+                                                                0.0,
                                                                 -32.0
                                                             ],
                                                             "rotation": 0.0,
@@ -4002,7 +4065,7 @@
                                                             "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
                                                             "horizontalAlign": 1,
                                                             "id": "2a71c6cc-09ea-4cdf-9e37-3dbad4905d42",
-                                                            "scale": 0.15000000596046448,
+                                                            "scale": 0.25,
                                                             "text": "Deals 5 Damage",
                                                             "type": "UITextRenderer",
                                                             "verticalAlign": 1
@@ -4073,295 +4136,6 @@
                                                                 0.5,
                                                                 0.5
                                                             ],
-                                                            "id": "31eaf60d-737f-42dc-8f00-4b39fdc1d93d",
-                                                            "offsetMax": [
-                                                                0.0,
-                                                                0.0
-                                                            ],
-                                                            "offsetMin": [
-                                                                0.0,
-                                                                0.0
-                                                            ],
-                                                            "pivot": [
-                                                                0.5,
-                                                                0.5
-                                                            ],
-                                                            "position": [
-                                                                70.0,
-                                                                -7.5
-                                                            ],
-                                                            "rotation": 0.0,
-                                                            "scale": [
-                                                                1.0,
-                                                                1.0
-                                                            ],
-                                                            "size": [
-                                                                0.0,
-                                                                0.0
-                                                            ],
-                                                            "type": "RectTransform",
-                                                            "zIndex": 0
-                                                        },
-                                                        {
-                                                            "color": [
-                                                                0.9372549057006836,
-                                                                0.7490196228027344,
-                                                                0.01568627543747425
-                                                            ],
-                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
-                                                            "horizontalAlign": 1,
-                                                            "id": "bbb3d714-6660-4552-8e88-e35b22d2156d",
-                                                            "scale": 0.20000000298023224,
-                                                            "text": "MAXIMUM EFFECT",
-                                                            "type": "UITextRenderer",
-                                                            "verticalAlign": 1
-                                                        }
-                                                    ],
-                                                    "enabled": false,
-                                                    "id": "2cc59b89-f428-4251-bcad-364913069669",
-                                                    "name": "Text",
-                                                    "tags": []
-                                                },
-                                                {
-                                                    "children": [
-                                                        {
-                                                            "children": [],
-                                                            "components": [
-                                                                {
-                                                                    "anchorMax": [
-                                                                        0.5,
-                                                                        0.5
-                                                                    ],
-                                                                    "anchorMin": [
-                                                                        0.5,
-                                                                        0.5
-                                                                    ],
-                                                                    "id": "93afc43d-975e-4518-9a83-c561fa74a696",
-                                                                    "offsetMax": [
-                                                                        0.0,
-                                                                        0.0
-                                                                    ],
-                                                                    "offsetMin": [
-                                                                        0.0,
-                                                                        0.0
-                                                                    ],
-                                                                    "pivot": [
-                                                                        0.5,
-                                                                        0.5
-                                                                    ],
-                                                                    "position": [
-                                                                        -1.0,
-                                                                        2.0
-                                                                    ],
-                                                                    "rotation": 0.0,
-                                                                    "scale": [
-                                                                        1.0,
-                                                                        1.0
-                                                                    ],
-                                                                    "size": [
-                                                                        40.0,
-                                                                        40.0
-                                                                    ],
-                                                                    "type": "RectTransform",
-                                                                    "zIndex": 4
-                                                                },
-                                                                {
-                                                                    "color": [
-                                                                        1.0,
-                                                                        1.0,
-                                                                        1.0,
-                                                                        1.0
-                                                                    ],
-                                                                    "id": "5639489c-6063-4f82-92ec-9ff4bc12ecfd",
-                                                                    "materialPath": "shaders/quad",
-                                                                    "texture": "textures/ui grafiki/ui patterns/leczenie.png",
-                                                                    "type": "ImageRenderer"
-                                                                }
-                                                            ],
-                                                            "enabled": false,
-                                                            "id": "975c13e9-3dad-4929-9f7a-3c9b634ed608",
-                                                            "name": "Empty",
-                                                            "tags": []
-                                                        }
-                                                    ],
-                                                    "components": [
-                                                        {
-                                                            "anchorMax": [
-                                                                0.5,
-                                                                0.5
-                                                            ],
-                                                            "anchorMin": [
-                                                                0.5,
-                                                                0.5
-                                                            ],
-                                                            "id": "56ddd3e9-2cd2-4bbf-bfa5-9a36287ed14c",
-                                                            "offsetMax": [
-                                                                0.0,
-                                                                0.0
-                                                            ],
-                                                            "offsetMin": [
-                                                                0.0,
-                                                                0.0
-                                                            ],
-                                                            "pivot": [
-                                                                0.5,
-                                                                0.5
-                                                            ],
-                                                            "position": [
-                                                                23.0,
-                                                                -32.0
-                                                            ],
-                                                            "rotation": 0.0,
-                                                            "scale": [
-                                                                1.0,
-                                                                1.0
-                                                            ],
-                                                            "size": [
-                                                                30.0,
-                                                                30.0
-                                                            ],
-                                                            "type": "RectTransform",
-                                                            "zIndex": 3
-                                                        },
-                                                        {
-                                                            "color": [
-                                                                1.0,
-                                                                0.0,
-                                                                0.0,
-                                                                1.0
-                                                            ],
-                                                            "id": "47c4fa22-7a07-4b2b-83c6-10f7275fe172",
-                                                            "materialPath": "shaders/quad",
-                                                            "texture": "textures/hex.png",
-                                                            "type": "ImageRenderer"
-                                                        }
-                                                    ],
-                                                    "enabled": false,
-                                                    "id": "516957f0-45e3-4079-89b8-6442560f5411",
-                                                    "name": "Hex_UI",
-                                                    "tags": []
-                                                },
-                                                {
-                                                    "children": [],
-                                                    "components": [
-                                                        {
-                                                            "anchorMax": [
-                                                                0.5,
-                                                                0.5
-                                                            ],
-                                                            "anchorMin": [
-                                                                0.5,
-                                                                0.5
-                                                            ],
-                                                            "id": "9fab734d-04c8-4e06-8267-ca44792326dd",
-                                                            "offsetMax": [
-                                                                0.0,
-                                                                0.0
-                                                            ],
-                                                            "offsetMin": [
-                                                                0.0,
-                                                                0.0
-                                                            ],
-                                                            "pivot": [
-                                                                0.5,
-                                                                0.5
-                                                            ],
-                                                            "position": [
-                                                                89.5999984741211,
-                                                                -32.0
-                                                            ],
-                                                            "rotation": 0.0,
-                                                            "scale": [
-                                                                1.0,
-                                                                1.0
-                                                            ],
-                                                            "size": [
-                                                                0.0,
-                                                                0.0
-                                                            ],
-                                                            "type": "RectTransform",
-                                                            "zIndex": 0
-                                                        },
-                                                        {
-                                                            "color": [
-                                                                1.0,
-                                                                1.0,
-                                                                1.0
-                                                            ],
-                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
-                                                            "horizontalAlign": 1,
-                                                            "id": "5d7c90f2-8ff2-4b7a-b978-9e217d027b16",
-                                                            "scale": 0.15000000596046448,
-                                                            "text": "10 Damage total",
-                                                            "type": "UITextRenderer",
-                                                            "verticalAlign": 1
-                                                        }
-                                                    ],
-                                                    "enabled": false,
-                                                    "id": "736ff5c0-96a8-435b-863e-ffdda9a4de45",
-                                                    "name": "T1",
-                                                    "tags": []
-                                                }
-                                            ],
-                                            "components": [
-                                                {
-                                                    "anchorMax": [
-                                                        0.5,
-                                                        0.5
-                                                    ],
-                                                    "anchorMin": [
-                                                        0.5,
-                                                        0.5
-                                                    ],
-                                                    "id": "667797af-82a4-4592-8652-935f97a34bf6",
-                                                    "offsetMax": [
-                                                        0.0,
-                                                        0.0
-                                                    ],
-                                                    "offsetMin": [
-                                                        0.0,
-                                                        0.0
-                                                    ],
-                                                    "pivot": [
-                                                        0.5,
-                                                        0.5
-                                                    ],
-                                                    "position": [
-                                                        0.0,
-                                                        0.0
-                                                    ],
-                                                    "rotation": 0.0,
-                                                    "scale": [
-                                                        1.0,
-                                                        1.0
-                                                    ],
-                                                    "size": [
-                                                        0.0,
-                                                        0.0
-                                                    ],
-                                                    "type": "RectTransform",
-                                                    "zIndex": 0
-                                                }
-                                            ],
-                                            "enabled": false,
-                                            "id": "b39ffe76-54e5-4269-8646-45f8118dde4b",
-                                            "name": "Right",
-                                            "tags": []
-                                        },
-                                        {
-                                            "children": [
-                                                {
-                                                    "children": [],
-                                                    "components": [
-                                                        {
-                                                            "anchorMax": [
-                                                                0.5,
-                                                                0.5
-                                                            ],
-                                                            "anchorMin": [
-                                                                0.5,
-                                                                0.5
-                                                            ],
                                                             "id": "223f2da1-b24f-49a4-9fa9-796c4c884e65",
                                                             "offsetMax": [
                                                                 0.0,
@@ -4406,65 +4180,6 @@
                                                     ],
                                                     "enabled": false,
                                                     "id": "54688582-022b-4c12-a21b-4716d3698af1",
-                                                    "name": "Empty",
-                                                    "tags": []
-                                                },
-                                                {
-                                                    "children": [],
-                                                    "components": [
-                                                        {
-                                                            "anchorMax": [
-                                                                0.5,
-                                                                0.5
-                                                            ],
-                                                            "anchorMin": [
-                                                                0.5,
-                                                                0.5
-                                                            ],
-                                                            "id": "0bd03233-0b33-43ca-a062-4198add9a2bb",
-                                                            "offsetMax": [
-                                                                0.0,
-                                                                0.0
-                                                            ],
-                                                            "offsetMin": [
-                                                                0.0,
-                                                                0.0
-                                                            ],
-                                                            "pivot": [
-                                                                0.5,
-                                                                0.5
-                                                            ],
-                                                            "position": [
-                                                                0.0,
-                                                                -16.0
-                                                            ],
-                                                            "rotation": 0.0,
-                                                            "scale": [
-                                                                1.0,
-                                                                1.0
-                                                            ],
-                                                            "size": [
-                                                                2.0,
-                                                                50.0
-                                                            ],
-                                                            "type": "RectTransform",
-                                                            "zIndex": 1
-                                                        },
-                                                        {
-                                                            "color": [
-                                                                0.29019609093666077,
-                                                                0.29019609093666077,
-                                                                0.29019609093666077,
-                                                                1.0
-                                                            ],
-                                                            "id": "1f19d82f-4e5a-4f7a-ad12-a59389bab335",
-                                                            "materialPath": "shaders/quad",
-                                                            "texture": "",
-                                                            "type": "ImageRenderer"
-                                                        }
-                                                    ],
-                                                    "enabled": false,
-                                                    "id": "909424ba-eb1e-47c7-ab71-9eeb53b879be",
                                                     "name": "Empty",
                                                     "tags": []
                                                 }
@@ -4588,7 +4303,7 @@
                                                         0.5
                                                     ],
                                                     "position": [
-                                                        -103.80000305175781,
+                                                        -71.5999984741211,
                                                         33.0
                                                     ],
                                                     "rotation": 0.0,
@@ -4672,7 +4387,7 @@
                                                     "horizontalAlign": 1,
                                                     "id": "bc598efa-1eba-4b21-b9ef-ed6c5ce4ba97",
                                                     "scale": 0.4000000059604645,
-                                                    "text": "BONUS HEX",
+                                                    "text": "SKULL",
                                                     "type": "UITextRenderer",
                                                     "verticalAlign": 1
                                                 }
@@ -5760,8 +5475,7 @@
                                     ],
                                     "events": {
                                         "click": [
-                                            "Confirm_Round",
-                                            "Confirm_Round_AttackAnim"
+                                            "Confirm_Round"
                                         ]
                                     },
                                     "hoverColor": [

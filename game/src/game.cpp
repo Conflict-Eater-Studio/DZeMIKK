@@ -253,7 +253,7 @@ void Game::startGame() {
 
             auto nameGO = itemTooltip->findChildByName("Name");
             auto nameText = nameGO->getComponent<dzemikk::UITextRenderer>();
-            nameText->text = "REVEAL PATTERN";
+            nameText->text = "OBSIDIAN";
 
             auto textGO = itemTooltip->findChildByName("Text");
             auto text = textGO->getComponent<dzemikk::UITextRenderer>();
@@ -278,7 +278,7 @@ void Game::startGame() {
 
             auto nameGO = itemTooltip->findChildByName("Name");
             auto nameText = nameGO->getComponent<dzemikk::UITextRenderer>();
-            nameText->text = "REVEAL HEX";
+            nameText->text = "SEASHELL";
 
             auto textGO = itemTooltip->findChildByName("Text");
             auto text = textGO->getComponent<dzemikk::UITextRenderer>();
@@ -659,7 +659,6 @@ void Game::setupWorldVisuals() {
 
     auto* enemyManagerGO = _mainScene.get()->findGameObjectByName("EnemyManager");
     auto* manager = enemyManagerGO->getComponent<game::EnemyManager>();
-
 
     worldVisualManager->showChunkBlockers("chunkMain1", "chunkMain2", manager);
     worldVisualManager->showChunkBlockers("chunkMain2", "chunkMain3", manager);

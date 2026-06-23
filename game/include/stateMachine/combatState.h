@@ -128,12 +128,12 @@ class CombatState : public IGameState {
     /**
      * @brief Vertical offset applied to hidden cells.
      */
-    float _hiddenOffsetY = -7.0F;
+    float _hiddenOffsetY = -8.0F;
 
     /**
      * @brief Speed of the board enter animation.
      */
-    float _animationEnterSpeed = 0.5F;
+    float _animationEnterSpeed = 0.8F;
 
     /**
      * @brief Speed of the board exit animation.

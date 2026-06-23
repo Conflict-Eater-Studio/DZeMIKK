@@ -34,6 +34,8 @@ void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitConte
 
 
 void game::CinematicState::onEnter() {
+    _game->resetExplorationInputState();
+
     cinematicSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
     dzemikk::AssetManager::AssetTask<dzemikk::Sound, cinematicSound::SoundInitContext> taskS;
     taskS.context = sCtx;

@@ -147,11 +147,22 @@ void game::CombatState::onEnter() {
         break;
     }
 
+    auto battlefieldOverlay =
+        _game->getCurrentScene().get()->findGameObjectByName("BattlefieldOverlay");
+    auto playerTransform = _player->getOwner()->transform();
+    battlefieldOverlay->transform()->setPosition(
+        {playerTransform->getPosition().x, -1.0F, playerTransform->getPosition().z});
+    battlefieldOverlay->enabled(true);
+
     startNewTurn();
 }
 
 void game::CombatState::onExit() {
     _game->enableCombatUI(false);
+
+    auto battlefieldOverlay =
+        _game->getCurrentScene().get()->findGameObjectByName("BattlefieldOverlay");
+    battlefieldOverlay->enabled(false);
 
     auto scene = _game->getCurrentScene();
 
@@ -474,6 +485,26 @@ void game::CombatState::resolveConflict() {
         enemyHealth->heal(result.healToEnemy);
     }
 
+    if (playerHealth->isDead()) {
+        _exitAnimation = true;
+        _boardTransition = 1.0F;
+        _playerDied = true;
+
+        combatSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
+        dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS;
+        taskS.context = sCtx;
+        taskS.onLoad = combatSound::onSFXLoad;
+        _game->getEngine()->getAssetManager()->getAsync("audio/prime_przegrana_walka_enhanced.wav",
+                                                        taskS);
+
+        dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS2;
+        taskS2.context = sCtx;
+        taskS2.onLoad = combatSound::onSFXLoad;
+        _game->getEngine()->getAssetManager()->getAsync("audio/prime_wznoszeniePol.wav", taskS2);
+
+        return;
+    }
+
     if (enemyHealth->isDead()) {
         auto* grid = _game->getCurrentScene()
                          .get()
@@ -512,27 +543,7 @@ void game::CombatState::resolveConflict() {
                 enemyManager->removeEnemy(_currentEnemy);
             }
         }
-    }
 
-    if (playerHealth->isDead()) {
-        _exitAnimation = true;
-        _boardTransition = 1.0F;
-        _playerDied = true;
-
-        combatSound::SoundInitContext sCtx(_game->getEngine()->getAudioManager());
-        dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS;
-        taskS.context = sCtx;
-        taskS.onLoad = combatSound::onSFXLoad;
-        _game->getEngine()->getAssetManager()->getAsync("audio/prime_przegrana_walka_enhanced.wav",
-                                                        taskS);
-
-        dzemikk::AssetManager::AssetTask<dzemikk::Sound, combatSound::SoundInitContext> taskS2;
-        taskS2.context = sCtx;
-        taskS2.onLoad = combatSound::onSFXLoad;
-        _game->getEngine()->getAssetManager()->getAsync("audio/prime_wznoszeniePol.wav", taskS2);
-    }
-
-    if (enemyHealth->isDead()) {
         _exitAnimation = true;
         _boardTransition = 1.0F;
 

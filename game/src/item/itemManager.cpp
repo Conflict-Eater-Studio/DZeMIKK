@@ -128,8 +128,8 @@ void ItemManager::spawnItem(const boost::uuids::uuid& chunkId, const HexChunk::H
 
     auto prefab = _assetManager->get<nlohmann::json>(prefabPath);
     go = dzemikk::PrefabSerializer::instantiate(*getOwner()->getScene(), *prefab.get(),
-                                                _assetManager, getOwner());
-
+                                                _assetManager);
+    
     switch (cfg.type) {
     case ItemType::Heal: {
         float healAmount = cfg.healAmount.value_or(10.0F);

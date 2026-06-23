@@ -395,12 +395,6 @@ void game::CombatUIPanel::setupButtonActions(game::CombatUIPanel::PatternPoolObj
             auto* leftTextGo = patternTooltip->findChildByName("Left")->findChildByName("T1");
             auto* leftTextRenderer = leftTextGo->getComponent<dzemikk::UITextRenderer>();
 
-            auto* rightHexGO = patternTooltip->findChildByName("Right")->findChildByName("Hex_UI");
-            auto* rightHexIconGO = rightHexGO->findChildByName("Empty");
-
-            auto* rightTextGo = patternTooltip->findChildByName("Right")->findChildByName("T1");
-            auto* rightTextRenderer = rightTextGo->getComponent<dzemikk::UITextRenderer>();
-
             auto* bonusTooltipTextGO = bonusTooltip->findChildByName("Text");
             auto* bonusTooltipTextRenderer =
                 bonusTooltipTextGO->getComponent<dzemikk::UITextRenderer>();
@@ -423,16 +417,6 @@ void game::CombatUIPanel::setupButtonActions(game::CombatUIPanel::PatternPoolObj
                     "Deals {:.1f} Damage",
                     _patterns->getPattern(obj.patternIndex)->pattern.getEffectStrength());
 
-                rightHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
-                    {1.0F, 0.0F, 0.0F, 1.0F});
-                rightHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
-                    _assetManager->get<dzemikk::Texture>(
-                        "textures/ui grafiki/ui patterns/atak.png"));
-
-                rightTextRenderer->text = std::format(
-                    "{:.1f} Damage total",
-                    _patterns->getPattern(obj.patternIndex)->pattern.getEffectStrength() *
-                        _patterns->getPattern(obj.patternIndex)->pattern.getHexes().size());
                 patternTooltip->enabled(true);
                 break;
             case HexPattern::Type::DEF:
@@ -452,16 +436,6 @@ void game::CombatUIPanel::setupButtonActions(game::CombatUIPanel::PatternPoolObj
                     "Grants {:.1f} Armor",
                     _patterns->getPattern(obj.patternIndex)->pattern.getEffectStrength());
 
-                rightHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
-                    {0.0F, 0.0F, 1.0F, 1.0F});
-                rightHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
-                    _assetManager->get<dzemikk::Texture>(
-                        "textures/ui grafiki/ui patterns/tarcza.png"));
-
-                rightTextRenderer->text = std::format(
-                    "{:.1f} Armor total",
-                    _patterns->getPattern(obj.patternIndex)->pattern.getEffectStrength() *
-                        _patterns->getPattern(obj.patternIndex)->pattern.getHexes().size());
                 patternTooltip->enabled(true);
                 break;
             case HexPattern::Type::HEAL:
@@ -481,16 +455,6 @@ void game::CombatUIPanel::setupButtonActions(game::CombatUIPanel::PatternPoolObj
                     "Restores {:.1f} Health",
                     _patterns->getPattern(obj.patternIndex)->pattern.getEffectStrength());
 
-                rightHexGO->getComponent<dzemikk::ImageRenderer>()->setColor(
-                    {0.0F, 1.0F, 0.0F, 1.0F});
-                rightHexIconGO->getComponent<dzemikk::ImageRenderer>()->setTexture(
-                    _assetManager->get<dzemikk::Texture>(
-                        "textures/ui grafiki/ui patterns/leczenie.png"));
-
-                rightTextRenderer->text = std::format(
-                    "{:.1f} Health total",
-                    _patterns->getPattern(obj.patternIndex)->pattern.getEffectStrength() *
-                        _patterns->getPattern(obj.patternIndex)->pattern.getHexes().size());
                 patternTooltip->enabled(true);
                 break;
             case HexPattern::Type::BONUSHEX:
