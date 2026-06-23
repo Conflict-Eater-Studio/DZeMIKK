@@ -590,33 +590,30 @@ void Game::setupWorldVisuals() {
     worldVisualManager->init();
     worldVisualManager->generatePathBetweenChunks(
         "chunkMain0", "chunkMain1", game::HexCell::Type::Normal, game::HexCell::Type::Bridge);
+
     worldVisualManager->generatePathBetweenChunks("chunkMain1", "chunkMain2",
                                                   game::HexCell::Type::Bridge,
                                                   game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain2", "chunkMain3",
-                                                  game::HexCell::Type::BlockingBridge,
-                                                  game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain3", "chunkMain4",
-                                                  game::HexCell::Type::BlockingBridge,
-                                                  game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain4", "chunkMain5",
-                                                  game::HexCell::Type::BlockingBridge,
-                                                  game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain5", "chunkMain6",
-                                                  game::HexCell::Type::BlockingBridge,
-                                                  game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain6", "chunkMain7",
-                                                  game::HexCell::Type::BlockingBridge,
-                                                  game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain7", "chunkMain8",
-                                                  game::HexCell::Type::BlockingBridge,
-                                                  game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain8", "chunkMain9",
-                                                  game::HexCell::Type::BlockingBridge,
-                                                  game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain9", "chunkMain10",
-                                                  game::HexCell::Type::BlockingBridge,
-                                                  game::HexCell::Type::BlockingBridge);
+    worldVisualManager->generatePathBetweenChunks("chunkMain1", "chunkMain2",
+                                                  game::HexCell::Type::Bridge,
+                                                  game::HexCell::Type::Bridge);
+
+    for (int i = 2; i < 10; ++i) {
+        std::string from = "chunkMain" + std::to_string(i);
+        std::string to = "chunkMain" + std::to_string(i + 1);
+
+        bool found = worldVisualManager->generatePathBetweenChunks(
+            from, to, game::HexCell::Type::BlockingBridge, game::HexCell::Type::BlockingBridge);
+
+        if (!found) {
+            worldVisualManager->generatePathBetweenChunks(from, to, game::HexCell::Type::Bridge,
+                                                          game::HexCell::Type::BlockingBridge);
+
+            worldVisualManager->generatePathBetweenChunks(from, to, game::HexCell::Type::Bridge,
+                                                          game::HexCell::Type::Bridge);
+        }
+    }
+
     worldVisualManager->generatePathBetweenChunks("chunkMain10", "",
                                                   game::HexCell::Type::BlockingBridge,
                                                   game::HexCell::Type::EnemyBattleHex);

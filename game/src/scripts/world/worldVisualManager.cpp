@@ -265,7 +265,7 @@ void game::WorldVisualManager::spawnForestChunk(const std::string& chunkName) {
     }
 }
 
-void game::WorldVisualManager::generatePathBetweenChunks(const std::string& chunkA,
+bool game::WorldVisualManager::generatePathBetweenChunks(const std::string& chunkA,
                                                          const std::string& chunkB,
                                                          HexCell::Type chunkAtype,
                                                          HexCell::Type chunkBtype) {
@@ -280,7 +280,7 @@ void game::WorldVisualManager::generatePathBetweenChunks(const std::string& chun
     }
 
     if (itA == chunks.end() || itB == chunks.end())
-        return;
+        return false;
 
     HexCell* start = getTopHex(itA->second);
     HexCell* target = getTopHex(itB->second);
@@ -295,9 +295,10 @@ void game::WorldVisualManager::generatePathBetweenChunks(const std::string& chun
     }
 
     if (!start || !target)
-        return;
+        return false;
 
     generatePath(start->getCoord(), target->getCoord());
+    return true;
 }
 
 void game::WorldVisualManager::spawnSignToChunk(const std::string& sourceChunk,

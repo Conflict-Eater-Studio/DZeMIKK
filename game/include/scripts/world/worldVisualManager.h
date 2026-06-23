@@ -52,8 +52,9 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
 
     void spawnForestChunk(const std::string& chunkName);
 
-    void generatePathBetweenChunks(const std::string& chunkA, const std::string& chunkB,
+    bool generatePathBetweenChunks(const std::string& chunkA, const std::string& chunkB,
                                    HexCell::Type chunkAtype, HexCell::Type chunkBtype);
+
     void spawnSignToChunk(const std::string& sourceChunk, const std::string& targetChunk);
 
     void spawnCampChunk(const std::string& chunkName);
