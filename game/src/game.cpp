@@ -86,6 +86,7 @@
 #include <healthSystem.h>
 #include <iostream>
 #include <random>
+#include <ecs/components/ui/spriteAnimation.h>
 
 static std::mt19937 rng{std::random_device{}()};
 
@@ -112,6 +113,23 @@ void Game::spawnRandomPointLight() {
     t->setPosition(randVec3(-20.0f, 20.0f));
 
     std::cout << "Spawned random point light\n";
+}
+
+void Game::setupSaveAnim() {
+    auto saveAnimGO = _mainScene.get()->findGameObjectByName("Save_Anim");
+
+    auto* anim = saveAnimGO->addComponent<dzemikk::SpriteAnimation>();
+
+    std::unordered_map<unsigned int, dzemikk::AssetHandle<dzemikk::Texture>> frames;
+
+    for (unsigned int i = 1; i <= 7; i++) {
+        std::string assetName = "textures/load_anim/load_ani" + std::to_string(i) + ".png";
+
+        frames[i - 1] = _engine->getAssetManager()->get<dzemikk::Texture>(assetName);
+    }
+
+    anim->setFrames(frames);
+    anim->setFps(12.0f);
 }
 
 void printHierarchy(dzemikk::GameObject* obj, int depth = 0) {
@@ -216,6 +234,8 @@ void Game::startGame() {
     } else {
         btnResetInteractable->setInteractable(true);
     }
+
+    setupSaveAnim();
 
     auto* logo = _menuScene.get()->findGameObjectByName("Logo");
     logo->addComponent<game::LogoComponent>();

@@ -480,6 +480,10 @@
                                             ]
                                         },
                                         {
+                                            "name": "R90",
+                                            "transitions": []
+                                        },
+                                        {
                                             "name": "R210",
                                             "transitions": []
                                         },
@@ -499,15 +503,11 @@
                                             ]
                                         },
                                         {
-                                            "name": "R90",
+                                            "name": "R150",
                                             "transitions": []
                                         },
                                         {
                                             "name": "R330",
-                                            "transitions": []
-                                        },
-                                        {
-                                            "name": "R150",
                                             "transitions": []
                                         },
                                         {
@@ -16829,6 +16829,65 @@
                     "enabled": false,
                     "id": "7d85a3c2-7b71-4a11-8ba2-627550e51e82",
                     "name": "Heal_Found",
+                    "tags": []
+                },
+                {
+                    "children": [],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                0.5
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                0.5
+                            ],
+                            "id": "9e472e60-b035-44c0-8b1f-742a24b6c0ce",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                0.0,
+                                0.0
+                            ],
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                860.0,
+                                -440.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                100.0,
+                                100.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 0
+                        },
+                        {
+                            "color": [
+                                1.0,
+                                1.0,
+                                1.0,
+                                1.0
+                            ],
+                            "id": "702fb107-8b4a-41c2-a52e-7c0d34a44c1d",
+                            "materialPath": "shaders/quad",
+                            "texture": "textures/load_anim/load_ani2.png",
+                            "type": "ImageRenderer"
+                        }
+                    ],
+                    "enabled": false,
+                    "id": "2f608752-64e3-41ba-b76a-cea2831751b3",
+                    "name": "Save_Anim",
                     "tags": []
                 }
             ],

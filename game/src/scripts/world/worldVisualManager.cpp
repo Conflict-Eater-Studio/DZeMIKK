@@ -551,7 +551,7 @@ bool game::WorldVisualManager::isHexFree(HexCell* hex) const {
     if (hex->getState() == HexCell::State::Prop || hex->getState() == HexCell::State::Item ||
         hex->getState() == HexCell::State::Player || hex->getState() == HexCell::State::Enemy ||
         hex->getState() == HexCell::State::Totem || hex->getState() == HexCell::State::TotemDialog ||
-        hex->getVisualState() == HexCell::VisualState::Path || hex->getVisualState() == HexCell::VisualState::Path)
+        hex->getVisualState() == HexCell::VisualState::Path || hex->getVisualState() == HexCell::VisualState::Signpost)
         return false;
 
     if (hex->getType() == HexCell::Type::PlayerBattleHex ||

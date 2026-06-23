@@ -146,6 +146,8 @@ class World : public dzemikk::MonoBehaviour {
     std::future<void> _saveFuture;
 
     dzemikk::AssetHandle<dzemikk::Model> _hexModel;
+
+    float _saveAnimTimer = 0.0F;
 };
 
 } // namespace game

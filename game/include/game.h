@@ -69,6 +69,7 @@ class Game {
     void setupDialogs();
     void setupWorldVisuals();
     void spawnRandomPointLight();
+    void setupSaveAnim();
 
     dzemikk::Engine* _engine;
     dzemikk::AssetHandle<dzemikk::Scene> _mainScene;

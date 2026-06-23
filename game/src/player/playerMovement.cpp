@@ -341,7 +341,7 @@ std::vector<HexGrid::HexCellPtr> PlayerMovement::findPath(const HexGrid::HexCell
                     continue;
                 }
             }
-            if (neighborCell->getState() == HexCell::State::Prop) {
+            if (neighborCell->getState() == HexCell::State::Prop || neighborCell->getVisualState() == HexCell::VisualState::Signpost) {
                 continue;
             }
             if (neighborCell->getEntity() != nullptr && neighbor != target) {

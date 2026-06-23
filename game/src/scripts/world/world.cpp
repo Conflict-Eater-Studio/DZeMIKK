@@ -19,6 +19,7 @@
 #include "scripts/world/saveSnapshot.h"
 #include "scripts/world/worldHex.h"
 #include "totem/totemManager.h"
+#include <ecs/components/ui/spriteAnimation.h>
 
 #include <boost/uuid/detail/nil_uuid.hpp>
 #include <boost/uuid/string_generator.hpp>
@@ -697,6 +698,10 @@ void World::updateSnapshot() {
 }
 
 void World::saveToFile(const std::string& filename) {
+    auto saveAnimGO = _game->getCurrentScene().get()->findGameObjectByName("Save_Anim");
+    saveAnimGO->enabled(true);
+    saveAnimGO->getComponent<dzemikk::SpriteAnimation>()->play();
+    _saveAnimTimer = 2.0F;
 #if DZEMIKK_DEV_TOOLS
     auto totalStart = std::chrono::steady_clock::now();
 #endif
@@ -766,6 +771,19 @@ void World::saveToFile(const std::string& filename) {
 }
 
 void World::update(double dt) {
+    if (_saveAnimTimer > 0.0F) {
+        _saveAnimTimer -= static_cast<float>(dt);
+
+        if (_saveAnimTimer <= 0.0F) {
+            auto saveAnimGO = _game->getCurrentScene().get()->findGameObjectByName("Save_Anim");
+
+            if (saveAnimGO) {
+                saveAnimGO->getComponent<dzemikk::SpriteAnimation>()->stop();
+                saveAnimGO->enabled(false);
+            }
+        }
+    }
+
     for (const auto& chunk : _grid.getChunks()) {
         for (const auto& [coord, cell] : chunk.second->getHexes()) {
             if (cell->getGenState() == HexCell::GenState::Blocked ||
