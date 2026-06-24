@@ -52,7 +52,7 @@ void game::TotemEntity::use() {
     auto* playerGO = _game->getCurrentScene().get()->findGameObjectByName("Player");
     auto* patternComponent = playerGO->getComponent<game::PlayerPatternComponent>();
     for (auto& pattern : _config.patterns) {
-        patternComponent->addPattern(pattern);
+        patternComponent->addPattern(pattern, 3, 3);
     }
 
     auto* pattern = patternComponent->getPattern(patternComponent->getPatternCount() - 1);

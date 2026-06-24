@@ -733,7 +733,7 @@ void Game::setupWorld() {
                              .steps = 15,
                              .dirFromParent = game::HexCoord::Direction::R330,
                              .unlockPattern = game::HexPattern(
-                                 {{-1, 1}, {0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 12.0F)});
+                                 {{-1, 1}, {0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 20.0F)});
 
         auto chunkMain3 = world->addChunk({.parentPersistantId = chunkMain2,
                                            .name = "chunkMain3",
@@ -768,7 +768,9 @@ void Game::setupWorld() {
         auto chunkMain4Sub1 = world->addChunk({.parentPersistantId = chunkMain4,
                                                .name = "chunkMain4Sub1",
                                                .steps = 13,
-                                               .dirFromParent = game::HexCoord::Direction::R30});
+                                               .dirFromParent = game::HexCoord::Direction::R30,
+                                               .unlockPattern = game::HexPattern({{0, 0}, {1, 0}, {2, 0}, {1, -1}},
+                                               game::HexPattern::Type::ATK, 25.0F)});
 
         auto chunkMain7Sub1 = world->addChunk({.parentPersistantId = chunkMain7,
                                                .name = "chunkMain7Sub1",
@@ -1351,34 +1353,19 @@ void Game::setupPlayer() {
         _playerEntity->teleportTo(_hexGrid->getCell({0, 0}));
 
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}}, game::HexPattern::Type::ATK, 100.0F), 5, 5);
+            game::HexPattern({{0, 0}}, game::HexPattern::Type::ATK, 10.0F), 3, 3);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 150.0F), 5, 5);
-        patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {1, 0}}, game::HexPattern::Type::ATK, 20.0F), 5, 5);
-        patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {0, 1}}, game::HexPattern::Type::ATK, 25.0F),
-            5, 5);
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::ATK, 15.0F), 3, 3);
 
         patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::DEF, 10.0F),
-                                     5, 5);
+                                     3, 3);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::DEF, 15.0F), 5, 5);
-        patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {2, -2}}, game::HexPattern::Type::DEF, 20.0F), 5, 5);
-        patternComponent->addPattern(game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {2, -1}},
-                                                      game::HexPattern::Type::DEF, 25.0F),
-                                     5, 5);
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::DEF, 15.0F), 3, 3);
 
         patternComponent->addPattern(game::HexPattern({{0, 0}}, game::HexPattern::Type::HEAL, 5.0F),
-                                     5, 5);
+                                     3, 3);
         patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 8.0F), 5, 5);
-        patternComponent->addPattern(
-            game::HexPattern({{0, 0}, {1, -1}, {0, -1}}, game::HexPattern::Type::HEAL, 1.0F), 5, 5);
-        patternComponent->addPattern(game::HexPattern({{0, 0}, {1, -1}, {0, -1}, {-1, 0}},
-                                                      game::HexPattern::Type::HEAL, 2.0F),
-                                     5, 5);
+            game::HexPattern({{0, 0}, {1, -1}}, game::HexPattern::Type::HEAL, 8.0F), 3, 3);
     }
 }
 
@@ -1821,12 +1808,27 @@ void Game::setupTotems() {
                 .patterns =
                     {
                         game::HexPattern({{-1, 1}, {0, 0}, {1, -1}}, game::HexPattern::Type::ATK,
-                                         12.0F),
-                        game::HexPattern({{-2, 1}, {0, 0}}, game::HexPattern::Type::DEF, 12.0F),
-                        game::HexPattern({{-1, 2}, {0, 0}, {2, -1}}, game::HexPattern::Type::HEAL,
-                                         12.0F),
+                                         20.0F),
+                        game::HexPattern({{0, 0}, {1, -1}, {2, -2}},
+                                                       game::HexPattern::Type::DEF, 20.0F),
+                        game::HexPattern({{0, 0}, {1, -1}, {1, 0}},
+                                                       game::HexPattern::Type::DEF, 20.0F),
+                        game::HexPattern({{0, 0}, {1, -1}, {0, -1}},
+                                                       game::HexPattern::Type::HEAL, 12.0F),
                     },
             });
+        manager->addTotem(
+            _hexGrid->getChunkByName("chunkMain4")->getPersistantId(),
+                    {
+                        .patterns =
+                            {
+                                game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {0, 1}}, game::HexPattern::Type::ATK, 25.0F),
+                                game::HexPattern({{0, 0}, {1, -1}, {1, 0}, {2, -1}}, game::HexPattern::Type::DEF, 25.0F),
+                                game::HexPattern({{0, 0}, {1, -1}, {0, -1}, {-1, 0}}, game::HexPattern::Type::HEAL, 20.0F),
+                                game::HexPattern({{0, 0}, {1, 0}, {2, 0}, {1, -1}}, game::HexPattern::Type::ATK, 25.0F),
+                                game::HexPattern({{0, 0}, {2, -1}}, game::HexPattern::Type::HEAL, 8.0F),
+                            },
+                    });
     }
 }
 
