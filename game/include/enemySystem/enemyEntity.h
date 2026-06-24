@@ -63,6 +63,7 @@ class EnemyEntity : public Entity {
         j["type"] = static_cast<int>(_type);
         j["personality"] = static_cast<int>(_personality);
         j["config"] = _config;
+        j["name"] = _name;
         return j;
     }
 
@@ -123,10 +124,12 @@ class EnemyEntity : public Entity {
     void setHp(double hp);
     void setEnemyType(EnemyType type);
     void setEnemyPersonality(EnemyPersonality personality);
+    void setName(std::string name);
 
     [[nodiscard]] double getHp() const;
     [[nodiscard]] EnemyType getEnemyType() const;
     [[nodiscard]] EnemyPersonality getEnemyPersonality() const;
+    [[nodiscard]] std::string getName() const;
 
 #pragma endregion
 
@@ -173,6 +176,7 @@ class EnemyEntity : public Entity {
     double _hp = 1;
     EnemyType _type = EnemyType::Normal;
     EnemyPersonality _personality = EnemyPersonality::Balanced;
+    std::string _name = "Enemy";
 
 #pragma endregion
 

@@ -122,6 +122,13 @@ void game::CombatState::onEnter() {
                               ->findDescendantByName("Avatar");
     auto enemyAvatarRenderer = enemyAvatarGO->getComponent<dzemikk::ImageRenderer>();
 
+    auto* enemyNameGO = _game->getCurrentScene().get()->findGameObjectByName("Enemy_Avatar_Panel")->findDescendantByName("Name");
+    if (_currentEnemy->getName().empty()) {
+        enemyNameGO->getComponent<dzemikk::UITextRenderer>()->text = "SERVANT";
+    }else {
+        enemyNameGO->getComponent<dzemikk::UITextRenderer>()->text = _currentEnemy->getName();
+    }
+
     switch (_currentEnemy->getEnemyPersonality()) {
     case EnemyPersonality::Aggressive:
         enemyAvatarRenderer->setTexture(

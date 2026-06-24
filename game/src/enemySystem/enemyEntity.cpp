@@ -78,6 +78,9 @@ void game::EnemyEntity::setEnemyType(EnemyType type) {
 void game::EnemyEntity::setEnemyPersonality(EnemyPersonality personality) {
     _personality = personality;
 }
+void game::EnemyEntity::setName(std::string name) {
+    _name = name;
+}
 
 double game::EnemyEntity::getHp() const {
     return _hp;
@@ -89,6 +92,9 @@ game::EnemyType game::EnemyEntity::getEnemyType() const {
 
 game::EnemyPersonality game::EnemyEntity::getEnemyPersonality() const {
     return _personality;
+}
+std::string game::EnemyEntity::getName() const {
+    return _name;
 }
 
 void game::EnemyEntity::setActionWeights(const EnemyActionWeights& weights) {

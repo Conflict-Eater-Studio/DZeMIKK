@@ -480,10 +480,6 @@
                                             ]
                                         },
                                         {
-                                            "name": "R90",
-                                            "transitions": []
-                                        },
-                                        {
                                             "name": "R210",
                                             "transitions": []
                                         },
@@ -503,11 +499,15 @@
                                             ]
                                         },
                                         {
-                                            "name": "R150",
+                                            "name": "R90",
                                             "transitions": []
                                         },
                                         {
                                             "name": "R330",
+                                            "transitions": []
+                                        },
+                                        {
+                                            "name": "R150",
                                             "transitions": []
                                         },
                                         {
@@ -2826,7 +2826,7 @@
                                                         0.5
                                                     ],
                                                     "position": [
-                                                        -52.400001525878906,
+                                                        82.80000305175781,
                                                         40.0
                                                     ],
                                                     "rotation": 0.0,
@@ -2851,7 +2851,7 @@
                                                     "horizontalAlign": 2,
                                                     "id": "99d444ce-7949-47d2-8f89-9f7742d1493d",
                                                     "scale": 0.6000000238418579,
-                                                    "text": "ENEMY\n",
+                                                    "text": "ENEMY",
                                                     "type": "UITextRenderer",
                                                     "verticalAlign": 1
                                                 }
@@ -3213,8 +3213,8 @@
                                                         0.5
                                                     ],
                                                     "position": [
-                                                        148.0,
-                                                        -55.79999923706055
+                                                        132.3000030517578,
+                                                        -50.099998474121094
                                                     ],
                                                     "rotation": 0.0,
                                                     "scale": [
@@ -3222,8 +3222,8 @@
                                                         1.0
                                                     ],
                                                     "size": [
-                                                        0.0,
-                                                        0.0
+                                                        400.0,
+                                                        50.0
                                                     ],
                                                     "type": "RectTransform",
                                                     "zIndex": 0
@@ -3235,12 +3235,12 @@
                                                         1.0
                                                     ],
                                                     "font": "fonts/Dingos_Font/Dingos-Stamp_Black.otf",
-                                                    "horizontalAlign": 0,
+                                                    "horizontalAlign": 2,
                                                     "id": "df5728ae-443c-4998-a332-ea259c29c303",
                                                     "scale": 0.5099999904632568,
-                                                    "text": "AGGRESIVE",
+                                                    "text": "AGGRESSIVE",
                                                     "type": "UITextRenderer",
-                                                    "verticalAlign": 0
+                                                    "verticalAlign": 1
                                                 }
                                             ],
                                             "enabled": true,

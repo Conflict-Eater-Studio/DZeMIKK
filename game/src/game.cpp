@@ -1421,6 +1421,7 @@ void Game::setupEnemies() {
             .hp = 100,
             .territoryPattern = "1",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain2")->getPersistantId()},
+            .name = "MALAKA'I",
         };
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain1")->getPersistantId(),
                           chunkMain1Config);
@@ -1431,6 +1432,7 @@ void Game::setupEnemies() {
             .hp = 150,
             .territoryPattern = "2",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain3")->getPersistantId()},
+            .name = "NAMAKA"
         };
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain2")->getPersistantId(),
                           chunkMain2Config);
@@ -1440,13 +1442,18 @@ void Game::setupEnemies() {
             .type = game::EnemyType::Special,
             .hp = 200,
             .territoryPattern = "2",
-            .blocksChunks = {_hexGrid->getChunkByName("chunkMain3Sub1")->getPersistantId()}};
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain3Sub1")->getPersistantId()},
+            .name = "KAHEKILI"
+        };
+
         game::EnemySpawnConfig chunkMain3Config2 = {
             .personality = game::EnemyPersonality::Defensive,
             .type = game::EnemyType::Normal,
             .hp = 200,
             .territoryPattern = "3",
-            .blocksChunks = {_hexGrid->getChunkByName("chunkMain4")->getPersistantId()}};
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain4")->getPersistantId()},
+            .name = "KE AKUA"
+        };
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain3")->getPersistantId(),
                           chunkMain3Config1);
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain3")->getPersistantId(),
@@ -1457,7 +1464,9 @@ void Game::setupEnemies() {
             .type = game::EnemyType::Boss,
             .hp = 250,
             .territoryPattern = "5",
-            .blocksChunks = {_hexGrid->getChunkByName("chunkMain5")->getPersistantId()}};
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain5")->getPersistantId()},
+            .name = "KAHUN"
+        };
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain4")->getPersistantId(),
                           chunkMain4Config1);
 
@@ -1466,13 +1475,17 @@ void Game::setupEnemies() {
             .type = game::EnemyType::Normal,
             .hp = 300,
             .territoryPattern = "3",
-            .blocksChunks = {_hexGrid->getChunkByName("chunkMain6")->getPersistantId()}};
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain6")->getPersistantId()},
+            .name = "KAKA'I"
+        };
         game::EnemySpawnConfig chunkMain5Config2 = {
             .personality = game::EnemyPersonality::Aggressive,
             .type = game::EnemyType::Normal,
             .hp = 250,
             .territoryPattern = "3",
-            .blocksChunks = {_hexGrid->getChunkByName("chunkMain6")->getPersistantId()}};
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain6")->getPersistantId()},
+            .name = "MAKUALA"
+        };
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain5")->getPersistantId(),
                           chunkMain5Config1);
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain5")->getPersistantId(),
@@ -1483,7 +1496,9 @@ void Game::setupEnemies() {
             .type = game::EnemyType::Normal,
             .hp = 350,
             .territoryPattern = "4",
-            .blocksChunks = {_hexGrid->getChunkByName("chunkMain7")->getPersistantId()}};
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain7")->getPersistantId()},
+            .name = "HO'OPUNIPUNI"
+        };
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain6")->getPersistantId(),
                           chunkMain6Config);
 
@@ -1492,13 +1507,17 @@ void Game::setupEnemies() {
             .type = game::EnemyType::Normal,
             .hp = 250,
             .territoryPattern = "3",
-            .blocksChunks = {_hexGrid->getChunkByName("chunkMain8")->getPersistantId()}};
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain8")->getPersistantId()},
+            .name = "MAKUAKANE"
+        };
         game::EnemySpawnConfig chunkMain7Config2 = {
             .personality = game::EnemyPersonality::Balanced,
             .type = game::EnemyType::Normal,
             .hp = 300,
             .territoryPattern = "3",
-            .blocksChunks = {_hexGrid->getChunkByName("chunkMain8")->getPersistantId()}};
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain8")->getPersistantId()},
+            .name = "PELEKANE"
+        };
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain7")->getPersistantId(),
                           chunkMain7Config1);
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain7")->getPersistantId(),
@@ -1509,7 +1528,9 @@ void Game::setupEnemies() {
             .type = game::EnemyType::Special,
             .hp = 400,
             .territoryPattern = "5",
-            .blocksChunks = {_hexGrid->getChunkByName("chunkMain7Sub2")->getPersistantId()}};
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain7Sub2")->getPersistantId()},
+            .name = "NALU"
+        };
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain7Sub1")->getPersistantId(),
                           chunkMain7Sub1Config);
 
@@ -1519,6 +1540,7 @@ void Game::setupEnemies() {
             .hp = 350,
             .territoryPattern = "4",
             .blocksChunks = {_hexGrid->getChunkByName("chunkMain7Sub3")->getPersistantId()},
+            .name = "MAKE"
         };
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain7Sub2")->getPersistantId(),
                           chunkMain7Sub2Config);
@@ -1528,13 +1550,16 @@ void Game::setupEnemies() {
             .type = game::EnemyType::Normal,
             .hp = 350,
             .territoryPattern = "4",
-            .blocksChunks = {_hexGrid->getChunkByName("chunkMain9")->getPersistantId()}};
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain9")->getPersistantId()},
+            .name = "POHAKU" };
         game::EnemySpawnConfig chunkMain8Config2 = {
             .personality = game::EnemyPersonality::Balanced,
             .count = 1,
             .hp = 400,
             .territoryPattern = "5",
-            .blocksChunks = {_hexGrid->getChunkByName("chunkMain9")->getPersistantId()}};
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain9")->getPersistantId()},
+            .name = "MAKUALA"
+        };
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain8")->getPersistantId(),
                           chunkMain8Config1);
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain8")->getPersistantId(),
@@ -1546,14 +1571,18 @@ void Game::setupEnemies() {
             .count = 1,
             .hp = 350,
             .territoryPattern = "4",
-            .blocksChunks = {_hexGrid->getChunkByName("chunkMain10")->getPersistantId()}};
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain10")->getPersistantId()},
+            .name = "TUNG TUNG SAHUR"
+        };
         game::EnemySpawnConfig chunkMain9Config2 = {
             .personality = game::EnemyPersonality::Aggressive,
             .type = game::EnemyType::Normal,
             .count = 1,
             .hp = 300,
             .territoryPattern = "1",
-            .blocksChunks = {_hexGrid->getChunkByName("chunkMain10")->getPersistantId()}};
+            .blocksChunks = {_hexGrid->getChunkByName("chunkMain10")->getPersistantId()},
+            .name = "HAULE"
+        };
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain9")->getPersistantId(),
                           chunkMain9Config1);
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain9")->getPersistantId(),
@@ -1565,6 +1594,7 @@ void Game::setupEnemies() {
             .count = 1,
             .hp = 500,
             .territoryPattern = "6",
+            .name = "MO'IO"
         };
         manager->addEnemy(_hexGrid->getChunkByName("chunkMain10")->getPersistantId(),
                           chunkMain10Config);

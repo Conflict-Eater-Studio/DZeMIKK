@@ -32,6 +32,7 @@ struct EnemySpawnConfig {
     int hp;
     std::string territoryPattern;
     std::vector<boost::uuids::uuid> blocksChunks;
+    std::string name;
 };
 
 // NOLINTBEGIN(readability-identifier-naming)
@@ -42,7 +43,9 @@ inline void to_json(nlohmann::json& j, const EnemySpawnConfig& config) {
                        {"count", config.count},
                        {"hp", config.hp},
                        {"territoryPattern", config.territoryPattern},
-                       {"blocksChunks", nlohmann::json::array()}};
+                       {"blocksChunks", nlohmann::json::array()},
+                        {"name", config.name}};
+
 
     for (const auto& chunkId : config.blocksChunks) {
         j["blocksChunks"].push_back(boost::uuids::to_string(chunkId));
@@ -51,7 +54,8 @@ inline void to_json(nlohmann::json& j, const EnemySpawnConfig& config) {
 
 inline void from_json(const nlohmann::json& j, EnemySpawnConfig& config) {
     if (!j.contains("personality") || !j.contains("type") || !j.contains("count") ||
-        !j.contains("hp") || !j.contains("territoryPattern") || !j.contains("blocksChunks")) {
+        !j.contains("hp") || !j.contains("territoryPattern") || !j.contains("blocksChunks")
+        || !j.contains("name")) {
         throw std::runtime_error("Invalid JSON for EnemySpawnConfig");
     }
     if (j.contains("persistantId")) {
@@ -63,6 +67,7 @@ inline void from_json(const nlohmann::json& j, EnemySpawnConfig& config) {
     j.at("count").get_to(config.count);
     j.at("hp").get_to(config.hp);
     j.at("territoryPattern").get_to(config.territoryPattern);
+    j.at("name").get_to(config.name);
     for (const auto& chunkIdStr : j["blocksChunks"]) {
         config.blocksChunks.push_back(
             boost::uuids::string_generator()(chunkIdStr.get<std::string>()));

@@ -196,6 +196,7 @@ void game::EnemyManager::spawnEnemy(const boost::uuids::uuid& chunkId,
     enemy->setHp(config.hp);
     enemy->setEnemyType(config.type);
     enemy->setEnemyPersonality(config.personality);
+    enemy->setName(config.name);
     enemy->setConfig(config);
 
     enemy->onEnter(cell);

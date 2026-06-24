@@ -11,6 +11,11 @@ void game::EnemyTooltip::showTooltip(EnemySpawnConfig config) {
     _tooltipGO->enabled(true);
     _hp->text = std::to_string(config.hp) + "/" + std::to_string(config.hp);
     _slider->onValueChanged(1.0f);
+    if (config.name.empty()) {
+        _name->text = "SERVANT";
+    }else {
+        _name->text = config.name;
+    }
     switch (config.personality) {
     case EnemyPersonality::Aggressive:
         _personality->text = "AGGRESSIVE";
