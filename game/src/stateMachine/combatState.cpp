@@ -152,6 +152,12 @@ void game::CombatState::onEnter() {
         {playerTransform->getPosition().x, -1.0F, playerTransform->getPosition().z});
     battlefieldOverlay->enabled(true);
 
+    auto eAvatarPersonalityGO = _game->getCurrentScene()
+                                    .get()
+                                    ->findGameObjectByName("Enemy_Avatar_Panel")
+                                    ->findDescendantByName("Personality");
+    eAvatarPersonalityGO->enabled(false);
+
     startNewTurn();
 }
 
