@@ -30,6 +30,11 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
         dzemikk::GameObject* object;
     };
 
+    struct SpawnedTipi {
+        HexCell* hex;
+        dzemikk::GameObject* object;
+    };
+
     using Base = dzemikk::MonoBehaviour;
 
     void start() override;
@@ -66,6 +71,7 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
     void showChunkBlockers(const std::string& enemyChunkName, const std::string& blockedChunkName,
                            EnemyManager* enemyManager);
     void clearTreesOnEnemyPaths();
+    void clearTreesOnItemPaths();
   private:
     struct ForestCluster {
         glm::vec3 center;
@@ -87,6 +93,7 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
 
     std::unordered_map < std::string, dzemikk::AssetHandle <nlohmann::json>> _cache;
     std::vector<SpawnedTree> _spawnedTrees;
+    std::vector<SpawnedTipi> _spawnedTipi;
 
     float rand01() {
         return (float)rand() / (float)RAND_MAX;
@@ -103,6 +110,7 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
 
     bool isNearProtectedObject(HexCell* hex, int radius) const;
     void removeTreesFromPath(const std::vector<HexCoord>& path);
+    void removeTipiFromPath(const std::vector<HexCoord>& path);
 };
 
 } // namespace game

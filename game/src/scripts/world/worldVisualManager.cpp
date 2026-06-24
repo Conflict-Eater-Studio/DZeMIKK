@@ -854,6 +854,8 @@ void game::WorldVisualManager::spawnCampChunk(const std::string& chunkName) {
         if (!tipi)
             continue;
 
+        _spawnedTipi.push_back({hex, tipi});
+
         tipi->transform()->setPosition(pos);
 
         glm::vec3 dir = glm::normalize(centerPos - pos);
@@ -933,8 +935,6 @@ void game::WorldVisualManager::showChunkBlockers(const std::string& enemyChunkNa
             }
 
             if (bridgeIndex >= bridgeCells.size()) {
-                spdlog::warn("Not enough valid bridge cells. blockers={} bridges={}", bridgeIndex,
-                             bridgeCells.size());
                 return;
             }
 
@@ -1023,9 +1023,6 @@ void game::WorldVisualManager::clearTreesOnEnemyPaths() {
         if (enemyHexes.empty())
             continue;
 
-        spdlog::critical("[clearTreesOnEnemyPaths] Chunk={} enemy battle hexes={}", chunkName,
-                         enemyHexes.size());
-
         HexCell* startHex = nullptr;
 
         for (auto& hexPtr : hexes) {
@@ -1055,17 +1052,68 @@ void game::WorldVisualManager::clearTreesOnEnemyPaths() {
             continue;
 
         for (auto* enemyHex : enemyHexes) {
-
-            spdlog::critical(
-                "[clearTreesOnEnemyPaths] Generating path from ({},{}) to enemy ({},{})",
-                startHex->getCoord().q(), startHex->getCoord().r(), enemyHex->getCoord().q(),
-                enemyHex->getCoord().r());
-
             auto path = findPath(startHex->getCoord(), enemyHex->getCoord());
 
-            spdlog::critical("[clearTreesOnEnemyPaths] Path size={}", path.size());
+            removeTreesFromPath(path);
+        }
+    }
+}
+
+void game::WorldVisualManager::clearTreesOnItemPaths() {
+    if (!_world)
+        return;
+
+    auto chunks = _world->getVisualHexesByChunk();
+
+    for (auto& [chunkName, hexes] : chunks) {
+
+        std::vector<HexCell*> itemHexes;
+
+        for (auto& hexPtr : hexes) {
+            if (!hexPtr)
+                continue;
+
+            if (hexPtr->getState() == HexCell::State::Item) {
+                itemHexes.push_back(hexPtr.get());
+            }
+        }
+
+        if (itemHexes.empty())
+            continue;
+
+        HexCell* startHex = nullptr;
+
+        for (auto& hexPtr : hexes) {
+            if (!hexPtr)
+                continue;
+
+            auto type = hexPtr->getType();
+
+            if (type == HexCell::Type::Bridge || type == HexCell::Type::BlockingBridge ||
+                type == HexCell::Type::BlockingPattern) {
+
+                if (!startHex) {
+                    startHex = hexPtr.get();
+                } else {
+                    auto* currentT = _world->getHexTransformByCell(*startHex);
+                    auto* candidateT = _world->getHexTransformByCell(*hexPtr);
+
+                    if (candidateT && currentT &&
+                        candidateT->getPosition().y < currentT->getPosition().y) {
+                        startHex = hexPtr.get();
+                    }
+                }
+            }
+        }
+
+        if (!startHex)
+            continue;
+
+        for (auto* itemHex : itemHexes) {
+            auto path = findPath(startHex->getCoord(), itemHex->getCoord());
 
             removeTreesFromPath(path);
+            removeTipiFromPath(path);
         }
     }
 }
@@ -1137,5 +1185,30 @@ void game::WorldVisualManager::removeTreesFromPath(const std::vector<HexCoord>& 
         cell->setState(HexCell::State::Empty);
 
         _spawnedTrees.erase(it);
+    }
+}
+
+void game::WorldVisualManager::removeTipiFromPath(const std::vector<HexCoord>& path) {
+    for (const auto& coord : path) {
+        auto cell = _world->getGrid()->getCell(coord);
+
+        if (!cell) {
+            continue;
+        }
+
+        auto it = std::find_if(_spawnedTipi.begin(), _spawnedTipi.end(),
+                               [&](const SpawnedTipi& tipi) { return tipi.hex == cell.get(); });
+
+        if (it == _spawnedTipi.end()) {
+            continue;
+        }
+
+        if (it->object) {
+            getOwner()->getScene()->destroyGameObject(it->object);
+        }
+
+        cell->setState(HexCell::State::Empty);
+
+        _spawnedTipi.erase(it);
     }
 }
