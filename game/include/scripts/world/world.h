@@ -117,6 +117,38 @@ class World : public dzemikk::MonoBehaviour {
     std::unordered_map<std::string, std::vector<std::shared_ptr<HexCell>>>
     getVisualHexesByChunk() const;
 
+    [[nodiscard]] const std::shared_ptr<dzemikk::Material>& getBaseMaterial() const {
+        return _material;
+    }
+
+    [[nodiscard]] std::shared_ptr<dzemikk::Material>& getBaseMaterial() {
+        return _material;
+    }
+
+    [[nodiscard]] const auto& getHexMaterials() const {
+        return _hexMaterials;
+    }
+
+    [[nodiscard]] auto& getHexMaterials() {
+        return _hexMaterials;
+    }
+
+    [[nodiscard]] const auto& getHexMaterialsGenState() const {
+        return _hexMaterialsGenState;
+    }
+
+    [[nodiscard]] auto& getHexMaterialsGenState() {
+        return _hexMaterialsGenState;
+    }
+
+    [[nodiscard]] const auto& getHexMaterialsVisualState() const {
+        return _hexMaterialsVisualState;
+    }
+
+    [[nodiscard]] auto& getHexMaterialsVisualState() {
+        return _hexMaterialsVisualState;
+    }
+
   private:
     void spawnHexVisual(const std::shared_ptr<HexCell>& cell);
     void despawnHexVisual(const HexCoord& coord);

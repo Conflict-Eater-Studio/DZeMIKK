@@ -1293,7 +1293,6 @@ void Game::setupPlayer() {
     combatPlayerPanel->setAssetManager(_engine->getAssetManager());
     combatPlayerPanel->setCanvas(playerPanel);
     combatPlayerPanel->setEngine(_engine);
-    combatPlayerPanel->setGame(this);
 
     auto* playerHealthGO = _mainScene.get()
                                ->findGameObjectByName("Player_Avatar_Panel")
