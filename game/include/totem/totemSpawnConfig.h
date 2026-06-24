@@ -7,7 +7,6 @@
 #include <boost/uuid/string_generator.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
-
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
@@ -35,7 +34,7 @@ struct TotemSpawnConfig {
     /**
      * @brief Pattern granted or associated with the totem.
      */
-    HexPattern pattern;
+    std::vector<HexPattern> patterns;
 
     /**
      * @brief Prefab used as the root container for the totem.
@@ -61,7 +60,7 @@ struct TotemSpawnConfig {
 inline void to_json(nlohmann::json& j, const TotemSpawnConfig& config) {
     j = nlohmann::json{{"persistantId", boost::uuids::to_string(config.persistantId)},
                        {"chunkId", boost::uuids::to_string(config.chunkId)},
-                       {"pattern", config.pattern},
+                       {"patterns", config.patterns},
                        {"prefabPath", config.prefabPath},
                        {"segmentPool", config.segmentPool},
                        {"used", config.used}};
@@ -73,11 +72,10 @@ inline void from_json(const nlohmann::json& j, TotemSpawnConfig& config) {
             boost::uuids::string_generator()(j.at("persistantId").get<std::string>());
     }
     if (j.contains("chunkId")) {
-        config.chunkId =
-            boost::uuids::string_generator()(j.at("chunkId").get<std::string>());
+        config.chunkId = boost::uuids::string_generator()(j.at("chunkId").get<std::string>());
     }
-    if (j.contains("pattern")) {
-        config.pattern = j.at("pattern").get<HexPattern>();
+    if (j.contains("patterns")) {
+        config.patterns = j.at("patterns").get<std::vector<HexPattern>>();
     }
     if (j.contains("prefabPath")) {
         j.at("prefabPath").get_to(config.prefabPath);

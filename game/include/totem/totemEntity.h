@@ -1,8 +1,13 @@
 #ifndef GAME_TOTEM_ENTITY_H
 #define GAME_TOTEM_ENTITY_H
 
+#include "animation/animationclip.h"
+#include "ecs/components/animator.h"
 #include "map/Entity.h"
 #include "totem/totemSpawnConfig.h"
+
+#include <memory>
+#include <vector>
 
 class Game;
 
@@ -50,7 +55,7 @@ class TotemEntity : public Entity {
      *
      * @return Totem spawn configuration.
      */
-    const TotemSpawnConfig& getConfig() const {
+    [[nodiscard]] const TotemSpawnConfig& getConfig() const {
         return _config;
     }
 
@@ -95,7 +100,13 @@ class TotemEntity : public Entity {
      */
     void lightOn();
 
+    void animatePatterns();
+
+    void update(double deltaTime) override;
+
   private:
+    void spawnNextPattern();
+
     /**
      * @brief Totem configuration data.
      */
@@ -105,6 +116,14 @@ class TotemEntity : public Entity {
      * @brief Owning game instance.
      */
     Game* _game = nullptr;
+
+    dzemikk::Animator* _animator = nullptr;
+
+    std::vector<std::shared_ptr<dzemikk::AnimationClip>> _patternClips;
+
+    float _patternSpawnTimer = 0.0F;
+    size_t _nextPatternIndex = 0;
+    bool _spawningPatterns = false;
 };
 
 } // namespace game

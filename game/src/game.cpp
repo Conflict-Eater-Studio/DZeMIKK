@@ -817,9 +817,8 @@ void Game::setupWorldVisuals() {
     worldVisualManager->generatePathBetweenChunks("chunkMain1", "chunkMain2",
                                                   game::HexCell::Type::Bridge,
                                                   game::HexCell::Type::BlockingBridge);
-    worldVisualManager->generatePathBetweenChunks("chunkMain1", "chunkMain2",
-                                                  game::HexCell::Type::Bridge,
-                                                  game::HexCell::Type::Bridge);
+    worldVisualManager->generatePathBetweenChunks(
+        "chunkMain1", "chunkMain2", game::HexCell::Type::Bridge, game::HexCell::Type::Bridge);
 
     for (int i = 2; i < 10; ++i) {
         std::string from = "chunkMain" + std::to_string(i);
@@ -933,7 +932,6 @@ void Game::setupInputCallbacks() {
         dzemikk::MeshRenderer* currentRenderer = nullptr;
 
         game::EnemyEntity* currentEnemy = nullptr;
-
 
         if (collider) {
             currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
@@ -1765,11 +1763,19 @@ void Game::setupEnemiesTooltip() {
     _enemyTooltip = _mainScene.get()->createGameObject()->addComponent<game::EnemyTooltip>();
 
     auto* enemyPanel = _mainScene.get()->findGameObjectByName("Enemy_Avatar_Panel");
-    auto* nameText = enemyPanel->findDescendantByName("Name")->getComponent<dzemikk::UITextRenderer>();
-    auto* healthText =  enemyPanel->findDescendantByName("Health_Holder")->findDescendantByName("Text")->getComponent<dzemikk::UITextRenderer>();
-    auto* personalityText = enemyPanel->findDescendantByName("Personality")->getComponent<dzemikk::UITextRenderer>();
-    auto* avatarImageRenderer = enemyPanel->findDescendantByName("Avatar_Holder")->findDescendantByName("Avatar")->getComponent<dzemikk::ImageRenderer>();
-    auto* slider = enemyPanel->findDescendantByName("Health_Holder")->findDescendantByName("Slider")->getComponent<dzemikk::UISlider>();
+    auto* nameText =
+        enemyPanel->findDescendantByName("Name")->getComponent<dzemikk::UITextRenderer>();
+    auto* healthText = enemyPanel->findDescendantByName("Health_Holder")
+                           ->findDescendantByName("Text")
+                           ->getComponent<dzemikk::UITextRenderer>();
+    auto* personalityText =
+        enemyPanel->findDescendantByName("Personality")->getComponent<dzemikk::UITextRenderer>();
+    auto* avatarImageRenderer = enemyPanel->findDescendantByName("Avatar_Holder")
+                                    ->findDescendantByName("Avatar")
+                                    ->getComponent<dzemikk::ImageRenderer>();
+    auto* slider = enemyPanel->findDescendantByName("Health_Holder")
+                       ->findDescendantByName("Slider")
+                       ->getComponent<dzemikk::UISlider>();
 
     _enemyTooltip->setTooltipGO(enemyPanel);
     _enemyTooltip->setNameText(nameText);
@@ -1778,7 +1784,6 @@ void Game::setupEnemiesTooltip() {
     _enemyTooltip->setImageRenderer(avatarImageRenderer);
     _enemyTooltip->setSlider(slider);
     _enemyTooltip->setGame(this);
-
 }
 
 void Game::setupTotems() {
@@ -1810,9 +1815,18 @@ void Game::setupTotems() {
     if (!worldData.empty() && worldData.contains("totems")) {
         manager->loadState(worldData["totems"]);
     } else {
-        manager->addTotem(_hexGrid->getChunkByName("chunkMain2")->getPersistantId(),
-                          {.pattern = game::HexPattern({{-1, 1}, {0, 0}, {1, -1}},
-                                                       game::HexPattern::Type::ATK, 12.0F)});
+        manager->addTotem(
+            _hexGrid->getChunkByName("chunkMain2")->getPersistantId(),
+            {
+                .patterns =
+                    {
+                        game::HexPattern({{-1, 1}, {0, 0}, {1, -1}}, game::HexPattern::Type::ATK,
+                                         12.0F),
+                        game::HexPattern({{-2, 1}, {0, 0}}, game::HexPattern::Type::ATK, 12.0F),
+                        game::HexPattern({{-1, 2}, {0, 0}, {2, -1}}, game::HexPattern::Type::ATK,
+                                         12.0F),
+                    },
+            });
     }
 }
 
@@ -1878,7 +1892,8 @@ void Game::setupDialogs() {
                   .text = "You stand upon a land of runes, spirits, and blood offered\n"
                           "to the gods. The shamans have taken your son. They will\n"
                           "sacrifice him in the heart of the volcano."},
-                 {.speaker = "Mother Lily", .text = "I would rather die than let them hurt my child!"},
+                 {.speaker = "Mother Lily",
+                  .text = "I would rather die than let them hurt my child!"},
                  {.speaker = "Totem",
                   .text = "The shamans rule these islands, and their servants will \nstand in your "
                           "way. "
