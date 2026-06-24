@@ -407,8 +407,6 @@ void game::CombatState::startNewTurn() {
         }
     }
 
-    spdlog::critical("Changed {} hexes to inactive material", inactiveCount);
-
     auto* enemyPanel = _game->getCurrentScene().get()->findGameObjectByName("Enemy_Panel");
     auto* enemyPanelUI = enemyPanel->getComponent<CombatUIPanel>();
     enemyPanelUI->refresh(true);

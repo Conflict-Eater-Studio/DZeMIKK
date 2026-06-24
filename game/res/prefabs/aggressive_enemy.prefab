@@ -5,10 +5,10 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "a076cbd4-b32b-4a0a-8754-e8459a4caff5",
+                        "id": "ede4631b-0a16-418f-a6e9-6058b15eff3e",
                         "position": [
                             0.0,
-                            17.0,
+                            30.0,
                             0.0
                         ],
                         "rotation": [
@@ -31,30 +31,30 @@
                             0.08391005545854568,
                             0.08391005545854568
                         ],
-                        "intensity": 3.990999937057495,
+                        "intensity": 6.007999897003174,
                         "range": 31.5,
                         "type": "PointLight"
                     }
                 ],
                 "enabled": true,
-                "id": "bae28df1-2304-46bf-95cf-6d0141e0e65c",
+                "id": "d23d9f54-af1a-404c-8a16-1b6a1e0a83b6",
                 "name": "Light",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "50175d75-9698-4473-a4b2-59347593335a",
+                "id": "b443bb92-57a8-4f8f-884c-108c3bd092ba",
                 "position": [
                     0.0,
                     -0.5,
                     0.0
                 ],
                 "rotation": [
-                    1.0,
-                    4.3711633423981766e-08,
-                    -1.910706852746623e-15,
-                    -4.3711633423981766e-08
+                    -0.7076002955436707,
+                    6.181722511655607e-08,
+                    0.7066129446029663,
+                    6.181722511655607e-08
                 ],
                 "scale": [
                     0.012000000104308128,
@@ -64,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "e3b19090-0ac2-44ba-9061-ae400357aea6",
+                "id": "41b2c5f5-a2ed-4bd3-b161-b8051bfd3a1e",
                 "materials": [
                     {
                         "albedoColor": [
@@ -280,7 +280,7 @@
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "94e72050-78ce-49df-aba3-b77f6f63a3ea",
+                "id": "ecd98300-a5d2-48a9-aa11-e7ada7d49b97",
                 "parameters": {},
                 "stateMachine": [
                     {
@@ -288,11 +288,11 @@
                         "transitions": []
                     },
                     {
-                        "name": "Death",
+                        "name": "Attack",
                         "transitions": []
                     },
                     {
-                        "name": "Attack",
+                        "name": "Death",
                         "transitions": []
                     }
                 ],
@@ -300,7 +300,7 @@
             }
         ],
         "enabled": true,
-        "id": "0a3a3c65-9d84-4e26-a014-1f0323398ef6",
+        "id": "ac26f1e6-bee8-408b-8088-efee308ca43b",
         "name": "Aggressive",
         "tags": []
     }

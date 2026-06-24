@@ -5,10 +5,10 @@
                 "children": [],
                 "components": [
                     {
-                        "id": "b4ab3ea3-08ba-41ba-985c-888d3a92b612",
+                        "id": "ed972940-6426-4f96-9f74-00b6ea6b0166",
                         "position": [
                             -1.2000000476837158,
-                            17.0,
+                            29.0,
                             0.0
                         ],
                         "rotation": [
@@ -31,20 +31,20 @@
                             0.6323529481887817,
                             0.6323529481887817
                         ],
-                        "intensity": 3.7769999504089355,
+                        "intensity": 6.2230000495910645,
                         "range": 10.0,
                         "type": "PointLight"
                     }
                 ],
                 "enabled": true,
-                "id": "3e5c130b-a859-4ab2-9fbc-01b200464898",
+                "id": "a7688a76-306e-4c07-a236-8e807feabe80",
                 "name": "Light",
                 "tags": []
             }
         ],
         "components": [
             {
-                "id": "46ef203c-77fe-4740-a209-4100d6d69d6a",
+                "id": "c7cf054a-a4dd-4c37-8043-02f90f82a436",
                 "position": [
                     0.0,
                     0.30000001192092896,
@@ -64,7 +64,7 @@
                 "type": "Transform"
             },
             {
-                "id": "50a8d132-5f36-4bb1-81ae-08612c4180ca",
+                "id": "3d224e97-f641-4861-83dd-f95603fe91fe",
                 "materials": [
                     {
                         "albedoColor": [
@@ -280,7 +280,7 @@
             {
                 "currentStateName": "Idle",
                 "currentTime": 0.0,
-                "id": "0e417b58-0103-48d6-979d-1bdf949531b9",
+                "id": "cc674849-3971-4193-b29a-60ad04deb93e",
                 "parameters": {},
                 "stateMachine": [
                     {
@@ -288,11 +288,11 @@
                         "transitions": []
                     },
                     {
-                        "name": "Attack",
+                        "name": "Death",
                         "transitions": []
                     },
                     {
-                        "name": "Death",
+                        "name": "Attack",
                         "transitions": []
                     }
                 ],
@@ -300,7 +300,7 @@
             }
         ],
         "enabled": true,
-        "id": "59907e31-d673-487d-9bd8-cf3828bc006a",
+        "id": "7f0dc53f-e423-4ef9-85cf-7dc9f6edb6cb",
         "name": "Balanced ",
         "tags": []
     }
