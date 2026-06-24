@@ -284,19 +284,6 @@ void game::CombatState::onExit() {
 
 void game::CombatState::onUpdate(float dt) {
     if (_exitAnimation) {
-        // HACK: For those who find this, i don't wanna explain XD
-        if (auto* cameraGO = _game->getCurrentScene().get()->findGameObjectByName("Camera");
-            cameraGO) {
-            if (auto effects = cameraGO->getComponents<dzemikk::PostProcessEffect>();
-                !effects.empty()) {
-                for (auto& effect : effects) {
-                    if (effect->getShader().getAssetPath() == "shaders/grayscale" &&
-                        !effect->isEnabled()) {
-                        effect->setEnabled(true);
-                    }
-                }
-            }
-        }
 
         _boardTransition -= dt * _animationExitSpeed;
 
@@ -549,6 +536,20 @@ void game::CombatState::resolveConflict() {
         taskS2.context = sCtx;
         taskS2.onLoad = combatSound::onSFXLoad;
         _game->getEngine()->getAssetManager()->getAsync("audio/prime_wznoszeniePol.wav", taskS2);
+
+        // HACK: For those who find this, i don't wanna explain XD
+        if (auto* cameraGO = _game->getCurrentScene().get()->findGameObjectByName("Camera");
+            cameraGO) {
+            if (auto effects = cameraGO->getComponents<dzemikk::PostProcessEffect>();
+                !effects.empty()) {
+                for (auto& effect : effects) {
+                    if (effect->getShader().getAssetPath() == "shaders/grayscale" &&
+                        !effect->isEnabled()) {
+                        effect->setEnabled(true);
+                    }
+                }
+            }
+        }
 
         return;
     }
