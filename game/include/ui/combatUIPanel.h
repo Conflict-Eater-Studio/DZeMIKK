@@ -86,6 +86,7 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
     void refreshCounts();
     void setHideEmptyPatterns(bool value);
     void setEngine(dzemikk::Engine* engine);
+    void deselectPattern();
 
   private:
     /**
@@ -113,10 +114,6 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
      * @brief Returns the displayed count for a pattern entry.
      */
     [[nodiscard]] int32_t getPatternCount(const PatternComponent::PatternEntry& entry) const;
-    /**
-     * @brief Applies usage-based tinting to a color.
-     */
-    static glm::vec4 applyUsageTint(glm::vec4 base, uint32_t count);
     /**
      * @brief Registers button click/hover/unhover actions once per pooled slot.
      *
@@ -189,6 +186,9 @@ class CombatUIPanel : public dzemikk::MonoBehaviour {
 
     static constexpr size_t kPatternsPerRow = 2;
     static constexpr size_t kMaxVisiblePatterns = 8;
+
+    int _selectedIndex = -1;
+    glm::vec4 _selectedColor = glm::vec4(0.0F);
 
     dzemikk::Engine* _engine = nullptr;
 

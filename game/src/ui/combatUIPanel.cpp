@@ -59,7 +59,7 @@ void game::CombatUIPanel::start() {
 }
 
 void game::CombatUIPanel::update(double deltaTime) {
-    std::ranges::for_each(_patternPool, [](PatternPoolObject& obj) {
+    std::ranges::for_each(_patternPool, [this](PatternPoolObject& obj) {
         if (!obj.used && obj.root->isEnabled()) {
             obj.root->enabled(false);
         }
@@ -139,7 +139,7 @@ void game::CombatUIPanel::createPatternSlot(const PatternComponent::PatternEntry
     poolObjIt->patternIndex = index;
 
     const uint32_t usageCount = getPatternCount(entry);
-    const auto color = applyUsageTint(getPatternBaseColor(entry.pattern.getType()), usageCount);
+    const auto color = getPatternBaseColor(entry.pattern.getType());
 
     setupButton(*poolObjIt, color);
     setupPatternSlotContent(*poolObjIt, entry.pattern, usageCount);
@@ -225,6 +225,25 @@ void game::CombatUIPanel::refreshCounts() {
             int32_t maxCount = patternEntry.maxCount;
             entry.countText->text = std::to_string(count) + "/" + std::to_string(maxCount);
         }
+
+        if (count <= 0) {
+            entry.borderRenderer->setColor({0.6F, 0.6F, 0.6F, 0.5F});
+            entry.button->setInteractable(false);
+            auto style = entry.button->getStyle();
+            style.normalColor = {0.5F, 0.5F, 0.5F, 0.5F};
+            entry.button->setStyle(style);
+        } else {
+            auto color = getPatternBaseColor(patternEntry.pattern.getType());
+            if (_selectedIndex == entry.patternIndex) {
+                entry.borderRenderer->setColor(glm::vec4(1.0F));
+            } else {
+                entry.borderRenderer->setColor({color.r, color.g, color.b, 1.0F});
+            }
+            entry.button->setInteractable(true);
+            auto style = entry.button->getStyle();
+            style.normalColor = color;
+            entry.button->setStyle(style);
+        }
     }
 }
 
@@ -266,16 +285,6 @@ glm::vec4 game::CombatUIPanel::getPatternBaseColor(HexPattern::Type type) {
     default:
         return {0.3F, 0.3F, 0.3F, 0.55F};
     }
-}
-
-glm::vec4 game::CombatUIPanel::applyUsageTint(glm::vec4 base, uint32_t count) {
-    // float intensity = std::min(1.0F, (float)count * 0.2F);
-
-    // base.r += intensity * 0.3F;
-    // base.g += intensity * 0.3F;
-    // base.b += intensity * 0.3F;
-
-    return base;
 }
 
 std::string game::CombatUIPanel::typeName() const {
@@ -369,6 +378,8 @@ void game::CombatUIPanel::setupButtonActions(game::CombatUIPanel::PatternPoolObj
                 return;
             }
             _patterns->usePattern(obj.patternIndex);
+            _selectedIndex = static_cast<int>(obj.patternIndex);
+            obj.borderRenderer->setColor({1.0F, 1.0F, 1.0F, 1.0F});
             refreshCounts();
         },
         actionId);
@@ -617,4 +628,14 @@ bool game::CombatUIPanel::isMouseOverPanel() const {
     constexpr float maxY = 900.0F;
 
     return (mouse.x >= minX && mouse.x <= maxX && mouse.y >= minY && mouse.y <= maxY);
+}
+
+void game::CombatUIPanel::deselectPattern() {
+    for (const auto& p : _patternPool) {
+        if (p.patternIndex == _selectedIndex) {
+            p.borderRenderer->setColor(
+                getPatternBaseColor(_patterns->getPattern(p.patternIndex)->pattern.getType()));
+        }
+    }
+    _selectedIndex = -1;
 }
