@@ -57,6 +57,7 @@
 #include "ecs/components/outlinePostProcessEffect.h"
 #include "ecs/components/postProcessEffect.h"
 #include "ecs/components/ui/uiSlider.h"
+#include "enemySystem/EnemyTooltip.h"
 #include "enemySystem/enemyManager.h"
 #include "enemySystem/enemyPatternComponent.h"
 #include "enemySystem/territoryPatternRegistry.h"
@@ -82,11 +83,11 @@
 #include <ecs/components/animator.h>
 #include <ecs/components/light/pointLight.h>
 #include <ecs/components/skinnedMeshRenderer.h>
+#include <ecs/components/ui/spriteAnimation.h>
 #include <gameStateMachine.h>
 #include <healthSystem.h>
 #include <iostream>
 #include <random>
-#include <ecs/components/ui/spriteAnimation.h>
 
 static std::mt19937 rng{std::random_device{}()};
 
@@ -249,6 +250,7 @@ void Game::startGame() {
     setupPlayer();
     registerDefaultTerritories();
     setupEnemies();
+    setupEnemiesTooltip();
 
     // Setup Items and Totems ALWAYS after Enemies
     setupItems();
@@ -932,6 +934,7 @@ void Game::setupInputCallbacks() {
 
         game::EnemyEntity* currentEnemy = nullptr;
 
+
         if (collider) {
             currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
 
@@ -951,7 +954,7 @@ void Game::setupInputCallbacks() {
 
                     if (currentEnemy) {
                         animEnemy = currentEnemy;
-
+                        _enemyTooltip->showTooltip(currentEnemy->getConfig());
                         animCells.clear();
                         animIndex = 0;
                         animFrameCounter = 0;
@@ -981,6 +984,7 @@ void Game::setupInputCallbacks() {
         };
 
         if (!currentEnemy) {
+            _enemyTooltip->hideTooltip();
             if (lastHighlightedEnemy) {
 
                 for (auto* tCell : lastHighlightedEnemy->getTerritory()) {
@@ -1757,6 +1761,25 @@ void Game::setExplorationState() {
 void Game::setCinematicState() {
     _stateMachine->setState(std::make_unique<game::CinematicState>(this));
 }
+void Game::setupEnemiesTooltip() {
+    _enemyTooltip = _mainScene.get()->createGameObject()->addComponent<game::EnemyTooltip>();
+
+    auto* enemyPanel = _mainScene.get()->findGameObjectByName("Enemy_Avatar_Panel");
+    auto* nameText = enemyPanel->findDescendantByName("Name")->getComponent<dzemikk::UITextRenderer>();
+    auto* healthText =  enemyPanel->findDescendantByName("Health_Holder")->findDescendantByName("Text")->getComponent<dzemikk::UITextRenderer>();
+    auto* personalityText = enemyPanel->findDescendantByName("Personality")->getComponent<dzemikk::UITextRenderer>();
+    auto* avatarImageRenderer = enemyPanel->findDescendantByName("Avatar_Holder")->findDescendantByName("Avatar")->getComponent<dzemikk::ImageRenderer>();
+    auto* slider = enemyPanel->findDescendantByName("Health_Holder")->findDescendantByName("Slider")->getComponent<dzemikk::UISlider>();
+
+    _enemyTooltip->setTooltipGO(enemyPanel);
+    _enemyTooltip->setNameText(nameText);
+    _enemyTooltip->setHealthText(healthText);
+    _enemyTooltip->setPersonalityText(personalityText);
+    _enemyTooltip->setImageRenderer(avatarImageRenderer);
+    _enemyTooltip->setSlider(slider);
+    _enemyTooltip->setGame(this);
+
+}
 
 void Game::setupTotems() {
     if (_worldGO == nullptr || _worldGO->getComponent<game::World>() == nullptr) {
@@ -1850,17 +1873,17 @@ void Game::setupDialogs() {
         manager->addDialog({
             .targetEntityId = entity->getId(),
             .entries =
-                {{.speaker = "Mother", .text = "Where am I? Where is my son?!"},
+                {{.speaker = "Mother Lily", .text = "Where am I? Where is my son?!"},
                  {.speaker = "Totem",
                   .text = "You stand upon a land of runes, spirits, and blood offered\n"
                           "to the gods. The shamans have taken your son. They will\n"
                           "sacrifice him in the heart of the volcano."},
-                 {.speaker = "Mother", .text = "I would rather die than let them hurt my child!"},
+                 {.speaker = "Mother Lily", .text = "I would rather die than let them hurt my child!"},
                  {.speaker = "Totem",
                   .text = "The shamans rule these islands, and their servants will \nstand in your "
                           "way. "
                           "Every step will bring you closer \nto your son... or closer to death."},
-                 {.speaker = "Mother", .text = "I am not afraid. I will fight them!"},
+                 {.speaker = "Mother Lily", .text = "I am not afraid. I will fight them!"},
                  {.speaker = "Totem",
                   .text =
                       "Take these runes. Their power will allow you to \nattack, shield yourself "

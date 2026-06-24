@@ -122,6 +122,7 @@ nlohmann::json DialogManager::saveState() const {
     return j;
 }
 
+
 void DialogManager::loadState(const nlohmann::json& j) {
     for (const auto& [idStr, dialogData] : j.items()) {
         auto entityId = boost::uuids::string_generator()(idStr);

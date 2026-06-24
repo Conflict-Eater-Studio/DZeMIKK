@@ -1,6 +1,7 @@
 #ifndef DZEMIKK_GAME_H
 #define DZEMIKK_GAME_H
 #include "core/engine.h"
+#include "enemySystem/EnemyTooltip.h"
 #include "glad/glad.h"
 #include "map/PlayerEntity.h"
 #include "scripts/world/world.h"
@@ -49,6 +50,7 @@ class Game {
     void setExplorationState();
     void setCinematicState();
 
+    void setupEnemiesTooltip();
     void startGame();
     void restartGame();
     [[nodiscard]] bool isPendingRestart() const;
@@ -87,7 +89,7 @@ class Game {
     game::PlayerMovement* _playerMovement = nullptr;
     game::CameraController* _cameraController = nullptr;
     game::GameStateMachine* _stateMachine = nullptr;
-
+    game::EnemyTooltip* _enemyTooltip = nullptr;
     dzemikk::MeshRenderer* _lastHitRenderer = nullptr;
     std::unordered_map<dzemikk::MeshRenderer*, glm::vec4> _lastHitBaseColors;
 
