@@ -9,6 +9,7 @@
 #include "enemySystem/enemyEntity.h"
 #include "stateMachine/combatState.h"
 #include "stateMachine/explorationState.h"
+#include "stateMachine/cinematicState.h"
 
 namespace game {
 
@@ -44,7 +45,7 @@ void PlayerCombatAnimationController::update(double deltaTime) {
         }
     }
 
-    if (auto* combat = _gameStateMachine->getCurrentStateAs<ExplorationState>()) {
+    if (_gameStateMachine->getCurrentStateAs<ExplorationState>() || _gameStateMachine->getCurrentStateAs<CinematicState>()) {
         _playerAnimator->setBool("isFinished", true);
         canPlay = true;
         _enemyAnimator = nullptr;
@@ -55,12 +56,9 @@ void PlayerCombatAnimationController::update(double deltaTime) {
         _enemyAnimator->play("Idle");
     }
 
-
     if (_playerHealthSystem->getCurrentHealth() <= 0.0f) {
         //_playerAnimator->play("Death");
     }
-
-
 
 }
 
