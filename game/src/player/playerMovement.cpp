@@ -44,17 +44,11 @@ void PlayerMovement::start() {}
 void PlayerMovement::update(double deltaTime) {
     if (!_animator)
         return;
-    if (_path.empty()) {
-        _animator->setInt("isMoving", 0);
-        return;
-    }
 
     updateCellLerps(deltaTime);
 
-    if (_step >= _path.size()) {
+    if (_step >= _path.size() || _path.empty()) {
         _animator->setInt("isMoving", 0);
-        HexGrid::HexCellPtr currentCell = _path[_step - 1];
-
         return;
     }
 
@@ -144,9 +138,9 @@ void PlayerMovement::setHexGrid(HexGrid* hexGrid) {
 }
 void PlayerMovement::moveTo(HexGrid::HexCellPtr cell) {
     std::vector<HexGrid::HexCellPtr> path = findPath(_playerEntity->getCell(), cell);
-    // if (!_animator->getCurrentState()->getClip()->isFinished()){
-    //     _cachedPath = path;
-    // }
+    if (!_animator->getCurrentState()->getClip()->isFinished()){
+         _cachedPath = path;
+     }
     if (_animator->getCurrentState()->getName() == "Idle") {
         _path = path;
         _step = 1;
