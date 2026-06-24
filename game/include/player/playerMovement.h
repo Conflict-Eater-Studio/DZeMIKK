@@ -7,7 +7,7 @@
 
 class Game;
 namespace dzemikk {
-    class Animator;
+class Animator;
 }
 namespace game {
 
@@ -48,6 +48,7 @@ class PlayerMovement : public dzemikk::MonoBehaviour {
     [[nodiscard]] dzemikk::Animator* getAnimator() const;
 
     void setWorld(World* world);
+
   private:
     void lerpCellTo(const HexGrid::HexCellPtr& cell, float targetY, LerpCallback callback);
     void updateCellLerps(double deltaTime);
@@ -70,7 +71,6 @@ class PlayerMovement : public dzemikk::MonoBehaviour {
     glm::vec3 _position;
 
     static bool isWalkableCell(const HexGrid::HexCellPtr& cell);
-    void tryUnlockBlockingPattern(const HexGrid::HexCellPtr& cell);
 };
 } // namespace game
 

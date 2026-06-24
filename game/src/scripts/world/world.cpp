@@ -19,11 +19,11 @@
 #include "scripts/world/saveSnapshot.h"
 #include "scripts/world/worldHex.h"
 #include "totem/totemManager.h"
-#include <ecs/components/ui/spriteAnimation.h>
 
 #include <boost/uuid/detail/nil_uuid.hpp>
 #include <boost/uuid/string_generator.hpp>
 #include <chrono>
+#include <ecs/components/ui/spriteAnimation.h>
 #include <filesystem>
 #include <format>
 #include <fstream>
@@ -394,7 +394,8 @@ nlohmann::json World::save() {
 
 #if DZEMIKK_DEV_TOOLS
     auto gridEnd = std::chrono::steady_clock::now();
-    auto gridUs = std::chrono::duration_cast<std::chrono::microseconds>(gridEnd - gridStart).count();
+    auto gridUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(gridEnd - gridStart).count();
     spdlog::info("[World::save] Grid serialization: {} us", gridUs);
 #endif
 
@@ -414,7 +415,8 @@ nlohmann::json World::save() {
 
 #if DZEMIKK_DEV_TOOLS
     auto itemsEnd = std::chrono::steady_clock::now();
-    auto itemsUs = std::chrono::duration_cast<std::chrono::microseconds>(itemsEnd - itemsStart).count();
+    auto itemsUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(itemsEnd - itemsStart).count();
     spdlog::info("[World::save] Items serialization: {} us", itemsUs);
 #endif
 
@@ -434,7 +436,8 @@ nlohmann::json World::save() {
 
 #if DZEMIKK_DEV_TOOLS
     auto enemiesEnd = std::chrono::steady_clock::now();
-    auto enemiesUs = std::chrono::duration_cast<std::chrono::microseconds>(enemiesEnd - enemiesStart).count();
+    auto enemiesUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(enemiesEnd - enemiesStart).count();
     spdlog::info("[World::save] Enemies serialization: {} us", enemiesUs);
 #endif
 
@@ -450,7 +453,8 @@ nlohmann::json World::save() {
 
 #if DZEMIKK_DEV_TOOLS
     auto totemsEnd = std::chrono::steady_clock::now();
-    auto totemsUs = std::chrono::duration_cast<std::chrono::microseconds>(totemsEnd - totemsStart).count();
+    auto totemsUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(totemsEnd - totemsStart).count();
     spdlog::info("[World::save] Totems serialization: {} us", totemsUs);
 #endif
 
@@ -466,7 +470,8 @@ nlohmann::json World::save() {
 
 #if DZEMIKK_DEV_TOOLS
     auto dialogsEnd = std::chrono::steady_clock::now();
-    auto dialogsUs = std::chrono::duration_cast<std::chrono::microseconds>(dialogsEnd - dialogsStart).count();
+    auto dialogsUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(dialogsEnd - dialogsStart).count();
     spdlog::info("[World::save] Dialogs serialization: {} us", dialogsUs);
 #endif
 
@@ -507,7 +512,8 @@ nlohmann::json World::save() {
 
 #if DZEMIKK_DEV_TOOLS
     auto playerEnd = std::chrono::steady_clock::now();
-    auto playerUs = std::chrono::duration_cast<std::chrono::microseconds>(playerEnd - playerStart).count();
+    auto playerUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(playerEnd - playerStart).count();
     spdlog::info("[World::save] Player serialization: {} us", playerUs);
 #endif
 
@@ -568,7 +574,8 @@ void World::updateSnapshot() {
 
 #if DZEMIKK_DEV_TOOLS
     auto gridEnd = std::chrono::steady_clock::now();
-    auto gridUs = std::chrono::duration_cast<std::chrono::microseconds>(gridEnd - gridStart).count();
+    auto gridUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(gridEnd - gridStart).count();
     spdlog::info("[World::updateSnapshot] Grid cells update: {} us", gridUs);
 #endif
 
@@ -587,7 +594,8 @@ void World::updateSnapshot() {
 
 #if DZEMIKK_DEV_TOOLS
     auto itemsEnd = std::chrono::steady_clock::now();
-    auto itemsUs = std::chrono::duration_cast<std::chrono::microseconds>(itemsEnd - itemsStart).count();
+    auto itemsUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(itemsEnd - itemsStart).count();
     spdlog::info("[World::updateSnapshot] Items update: {} us", itemsUs);
 #endif
 
@@ -606,7 +614,8 @@ void World::updateSnapshot() {
 
 #if DZEMIKK_DEV_TOOLS
     auto enemiesEnd = std::chrono::steady_clock::now();
-    auto enemiesUs = std::chrono::duration_cast<std::chrono::microseconds>(enemiesEnd - enemiesStart).count();
+    auto enemiesUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(enemiesEnd - enemiesStart).count();
     spdlog::info("[World::updateSnapshot] Enemies update: {} us", enemiesUs);
 #endif
 
@@ -625,7 +634,8 @@ void World::updateSnapshot() {
 
 #if DZEMIKK_DEV_TOOLS
     auto totemsEnd = std::chrono::steady_clock::now();
-    auto totemsUs = std::chrono::duration_cast<std::chrono::microseconds>(totemsEnd - totemsStart).count();
+    auto totemsUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(totemsEnd - totemsStart).count();
     spdlog::info("[World::updateSnapshot] Totems update: {} us", totemsUs);
 #endif
 
@@ -641,7 +651,8 @@ void World::updateSnapshot() {
 
 #if DZEMIKK_DEV_TOOLS
     auto dialogsEnd = std::chrono::steady_clock::now();
-    auto dialogsUs = std::chrono::duration_cast<std::chrono::microseconds>(dialogsEnd - dialogsStart).count();
+    auto dialogsUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(dialogsEnd - dialogsStart).count();
     spdlog::info("[World::updateSnapshot] Dialogs update: {} us", dialogsUs);
 #endif
 
@@ -686,13 +697,15 @@ void World::updateSnapshot() {
 
 #if DZEMIKK_DEV_TOOLS
     auto playerEnd = std::chrono::steady_clock::now();
-    auto playerUs = std::chrono::duration_cast<std::chrono::microseconds>(playerEnd - playerStart).count();
+    auto playerUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(playerEnd - playerStart).count();
     spdlog::info("[World::updateSnapshot] Player update: {} us", playerUs);
 #endif
 
 #if DZEMIKK_DEV_TOOLS
     auto totalEnd = std::chrono::steady_clock::now();
-    auto totalUs = std::chrono::duration_cast<std::chrono::microseconds>(totalEnd - totalStart).count();
+    auto totalUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(totalEnd - totalStart).count();
     spdlog::info("[World::updateSnapshot] Total snapshot update: {} us", totalUs);
 #endif
 }
@@ -717,7 +730,9 @@ void World::saveToFile(const std::string& filename) {
         auto fullJson = save();
 #if DZEMIKK_DEV_TOOLS
         auto jsonSaveEnd = std::chrono::steady_clock::now();
-        auto jsonSaveUs = std::chrono::duration_cast<std::chrono::microseconds>(jsonSaveEnd - jsonSaveStart).count();
+        auto jsonSaveUs =
+            std::chrono::duration_cast<std::chrono::microseconds>(jsonSaveEnd - jsonSaveStart)
+                .count();
         spdlog::info("[World::saveToFile] Full JSON save: {} us", jsonSaveUs);
 #endif
 
@@ -727,7 +742,9 @@ void World::saveToFile(const std::string& filename) {
         _snapshot.buildFull(fullJson);
 #if DZEMIKK_DEV_TOOLS
         auto buildSnapshotEnd = std::chrono::steady_clock::now();
-        auto buildSnapshotUs = std::chrono::duration_cast<std::chrono::microseconds>(buildSnapshotEnd - buildSnapshotStart).count();
+        auto buildSnapshotUs = std::chrono::duration_cast<std::chrono::microseconds>(
+                                   buildSnapshotEnd - buildSnapshotStart)
+                                   .count();
         spdlog::info("[World::saveToFile] Build snapshot from JSON: {} us", buildSnapshotUs);
 #endif
 
@@ -748,7 +765,9 @@ void World::saveToFile(const std::string& filename) {
         auto serializedJson = _snapshot.serialize();
 #if DZEMIKK_DEV_TOOLS
         auto serializeEnd = std::chrono::steady_clock::now();
-        auto serializeUs = std::chrono::duration_cast<std::chrono::microseconds>(serializeEnd - serializeStart).count();
+        auto serializeUs =
+            std::chrono::duration_cast<std::chrono::microseconds>(serializeEnd - serializeStart)
+                .count();
         spdlog::info("[World::saveToFile] Snapshot serialize (worker thread): {} us", serializeUs);
 
         auto fileStart = std::chrono::steady_clock::now();
@@ -758,14 +777,16 @@ void World::saveToFile(const std::string& filename) {
         out.close();
 #if DZEMIKK_DEV_TOOLS
         auto fileEnd = std::chrono::steady_clock::now();
-        auto fileUs = std::chrono::duration_cast<std::chrono::microseconds>(fileEnd - fileStart).count();
+        auto fileUs =
+            std::chrono::duration_cast<std::chrono::microseconds>(fileEnd - fileStart).count();
         spdlog::info("[World::saveToFile] File write (worker thread): {} us", fileUs);
 #endif
     });
 
 #if DZEMIKK_DEV_TOOLS
     auto totalEnd = std::chrono::steady_clock::now();
-    auto totalUs = std::chrono::duration_cast<std::chrono::microseconds>(totalEnd - totalStart).count();
+    auto totalUs =
+        std::chrono::duration_cast<std::chrono::microseconds>(totalEnd - totalStart).count();
     spdlog::info("[World::saveToFile] Total main thread time: {} us", totalUs);
 #endif
 }
@@ -775,7 +796,7 @@ void World::update(double dt) {
         _saveAnimTimer -= static_cast<float>(dt);
 
         if (_saveAnimTimer <= 0.0F) {
-            auto saveAnimGO = _game->getCurrentScene().get()->findGameObjectByName("Save_Anim");
+            auto* saveAnimGO = _game->getCurrentScene().get()->findGameObjectByName("Save_Anim");
 
             if (saveAnimGO) {
                 saveAnimGO->getComponent<dzemikk::SpriteAnimation>()->stop();
@@ -833,22 +854,27 @@ void World::update(double dt) {
             if (cell->getHexCell()->getType() == HexCell::Type::BlockingPattern) {
                 cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
                     0, _hexMaterials[HexCell::Type::BlockingPattern]);
-                //color = glm::vec4(0.0F, 1.0F, 0.0F, 1.0F);
-                color = glm::vec4(0.0078f, 0.0196f, 0.0392f, 1.0F);
+                // color = glm::vec4(0.0F, 1.0F, 0.0F, 1.0F);
+                color = glm::vec4(0.0078F, 0.0196F, 0.0392F, 1.0F);
             }
 
             if (cell->getHexCell()->getType() == HexCell::Type::Bridge) {
                 cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
                     0, _hexMaterials[HexCell::Type::Bridge]);
-                //color = glm::vec4(0.0F, 1.0F, 1.0F, 1.0F);
-                color = glm::vec4(1.000, 0.875, 0.580, 1.0F);
+                // color = glm::vec4(0.0F, 1.0F, 1.0F, 1.0F);
+                color = glm::vec4(1.000F, 0.875F, 0.580F, 1.0F);
             }
 
             if (cell->getHexCell()->getType() == HexCell::Type::BlockingBridge) {
                 cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
                     0, _hexMaterials[HexCell::Type::BlockingBridge]);
-                //color = glm::vec4(1.0F, 1.0F, 0.0F, 1.0F);
-                color = glm::vec4(0.0078f, 0.0196f, 0.0392f, 1.0F);
+                color = glm::vec4(0.0078F, 0.0196F, 0.0392F, 1.0F);
+            }
+
+            if (cell->getHexCell()->getType() == HexCell::Type::BridgeHighlighted) {
+                cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->setMaterial(
+                    0, _hexMaterials[HexCell::Type::BridgeHighlighted]);
+                color = glm::vec4(1.000, 0.875, 0.580, 1.0F);
             }
 
             cell->getOwner()->getComponent<dzemikk::MeshRenderer>()->getMaterial(0)->setAlbedoColor(
@@ -934,7 +960,8 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
     }
 
     if (!_hexModel) {
-        _hexModel = _assetManager->get<dzemikk::Model>("models/assets/hexy/hex_wypukly/hex_wypukly.fbx");
+        _hexModel =
+            _assetManager->get<dzemikk::Model>("models/assets/hexy/hex_wypukly/hex_wypukly.fbx");
     }
 
     if (_spawnedHexes.contains(cell->getCoord())) {
@@ -955,7 +982,8 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
     auto worldPos = cell->getCoord().toWorldPosition(1.0F, 0.1F, cell->getHeight());
     obj->transform()->setPosition(worldPos);
     obj->transform()->setScale({1.0F, 1.0F, 1.0F});
-    obj->transform()->setRotation(glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
+    obj->transform()->setRotation(
+        glm::angleAxis(glm::radians(-90.0F), glm::vec3{1.0F, 0.0F, 0.0F}));
     auto* meshRenderer = obj->addComponent<dzemikk::MeshRenderer>();
     meshRenderer->setModel(_hexModel);
     meshRenderer->setCullingRadius(60.0F);
@@ -984,6 +1012,12 @@ void World::spawnHexVisual(const std::shared_ptr<HexCell>& cell) {
         meshRenderer->setMaterial(0, _hexMaterials[HexCell::Type::Bridge]);
         meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(0.0F, 1.0F, 0.0F, 1.0F));
     }
+
+    if (cell->getType() == HexCell::Type::BridgeHighlighted) {
+        meshRenderer->setMaterial(0, _hexMaterials[HexCell::Type::BridgeHighlighted]);
+        meshRenderer->getMaterial(0)->setAlbedoColor(glm::vec4(0.56F, 0.44F, 0.13F, 1.0F));
+    }
+
     if (cell->getType() == HexCell::Type::EnemyBattleHex) {
         if (cell->getVisualState() == HexCell::VisualState::LightUpEnemyBattleHex) {
             meshRenderer->setMaterial(
@@ -1021,6 +1055,7 @@ void World::setMaterial(std::shared_ptr<dzemikk::Material> material) {
     _hexMaterials[HexCell::Type::Bridge] = _material.get()->clone();
     _hexMaterials[HexCell::Type::BlockingBridge] = _material.get()->clone();
     _hexMaterials[HexCell::Type::BlockingPattern] = _material.get()->clone();
+    _hexMaterials[HexCell::Type::BridgeHighlighted] = _material.get()->clone();
 
     _hexMaterialsGenState[HexCell::GenState::Blocked] = _material.get()->clone();
     _hexMaterialsGenState[HexCell::GenState::Protected] = _material.get()->clone();
@@ -1030,9 +1065,10 @@ void World::setMaterial(std::shared_ptr<dzemikk::Material> material) {
 
     auto shader =
         _game->getEngine()->getAssetManager()->get<dzemikk::Shader>("shaders/PBRFresnelGlow");
-    _hexMaterialsVisualState[HexCell::VisualState::LightUpEnemyBattleHex] = _material.get()->clone();
+    _hexMaterialsVisualState[HexCell::VisualState::LightUpEnemyBattleHex] =
+        _material.get()->clone();
     _hexMaterialsVisualState[HexCell::VisualState::LightUpEnemyBattleHex]->setShader(shader);
-
+    _hexMaterials[HexCell::Type::BridgeHighlighted]->setShader(shader);
 }
 
 void World::setPlayer(PlayerEntity* playerEntity) {

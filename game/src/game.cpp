@@ -1822,8 +1822,8 @@ void Game::setupTotems() {
                     {
                         game::HexPattern({{-1, 1}, {0, 0}, {1, -1}}, game::HexPattern::Type::ATK,
                                          12.0F),
-                        game::HexPattern({{-2, 1}, {0, 0}}, game::HexPattern::Type::ATK, 12.0F),
-                        game::HexPattern({{-1, 2}, {0, 0}, {2, -1}}, game::HexPattern::Type::ATK,
+                        game::HexPattern({{-2, 1}, {0, 0}}, game::HexPattern::Type::DEF, 12.0F),
+                        game::HexPattern({{-1, 2}, {0, 0}, {2, -1}}, game::HexPattern::Type::HEAL,
                                          12.0F),
                     },
             });

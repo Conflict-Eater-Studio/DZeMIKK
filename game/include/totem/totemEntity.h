@@ -4,6 +4,7 @@
 #include "animation/animationclip.h"
 #include "ecs/components/animator.h"
 #include "map/Entity.h"
+#include "renderer/material.h"
 #include "totem/totemSpawnConfig.h"
 
 #include <memory>
@@ -124,6 +125,8 @@ class TotemEntity : public Entity {
     float _patternSpawnTimer = 0.0F;
     size_t _nextPatternIndex = 0;
     bool _spawningPatterns = false;
+
+    // std::unordered_map<HexPattern::Type, std::shared_ptr<dzemikk::Material>> _mats;
 };
 
 } // namespace game

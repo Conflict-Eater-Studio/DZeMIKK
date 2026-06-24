@@ -230,37 +230,6 @@ bool PlayerMovement::isWalkableCell(const HexGrid::HexCellPtr& cell) {
            cell->getType() != HexCell::Type::BlockingBridge;
 }
 
-void PlayerMovement::tryUnlockBlockingPattern(const HexGrid::HexCellPtr& cell) {
-    if (!cell || cell->getType() != HexCell::Type::BlockingPattern) {
-        return;
-    }
-
-    const auto* blockingInfo = _hexGrid->findBlockingPatternByCoord(cell->getCoord());
-    if (!blockingInfo || blockingInfo->unlocked) {
-        return;
-    }
-
-    auto* playerGO = getOwner()->getScene()->findGameObjectByTag("Player");
-    if (!playerGO) {
-#if DZEMIKK_DEV_TOOLS
-        spdlog::warn("[PlayerMovement] Player GameObject not found in scene.");
-#endif
-        return;
-    }
-
-    auto* patternComponent = playerGO->getComponent<PlayerPatternComponent>();
-    if (!patternComponent) {
-#if DZEMIKK_DEV_TOOLS
-        spdlog::warn("[PlayerMovement] PlayerPatternComponent not found on Player GameObject.");
-#endif
-        return;
-    }
-
-    if (patternComponent->hasPattern(blockingInfo->pattern)) {
-        _hexGrid->unlockChunk(blockingInfo->blockedChunkId);
-    }
-}
-
 std::vector<HexGrid::HexCellPtr> PlayerMovement::findPath(const HexGrid::HexCellPtr& startCell,
                                                           const HexGrid::HexCellPtr& targetCell) {
     if (startCell == nullptr || targetCell == nullptr) {
@@ -329,7 +298,6 @@ std::vector<HexGrid::HexCellPtr> PlayerMovement::findPath(const HexGrid::HexCell
             auto neighborCell = _hexGrid->getCell(neighbor);
 
             if (neighborCell && neighborCell->getType() == HexCell::Type::BlockingPattern) {
-                tryUnlockBlockingPattern(neighborCell);
                 neighborCell = _hexGrid->getCell(neighbor);
             }
 
@@ -341,7 +309,8 @@ std::vector<HexGrid::HexCellPtr> PlayerMovement::findPath(const HexGrid::HexCell
                     continue;
                 }
             }
-            if (neighborCell->getState() == HexCell::State::Prop || neighborCell->getVisualState() == HexCell::VisualState::Signpost) {
+            if (neighborCell->getState() == HexCell::State::Prop ||
+                neighborCell->getVisualState() == HexCell::VisualState::Signpost) {
                 continue;
             }
             if (neighborCell->getEntity() != nullptr && neighbor != target) {
@@ -359,7 +328,7 @@ std::vector<HexGrid::HexCellPtr> PlayerMovement::findPath(const HexGrid::HexCell
             gScore[neighbor] = neighbourGScore;
 
             const int fScore = neighbourGScore + HexCoord::distance(neighbor, target);
-            frontier.push({neighbor, fScore});
+            frontier.push({.coord = neighbor, .fScore = fScore});
         }
     }
 

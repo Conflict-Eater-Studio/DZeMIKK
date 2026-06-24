@@ -525,7 +525,7 @@ bool HexGrid::unlockChunk(const boost::uuids::uuid& chunkId) {
     for (const auto& coord : info.occupiedCoords) {
         auto cell = parentChunk->getCell(coord);
         if (cell != nullptr) {
-            cell->setType(HexCell::Type::Bridge);
+            cell->setType(HexCell::Type::BridgeHighlighted);
             parentChunk->markSaveDirty();
         }
     }
