@@ -36,8 +36,8 @@ class Dialog {
     void enqueuePlan(const std::string& speaker, const std::string& text) {
 #if DZEMIKK_DEV_TOOLS
         spdlog::info("[Dialog]: Enqueuing plan");
-        _entriesPlan.push({.speaker = speaker, .text = text});
 #endif
+        _entriesPlan.push({.speaker = speaker, .text = text});
     }
     void clearPlan() {
         _entriesPlan = std::queue<Entry>();
