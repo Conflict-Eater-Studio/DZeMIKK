@@ -152,6 +152,12 @@ void game::CombatState::onEnter() {
         {playerTransform->getPosition().x, -1.0F, playerTransform->getPosition().z});
     battlefieldOverlay->enabled(true);
 
+    auto eAvatarPersonalityGO = _game->getCurrentScene()
+                                    .get()
+                                    ->findGameObjectByName("Enemy_Avatar_Panel")
+                                    ->findDescendantByName("Personality");
+    eAvatarPersonalityGO->enabled(false);
+
     startNewTurn();
 }
 
@@ -192,7 +198,10 @@ void game::CombatState::onExit() {
             g->enabled(false);
         }
 
-        cell->setDirty(true);
+        //cell->setDirty(true);
+        auto renderer = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+        renderer->setMaterial(0, world->getHexMaterials()[HexCell::Type::Normal]);
+        renderer->getMaterial(0)->setAlbedoColor({0.075, 0.133, 0.290});
     }
 
     _player->clearTerritory();
@@ -208,8 +217,27 @@ void game::CombatState::onExit() {
 
         if (!_playerDied) {
             cell->setType(HexCell::Type::Normal);
+
+            auto transform = world->getHexTransformByCell(*cell);
+            auto renderer = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+            renderer->setMaterial(0, world->getHexMaterials()[HexCell::Type::Normal]);
+            renderer->getMaterial(0)->setAlbedoColor({0.075, 0.133, 0.290});
         }
-        cell->setDirty(true);
+        //cell->setDirty(true);
+
+
+        if (cell->getVisualState() == HexCell::VisualState::LightUpEnemyBattleHex) {
+            auto transform = world->getHexTransformByCell(*cell);
+            auto renderer = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+            renderer->setMaterial(
+                0, world->getHexMaterialsVisualState()[HexCell::VisualState::LightUpEnemyBattleHex]);
+            renderer->getMaterial(0)->setAlbedoColor({0.173, 0.106, 0.388});
+        } else {
+            auto transform = world->getHexTransformByCell(*cell);
+            auto renderer = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+            renderer->setMaterial(0, world->getHexMaterials()[HexCell::Type::EnemyBattleHex]);
+            renderer->getMaterial(0)->setAlbedoColor({0.1F, 0.0F, 0.4F});
+        }
     }
 
     if (auto enemyCell = grid->findCellByEntity(_currentEnemy); enemyCell) {
@@ -351,6 +379,8 @@ void game::CombatState::startNewTurn() {
         }
     }
 
+    int inactiveCount = 0;
+
     for (auto* cell : _currentEnemy->getTerritory()) {
 
         if (!cell) {
@@ -373,8 +403,11 @@ void game::CombatState::startNewTurn() {
             mesh->setMaterial(0, _enemyBattleHexMaterial);
         } else {
             mesh->setMaterial(0, _emptyEnemyBattleHexMaterial);
+            ++inactiveCount;
         }
     }
+
+    spdlog::critical("Changed {} hexes to inactive material", inactiveCount);
 
     auto* enemyPanel = _game->getCurrentScene().get()->findGameObjectByName("Enemy_Panel");
     auto* enemyPanelUI = enemyPanel->getComponent<CombatUIPanel>();

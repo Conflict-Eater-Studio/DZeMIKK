@@ -7,6 +7,7 @@
 #include "map/PlayerEntity.h"
 #include "map/Entity.h"
 #include "scripts/world/world.h"
+#include <ecs/components/meshRenderer.h>
 
 CombatArenaResult CombatArenaBuilder::build(game::EnemyEntity* enemy, game::PlayerEntity* player,
                                             game::HexGrid* grid, game::World* world) {
@@ -52,6 +53,9 @@ CombatArenaResult CombatArenaBuilder::build(game::EnemyEntity* enemy, game::Play
         cell->setDirty(true);
 
         auto transform = world->getHexTransformByCell(*cell.get());
+        auto renderer = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+        renderer->setMaterial(0, world->getHexMaterials()[game::HexCell::Type::PlayerBattleHex]);
+        renderer->getMaterial(0)->setAlbedoColor({1.0F, 1.0F, 0.0F});
 
         for (auto g : transform->getOwner()->getChildren()) {
             g->enabled(false);

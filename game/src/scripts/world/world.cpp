@@ -31,6 +31,9 @@
 #include <memory>
 #include <random>
 
+#include "gameStateMachine.h"
+#include "stateMachine/combatState.h"
+
 #if DZEMIKK_DEV_TOOLS
 #include <spdlog/spdlog.h>
 #endif
@@ -797,6 +800,11 @@ void World::update(double dt) {
     for (auto* trs : _hexTransforms) {
         auto* cell = trs->getOwner()->getComponent<game::WorldHex>();
         if (cell->getHexCell()->isDirty()) {
+
+            if (_game->getStateMachine()->getCurrentStateAs<CombatState>()) {
+                return;
+            }
+
             auto color = glm::vec4(1.0F);
 
             if (cell->getHexCell()->getType() == HexCell::Type::Normal) {

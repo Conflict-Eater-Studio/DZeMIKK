@@ -157,7 +157,7 @@ void game::CinematicState::onUpdate(float dt) {
 
         glm::quat start = _startRot;
 
-        glm::quat target = glm::quat(glm::vec3(glm::radians(-30.0f), glm::radians(-180.0f), 0.0f));
+        glm::quat target = glm::quat(glm::vec3(glm::radians(-30.0f), glm::radians(-160.0f), 0.0f));
 
         float duration = 2.5f;
         float t = glm::clamp(_textTimer / duration, 0.0f, 1.0f);

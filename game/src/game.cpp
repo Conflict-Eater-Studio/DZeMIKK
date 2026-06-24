@@ -57,6 +57,7 @@
 #include "ecs/components/outlinePostProcessEffect.h"
 #include "ecs/components/postProcessEffect.h"
 #include "ecs/components/ui/uiSlider.h"
+#include "enemySystem/EnemyTooltip.h"
 #include "enemySystem/enemyManager.h"
 #include "enemySystem/enemyPatternComponent.h"
 #include "enemySystem/territoryPatternRegistry.h"
@@ -82,11 +83,11 @@
 #include <ecs/components/animator.h>
 #include <ecs/components/light/pointLight.h>
 #include <ecs/components/skinnedMeshRenderer.h>
+#include <ecs/components/ui/spriteAnimation.h>
 #include <gameStateMachine.h>
 #include <healthSystem.h>
 #include <iostream>
 #include <random>
-#include <ecs/components/ui/spriteAnimation.h>
 
 static std::mt19937 rng{std::random_device{}()};
 
@@ -249,6 +250,7 @@ void Game::startGame() {
     setupPlayer();
     registerDefaultTerritories();
     setupEnemies();
+    setupEnemiesTooltip();
 
     // Setup Items and Totems ALWAYS after Enemies
     setupItems();
@@ -876,6 +878,7 @@ void Game::setupWorldVisuals() {
     worldVisualManager->spawnForestChunk("chunkMain10");
 
     worldVisualManager->clearTreesOnEnemyPaths();
+    worldVisualManager->clearTreesOnItemPaths();
 
     auto* enemyManagerGO = _mainScene.get()->findGameObjectByName("EnemyManager");
     auto* manager = enemyManagerGO->getComponent<game::EnemyManager>();
@@ -931,6 +934,7 @@ void Game::setupInputCallbacks() {
 
         game::EnemyEntity* currentEnemy = nullptr;
 
+
         if (collider) {
             currentRenderer = collider->getOwner()->getComponent<dzemikk::MeshRenderer>();
 
@@ -950,7 +954,7 @@ void Game::setupInputCallbacks() {
 
                     if (currentEnemy) {
                         animEnemy = currentEnemy;
-
+                        _enemyTooltip->showTooltip(currentEnemy->getConfig());
                         animCells.clear();
                         animIndex = 0;
                         animFrameCounter = 0;
@@ -980,6 +984,7 @@ void Game::setupInputCallbacks() {
         };
 
         if (!currentEnemy) {
+            _enemyTooltip->hideTooltip();
             if (lastHighlightedEnemy) {
 
                 for (auto* tCell : lastHighlightedEnemy->getTerritory()) {
@@ -1755,6 +1760,25 @@ void Game::setExplorationState() {
 
 void Game::setCinematicState() {
     _stateMachine->setState(std::make_unique<game::CinematicState>(this));
+}
+void Game::setupEnemiesTooltip() {
+    _enemyTooltip = _mainScene.get()->createGameObject()->addComponent<game::EnemyTooltip>();
+
+    auto* enemyPanel = _mainScene.get()->findGameObjectByName("Enemy_Avatar_Panel");
+    auto* nameText = enemyPanel->findDescendantByName("Name")->getComponent<dzemikk::UITextRenderer>();
+    auto* healthText =  enemyPanel->findDescendantByName("Health_Holder")->findDescendantByName("Text")->getComponent<dzemikk::UITextRenderer>();
+    auto* personalityText = enemyPanel->findDescendantByName("Personality")->getComponent<dzemikk::UITextRenderer>();
+    auto* avatarImageRenderer = enemyPanel->findDescendantByName("Avatar_Holder")->findDescendantByName("Avatar")->getComponent<dzemikk::ImageRenderer>();
+    auto* slider = enemyPanel->findDescendantByName("Health_Holder")->findDescendantByName("Slider")->getComponent<dzemikk::UISlider>();
+
+    _enemyTooltip->setTooltipGO(enemyPanel);
+    _enemyTooltip->setNameText(nameText);
+    _enemyTooltip->setHealthText(healthText);
+    _enemyTooltip->setPersonalityText(personalityText);
+    _enemyTooltip->setImageRenderer(avatarImageRenderer);
+    _enemyTooltip->setSlider(slider);
+    _enemyTooltip->setGame(this);
+
 }
 
 void Game::setupTotems() {
