@@ -875,6 +875,8 @@ void Game::setupWorldVisuals() {
     worldVisualManager->spawnForestChunk("chunkMain9");
     worldVisualManager->spawnForestChunk("chunkMain10");
 
+    worldVisualManager->clearTreesOnEnemyPaths();
+
     auto* enemyManagerGO = _mainScene.get()->findGameObjectByName("EnemyManager");
     auto* manager = enemyManagerGO->getComponent<game::EnemyManager>();
 
