@@ -2,6 +2,7 @@
 
 #include "camera/cameraController.h"
 #include "ecs/components/animator.h"
+#include "ecs/components/postProcessEffect.h"
 #include "enemySystem/combatArenaBuilder.h"
 #include "enemySystem/enemyEntity.h"
 #include "enemySystem/enemyManager.h"
@@ -28,6 +29,7 @@
 #include <ecs/scene.h>
 #include <enemySystem/enemyPatternComponent.h>
 #include <iostream>
+#include <ranges>
 #include <renderer/shader.h>
 
 namespace combatSound {
@@ -282,6 +284,19 @@ void game::CombatState::onExit() {
 
 void game::CombatState::onUpdate(float dt) {
     if (_exitAnimation) {
+        // HACK: For those who find this, i don't wanna explain XD
+        if (auto* cameraGO = _game->getCurrentScene().get()->findGameObjectByName("Camera");
+            cameraGO) {
+            if (auto effects = cameraGO->getComponents<dzemikk::PostProcessEffect>();
+                !effects.empty()) {
+                for (auto& effect : effects) {
+                    if (effect->getShader().getAssetPath() == "shaders/grayscale" &&
+                        !effect->isEnabled()) {
+                        effect->setEnabled(true);
+                    }
+                }
+            }
+        }
 
         _boardTransition -= dt * _animationExitSpeed;
 

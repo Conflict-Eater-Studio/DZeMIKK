@@ -1,6 +1,8 @@
 #include "stateMachine/explorationState.h"
 
 #include "camera/cameraController.h"
+#include "ecs/components/postProcessEffect.h"
+#include "ecs/scene.h"
 #include "game.h"
 
 #include <assetManager/assetmanager.h>
@@ -24,7 +26,20 @@ void onSoundLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitCon
 game::ExplorationState::ExplorationState(Game* game) : _game(game) {}
 
 void game::ExplorationState::onEnter() {
+    // HACK: For those who find this, i don't wanna explain XD
     if (_game && _game->isPendingRestart()) {
+        if (auto* cameraGO = _game->getCurrentScene().get()->findGameObjectByName("Camera");
+            cameraGO) {
+            if (auto effects = cameraGO->getComponents<dzemikk::PostProcessEffect>();
+                !effects.empty()) {
+                for (auto& effect : effects) {
+                    if (effect->getShader().getAssetPath() == "shaders/grayscale" &&
+                        effect->isEnabled()) {
+                        effect->setEnabled(false);
+                    }
+                }
+            }
+        }
         _game->restartGame();
         return;
     }

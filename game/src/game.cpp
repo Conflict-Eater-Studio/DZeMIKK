@@ -684,6 +684,11 @@ void Game::setupMainCamera() {
         _engine->getAssetManager()->get<dzemikk::Shader>("shaders/vignette"));
     postProccessEffect->setPriority(9);
 
+    auto* grayscale = cameraGO->addComponent<dzemikk::PostProcessEffect>();
+    grayscale->setEnabled(false);
+    grayscale->setShader(_engine->getAssetManager()->get<dzemikk::Shader>("shaders/grayscale"));
+    grayscale->setPriority(10);
+
     _engine->getRenderer()->getCameraSystem().setActiveSceneCamera(_mainCamera);
 }
 
