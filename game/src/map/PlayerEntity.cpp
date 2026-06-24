@@ -180,6 +180,29 @@ void PlayerEntity::onEnter(HexCellPtr cell) {
         }
     }
 
+    if (cell->getType() == HexCell::Type::BridgeHighlighted) {
+        auto* hg = _game->getHexGrid();
+        boost::uuids::uuid id = boost::uuids::nil_uuid();
+        for (const auto& [uuid, bpi] : hg->getBlockingPatterns()) {
+            for (const auto& coord : bpi.occupiedCoords) {
+                if (coord == cell->getCoord()) {
+                    id = bpi.blockedChunkId;
+                    break;
+                }
+            }
+        }
+        if (id != boost::uuids::nil_uuid()) {
+            const auto* bpi = hg->getBlockingPatternInfo(id);
+            for (const auto coord : bpi->occupiedCoords) {
+                auto* c = hg->getCell(coord).get();
+                if (c) {
+                    c->setType(HexCell::Type::Bridge);
+                    c->setDirty(true);
+                }
+            }
+        }
+    }
+
     auto neighbors = HexCoord::getNeighbors(cell->getCoord());
     auto* grid = _game->getHexGrid();
     if (grid) {

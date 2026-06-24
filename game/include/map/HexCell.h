@@ -27,7 +27,8 @@ class HexCell {
         EnemyBattleHex,
         Bridge,
         BlockingPattern,
-        BlockingBridge
+        BlockingBridge,
+        BridgeHighlighted,
     };
     enum class GenState : uint8_t { Normal, Blocked, Protected };
     enum class VisualState : uint8_t { None, Path, Signpost, LightUpEnemyBattleHex };
