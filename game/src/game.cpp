@@ -1847,17 +1847,17 @@ void Game::setupDialogs() {
         manager->addDialog({
             .targetEntityId = entity->getId(),
             .entries =
-                {{.speaker = "Mother", .text = "Where am I? Where is my son?!"},
+                {{.speaker = "Mother Lily", .text = "Where am I? Where is my son?!"},
                  {.speaker = "Totem",
                   .text = "You stand upon a land of runes, spirits, and blood offered\n"
                           "to the gods. The shamans have taken your son. They will\n"
                           "sacrifice him in the heart of the volcano."},
-                 {.speaker = "Mother", .text = "I would rather die than let them hurt my child!"},
+                 {.speaker = "Mother Lily", .text = "I would rather die than let them hurt my child!"},
                  {.speaker = "Totem",
                   .text = "The shamans rule these islands, and their servants will \nstand in your "
                           "way. "
                           "Every step will bring you closer \nto your son... or closer to death."},
-                 {.speaker = "Mother", .text = "I am not afraid. I will fight them!"},
+                 {.speaker = "Mother Lily", .text = "I am not afraid. I will fight them!"},
                  {.speaker = "Totem",
                   .text =
                       "Take these runes. Their power will allow you to \nattack, shield yourself "
