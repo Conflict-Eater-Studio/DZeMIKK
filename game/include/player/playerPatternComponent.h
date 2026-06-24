@@ -115,6 +115,7 @@ class PlayerPatternComponent : public PatternComponent {
      * @brief Removes the current preview.
      */
     void deactivatePattern();
+    void deselectPattern();
 
     /**
      * @brief Returns all placed patterns.

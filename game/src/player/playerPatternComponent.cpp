@@ -400,6 +400,7 @@ void game::PlayerPatternComponent::handleRightClick() {
 
     if (_activePatternIndex >= 0) {
         deactivatePattern();
+        deselectPattern();
     }
 
     tryRemovePlacedPatternUnderCursor();
@@ -623,4 +624,12 @@ void game::PlayerPatternComponent::onMouseScrolled(dzemikk::MouseScrolledEvent& 
     const auto& rotatedHexes = pattern.rotate(rotation);
 
     updatePreviewPositions(rotatedHexes);
+}
+
+void game::PlayerPatternComponent::deselectPattern() {
+    _game->getCurrentScene()
+        .get()
+        ->findGameObjectByName("Player_Panel")
+        ->getComponent<game::CombatUIPanel>()
+        ->deselectPattern();
 }
