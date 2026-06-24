@@ -25,6 +25,11 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
         bool allowRotation;
     };
 
+    struct SpawnedTree {
+        HexCell* hex;
+        dzemikk::GameObject* object;
+    };
+
     using Base = dzemikk::MonoBehaviour;
 
     void start() override;
@@ -60,6 +65,7 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
     void spawnCampChunk(const std::string& chunkName);
     void showChunkBlockers(const std::string& enemyChunkName, const std::string& blockedChunkName,
                            EnemyManager* enemyManager);
+    void clearTreesOnEnemyPaths();
   private:
     struct ForestCluster {
         glm::vec3 center;
@@ -68,7 +74,7 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
 
     bool isHexFree(HexCell* hex) const;
 
-    void spawnClusterObject(dzemikk::Scene* scene, const std::string& prefabKey,
+    dzemikk::GameObject* spawnClusterObject(dzemikk::Scene* scene, const std::string& prefabKey,
                             const glm::vec3& pos, float minScale, float maxScale, dzemikk::Transform* parent);
     void spawnRockCluster(dzemikk::Scene* scene, const std::vector<std::string>& rocks,
                           const glm::vec3& basePos, int minCount, int maxCount, float spread,
@@ -80,6 +86,7 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
     dzemikk::AssetManager* _assetManager = nullptr;
 
     std::unordered_map < std::string, dzemikk::AssetHandle <nlohmann::json>> _cache;
+    std::vector<SpawnedTree> _spawnedTrees;
 
     float rand01() {
         return (float)rand() / (float)RAND_MAX;
@@ -93,6 +100,9 @@ class WorldVisualManager : public dzemikk::MonoBehaviour {
 
 
     static const char* personalityToString(EnemyPersonality p);
+
+    bool isNearProtectedObject(HexCell* hex, int radius) const;
+    void removeTreesFromPath(const std::vector<HexCoord>& path);
 };
 
 } // namespace game
