@@ -164,6 +164,10 @@ void game::CombatState::onEnter() {
 void game::CombatState::onExit() {
     _game->enableCombatUI(false);
 
+    auto* playerPanel = _game->getCurrentScene().get()->findGameObjectByName("Player_Panel");
+    auto* combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
+    combatPlayerPanel->deselectPattern();
+
     auto battlefieldOverlay =
         _game->getCurrentScene().get()->findGameObjectByName("BattlefieldOverlay");
     battlefieldOverlay->enabled(false);
