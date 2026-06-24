@@ -19,6 +19,8 @@ void PlayerCombatAnimationController::start() {
             playConfirmRoundAttack();
             canPlay = false;
         }
+
+        spdlog::critical("Anim attack playded");
     }, "Confirm_Round_AttackAnim");
     std::string t = _playerAnimator->getCurrentState()->getName();
 
