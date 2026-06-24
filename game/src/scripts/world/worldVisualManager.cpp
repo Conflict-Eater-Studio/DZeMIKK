@@ -1,21 +1,20 @@
 #define GLM_ENABLE_EXPERIMENTAL
 
 #include "scripts/world/worldVisualManager.h"
+
 #include "game.h"
 
 #include <assetManager/assetmanager.h>
-#include <ecs/serialize/prefabSerializer.h>
-#include <ecs/scene.h>
 #include <ecs/components/camera.h>
 #include <ecs/components/meshRenderer.h>
-
+#include <ecs/scene.h>
+#include <ecs/serialize/prefabSerializer.h>
+#include <enemySystem/enemyManager.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
-#include <enemySystem/enemyManager.h>
+#include <spdlog/spdlog.h>
 
-void game::WorldVisualManager::start() {
-
-}
+void game::WorldVisualManager::start() {}
 
 void game::WorldVisualManager::init() {
     if (_world == nullptr) {
@@ -25,8 +24,10 @@ void game::WorldVisualManager::init() {
     auto chunks = _world->getVisualHexesByChunk();
 
     _cache["Tree_big"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Tree_big.prefab");
-    _cache["Tree_big_with_branches"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Tree_big_with_branches.prefab");
-    _cache["Tree_small_with_branches"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Tree_small_with_branches.prefab");
+    _cache["Tree_big_with_branches"] =
+        _assetManager->get<nlohmann::json>("prefabs/map_assest/Tree_big_with_branches.prefab");
+    _cache["Tree_small_with_branches"] =
+        _assetManager->get<nlohmann::json>("prefabs/map_assest/Tree_small_with_branches.prefab");
     _cache["Bush"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Bush.prefab");
     _cache["Bush2"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Bush2.prefab");
     _cache["Camp_fire"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Camp_fire.prefab");
@@ -34,12 +35,13 @@ void game::WorldVisualManager::init() {
     _cache["Rock2"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Rock2.prefab");
     _cache["Rock3"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Rock3.prefab");
     _cache["Tipi"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Tipi.prefab");
-    _cache["Tipi_sticks"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Tipi_sticks.prefab");
+    _cache["Tipi_sticks"] =
+        _assetManager->get<nlohmann::json>("prefabs/map_assest/Tipi_sticks.prefab");
     _cache["Tree_bush"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Tree_bush.prefab");
     _cache["Tree_smal"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Tree_smal.prefab");
     _cache["Grass1"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Grass1.prefab");
     _cache["Signpost"] = _assetManager->get<nlohmann::json>("prefabs/map_assest/Signpost.prefab");
-    
+
     _cache["mask_att"] = _assetManager->get<nlohmann::json>("prefabs/mask/mask_att.prefab");
     _cache["mask_bal"] = _assetManager->get<nlohmann::json>("prefabs/mask/mask_bal.prefab");
     _cache["mask_deff"] = _assetManager->get<nlohmann::json>("prefabs/mask/mask_deff.prefab");
@@ -96,14 +98,14 @@ void game::WorldVisualManager::spawnPrefabOnChunk(const std::string& chunkName,
         if (!transform)
             continue;
 
-        auto* go = dzemikk::PrefabSerializer::instantiate(*scene, *prefabIt->second.get(),
-                                                          _assetManager);
+        auto* go =
+            dzemikk::PrefabSerializer::instantiate(*scene, *prefabIt->second.get(), _assetManager);
         if (!go)
             continue;
 
         go->transform()->setPosition(transform->getPosition());
 
-        go->setName("ChunkSpawn_" + chunkName);        
+        go->setName("ChunkSpawn_" + chunkName);
         hex->setState(HexCell::State::Prop);
     }
 }
@@ -206,16 +208,17 @@ void game::WorldVisualManager::spawnForestChunk(const std::string& chunkName) {
             dzemikk::GameObject* tree = nullptr;
 
             if (treeRoll < 0.30f) {
-                tree = spawnClusterObject(scene, "Tree_big_with_branches", pos, 1.0f, 1.4f, _world->getHexTransformByCell(*hex));
+                tree = spawnClusterObject(scene, "Tree_big_with_branches", pos, 1.0f, 1.4f,
+                                          _world->getHexTransformByCell(*hex));
             } else if (treeRoll < 0.50f) {
                 tree = spawnClusterObject(scene, "Tree_big", pos, 0.8f, 1.2f,
-                                   _world->getHexTransformByCell(*hex));
+                                          _world->getHexTransformByCell(*hex));
             } else if (treeRoll < 0.65f) {
                 tree = spawnClusterObject(scene, "Tree_small_with_branches", pos, 0.7f, 1.1f,
-                                   _world->getHexTransformByCell(*hex));
+                                          _world->getHexTransformByCell(*hex));
             } else {
                 tree = spawnClusterObject(scene, "Tree_smal", pos, 0.8f, 1.2f,
-                                   _world->getHexTransformByCell(*hex));
+                                          _world->getHexTransformByCell(*hex));
             }
             if (tree) {
                 _spawnedTrees.push_back({hex, tree});
@@ -259,10 +262,10 @@ void game::WorldVisualManager::spawnForestChunk(const std::string& chunkName) {
 
             if (treeRoll < 0.65f) {
                 tree = spawnClusterObject(scene, "Tree_small_with_branches", pos, 0.7f, 1.1f,
-                                   _world->getHexTransformByCell(*hex));
+                                          _world->getHexTransformByCell(*hex));
             } else {
                 tree = spawnClusterObject(scene, "Tree_smal", pos, 0.8f, 1.2f,
-                                   _world->getHexTransformByCell(*hex));
+                                          _world->getHexTransformByCell(*hex));
             }
 
             if (tree) {
@@ -295,12 +298,14 @@ bool game::WorldVisualManager::generatePathBetweenChunks(const std::string& chun
     HexCell* start = getTopHex(itA->second);
     HexCell* target = getTopHex(itB->second);
 
-    if (chunkAtype == HexCell::Type::BlockingBridge || chunkAtype == HexCell::Type::BlockingPattern || chunkAtype == HexCell::Type::Bridge) {
+    if (chunkAtype == HexCell::Type::BlockingBridge ||
+        chunkAtype == HexCell::Type::BlockingPattern || chunkAtype == HexCell::Type::Bridge) {
         start = getExtremeHexOfType(itA->second, chunkAtype, true);
     }
 
     if (chunkBtype == HexCell::Type::BlockingBridge ||
-        chunkBtype == HexCell::Type::BlockingPattern || chunkBtype == HexCell::Type::Bridge || chunkBtype == HexCell::Type::EnemyBattleHex) {
+        chunkBtype == HexCell::Type::BlockingPattern || chunkBtype == HexCell::Type::Bridge ||
+        chunkBtype == HexCell::Type::EnemyBattleHex) {
         target = getExtremeHexOfType(itB->second, chunkBtype, true);
     }
 
@@ -432,7 +437,8 @@ void game::WorldVisualManager::spawnSignToChunk(const std::string& sourceChunk,
     sign->transform()->setRotation(rot);
 }
 
-game::HexCell* game::WorldVisualManager::getTopHex(const std::vector<std::shared_ptr<HexCell>>& hexes) {
+game::HexCell*
+game::WorldVisualManager::getTopHex(const std::vector<std::shared_ptr<HexCell>>& hexes) {
 
     HexCell* result = nullptr;
     float bestZ = FLT_MAX;
@@ -504,7 +510,8 @@ void game::WorldVisualManager::generatePath(const HexCoord& start, const HexCoor
     }
 }
 
-std::vector<game::HexCoord> game::WorldVisualManager::findPath(const HexCoord& start, const HexCoord& goal) {
+std::vector<game::HexCoord> game::WorldVisualManager::findPath(const HexCoord& start,
+                                                               const HexCoord& goal) {
     std::queue<HexCoord> open;
     std::unordered_map<HexCoord, HexCoord> cameFrom;
     std::unordered_set<HexCoord> visited;
@@ -560,8 +567,10 @@ bool game::WorldVisualManager::isHexFree(HexCell* hex) const {
 
     if (hex->getState() == HexCell::State::Prop || hex->getState() == HexCell::State::Item ||
         hex->getState() == HexCell::State::Player || hex->getState() == HexCell::State::Enemy ||
-        hex->getState() == HexCell::State::Totem || hex->getState() == HexCell::State::TotemDialog ||
-        hex->getVisualState() == HexCell::VisualState::Path || hex->getVisualState() == HexCell::VisualState::Signpost)
+        hex->getState() == HexCell::State::Totem ||
+        hex->getState() == HexCell::State::TotemDialog ||
+        hex->getVisualState() == HexCell::VisualState::Path ||
+        hex->getVisualState() == HexCell::VisualState::Signpost)
         return false;
 
     if (hex->getType() == HexCell::Type::PlayerBattleHex ||
@@ -582,7 +591,7 @@ bool game::WorldVisualManager::isHexFree(HexCell* hex) const {
         if (!neighbor)
             continue;
 
-        if (neighbor->getType() == HexCell::Type::EnemyBattleHex || 
+        if (neighbor->getType() == HexCell::Type::EnemyBattleHex ||
             neighbor->getType() == HexCell::Type::BlockingBridge ||
             neighbor->getType() == HexCell::Type::BlockingPattern ||
             neighbor->getType() == HexCell::Type::Bridge ||
@@ -596,14 +605,16 @@ bool game::WorldVisualManager::isHexFree(HexCell* hex) const {
 }
 
 dzemikk::GameObject* game::WorldVisualManager::spawnClusterObject(dzemikk::Scene* scene,
-                                                  const std::string& prefabKey,
-                                                  const glm::vec3& pos, float minScale,
-                                                  float maxScale, dzemikk::Transform* parent) {
+                                                                  const std::string& prefabKey,
+                                                                  const glm::vec3& pos,
+                                                                  float minScale, float maxScale,
+                                                                  dzemikk::Transform* parent) {
     auto it = _cache.find(prefabKey);
     if (it == _cache.end())
         return nullptr;
 
-    auto* go = dzemikk::PrefabSerializer::instantiate(*scene, *it->second.get(), _assetManager, parent->getOwner());
+    auto* go = dzemikk::PrefabSerializer::instantiate(*scene, *it->second.get(), _assetManager,
+                                                      parent->getOwner());
     if (!go)
         return nullptr;
 
@@ -634,7 +645,7 @@ dzemikk::GameObject* game::WorldVisualManager::spawnClusterObject(dzemikk::Scene
         }
     }
 
-        if (prefabKey == "Tree_small_with_branches") {
+    if (prefabKey == "Tree_small_with_branches") {
         auto& children = go->getChildren();
 
         for (auto go : children) {
@@ -662,8 +673,10 @@ dzemikk::GameObject* game::WorldVisualManager::spawnClusterObject(dzemikk::Scene
     return go;
 }
 
-void game::WorldVisualManager::spawnRockCluster(dzemikk::Scene* scene, const std::vector<std::string>& rocks,
-                      const glm::vec3& basePos, int minCount, int maxCount, float spread, float minScale,
+void game::WorldVisualManager::spawnRockCluster(dzemikk::Scene* scene,
+                                                const std::vector<std::string>& rocks,
+                                                const glm::vec3& basePos, int minCount,
+                                                int maxCount, float spread, float minScale,
                                                 float maxScale, dzemikk::Transform* parent) {
 
     int count = minCount + rand() % (maxCount - minCount + 1);
@@ -673,8 +686,8 @@ void game::WorldVisualManager::spawnRockCluster(dzemikk::Scene* scene, const std
 
         glm::vec3 offset((rand01() - 0.5f) * spread, (rand01() - 0.5f) * spread, 0.0f);
 
-        auto* go =
-            dzemikk::PrefabSerializer::instantiate(*scene, *_cache[prefab].get(), _assetManager, parent->getOwner());
+        auto* go = dzemikk::PrefabSerializer::instantiate(*scene, *_cache[prefab].get(),
+                                                          _assetManager, parent->getOwner());
 
         if (!go)
             continue;
@@ -995,20 +1008,23 @@ void game::WorldVisualManager::clearTreesOnEnemyPaths() {
     auto chunks = _world->getVisualHexesByChunk();
 
     for (auto& [chunkName, hexes] : chunks) {
-        HexCell* enemyHex = nullptr;
+
+        std::vector<HexCell*> enemyHexes;
 
         for (auto& hexPtr : hexes) {
             if (!hexPtr)
                 continue;
 
             if (hexPtr->getType() == HexCell::Type::EnemyBattleHex) {
-                enemyHex = hexPtr.get();
-                break;
+                enemyHexes.push_back(hexPtr.get());
             }
         }
 
-        if (!enemyHex)
+        if (enemyHexes.empty())
             continue;
+
+        spdlog::critical("[clearTreesOnEnemyPaths] Chunk={} enemy battle hexes={}", chunkName,
+                         enemyHexes.size());
 
         HexCell* startHex = nullptr;
 
@@ -1020,11 +1036,11 @@ void game::WorldVisualManager::clearTreesOnEnemyPaths() {
 
             if (type == HexCell::Type::Bridge || type == HexCell::Type::BlockingBridge ||
                 type == HexCell::Type::BlockingPattern) {
+
                 if (!startHex) {
                     startHex = hexPtr.get();
                 } else {
                     auto* currentT = _world->getHexTransformByCell(*startHex);
-
                     auto* candidateT = _world->getHexTransformByCell(*hexPtr);
 
                     if (candidateT && currentT &&
@@ -1038,9 +1054,19 @@ void game::WorldVisualManager::clearTreesOnEnemyPaths() {
         if (!startHex)
             continue;
 
-        auto path = findPath(startHex->getCoord(), enemyHex->getCoord());
+        for (auto* enemyHex : enemyHexes) {
 
-        removeTreesFromPath(path);
+            spdlog::critical(
+                "[clearTreesOnEnemyPaths] Generating path from ({},{}) to enemy ({},{})",
+                startHex->getCoord().q(), startHex->getCoord().r(), enemyHex->getCoord().q(),
+                enemyHex->getCoord().r());
+
+            auto path = findPath(startHex->getCoord(), enemyHex->getCoord());
+
+            spdlog::critical("[clearTreesOnEnemyPaths] Path size={}", path.size());
+
+            removeTreesFromPath(path);
+        }
     }
 }
 
@@ -1093,20 +1119,22 @@ void game::WorldVisualManager::removeTreesFromPath(const std::vector<HexCoord>& 
     for (const auto& coord : path) {
         auto cell = _world->getGrid()->getCell(coord);
 
-        if (!cell)
+        if (!cell) {
             continue;
+        }
 
         auto it = std::find_if(_spawnedTrees.begin(), _spawnedTrees.end(),
                                [&](const SpawnedTree& tree) { return tree.hex == cell.get(); });
 
-        if (it == _spawnedTrees.end())
+        if (it == _spawnedTrees.end()) {
             continue;
-
-        if (it->object) {
-            it->object->destroy();
         }
 
-        cell->setType(HexCell::Type::Normal);
+        if (it->object) {
+            getOwner()->getScene()->destroyGameObject(it->object);
+        } 
+
+        cell->setState(HexCell::State::Empty);
 
         _spawnedTrees.erase(it);
     }
