@@ -19,10 +19,7 @@ void PlayerCombatAnimationController::start() {
             playConfirmRoundAttack();
             canPlay = false;
         }
-
-        spdlog::critical("Anim attack playded");
     }, "Confirm_Round_AttackAnim");
-    std::string t = _playerAnimator->getCurrentState()->getName();
 
 }
 
@@ -55,6 +52,8 @@ void PlayerCombatAnimationController::update(double deltaTime) {
 
     if (_enemyAnimator != nullptr && _enemyAnimator->getCurrentState()->getName() == "Attack" && _enemyAnimator->getCurrentState()->getClip()->isFinished()) {
         _enemyAnimator->play("Idle");
+        _enemyAnimator->setBool("isFinished", true);
+
     }
 
 

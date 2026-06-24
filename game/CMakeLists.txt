@@ -47,6 +47,8 @@ set(GAME_SOURCES
     ${SRC_DIR}/dialog/dialogManager.cpp
     ${SRC_DIR}/dialog/dialog.cpp
     ${SRC_DIR}/visuals/depthOfFieldEffect.cpp
+        ${SRC_DIR}/enemySystem/EnemyTooltip.cpp
+
 )
 
 set(GAME_HEADERS
@@ -110,6 +112,7 @@ set(GAME_HEADERS
     ${INC_DIR}/dialog/dialogEntity.h
     ${INC_DIR}/visuals/depthOfFieldEffect.h
     ${INC_DIR}/settings.h
+    ${INC_DIR}/enemySystem/EnemyTooltip.h
 )
 
 add_executable(game
