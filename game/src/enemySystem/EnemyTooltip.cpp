@@ -4,9 +4,7 @@
 #include "ecs/gameobject.h"
 #include "game.h"
 
-#if DZEMIKK_DEV_TOOLS
-#include "spdlog/spdlog.h"
-#endif
+
 void game::EnemyTooltip::showTooltip(EnemySpawnConfig config) {
     _tooltipGO->enabled(true);
     _hp->text = std::to_string(config.hp) + "/" + std::to_string(config.hp);

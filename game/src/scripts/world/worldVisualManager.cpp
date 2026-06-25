@@ -12,7 +12,6 @@
 #include <enemySystem/enemyManager.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/norm.hpp>
-#include <spdlog/spdlog.h>
 
 void game::WorldVisualManager::start() {}
 

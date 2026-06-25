@@ -1919,7 +1919,6 @@ void Game::restartGame() {
     _pendingRestart = false;
 
     if (!std::filesystem::exists("./world.json")) {
-        spdlog::warn("[Game] No world.json file found. Cannot restart.");
         throw std::runtime_error("No world.json file found. Cannot restart.");
     }
 

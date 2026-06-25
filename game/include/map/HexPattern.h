@@ -5,7 +5,6 @@
 
 #include <algorithm>
 #include <nlohmann/json.hpp>
-#include <spdlog/spdlog.h>
 #include <vector>
 
 namespace game {
