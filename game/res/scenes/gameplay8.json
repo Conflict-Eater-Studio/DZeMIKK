@@ -480,6 +480,10 @@
                                             ]
                                         },
                                         {
+                                            "name": "R90",
+                                            "transitions": []
+                                        },
+                                        {
                                             "name": "R210",
                                             "transitions": []
                                         },
@@ -499,15 +503,11 @@
                                             ]
                                         },
                                         {
-                                            "name": "R90",
+                                            "name": "R150",
                                             "transitions": []
                                         },
                                         {
                                             "name": "R330",
-                                            "transitions": []
-                                        },
-                                        {
-                                            "name": "R150",
                                             "transitions": []
                                         },
                                         {
@@ -17863,6 +17863,2281 @@
                     "id": "526f1c87-15ed-4adf-8292-b4f182daf472",
                     "name": "EnemyTooltip",
                     "tags": []
+                },
+                {
+                    "children": [
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "8c0f2862-90ee-499c-ba16-a1c7b2c1f66e",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        1400.0,
+                                        640.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "color": [
+                                        0.9372549057006836,
+                                        0.7490196228027344,
+                                        0.01568627543747425,
+                                        1.0
+                                    ],
+                                    "id": "16698539-55b5-4bf2-b6b1-2bddffa9aeaf",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "textures/ui grafiki/ui_info_ramka.png",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "7a4e9bdc-76e1-47d9-90b9-e9f0ea1c2f8d",
+                            "name": "Empty",
+                            "tags": []
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "b8387a47-f3ed-4936-a40e-e47950bc27a6",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                200.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                1.0,
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                            "horizontalAlign": 1,
+                                            "id": "0aeece74-58ec-44c3-a829-2f8816a9049c",
+                                            "scale": 0.800000011920929,
+                                            "text": "HOW TO PLAY - COMBAT",
+                                            "type": "UITextRenderer",
+                                            "verticalAlign": 1
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "6ea525a1-fe1e-4029-a20f-6c430e9a95a4",
+                                    "name": "Text",
+                                    "tags": []
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "afd3cd38-038d-437a-b2ea-a1d4e0e9b1e4",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                -400.0,
+                                                200.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                40.0,
+                                                40.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 1
+                                        },
+                                        {
+                                            "color": [
+                                                0.9372549057006836,
+                                                0.7490196228027344,
+                                                0.01568627543747425,
+                                                1.0
+                                            ],
+                                            "id": "e72e381c-07da-4e8f-b7c6-96323e6d5759",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "textures/hex.png",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "5a8935d1-5cb5-4689-ae45-207aab35f0fc",
+                                    "name": "Hex_left",
+                                    "tags": []
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "31fe3197-bc9f-4b91-b328-5eb88ac2ddc7",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                400.0,
+                                                200.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                40.0,
+                                                40.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 1
+                                        },
+                                        {
+                                            "color": [
+                                                0.9372549057006836,
+                                                0.7490196228027344,
+                                                0.01568627543747425,
+                                                1.0
+                                            ],
+                                            "id": "2e12ac41-2399-46c6-b5ff-4a5b01680a31",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "textures/hex.png",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "e9a4af98-0afc-4a0a-9657-dc3a25425fed",
+                                    "name": "Hex_right",
+                                    "tags": []
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "5878aa44-70ef-44fb-9e52-96dc0768736e",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        62.400001525878906
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "89e41c14-8662-4061-9d23-9f905ff44b4a",
+                            "name": "Top",
+                            "tags": []
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "e0760b56-ef83-43d2-958d-e42bced20172",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        178.10000610351563
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "8b148c48-3f1c-4965-b8e5-d42440b7aab1",
+                                    "scale": 0.6000000238418579,
+                                    "text": "Your goal is to COUNTER your opponent's action on your field:",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "68eb252f-9ff3-46e4-a653-91ba66875c4d",
+                            "name": "Middle",
+                            "tags": []
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "f6dbbfe3-f092-4162-94c5-53453d82546f",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        113.5999984741211
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        700.0,
+                                        2.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "color": [
+                                        0.9372549057006836,
+                                        0.7490196228027344,
+                                        0.01568627543747425,
+                                        1.0
+                                    ],
+                                    "id": "208fd0ad-585b-459b-956f-7a9f67bd6e60",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "9edf7486-f92d-4530-a83f-5324861ca86c",
+                            "name": "Line",
+                            "tags": []
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "d6a892b6-b92c-43f2-9cca-9b7fcf31f27f",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                60.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.4950980544090271,
+                                                                0.4950980544090271,
+                                                                0.4950980544090271,
+                                                                1.0
+                                                            ],
+                                                            "id": "ce449a07-5edf-4349-aed5-901d7354c9c2",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "0960afc2-3c5a-44c2-9b6a-856183332666",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "ddf0fa50-3ecc-48d9-aaf0-73eec4a3b4a6",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                120.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.0,
+                                                                0.20588231086730957,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "id": "73244d68-c2a0-4af6-b73e-50d7f59bfdaa",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "3063f41b-3a4c-406c-bed1-51969b42b56b",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "4178c6c3-b53a-4999-84a8-fcd6371d1447",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.9372549057006836,
+                                                                0.7490196228027344,
+                                                                0.01568627543747425,
+                                                                1.0
+                                                            ],
+                                                            "id": "55fd4c9d-9d1f-4a5b-a5b5-5fe190982851",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "de4e357b-0ada-4808-8793-b1573c2f3dc1",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "42f732a2-962c-4b8a-98fd-eefe68a8971b",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                50.0,
+                                                                90.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.9372549057006836,
+                                                                0.7490196228027344,
+                                                                0.01568627543747425,
+                                                                1.0
+                                                            ],
+                                                            "id": "0fd731a7-614f-4583-8707-5831f0bae941",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "e46435a0-f231-41fe-aaa4-153c8ffd5966",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "d2a33830-44a7-4db8-8ba9-ef2821b4307a",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                50.0,
+                                                                30.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.9372549057006836,
+                                                                0.7490196228027344,
+                                                                0.01568627543747425,
+                                                                1.0
+                                                            ],
+                                                            "id": "81af025a-2a35-4347-a706-8a8e06f4bda5",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "44c0e66b-96c6-4f85-ae05-cf6af8048b3b",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "6eb0c893-6b2b-42d8-9ca5-ced1e18c5ac9",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                100.0,
+                                                                60.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.9372549057006836,
+                                                                0.7490196228027344,
+                                                                0.01568627543747425,
+                                                                1.0
+                                                            ],
+                                                            "id": "cd996635-3083-485e-8790-25125f98f5fd",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "703d376e-2cf0-43ac-b681-d4fe38fc8d73",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "095d3bc6-a8c5-4770-8b4a-aa49fca4ee6e",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                -50.0,
+                                                                90.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.0,
+                                                                0.20392157137393951,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "id": "e6c6d1b2-99b1-44af-9713-17f4196696c9",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "86064bb4-3f69-4824-b18f-f379f8e9cde7",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "acffd64f-6c4d-435a-a8aa-adb59966c277",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                -50.0,
+                                                                30.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.9372549057006836,
+                                                                0.7490196228027344,
+                                                                0.01568627543747425,
+                                                                1.0
+                                                            ],
+                                                            "id": "26d70fe5-b0d0-4260-a129-b998941ba4fd",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "f3dfe3f7-b4c2-49e2-98e9-ec36863aef7e",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "2a569f88-911c-4268-a905-edbf5c7520a9",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                -100.0,
+                                                                60.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.0,
+                                                                0.20392157137393951,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "id": "1d1e5bfd-67b8-47e0-a8fb-c46d4319aeb0",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "e6bcb9bd-4ad1-4146-9473-3873c822b771",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "078a1f39-779d-47a5-8035-0db340303940",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                180.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 0
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                                            "horizontalAlign": 1,
+                                                            "id": "7a061493-1c21-4fd2-8609-a7fa2b9314a2",
+                                                            "scale": 0.5,
+                                                            "text": "YOUR RESPONSE",
+                                                            "type": "UITextRenderer",
+                                                            "verticalAlign": 1
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "066fe1d7-800d-4e33-993f-e7fa59a994ac",
+                                                    "name": "Empty",
+                                                    "tags": []
+                                                }
+                                            ],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "4518e7a1-ad38-4268-8e01-2f2d9c7972d5",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        0.0,
+                                                        -245.89999389648438
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                }
+                                            ],
+                                            "enabled": false,
+                                            "id": "f2dc8312-0858-413f-9287-b56c055babdd",
+                                            "name": "Hexes",
+                                            "tags": []
+                                        },
+                                        {
+                                            "children": [],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "b17f57ed-6120-4887-9abe-3f63d672675a",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        -349.0,
+                                                        -188.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "color": [
+                                                        1.0,
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                                    "horizontalAlign": 1,
+                                                    "id": "1b11090a-4b54-4b6f-bb6c-a100dbdf8f44",
+                                                    "scale": 0.5,
+                                                    "text": "You must play a \nDEFEND (BLUE) \non the same spot \non your field.",
+                                                    "type": "UITextRenderer",
+                                                    "verticalAlign": 1
+                                                }
+                                            ],
+                                            "enabled": false,
+                                            "id": "050aeca3-2df5-49d8-a235-393592924251",
+                                            "name": "Empty",
+                                            "tags": []
+                                        }
+                                    ],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "e239ac45-7c02-4d60-86f4-141171b8311d",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                -200.0,
+                                                35.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "553472f5-4279-4f3a-9646-a02593be3fcc",
+                                    "name": "Left",
+                                    "tags": []
+                                },
+                                {
+                                    "children": [
+                                        {
+                                            "children": [
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "4dbfd2c6-50dd-456a-a093-010480aab1f9",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                60.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.4950980544090271,
+                                                                0.4950980544090271,
+                                                                0.4950980544090271,
+                                                                1.0
+                                                            ],
+                                                            "id": "2ac4fe77-f1d7-4f8e-976f-024a24ca13fc",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "4ae5f911-ade0-4941-b957-a278ccf9eafc",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "535a36e3-d707-48d3-bc11-2b5c7c98fdc0",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                120.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                0.0,
+                                                                0.0,
+                                                                1.0
+                                                            ],
+                                                            "id": "8cfdf3e6-e210-45f2-ac88-7c9bb0410495",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "bda26289-f47d-40e3-b75a-b0ac7e5aea74",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "7d605d35-f89c-4ba5-92da-076ffd446880",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.20000000298023224,
+                                                                0.09019608050584793,
+                                                                0.3294117748737335,
+                                                                1.0
+                                                            ],
+                                                            "id": "61074e3c-1d4c-4f56-b3d8-50635b49748a",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "e5ae03cb-e734-43ca-bcf6-2472d53e0c66",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "cb63832f-58d6-4df2-b07f-1dc602a0d5eb",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                50.0,
+                                                                90.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.20000000298023224,
+                                                                0.09019608050584793,
+                                                                0.3294117748737335,
+                                                                1.0
+                                                            ],
+                                                            "id": "19a60d49-d6ee-4840-8ab9-0debb629bc80",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "61beb111-865d-4f1f-94f5-9323e2bb7583",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "45477332-e926-4e9f-aeaa-9daa3a2bef23",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                50.0,
+                                                                30.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.20000000298023224,
+                                                                0.09019608050584793,
+                                                                0.3294117748737335,
+                                                                1.0
+                                                            ],
+                                                            "id": "03d00f72-5f13-4d4b-8aec-047620973ac2",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "391bb864-12a2-4fd5-bd25-05aca9bd165a",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "873a2867-54b5-4c5f-b71c-a80ad3cd8560",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                100.0,
+                                                                60.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.20000000298023224,
+                                                                0.09019608050584793,
+                                                                0.3294117748737335,
+                                                                1.0
+                                                            ],
+                                                            "id": "58c0f2b0-f452-4917-aac2-a9acbc912fd4",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "1cc6d5de-51c2-45db-aa16-4b0e7be03e9f",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "5651999c-d78b-412c-bcf0-231735f6f41d",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                -50.0,
+                                                                90.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                0.0,
+                                                                0.0,
+                                                                1.0
+                                                            ],
+                                                            "id": "1be0a828-60c9-4dc5-b2b6-39e7724afed5",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "703d35b6-924b-410f-b75e-461cf7a89ec2",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "7e0fc1d8-529f-4a27-ab2d-96333a4b3234",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                -50.0,
+                                                                30.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                0.20000000298023224,
+                                                                0.09019608050584793,
+                                                                0.3294117748737335,
+                                                                1.0
+                                                            ],
+                                                            "id": "06e67628-80ee-47fd-8c86-8677785ce167",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "72c09eee-ffa6-46a5-b75c-63236081f6b9",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "8499ed84-25a8-4bc4-89ba-96f086855966",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                -100.0,
+                                                                60.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                60.0,
+                                                                60.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 3
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                0.0,
+                                                                0.0,
+                                                                1.0
+                                                            ],
+                                                            "id": "edf8419d-0a62-4197-99b8-4e852cfad4dc",
+                                                            "materialPath": "shaders/quad",
+                                                            "texture": "textures/hex.png",
+                                                            "type": "ImageRenderer"
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "500e8763-5818-4777-8c68-cda2b9748658",
+                                                    "name": "Hex_UI",
+                                                    "tags": []
+                                                },
+                                                {
+                                                    "children": [],
+                                                    "components": [
+                                                        {
+                                                            "anchorMax": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "anchorMin": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "id": "38993f8c-c1ed-450f-bd32-1119bd0a47e3",
+                                                            "offsetMax": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "offsetMin": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "pivot": [
+                                                                0.5,
+                                                                0.5
+                                                            ],
+                                                            "position": [
+                                                                0.0,
+                                                                180.0
+                                                            ],
+                                                            "rotation": 0.0,
+                                                            "scale": [
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "size": [
+                                                                0.0,
+                                                                0.0
+                                                            ],
+                                                            "type": "RectTransform",
+                                                            "zIndex": 0
+                                                        },
+                                                        {
+                                                            "color": [
+                                                                1.0,
+                                                                1.0,
+                                                                1.0
+                                                            ],
+                                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                                            "horizontalAlign": 1,
+                                                            "id": "f7d66fe9-e4fd-44a3-b7db-a8323a9bb041",
+                                                            "scale": 0.5,
+                                                            "text": "ENEMY ACTION",
+                                                            "type": "UITextRenderer",
+                                                            "verticalAlign": 1
+                                                        }
+                                                    ],
+                                                    "enabled": false,
+                                                    "id": "2d7b9098-30b5-43de-95d4-e2878c87d3b0",
+                                                    "name": "Empty",
+                                                    "tags": []
+                                                }
+                                            ],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "93d8c568-9d13-49d0-a0ac-dd47e4e3769b",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        0.0,
+                                                        -245.89999389648438
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                }
+                                            ],
+                                            "enabled": false,
+                                            "id": "e18d6d81-6799-4a2d-a6b5-6c2473fea5d0",
+                                            "name": "Hexes",
+                                            "tags": []
+                                        },
+                                        {
+                                            "children": [],
+                                            "components": [
+                                                {
+                                                    "anchorMax": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "anchorMin": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "id": "49f3b8fc-9a03-4029-b79c-acd3cad5bddc",
+                                                    "offsetMax": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "offsetMin": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "pivot": [
+                                                        0.5,
+                                                        0.5
+                                                    ],
+                                                    "position": [
+                                                        267.0,
+                                                        -188.0
+                                                    ],
+                                                    "rotation": 0.0,
+                                                    "scale": [
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "size": [
+                                                        0.0,
+                                                        0.0
+                                                    ],
+                                                    "type": "RectTransform",
+                                                    "zIndex": 0
+                                                },
+                                                {
+                                                    "color": [
+                                                        1.0,
+                                                        1.0,
+                                                        1.0
+                                                    ],
+                                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                                    "horizontalAlign": 1,
+                                                    "id": "a22ab1e2-291e-4910-b277-c60e0a78a177",
+                                                    "scale": 0.5,
+                                                    "text": "Enemy plays an \nATTACK (red) on \ntheir field.",
+                                                    "type": "UITextRenderer",
+                                                    "verticalAlign": 1
+                                                }
+                                            ],
+                                            "enabled": false,
+                                            "id": "5b1fb838-7567-41fc-b572-f6c25a29135b",
+                                            "name": "Empty",
+                                            "tags": []
+                                        }
+                                    ],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "4531b0df-3eb9-4ffa-9a06-f0d2a8fe62d8",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                200.0,
+                                                35.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "7cf32e5f-6bb3-4f9c-bf32-2e92df82cad2",
+                                    "name": "Right",
+                                    "tags": []
+                                },
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "79306a8f-c421-4dd9-9bc3-2f1cdd30b5b6",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                -165.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                0.9372549057006836,
+                                                0.7490196228027344,
+                                                0.01568627543747425
+                                            ],
+                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                            "horizontalAlign": 1,
+                                            "id": "c4cc09d2-db59-4228-a50c-46f6f602f041",
+                                            "scale": 1.0,
+                                            "text": ">>>",
+                                            "type": "UITextRenderer",
+                                            "verticalAlign": 0
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "0ce2077f-c25a-4dcc-a9d2-7c44d4248645",
+                                    "name": "Middle",
+                                    "tags": []
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "750650ec-a3fc-42ed-8a99-5c8ae17ff245",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        74.80000305175781
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "a0e39738-5c3c-4860-ba46-3fcadceb4734",
+                            "name": "Bottom",
+                            "tags": []
+                        },
+                        {
+                            "children": [],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "8823f885-ee24-432d-b596-146f66bd787e",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        1400.0,
+                                        640.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        0.06666667014360428,
+                                        0.054901961237192154,
+                                        0.11764705926179886,
+                                        0.7843137383460999
+                                    ],
+                                    "id": "facedca8-b0fd-4b34-b297-33e509bc60fd",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "textures/ui grafiki/ui_info.png",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "0e69081a-4bde-4b07-bf28-d5f597abc419",
+                            "name": "bg",
+                            "tags": []
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "anchorMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "id": "4dbd1ba4-bb8f-4ca0-baed-567395e5eeeb",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 2
+                                        },
+                                        {
+                                            "color": [
+                                                0.06666667014360428,
+                                                0.054901961237192154,
+                                                0.11764705926179886
+                                            ],
+                                            "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                            "horizontalAlign": 1,
+                                            "id": "13ac41b9-4c24-445c-bc25-76316525dee1",
+                                            "scale": 0.6000000238418579,
+                                            "text": "GOT IT!",
+                                            "type": "UITextRenderer",
+                                            "verticalAlign": 1
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "d1118094-280a-462e-8df8-03e3a7d6a73e",
+                                    "name": "Button_Text",
+                                    "tags": []
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "aa95aaf6-c655-468e-b9af-33e690bab384",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        -262.8999938964844
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        200.0,
+                                        60.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 1
+                                },
+                                {
+                                    "disabledColor": [
+                                        0.0,
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "events": {
+                                        "click": [
+                                            "combat.panel.exit"
+                                        ]
+                                    },
+                                    "hoverColor": [
+                                        0.5686274766921997,
+                                        0.45248231291770935,
+                                        0.0,
+                                        1.0
+                                    ],
+                                    "id": "3867a978-7576-4959-8095-b1dfc69b7146",
+                                    "interactable": true,
+                                    "normalColor": [
+                                        0.9372549057006836,
+                                        0.7490196228027344,
+                                        0.01568627543747425,
+                                        1.0
+                                    ],
+                                    "pressedColor": [
+                                        0.28921568393707275,
+                                        0.23014184832572937,
+                                        0.0,
+                                        1.0
+                                    ],
+                                    "type": "UIButton"
+                                },
+                                {
+                                    "color": [
+                                        0.9372549057006836,
+                                        0.7490196228027344,
+                                        0.01568627543747425,
+                                        1.0
+                                    ],
+                                    "id": "c1f6c9ef-c556-4ffe-a039-aa35d6f335fb",
+                                    "materialPath": "shaders/quad",
+                                    "texture": "",
+                                    "type": "ImageRenderer"
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "a0ac4889-378a-4871-a19d-fbd61d333a30",
+                            "name": "Button",
+                            "tags": []
+                        }
+                    ],
+                    "components": [
+                        {
+                            "anchorMax": [
+                                0.5,
+                                0.5
+                            ],
+                            "anchorMin": [
+                                0.5,
+                                0.5
+                            ],
+                            "id": "9ae45615-dea0-4187-898e-119ecd65ec1e",
+                            "offsetMax": [
+                                0.0,
+                                0.0
+                            ],
+                            "offsetMin": [
+                                0.0,
+                                0.0
+                            ],
+                            "pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "position": [
+                                0.0,
+                                0.0
+                            ],
+                            "rotation": 0.0,
+                            "scale": [
+                                1.0,
+                                1.0
+                            ],
+                            "size": [
+                                1700.0,
+                                600.0
+                            ],
+                            "type": "RectTransform",
+                            "zIndex": 0
+                        }
+                    ],
+                    "enabled": false,
+                    "id": "ac233cab-bf60-4d03-9359-a999f08a1c49",
+                    "name": "Combat_instruction",
+                    "tags": []
                 }
             ],
             "components": [
@@ -17909,7 +20184,7 @@
                     "type": "Canvas"
                 }
             ],
-            "enabled": true,
+            "enabled": false,
             "id": "be4b7f1f-02ba-4bfe-b52b-fc73cd70ec91",
             "name": "Canvas",
             "tags": []

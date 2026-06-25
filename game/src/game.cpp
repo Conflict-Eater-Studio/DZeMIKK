@@ -369,6 +369,13 @@ void Game::startGame() {
         },
         "combat.exit.randomHex");
 
+     dzemikk::UIActionRegistry::get().registerAction(
+        [this](const dzemikk::UIEvent&) {
+            auto tooltipsGO = _mainScene.get()->findGameObjectByName("Combat_instruction");
+            tooltipsGO->enabled(false);
+        },
+        "combat.panel.exit");
+
     dzemikk::UIActionRegistry::get().registerAction(
         [this, sceneManager, sceneShared](const dzemikk::UIEvent&) {
             _gameStarted = true;

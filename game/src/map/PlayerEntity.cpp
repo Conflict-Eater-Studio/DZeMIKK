@@ -32,6 +32,14 @@ void onSFXLoad(const dzemikk::AssetHandle<dzemikk::Sound>& sound, SoundInitConte
 
 namespace game {
 void PlayerEntity::onEnter(HexCellPtr cell) {
+    if (cell->getCoord().q() == 8 && cell->getCoord().r() == -2) {
+        auto* tutorial = _game->getCurrentScene().get()->findGameObjectByName("Combat_instruction");
+
+        if (tutorial) {
+            tutorial->enabled(true);
+        }
+    }
+
     if (auto* ent = dynamic_cast<ItemEntity*>(cell->getEntity())) {
         if (_owner != nullptr && _owner->getScene() != nullptr) {
             switch (ent->getItemType()) {
