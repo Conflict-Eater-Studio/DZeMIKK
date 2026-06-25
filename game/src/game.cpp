@@ -1203,7 +1203,7 @@ void Game::setupPlayer() {
     dzemikk::AnimationClip* pickupClip = nullptr;
     dzemikk::AnimationClip* deathClip = nullptr;
 
-    float animSpeed = 15.0F;
+    float animSpeed = 8.0F;
 
     animator->setApplyRootMotion(true);
 
@@ -1212,32 +1212,32 @@ void Game::setupPlayer() {
 
     forward30Clip = skeleton->getClip("300");
     forward30Clip->setLoop(false);
-    forward30Clip->setPlaybackSpeed(10.0f);
+    forward30Clip->setPlaybackSpeed(animSpeed);
     forward30Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
 
     forward90Clip = skeleton->getClip("0");
     forward90Clip->setLoop(false);
-    forward90Clip->setPlaybackSpeed(10.0f);
+    forward90Clip->setPlaybackSpeed(animSpeed);
     forward90Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
 
     forward150Clip = skeleton->getClip("60");
     forward150Clip->setLoop(false);
-    forward150Clip->setPlaybackSpeed(10.0f);
+    forward150Clip->setPlaybackSpeed(animSpeed);
     forward150Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
 
     forward210Clip = skeleton->getClip("120");
     forward210Clip->setLoop(false);
-    forward210Clip->setPlaybackSpeed(10.0f);
+    forward210Clip->setPlaybackSpeed(animSpeed);
     forward210Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
 
     forward270Clip = skeleton->getClip("180");
     forward270Clip->setLoop(false);
-    forward270Clip->setPlaybackSpeed(10.0f);
+    forward270Clip->setPlaybackSpeed(animSpeed);
     forward270Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
 
     forward330Clip = skeleton->getClip("240");
     forward330Clip->setLoop(false);
-    forward330Clip->setPlaybackSpeed(10.0f);
+    forward330Clip->setPlaybackSpeed(animSpeed);
     forward330Clip->setRootMotionMode(dzemikk::RootMotionMode::Position);
 
     attackClip1 = skeleton->getClip("attack1");

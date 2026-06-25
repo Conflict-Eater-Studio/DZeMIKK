@@ -159,12 +159,31 @@ class CombatState : public IGameState {
         int distance;
     };
 
+    struct PlannedHexAnimation {
+        dzemikk::Transform* transform;
+        float startY;
+    };
+
     std::vector<AnimatedHex> _hiddenHexes;
+
+    std::vector<PlannedHexAnimation> _plannedHexAnimations;
+
+    bool _enemyPlanAnimation = false;
+    float _enemyPlanAnimationTime = 0.0f;
+
+    float _enemyPlanDuration = 0.5f;
+    float _enemyPlanHeight = 2.0f;
+
+    bool _enemyPlanDelay = false;
+    float _enemyPlanDelayTimer = 0.0f;
 
     std::unordered_map<HexPattern::Type, std::shared_ptr<dzemikk::Material>> _hexMaterials;
     std::shared_ptr<dzemikk::Material> _enemyBattleHexMaterial;
+    std::shared_ptr<dzemikk::Material> _enemyGlowBattleHexMaterial;
     std::shared_ptr<dzemikk::Material> _emptyEnemyBattleHexMaterial;
     std::shared_ptr<dzemikk::Material> _showedPatternMaterial;
+
+    float _playerTurnTextTimer = 0.0f;
 
     /**
      * @brief Starts a new combat turn.

@@ -62,6 +62,8 @@ void game::CombatState::onEnter() {
 
     _game->getCameraController()->setMode(CameraController::Mode::Combat);
     _game->enableCombatUI(true);
+    _game->getCurrentScene().get()->findGameObjectByName("Enemy_Combat_Text")->enabled(false);
+    _game->getCurrentScene().get()->findGameObjectByName("Player_Combat_Text")->enabled(false);
 
     initializeCombat();
 
@@ -118,6 +120,10 @@ void game::CombatState::onEnter() {
     _showedPatternMaterial = material->clone();
     _showedPatternMaterial->setAlbedoColor({0.25F, 0.25F, 0.25F});
 
+    _enemyGlowBattleHexMaterial = material->clone();
+    _enemyGlowBattleHexMaterial->setAlbedoColor({0.1F, 0.0F, 0.4F});
+    _enemyGlowBattleHexMaterial->setShader(_game->getEngine()->getAssetManager()->get<dzemikk::Shader>("shaders/PBRFresnelGlow"));
+
     auto* enemyAvatarGO = _game->getCurrentScene()
                               .get()
                               ->findGameObjectByName("Enemy_Avatar_Panel")
@@ -159,8 +165,6 @@ void game::CombatState::onEnter() {
                                     ->findGameObjectByName("Enemy_Avatar_Panel")
                                     ->findDescendantByName("Personality");
     eAvatarPersonalityGO->enabled(false);
-
-    startNewTurn();
 }
 
 void game::CombatState::onExit() {
@@ -316,6 +320,8 @@ void game::CombatState::onUpdate(float dt) {
         if (_boardTransition >= 1.0F) {
             _boardTransition = 1.0F;
             _enterAnimation = false;
+
+            startNewTurn();
         }
 
         updateBoardVisibility(_boardTransition, false);
@@ -327,6 +333,106 @@ void game::CombatState::onUpdate(float dt) {
 
         if (_resultTimer <= 0.0F) {
             startNewTurn();
+        }
+    }
+
+    if (_enemyPlanAnimation) {
+
+        _enemyPlanAnimationTime += dt;
+
+        constexpr float HexDelay = 0.4f;
+
+        bool anyAnimating = false;
+
+        PlannedHexAnimation* highestHex = nullptr;
+        float highestY = -std::numeric_limits<float>::max();
+
+        for (size_t i = 0; i < _plannedHexAnimations.size(); ++i) {
+
+            auto& hex = _plannedHexAnimations[i];
+
+            float localTime = _enemyPlanAnimationTime - (i * HexDelay);
+
+            if (localTime < 0.0f) {
+                continue;
+            }
+
+            float t = glm::clamp(localTime / _enemyPlanDuration, 0.0f, 1.0f);
+
+            auto pos = hex.transform->getPosition();
+            pos.y = hex.startY + sin(t * glm::pi<float>()) * _enemyPlanHeight;
+            hex.transform->setPosition(pos);
+
+            if (pos.y > highestY) {
+                highestY = pos.y;
+                highestHex = &hex;
+            }
+
+            if (t < 1.0f) {
+                anyAnimating = true;
+            }
+        }
+
+        // MATERIAL LOGIC (stable restore)
+        for (auto& hex : _plannedHexAnimations) {
+
+            auto* mesh = hex.transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+            if (!mesh) {
+                continue;
+            }
+
+            if (&hex == highestHex) {
+                mesh->setMaterial(0, _enemyGlowBattleHexMaterial);
+            } else {
+                mesh->setMaterial(0, _enemyBattleHexMaterial);
+            }
+        }
+
+        if (!anyAnimating) {
+
+            for (auto& hex : _plannedHexAnimations) {
+
+                auto pos = hex.transform->getPosition();
+                pos.y = hex.startY;
+                hex.transform->setPosition(pos);
+
+                auto* mesh = hex.transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+                if (mesh) {
+                    mesh->setMaterial(0, _enemyBattleHexMaterial);
+                }
+            }
+
+            _enemyPlanAnimation = false;
+
+            _game->getCurrentScene()
+                .get()
+                ->findGameObjectByName("Enemy_Combat_Text")
+                ->enabled(false);
+
+            _game->getCurrentScene()
+                .get()
+                ->findGameObjectByName("Player_Combat_Text")
+                ->enabled(true);
+
+            _playerTurnTextTimer = 2.5f;
+
+            _phase = CombatPhase::PlayerTurn;
+            _playerPatternComponent->setInteractionEnabled(true);
+        }
+    }
+
+    if (_playerTurnTextTimer > 0.0f) {
+
+        _playerTurnTextTimer -= dt;
+
+        if (_playerTurnTextTimer <= 0.0f) {
+
+            auto* playerText =
+                _game->getCurrentScene().get()->findGameObjectByName("Player_Combat_Text");
+
+            if (playerText) {
+                playerText->enabled(false);
+            }
         }
     }
 }
@@ -385,6 +491,31 @@ void game::CombatState::startNewTurn() {
         }
     }
 
+    _plannedHexAnimations.clear();
+
+    for (auto* cell : _currentEnemy->getTerritory()) {
+
+        if (!cell) {
+            continue;
+        }
+
+        if (!usedCoords.contains(cell->getCoord())) {
+            continue;
+        }
+
+        auto* transform = world->getHexTransformByCell(*cell);
+
+        if (!transform) {
+            continue;
+        }
+
+        _plannedHexAnimations.push_back({transform, transform->getPosition().y});
+    }
+
+    _game->getCurrentScene().get()->findGameObjectByName("Enemy_Combat_Text")->enabled(true);
+    _enemyPlanAnimation = true;
+    _enemyPlanAnimationTime = 0.0f;
+
     int inactiveCount = 0;
 
     for (auto* cell : _currentEnemy->getTerritory()) {
@@ -422,9 +553,6 @@ void game::CombatState::startNewTurn() {
     auto* playerPanel = _game->getCurrentScene().get()->findGameObjectByName("Player_Panel");
     auto* combatPlayerPanel = playerPanel->getComponent<game::CombatUIPanel>();
     combatPlayerPanel->refreshCounts();
-
-    _phase = CombatPhase::PlayerTurn;
-    _playerPatternComponent->setInteractionEnabled(true);
 }
 
 void game::CombatState::endPlayerTurn() {

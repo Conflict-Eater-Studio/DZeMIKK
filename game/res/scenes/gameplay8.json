@@ -480,10 +480,6 @@
                                             ]
                                         },
                                         {
-                                            "name": "R90",
-                                            "transitions": []
-                                        },
-                                        {
                                             "name": "R210",
                                             "transitions": []
                                         },
@@ -503,11 +499,15 @@
                                             ]
                                         },
                                         {
-                                            "name": "R150",
+                                            "name": "R90",
                                             "transitions": []
                                         },
                                         {
                                             "name": "R330",
+                                            "transitions": []
+                                        },
+                                        {
+                                            "name": "R150",
                                             "transitions": []
                                         },
                                         {
@@ -2856,7 +2856,7 @@
                                                     "verticalAlign": 1
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "7de3cb1c-4384-483a-b3b6-5647ab8ebb93",
                                             "name": "Name",
                                             "tags": []
@@ -2919,7 +2919,7 @@
                                                             "verticalAlign": 1
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "e015e38d-4cd1-43f8-a40f-788f379fb241",
                                                     "name": "Text",
                                                     "tags": []
@@ -2980,7 +2980,7 @@
                                                                     "type": "ImageRenderer"
                                                                 }
                                                             ],
-                                                            "enabled": true,
+                                                            "enabled": false,
                                                             "id": "4baf61ef-40fc-4fe2-b44b-d6d62d87680d",
                                                             "name": "Slider_Fill",
                                                             "tags": []
@@ -3039,7 +3039,7 @@
                                                                     "type": "ImageRenderer"
                                                                 }
                                                             ],
-                                                            "enabled": true,
+                                                            "enabled": false,
                                                             "id": "751ab869-991e-412c-8312-01d72fca3484",
                                                             "name": "Slider_Handle",
                                                             "tags": []
@@ -3136,7 +3136,7 @@
                                                             "type": "ImageRenderer"
                                                         }
                                                     ],
-                                                    "enabled": true,
+                                                    "enabled": false,
                                                     "id": "a08fb056-ae45-4532-8618-bea21dd83ff3",
                                                     "name": "Slider",
                                                     "tags": []
@@ -3182,7 +3182,7 @@
                                                     "zIndex": 0
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "fa23f885-f5f0-4131-ab34-4bb88af92c2a",
                                             "name": "Health_Holder",
                                             "tags": []
@@ -3243,7 +3243,7 @@
                                                     "verticalAlign": 0
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "685e8faf-94ce-4af7-8c12-c8a2a35d94d8",
                                             "name": "Personality",
                                             "tags": []
@@ -3296,7 +3296,7 @@
                                             "type": "VerticalLayout"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "620d5269-12ec-44b2-9d8a-bd41459845ee",
                                     "name": "Info_Box",
                                     "tags": []
@@ -3355,7 +3355,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "e51d36cf-9578-4149-8911-a03931ecb43e",
                                     "name": "Empty",
                                     "tags": []
@@ -3416,7 +3416,7 @@
                                                     "type": "ImageRenderer"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "220c703d-f367-4707-b1bd-0c874da88815",
                                             "name": "Empty",
                                             "tags": []
@@ -3475,7 +3475,7 @@
                                                     "type": "ImageRenderer"
                                                 }
                                             ],
-                                            "enabled": true,
+                                            "enabled": false,
                                             "id": "4a1ac35b-5271-4475-91c8-1ccb818dafbd",
                                             "name": "Avatar",
                                             "tags": []
@@ -3533,7 +3533,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "a556f5d7-c7ae-4ecb-b803-c5dd3dde7f2c",
                                     "name": "Avatar_Holder",
                                     "tags": []
@@ -3592,7 +3592,7 @@
                                             "type": "ImageRenderer"
                                         }
                                     ],
-                                    "enabled": true,
+                                    "enabled": false,
                                     "id": "409fd283-0f9c-47a9-9b24-7b3098683da6",
                                     "name": "Decor",
                                     "tags": []
@@ -3650,7 +3650,7 @@
                                     "type": "ImageRenderer"
                                 }
                             ],
-                            "enabled": true,
+                            "enabled": false,
                             "id": "a90cad2e-e671-4cc1-bac1-3775f8de99ae",
                             "name": "Enemy_Avatar_Panel",
                             "tags": []
@@ -5581,6 +5581,248 @@
                             "enabled": false,
                             "id": "dcc97e2b-dd74-4d1c-9328-e1a1a334c5c3",
                             "name": "Confirm_Round",
+                            "tags": []
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "6e9260d5-99bf-4bc3-a654-b1126998a320",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                700.0,
+                                                100.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                0.06666667014360428,
+                                                0.054901961237192154,
+                                                0.11764705926179886,
+                                                0.7843137383460999
+                                            ],
+                                            "id": "4752db85-2ba6-4262-9881-35ef3da52e42",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "textures/ui grafiki/Actions_panel.png",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "97047a56-e7e8-4c95-8cc5-a16b8f5a9714",
+                                    "name": "Empty",
+                                    "tags": []
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "bfb45b45-625f-4d4c-94d0-ff596ea3c2ce",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        240.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "18b9b25f-fe8d-4485-999e-baa23a358238",
+                                    "scale": 1.0,
+                                    "text": "Enemy Planning",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "9fd51bf1-6ca8-4f95-86d6-d289d6d653d8",
+                            "name": "Enemy_Combat_Text",
+                            "tags": []
+                        },
+                        {
+                            "children": [
+                                {
+                                    "children": [],
+                                    "components": [
+                                        {
+                                            "anchorMax": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "anchorMin": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "id": "d61185ca-9033-42d3-97ad-861293d0591a",
+                                            "offsetMax": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "offsetMin": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "position": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "rotation": 0.0,
+                                            "scale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "size": [
+                                                700.0,
+                                                100.0
+                                            ],
+                                            "type": "RectTransform",
+                                            "zIndex": 0
+                                        },
+                                        {
+                                            "color": [
+                                                0.06666667014360428,
+                                                0.054901961237192154,
+                                                0.11764705926179886,
+                                                0.7843137383460999
+                                            ],
+                                            "id": "210cb2fe-8667-413a-ada8-952d060b411f",
+                                            "materialPath": "shaders/quad",
+                                            "texture": "textures/ui grafiki/Actions_panel.png",
+                                            "type": "ImageRenderer"
+                                        }
+                                    ],
+                                    "enabled": false,
+                                    "id": "ae0b42eb-8a18-4445-8884-f0ccb6448119",
+                                    "name": "Empty",
+                                    "tags": []
+                                }
+                            ],
+                            "components": [
+                                {
+                                    "anchorMax": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "anchorMin": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "id": "21536906-9502-4b4d-abcc-02c60058d94a",
+                                    "offsetMax": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "offsetMin": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "position": [
+                                        0.0,
+                                        240.0
+                                    ],
+                                    "rotation": 0.0,
+                                    "scale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "size": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "type": "RectTransform",
+                                    "zIndex": 0
+                                },
+                                {
+                                    "color": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "font": "fonts/Dingos_Font/Dingos-Stamp_Black.ttf",
+                                    "horizontalAlign": 1,
+                                    "id": "38f623af-133b-4552-bc35-25633ad29fa4",
+                                    "scale": 1.0,
+                                    "text": "Your turn",
+                                    "type": "UITextRenderer",
+                                    "verticalAlign": 1
+                                }
+                            ],
+                            "enabled": false,
+                            "id": "083b5d14-fdfe-4b9d-9728-a2c622969669",
+                            "name": "Player_Combat_Text",
                             "tags": []
                         }
                     ],
