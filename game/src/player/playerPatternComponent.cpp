@@ -219,8 +219,17 @@ void game::PlayerPatternComponent::confirmBonusHex(const HexPattern& pattern) {
             continue;
         }
 
-        cell->setType(HexCell::Type::PlayerBattleHex);
+
+        cell->setType(game::HexCell::Type::PlayerBattleHex);
         cell->setDirty(true);
+
+        auto _worldGO = _game->getCurrentScene().get()->findGameObjectByName("World");
+        auto* world = _worldGO->getComponent<game::World>();
+
+        auto transform = world->getHexTransformByCell(*cell.get());
+        auto renderer = transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
+        renderer->setMaterial(0, world->getHexMaterials()[game::HexCell::Type::PlayerBattleHex]);
+        renderer->getMaterial(0)->setAlbedoColor({1.0F, 1.0F, 0.0F});
 
         _playerEntity->addTerritoryCell(cell.get());
 
@@ -229,10 +238,6 @@ void game::PlayerPatternComponent::confirmBonusHex(const HexPattern& pattern) {
         auto* state = stateMachine->getCurrentStateAs<CombatState>();
         state->removeHiddenHex(cell.get());
 
-        auto* world = _playerEntity->getOwner()
-                          ->getScene()
-                          ->findGameObjectByName("World")
-                          ->getComponent<World>();
         if (auto* worldHex = world->getHexTransformByCell(*cell.get())) {
             glm::vec3 pos = worldHex->getPosition();
             pos.y -= _combatBoardOffset;

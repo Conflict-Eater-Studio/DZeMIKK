@@ -120,10 +120,6 @@ void game::CombatState::onEnter() {
     _showedPatternMaterial = material->clone();
     _showedPatternMaterial->setAlbedoColor({0.25F, 0.25F, 0.25F});
 
-    _enemyGlowBattleHexMaterial = material->clone();
-    _enemyGlowBattleHexMaterial->setAlbedoColor({0.1F, 0.0F, 0.4F});
-    _enemyGlowBattleHexMaterial->setShader(_game->getEngine()->getAssetManager()->get<dzemikk::Shader>("shaders/PBRFresnelGlow"));
-
     auto* enemyAvatarGO = _game->getCurrentScene()
                               .get()
                               ->findGameObjectByName("Enemy_Avatar_Panel")
@@ -373,7 +369,6 @@ void game::CombatState::onUpdate(float dt) {
             }
         }
 
-        // MATERIAL LOGIC (stable restore)
         for (auto& hex : _plannedHexAnimations) {
 
             auto* mesh = hex.transform->getOwner()->getComponent<dzemikk::MeshRenderer>();
@@ -381,11 +376,7 @@ void game::CombatState::onUpdate(float dt) {
                 continue;
             }
 
-            if (&hex == highestHex) {
-                mesh->setMaterial(0, _enemyGlowBattleHexMaterial);
-            } else {
-                mesh->setMaterial(0, _enemyBattleHexMaterial);
-            }
+             mesh->setMaterial(0, _enemyBattleHexMaterial);
         }
 
         if (!anyAnimating) {
@@ -569,7 +560,7 @@ void game::CombatState::endPlayerTurn() {
     taskS.onLoad = combatSound::onSFXLoad;
     _game->getEngine()->getAssetManager()->getAsync("audio/prime_zakonczenie_tury.wav", taskS);
 
-    _resultTimer = 2.0F;
+    _resultTimer = 3.0F;
 }
 
 std::shared_ptr<dzemikk::Material> game::CombatState::getPatternMaterial(HexPattern::Type type) {

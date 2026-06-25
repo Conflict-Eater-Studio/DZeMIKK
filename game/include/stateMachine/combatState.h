@@ -179,7 +179,6 @@ class CombatState : public IGameState {
 
     std::unordered_map<HexPattern::Type, std::shared_ptr<dzemikk::Material>> _hexMaterials;
     std::shared_ptr<dzemikk::Material> _enemyBattleHexMaterial;
-    std::shared_ptr<dzemikk::Material> _enemyGlowBattleHexMaterial;
     std::shared_ptr<dzemikk::Material> _emptyEnemyBattleHexMaterial;
     std::shared_ptr<dzemikk::Material> _showedPatternMaterial;
 

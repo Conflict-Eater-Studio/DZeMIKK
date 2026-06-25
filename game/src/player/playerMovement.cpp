@@ -55,7 +55,6 @@ void PlayerMovement::update(double deltaTime) {
     HexGrid::HexCellPtr currentTargetCell = _path[_step % _path.size()];
 
     if (currentTargetCell->getState() == HexCell::State::Item) {
-        spdlog::info("[PlayerMovement] Player stepped on item");
         if (_animator->getCurrentState()->getName() != "Pickup") {
             _animator->play("Pickup");
         }
